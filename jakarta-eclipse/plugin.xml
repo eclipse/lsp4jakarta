@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <!-- Jakarta EE Language -->
+   <extension
+   		point="org.eclipse.core.contenttype.contentTypes">
+   		<content-type
+            base-type="org.eclipse.jdt.core.javaSource"
+            default-charset="ISO-8859-1"
+            id="org.jakartaee.lsp4e.javaContentType"
+            name="Jakarta Java File"
+            priority="high">
+		</content-type>
+   </extension>
+    <extension
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            class="org.eclipse.lsp4e.ConnectDocumentToLanguageServerSetupParticipant"
+            contentTypeId="org.eclipse.jdt.core.javaSource">
+      </participant>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editorContentTypeBinding
+            contentTypeId="org.jakartaee.lsp4e.javaContentType"
+            editorId="org.eclipse.ui.genericeditor.GenericEditor">
+      </editorContentTypeBinding>
+   </extension>
+   <extension
+         point="org.eclipse.lsp4e.languageServer">
+      <server
+            class="org.jakarta.lsp4e.JakartaLSConnection"
+            id="org.jakartaee.lsp4e.jakartaserver"
+            label="JakartaEE Language Server"
+            clientImpl="org.jakarta.lsp4e.JakartaLanguageClient" >
+      </server>
+      <contentTypeMapping
+            contentType="org.jakartaee.lsp4e.javaContentType"
+            id="org.jakartaee.lsp4e.jakartaserver">
+      </contentTypeMapping>
+   </extension>
+</plugin>

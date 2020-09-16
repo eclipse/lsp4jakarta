@@ -1,0 +1,13 @@
+.classpath
+.project
+.settings
+.factorypath
+
+build/
+.out/
+bin/
+.bin/
+target/
+.target/
+
+.DS_Store*
