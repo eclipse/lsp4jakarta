@@ -7,7 +7,7 @@ CANOSP Fall 2020 Project
 
 # Getting Started
 
-1. Build the Jakarta EE LS: `mvn clean install` to create the `jarkata-ls-1.0-SNAPSHOT-jar-with-dependencies.jar` in the target directory
+1. Run `./buildAll.sh` to create the `jarkata-ls-1.0-SNAPSHOT-jar-with-dependencies.jar` and move it into the `jakarata-elcipse` folder
 
 2. Import `jakarta-eclipse` and `jakartalsp` in Eclipse
 
