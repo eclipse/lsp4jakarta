@@ -3,6 +3,7 @@ package io.microshed.jakartals;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
+import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.ServerCapabilities;
@@ -40,6 +41,10 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
     this.parentProcessId = params.getProcessId();
     ServerCapabilities serverCapabilities = new ServerCapabilities();
     InitializeResult initializeResult = new InitializeResult(serverCapabilities);
+    
+    // Provide Completion Capability to the LS
+    initializeResult.getCapabilities().setCompletionProvider(new CompletionOptions());
+
     return CompletableFuture.completedFuture(initializeResult);
   }
 
