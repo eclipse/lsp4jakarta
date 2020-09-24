@@ -36,7 +36,9 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -44,13 +46,14 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
 
 import io.microshed.jakartals.commons.SnippetRegistry;
-import io.microshed.jakartals.commons.Snippet;
 
 public class JakartaTextDocumentService implements TextDocumentService {
 
   private static final Logger LOGGER = Logger.getLogger(JakartaTextDocumentService.class.getName());
 
   private final JakartaLanguageServer jakartaLanguageServer;
+
+  private SnippetRegistry snippetRegistry = new SnippetRegistry();
 
 	// Text document manager that maintains the contexts of the text documents
   private final TextDocuments<TextDocument> documents = new TextDocuments<TextDocument>();
@@ -88,21 +91,10 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		This method is automatically called by the Language Server Client
 		provided it has provided a java-completion-computer extension on the client side.
 		*/
-		// Resolve the document
-		SnippetRegistry snippetRegistry = new SnippetRegistry();
-		List<Snippet> snips = snippetRegistry.getSnippets();
-		LOGGER.info(String.format("Snippet count: %d", snips.size()));
-		snippetRegistry.getSnippets().forEach(snippet-> {
-			LOGGER.info(snippet.getDescription());
-		});
 
-		List<CompletionItem> completion_items = new ArrayList<CompletionItem>();
-		completion_items.add(new CompletionItem("option1"));
-		completion_items.add(new CompletionItem("option2"));
-		completion_items.add(new CompletionItem("option3"));
-
-		// Now you want to Create a snippet registry on the fly by parsing
-		return CompletableFuture.completedFuture(Either.forLeft(completion_items));
+		return CompletableFuture.completedFuture(Either.forLeft(
+			snippetRegistry.getCompletionItemNoContext(new Range(position.getPosition(), position.getPosition()), "\n", true)
+		));
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
 import org.eclipse.lsp4j.MarkupContent;
 import org.eclipse.lsp4j.MarkupKind;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -79,8 +80,6 @@ public class SnippetRegistry {
 	 */
     public void registerSnippets(InputStream in, TypeAdapter<? extends ISnippetContext<?>> contextDeserializer)
     throws IOException {
-            LOGGER.info(in.toString());
-            LOGGER.info("Trying to register some snippets");
             registerSnippets(new InputStreamReader(in, StandardCharsets.UTF_8.name()), contextDeserializer);
     }
 
@@ -171,6 +170,24 @@ public class SnippetRegistry {
             item.setInsertTextFormat(InsertTextFormat.Snippet);
             return item;
         }).collect(Collectors.toList());
+	}
+
+	public List<CompletionItem> getCompletionItemNoContext(final Range replaceRange, final String lineDelimeter, boolean canSupportMarkdown) {
+		return getSnippets().stream().map(snippet -> {
+			String label = snippet.getPrefixes().get(0);
+			CompletionItem item = new CompletionItem();
+            item.setLabel(label);
+            item.setDetail(snippet.getDescription());
+			String insertText = getInsertText(snippet, false, lineDelimeter);
+            item.setKind(CompletionItemKind.Snippet);
+            item.setDocumentation(Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimeter)));
+            item.setFilterText(label);
+			item.setTextEdit(new TextEdit(replaceRange, insertText));
+			item.setInsertTextFormat(InsertTextFormat.Snippet);
+			LOGGER.info(label);
+			LOGGER.info(item.getTextEdit().toString());
+            return item;
+		}).collect(Collectors.toList());
 	}
 
 	private static MarkupContent createDocumentation(Snippet snippet, boolean canSupportMarkdown,

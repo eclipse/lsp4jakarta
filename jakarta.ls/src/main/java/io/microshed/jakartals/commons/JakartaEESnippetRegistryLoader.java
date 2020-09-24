@@ -8,10 +8,11 @@ import java.util.logging.Logger;
  * @author Ankush Sharma
  */
 public class JakartaEESnippetRegistryLoader implements ISnippetRegistryLoader {
-    private static final Logger LOGGER = Logger.getLogger(SnippetRegistry.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JakartaEESnippetRegistryLoader.class.getName());
 	@Override
 	public void load(SnippetRegistry registry) throws Exception {
-		registry.registerSnippets(JakartaEESnippetRegistryLoader.class.getResourceAsStream("jax-rs.json"), SnippetContextForJava.TYPE_ADAPTER);
+        LOGGER.info("Loading snippets into registry...");
+		registry.registerSnippets(JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("jax-rs.json"), SnippetContextForJava.TYPE_ADAPTER);
 	}
     
 }
