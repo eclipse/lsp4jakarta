@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Stores labels for the project located at a specific project uri
  *
- * @author dakwon
+ * @author Ankush Sharma, credit to dakwon
  *
  */
 public class ProjectLabelInfoEntry {

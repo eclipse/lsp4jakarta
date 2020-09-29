@@ -174,6 +174,9 @@ public class SnippetRegistry {
 
 	public List<CompletionItem> getCompletionItemNoContext(final Range replaceRange, final String lineDelimeter, boolean canSupportMarkdown) {
 		return getSnippets().stream().map(snippet -> {
+			// To filter by context, I just need to provide document contexts, and then perform a match and include or remove
+			// List<String> snippetTypes = ((SnippetContextForJava) snippet.getContext()).getTypes();
+			// LOGGER.info(snippetTypes.toString());
 			String label = snippet.getPrefixes().get(0);
 			CompletionItem item = new CompletionItem();
             item.setLabel(label);
@@ -184,8 +187,6 @@ public class SnippetRegistry {
             item.setFilterText(label);
 			item.setTextEdit(new TextEdit(replaceRange, insertText));
 			item.setInsertTextFormat(InsertTextFormat.Snippet);
-			LOGGER.info(label);
-			LOGGER.info(item.getTextEdit().toString());
             return item;
 		}).collect(Collectors.toList());
 	}

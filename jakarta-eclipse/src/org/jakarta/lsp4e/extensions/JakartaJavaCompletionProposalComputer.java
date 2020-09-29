@@ -27,7 +27,6 @@ public class JakartaJavaCompletionProposalComputer implements IJavaCompletionPro
 	@Override
 	public List<ICompletionProposal> computeCompletionProposals(ContentAssistInvocationContext context,
 			IProgressMonitor monitor) {
-		System.out.println("Context of Completion Proposal: " + context.toString());
 		CompletableFuture<ICompletionProposal[]> future = CompletableFuture.supplyAsync(() -> {
 			return lsContentAssistProcessor.computeCompletionProposals(context.getViewer(), context.getInvocationOffset());
 		});
