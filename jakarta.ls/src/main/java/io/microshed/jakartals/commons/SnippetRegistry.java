@@ -172,11 +172,19 @@ public class SnippetRegistry {
         }).collect(Collectors.toList());
 	}
 
+    /**
+     * Returns all snippet completion items. This method does not take into account the current context
+     * such as ClassPath, or imports, etc...
+     * @param replaceRange       the replace range.
+	 * @param lineDelimiter      the line delimiter.
+	 * @param canSupportMarkdown true if markdown is supported to generate
+	 *                           documentation and false otherwise.
+     * @return the snippet completion items irrespective of the current context.
+     */
 	public List<CompletionItem> getCompletionItemNoContext(final Range replaceRange, final String lineDelimeter, boolean canSupportMarkdown) {
 		return getSnippets().stream().map(snippet -> {
 			// To filter by context, I just need to provide document contexts, and then perform a match and include or remove
 			// List<String> snippetTypes = ((SnippetContextForJava) snippet.getContext()).getTypes();
-			// LOGGER.info(snippetTypes.toString());
 			String label = snippet.getPrefixes().get(0);
 			CompletionItem item = new CompletionItem();
             item.setLabel(label);
@@ -198,7 +206,7 @@ public class SnippetRegistry {
 	/**
 	 * Applies character based formatting
 	 * @param edit
-	 * @return
+     * @author Ankush Sharma
 	 */
 	private static void formatTextEdit(TextEdit edit) {
 		// NOTE: one tab is treated as 1 character, and so is one space
@@ -213,7 +221,13 @@ public class SnippetRegistry {
 		edit.setNewText(String.join("\n", lines));
 	}
 
-	// Repeates a character (count) times
+	/**
+     * Repeats a character (count) times
+     * @param count - number of times to repeat a String
+     * @param with - String to be repeated
+     * @return String
+     * @author Ankush Sharma
+     */
 	private static String repeat(int count, String with) {
 		return new String(new char[count]).replace("\0", with);
 	}

@@ -91,8 +91,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		This method is automatically called by the Language Server Client
 		provided it has provided a java-completion-computer extension on the client side.
 		*/
-		// Find a way to maintain a context Per Document
-		// We then pass this context into the CompletionItem with what the current URI has in its classpath
 		return CompletableFuture.completedFuture(Either.forLeft(
 			snippetRegistry.getCompletionItemNoContext(new Range(position.getPosition(), position.getPosition()), "\n", true)
 		));
