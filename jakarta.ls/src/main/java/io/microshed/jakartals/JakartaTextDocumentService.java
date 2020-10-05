@@ -36,12 +36,16 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
+
+import io.microshed.jakartals.commons.SnippetRegistry;
 
 public class JakartaTextDocumentService implements TextDocumentService {
 
@@ -49,11 +53,13 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
   private final JakartaLanguageServer jakartaLanguageServer;
 
+  private SnippetRegistry snippetRegistry = new SnippetRegistry();
+
 	// Text document manager that maintains the contexts of the text documents
   private final TextDocuments<TextDocument> documents = new TextDocuments<TextDocument>();
 
   public JakartaTextDocumentService(JakartaLanguageServer jls) {
-    this.jakartaLanguageServer = jls;
+	this.jakartaLanguageServer = jls;
   }
 
   @Override
@@ -76,6 +82,18 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		String uri = params.getTextDocument().getUri();
 		jakartaLanguageServer.getLanguageClient()
 				.publishDiagnostics(new PublishDiagnosticsParams(uri, new ArrayList<Diagnostic>()));
+	}
+
+	@Override
+	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
+		/*
+		Code completion functionality for eclipse Jakarta EE.
+		This method is automatically called by the Language Server Client
+		provided it has provided a java-completion-computer extension on the client side.
+		*/
+		return CompletableFuture.completedFuture(Either.forLeft(
+			snippetRegistry.getCompletionItemNoContext(new Range(position.getPosition(), position.getPosition()), "\n", true)
+		));
 	}
 
 	@Override

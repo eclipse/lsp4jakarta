@@ -40,7 +40,18 @@
       </contentTypeMapping>
    </extension>
    <extension
-         id="jakartajava-hover-provider"
+         id="jakarta-completion-computer"
+         name="Jakarta Proposals (based on Jakarta LS)"
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="org.jakarta.lsp4e.extensions.jakarta-java-completion-computer"
+            class="org.jakarta.lsp4e.extensions.JakartaJavaCompletionProposalComputer"
+            needsSortingAfterFiltering="false">
+      </javaCompletionProposalComputer>
+   </extension>
+   <extension
+   		 id="jakartajava-hover-provider"
          point="org.eclipse.jdt.ui.javaEditorTextHovers">
       <hover
             activate="true"
