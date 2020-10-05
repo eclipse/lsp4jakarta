@@ -93,6 +93,13 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		List<String> allDocs = documents.all().stream().map(doc -> doc.getUri()).collect(Collectors.toList());
 		triggerValidationFor(allDocs);
 	}
+	
+	
+	@Override
+	public CompletableFuture<Hover> hover(HoverParams params) {
+		LOGGER.info("received textDocument/hover request");
+		return jakartaLanguageServer.getLanguageClient().getJavaHover(params);
+	}
 
 
   private void triggerValidationFor(List<String> uris) {

@@ -36,10 +36,10 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
   @Override
   public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
     LOGGER.info("Initializing Jakarta EE server");
-
     this.parentProcessId = params.getProcessId();
     ServerCapabilities serverCapabilities = new ServerCapabilities();
     InitializeResult initializeResult = new InitializeResult(serverCapabilities);
+    initializeResult.getCapabilities().setHoverProvider(true);
     return CompletableFuture.completedFuture(initializeResult);
   }
 
