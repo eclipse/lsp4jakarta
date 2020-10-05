@@ -11,11 +11,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.lsp4e.LanguageClientImpl;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Hover;
+import org.eclipse.lsp4j.HoverParams;
+import org.eclipse.lsp4j.MarkedString;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 import io.microshed.jakartals.api.JakartaLanguageClientAPI;
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
@@ -37,8 +40,17 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
     }
     
     @Override
-    public CompletableFuture<Hover> getJavaHover() {
-        return CompletableFuture.completedFuture(null);
+    public CompletableFuture<Hover> getJavaHover(HoverParams params) {
+    	// return dummy test hover object
+    	Activator.log(new Status(IStatus.INFO, "hover request received", "hover request received"));
+    	return CompletableFutures.computeAsync((cancelChecker) -> {
+    	    IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+    	    Hover testHover = new Hover();
+    	    List<Either<String, MarkedString>> contents = new ArrayList<>();
+    	    contents.add(Either.forLeft("this is test hover"));
+    	    testHover.setContents(contents);
+    	    return testHover;
+    	 });
     }
 
     @Override
