@@ -176,11 +176,11 @@ public class SnippetRegistry {
      * Returns all snippet completion items. This method does not take into account the current context
      * such as ClassPath, or imports, etc...
      * @param replaceRange       the replace range.
-	 * @param lineDelimiter      the line delimiter.
-	 * @param canSupportMarkdown true if markdown is supported to generate
-	 *                           documentation and false otherwise.
+     * @param lineDelimeter      the line delimeter
+     * @param canSupportMarkdown true if mardown is supported to generate documentation and false otherwise
      * @return the snippet completion items irrespective of the current context.
      */
+
 	public List<CompletionItem> getCompletionItemNoContext(final Range replaceRange, final String lineDelimeter, boolean canSupportMarkdown) {
 		return getSnippets().stream().map(snippet -> {
 			// To filter by context, I just need to provide document contexts, and then perform a match and include or remove
