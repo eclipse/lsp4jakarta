@@ -182,14 +182,42 @@ public class SnippetRegistry {
             item.setLabel(label);
             item.setDetail(snippet.getDescription());
 			String insertText = getInsertText(snippet, false, lineDelimeter);
+
             item.setKind(CompletionItemKind.Snippet);
             item.setDocumentation(Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimeter)));
-            item.setFilterText(label);
-			item.setTextEdit(new TextEdit(replaceRange, insertText));
+			item.setFilterText(label);
+			
+			TextEdit textEdit = new TextEdit(replaceRange, insertText);
+			formatTextEdit(textEdit); // Fixes indentation on the lines based on tabs
+			item.setTextEdit(textEdit);
 			item.setInsertTextFormat(InsertTextFormat.Snippet);
             return item;
 		}).collect(Collectors.toList());
 	}
+
+	/**
+	 * Applies character based formatting
+	 * @param edit
+	 * @return
+	 */
+	private static void formatTextEdit(TextEdit edit) {
+		// NOTE: one tab is treated as 1 character, and so is one space
+		// Split the line by newlines, and perform tabs on every line after the first
+		String[] lines = edit.getNewText().split("\\r?\\n");
+		int num_tabs = edit.getRange().getStart().getCharacter();
+		String append_to_start_str = repeat(num_tabs, "\t");
+		for (int i = 1; i < lines.length; i++) {
+			lines[i] = append_to_start_str + lines[i];
+		}
+		// Join each element with a newline
+		edit.setNewText(String.join("\n", lines));
+	}
+
+	// Repeates a character (count) times
+	private static String repeat(int count, String with) {
+		return new String(new char[count]).replace("\0", with);
+	}
+
 
 	private static MarkupContent createDocumentation(Snippet snippet, boolean canSupportMarkdown,
 			String lineDelimiter) {
