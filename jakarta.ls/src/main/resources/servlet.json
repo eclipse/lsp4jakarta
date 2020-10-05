@@ -1,0 +1,52 @@
+{
+    "GenericServlet - protocol independent servlet": {
+        "prefix": "genericservlet",
+        "body": [
+          "package ${1: packagename}",
+          "",
+          "import jakarta.servlet.GenericServlet;",
+          "import jakarta.servlet.ServletRequest;",
+          "import jakarta.servlet.ServletResponse;",
+          "import jakarta.servlet.ServletException;",
+          "import java.io.IOException;",
+          "",
+          "public class ${2: classname} extends GenericServlet {",
+          "\t@Override",
+          "\tpublic void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {",
+          "\t\tres.setContentType(\"text/html\");",
+          "\t\tres.getWriter().println(\"Example Generic Servlet\");",
+          "\t}",
+          "}"
+        ],
+        "description": "GenericServlet - protocol independent servlet",
+        "context": {
+            "type": "jakarta.servlet.GenericServlet"
+        }
+    },
+    "HttpServlet - HTTP servlet suitable for a Web site": {
+        "prefix": "httpservlet",
+        "body": [
+            "package ${1: packagename}",
+            "",
+            "import jakarta.servlet.ServletException;",
+            "import jakarta.servlet.annotation.WebServlet;",
+            "import jakarta.servlet.http.HttpServlet;",
+            "import jakarta.servlet.http.HttpServletRequest;",
+            "import jakarta.servlet.http.HttpServletResponse;",
+            "import java.io.IOException;",
+            "",
+            "@WebServlet(name = \"${2:hello}\", urlPatterns = { \"${3:/hello}\" })",
+            "public class ${4: classname} extends HttpServlet {",
+            "\t@Override",
+            "\tprotected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
+            "\t\tres.setContentType(\"text/html;charset=UTF-8\");",
+            "\t\tres.getWriter().println(\"Hello Jakarta EE 9!\");",
+            "\t}",
+            "}"
+        ],
+        "description": "HttpServlet - HTTP servlet suitable for a Web site",
+        "context":{
+            "type": "jakarta.servlet.HttpServlet"
+        }
+    }
+}
