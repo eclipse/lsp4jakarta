@@ -10,6 +10,7 @@
  * 	Contributors:
  * 		 Red Hat Inc. - initial API and implementation and/or initial documentation
  *******************************************************************************/
+
 package org.jakarta.jdt;
 
 import java.io.File;
