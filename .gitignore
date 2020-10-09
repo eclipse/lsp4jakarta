@@ -11,3 +11,5 @@ target/
 .target/
 
 .DS_Store*
+jakarta.ls/.vscode/settings.json
+.vscode/settings.json
