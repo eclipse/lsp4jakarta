@@ -23,8 +23,8 @@
             "type": "jakarta.servlet.GenericServlet"
         }
     },
-    "HttpServlet - HTTP servlet suitable for a Web site": {
-        "prefix": "httpservlet",
+    "HttpServlet - supports HTTP GET requests": {
+        "prefix": "httpservletget",
         "body": [
             "package ${1: packagename}",
             "",
@@ -35,16 +35,40 @@
             "import jakarta.servlet.http.HttpServletResponse;",
             "import java.io.IOException;",
             "",
-            "@WebServlet(name = \"${2:hello}\", urlPatterns = { \"${3:/hello}\" })",
             "public class ${4: classname} extends HttpServlet {",
             "\t@Override",
             "\tprotected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
             "\t\tres.setContentType(\"text/html;charset=UTF-8\");",
-            "\t\tres.getWriter().println(\"Hello Jakarta EE 9!\");",
+            "\t\tres.getWriter().println(\"Example HTTP GET request for HTTPServlet\");",
             "\t}",
             "}"
         ],
-        "description": "HttpServlet - HTTP servlet suitable for a Web site",
+        "description": "HttpServlet - supports HTTP GET requests",
+        "context":{
+            "type": "jakarta.servlet.HttpServlet"
+        }
+    },
+    "HttpServlet - supports HTTP POST requests": {
+        "prefix": "httpservletpost",
+        "body": [
+            "package ${1: packagename}",
+            "",
+            "import jakarta.servlet.ServletException;",
+            "import jakarta.servlet.annotation.WebServlet;",
+            "import jakarta.servlet.http.HttpServlet;",
+            "import jakarta.servlet.http.HttpServletRequest;",
+            "import jakarta.servlet.http.HttpServletResponse;",
+            "import java.io.IOException;",
+            "",
+            "public class ${4: classname} extends HttpServlet {",
+            "\t@Override",
+            "\tprotected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
+            "\t\tres.setContentType(\"text/html;charset=UTF-8\");",
+            "\t\tres.getWriter().println(\"Example HTTP POST request for HTTPServlet\");",
+            "\t}",
+            "}"
+        ],
+        "description": "HttpServlet - supports HTTP POST requests",
         "context":{
             "type": "jakarta.servlet.HttpServlet"
         }
