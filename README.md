@@ -1,11 +1,13 @@
-# Jakarta EE LS 
+# Jakarta EE Language Server
+[![License](https://img.shields.io/badge/License-EPL%202.0-red.svg?label=license&logo=eclipse)](https://www.eclipse.org/legal/epl-2.0/)
+
 
 CANOSP Fall 2020 Project
 
-- [jakartalsp](/jakarta.ls) - Jakarta EE LS
+- [jakarta.ls](/jakarta.ls) - Jakarta EE Language Server
 - [jakarta-eclipse](/jakarta-eclipse) - Eclipse Client that consumes the Jakarta EE LS
 
-# Getting Started
+# Building the Jakarta LS and Eclipse Client
 
 1. Run `./buildAll.sh` to create the `jarkata-ls-1.0-SNAPSHOT-jar-with-dependencies.jar` and move it into the `jakarata-elcipse` folder
 
@@ -21,4 +23,6 @@ CANOSP Fall 2020 Project
 
 7. Right-click on the project, "Run As" --> "Eclipse Application"
 
-8. When you open up a Java file you should see the Jakarta EE server initializing and a sample diagnostic
+# Contributing
+
+Our [CONTRIBUTING](CONTRIBUTING.md) document contains details for submitting pull requests.
