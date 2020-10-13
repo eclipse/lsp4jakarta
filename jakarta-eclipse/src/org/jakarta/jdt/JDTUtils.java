@@ -10,7 +10,10 @@
  * 	Contributors:
  * 		 Red Hat Inc. - initial API and implementation and/or initial documentation
  *******************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> Minor edits and fixes to address PR comments
 package org.jakarta.jdt;
 
 import java.io.File;
