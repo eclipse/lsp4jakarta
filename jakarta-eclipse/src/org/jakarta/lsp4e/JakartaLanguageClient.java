@@ -93,7 +93,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 							}
 						}
 					} catch (JavaModelException e) {
-						Activator.logException("Java Model exception in JDT operations", e);
+						Activator.logException("Cannot calculate diagnostics", e);
 					}
 				}
 				PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
