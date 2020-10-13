@@ -14,6 +14,7 @@ public class JakartaEESnippetRegistryLoader implements ISnippetRegistryLoader {
         LOGGER.info("Loading snippets into registry...");
 		registry.registerSnippets(JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("jax-rs.json"), SnippetContextForJava.TYPE_ADAPTER);
 		registry.registerSnippets(JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("servlet.json"), SnippetContextForJava.TYPE_ADAPTER);
+		registry.registerSnippets(JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("servlet-request.json"), SnippetContextForJava.TYPE_ADAPTER);
 	}
 }
 
