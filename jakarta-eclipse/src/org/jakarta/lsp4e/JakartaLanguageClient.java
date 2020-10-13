@@ -27,7 +27,6 @@ import org.jakarta.jdt.JDTServicesManager;
 import io.microshed.jakartals.api.JakartaLanguageClientAPI;
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
 
-
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
 
 	public JakartaLanguageClient() {

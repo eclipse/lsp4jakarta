@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Minor edits and fixes to address PR comments
 /*******************************************************************************
  * Copyright (c) 2016-2017 Red Hat Inc. and others.
  * All rights reserved. This program and the accompanying materials
@@ -11,6 +14,7 @@
  * Contributors:
  *     Red Hat Inc. - initial API and implementation
  *******************************************************************************/
+<<<<<<< HEAD
 =======
 /******************************************************************************* 
  * Copyright (c) 2019 Red Hat, Inc. 
@@ -23,6 +27,8 @@
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
 >>>>>>> Added JDT tools pkg and Diagnostics on methods in JakartaLanguageClient
+=======
+>>>>>>> Minor edits and fixes to address PR comments
 package org.jakarta.jdt;
 
 import org.eclipse.jdt.core.IBuffer;
