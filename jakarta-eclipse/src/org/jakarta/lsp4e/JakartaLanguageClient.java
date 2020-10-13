@@ -30,84 +30,76 @@ import org.jakarta.jdt.JDTUtils;
 import io.microshed.jakartals.api.JakartaLanguageClientAPI;
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
 
-
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
-    
-    public JakartaLanguageClient() {
-        // do nothing
-    }
-    
-    private IProgressMonitor getProgressMonitor(CancelChecker cancelChecker) {
-        IProgressMonitor monitor = new NullProgressMonitor() {
-            public boolean isCanceled() {
-                cancelChecker.checkCanceled();
-                return false;
-            };
-        };
-        return monitor;
-    }
-    
-    @Override
-    public CompletableFuture<Hover> getJavaHover(HoverParams params) {
-    	// return dummy test hover object
-    	Activator.log(new Status(IStatus.INFO, "hover request received", "hover request received"));
-    	return CompletableFutures.computeAsync((cancelChecker) -> {
-    	    IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-    	    Hover testHover = new Hover();
-    	    List<Either<String, MarkedString>> contents = new ArrayList<>();
-    	    contents.add(Either.forLeft("this is test hover"));
-    	    testHover.setContents(contents);
-    	    return testHover;
-    	 });
-    }
 
-    @Override
-    public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(
-            JakartaDiagnosticsParams javaParams) {
-        Activator.log(new Status(IStatus.INFO, "diagnostic request received", "diagnostic request receieved"));
-        // creating a test diagnostic
-        return CompletableFutures.computeAsync((cancelChecker) -> {
-            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-                List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-                
-                List<Diagnostic> diagnostics = new ArrayList<>();
-                List<String> uris = javaParams.getUris();
-                for (String uri : uris) {
-                	
-                	URI u = JDTUtils.toURI(uri);
-                	ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
-                	if (unit != null) {
-                		System.out.println("--class name: " + unit.getElementName());
-                    	IType[] alltypes;
-    					try {
-    						alltypes = unit.getAllTypes();
-    						for (IType type: alltypes)  {
-    	                		IMethod[] methods = type.getMethods();
-    	                		for (IMethod method : methods) {
-    								System.out.println("--Method name: "+ method.getElementName());
-    								System.out.println("--Signature: "+ method.getSignature());
-    								System.out.println("--Return Type: "+ method.getReturnType());
-    								System.out.println("--source: "+ method.getSource());
-    								System.out.println("--to string: "+ method.toString());
-    								System.out.println("--new: "+ method.getPath().toString());
-    								// nameRange only has offset and the length of method here
-    								ISourceRange nameRange = JDTUtils.getNameRange(method);
-    								System.out.println("--MethodOffset: "+ nameRange.getOffset());
-    								System.out.println("--MethodLength: "+ nameRange.getLength());
-    								Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-    			                    Range diagRangeMe = range;
-    			                    diagnostics.add(new Diagnostic(diagRangeMe, "Dummy Diagnostic message on every method"));
-    							}
-    	                	}
-    					} catch (JavaModelException e) {
-    						// TODO Auto-generated catch block
-    						e.printStackTrace();
-    					}
-                	}
-                    PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
-                    publishDiagnostics.add(publishDiagnostic);
-                }
-                return publishDiagnostics;
-        });
-    }
+	public JakartaLanguageClient() {
+		// do nothing
+	}
+
+	private IProgressMonitor getProgressMonitor(CancelChecker cancelChecker) {
+		IProgressMonitor monitor = new NullProgressMonitor() {
+			public boolean isCanceled() {
+				cancelChecker.checkCanceled();
+				return false;
+			};
+		};
+		return monitor;
+	}
+
+	@Override
+	public CompletableFuture<Hover> getJavaHover(HoverParams params) {
+		// return dummy test hover object
+		Activator.log(new Status(IStatus.INFO, "hover request received", "hover request received"));
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			Hover testHover = new Hover();
+			List<Either<String, MarkedString>> contents = new ArrayList<>();
+			contents.add(Either.forLeft("this is test hover"));
+			testHover.setContents(contents);
+			return testHover;
+		});
+	}
+
+	@Override
+	public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
+		Activator.log(new Status(IStatus.INFO, "diagnostic request received", "diagnostic request receieved"));
+		// creating a test diagnostic
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
+
+			List<Diagnostic> diagnostics = new ArrayList<>();
+			List<String> uris = javaParams.getUris();
+			for (String uri : uris) {
+
+				URI u = JDTUtils.toURI(uri);
+				ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
+				if (unit != null) {
+					// System.out.println("--class name: " + unit.getElementName());
+					IType[] alltypes;
+					try {
+						alltypes = unit.getAllTypes();
+						for (IType type : alltypes) {
+							IMethod[] methods = type.getMethods();
+							for (IMethod method : methods) {
+								// System.out.println("--Method name: " + method.getElementName());
+								// nameRange only has offset and the length of method here
+								ISourceRange nameRange = JDTUtils.getNameRange(method);
+								// System.out.println("--MethodOffset: " + nameRange.getOffset());
+								// System.out.println("--MethodLength: " + nameRange.getLength());
+								Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+								Range diagRangeMe = range;
+								diagnostics.add(new Diagnostic(diagRangeMe, "A Diagnostic message on every method"));
+							}
+						}
+					} catch (JavaModelException e) {
+						Activator.logException("Java Model exception in JDT operations", e);
+					}
+				}
+				PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
+				publishDiagnostics.add(publishDiagnostic);
+			}
+			return publishDiagnostics;
+		});
+	}
 }
