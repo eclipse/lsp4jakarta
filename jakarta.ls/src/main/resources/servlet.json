@@ -1,0 +1,80 @@
+{
+    "GenericServlet - protocol independent servlet": {
+        "prefix": "genericservlet",
+        "body": [
+          "package ${1: packagename}",
+          "",
+          "import jakarta.servlet.GenericServlet;",
+          "import jakarta.servlet.ServletRequest;",
+          "import jakarta.servlet.ServletResponse;",
+          "import jakarta.servlet.ServletException;",
+          "import java.io.IOException;",
+          "",
+          "public class ${2: classname} extends GenericServlet {",
+          "\t@Override",
+          "\tpublic void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {",
+          "\t\tres.setContentType(\"text/html\");",
+          "\t\tres.getWriter().println(\"Example Generic Servlet\");",
+          "\t}",
+          "}"
+        ],
+        "description": "GenericServlet - protocol independent servlet",
+        "context": {
+            "type": "jakarta.servlet.GenericServlet"
+        }
+    },
+    "HttpServlet - supports HTTP GET requests": {
+        "prefix": "httpservletget",
+        "body": [
+            "package ${1: packagename}",
+            "",
+            "import jakarta.servlet.ServletException;",
+            "import jakarta.servlet.annotation.WebServlet;",
+            "import jakarta.servlet.http.HttpServlet;",
+            "import jakarta.servlet.http.HttpServletRequest;",
+            "import jakarta.servlet.http.HttpServletResponse;",
+            "import java.io.IOException;",
+            "",
+            "@WebServlet(name = \"name\", urlPatterns = { \"/path\" })",
+            "public class ${4: classname} extends HttpServlet {",
+            "\t@Override",
+            "\tprotected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
+            "\t\tres.setContentType(\"text/html;charset=UTF-8\");",
+            "\t\tres.getWriter().println(\"Example HTTP GET request for HTTPServlet\");",
+            "\t}",
+            "}"
+        ],
+        "description": "HttpServlet - supports HTTP GET requests",
+        "context":{
+            "type": "jakarta.servlet.HttpServlet"
+        }
+    },
+    "HttpServlet - supports HTTP POST requests": {
+        "prefix": "httpservletpost",
+        "body": [
+            "package ${1: packagename}",
+            "",
+            "import jakarta.servlet.ServletException;",
+            "import jakarta.servlet.annotation.WebServlet;",
+            "import jakarta.servlet.http.HttpServlet;",
+            "import jakarta.servlet.http.HttpServletRequest;",
+            "import jakarta.servlet.http.HttpServletResponse;",
+            "import java.io.IOException;",
+            "",
+            "@WebServlet(name = \"name\", urlPatterns = { \"/path\" })",
+            "public class ${4: classname} extends HttpServlet {",
+            "\t@Override",
+            "\tprotected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
+            "\t\tres.setContentType(\"text/html;charset=UTF-8\");",
+            "\t\t//Example usage of getting query parameter: /resource?param=1",
+            "\t\tString param = req.getParameter(\"param\");",
+            "\t\tres.getWriter().println(\"Example HTTP POST request for HTTPServlet\");",
+            "\t}",
+            "}"
+        ],
+        "description": "HttpServlet - supports HTTP POST requests",
+        "context":{
+            "type": "jakarta.servlet.HttpServlet"
+        }
+    }
+}
