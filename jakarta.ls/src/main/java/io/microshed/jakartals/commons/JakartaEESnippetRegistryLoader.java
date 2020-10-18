@@ -13,6 +13,7 @@ public class JakartaEESnippetRegistryLoader implements ISnippetRegistryLoader {
 	public void load(SnippetRegistry registry) throws Exception {
         LOGGER.info("Loading snippets into registry...");
 		registry.registerSnippets(JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("jax-rs.json"), SnippetContextForJava.TYPE_ADAPTER);
+		registry.registerSnippets(JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("servlet.json"), SnippetContextForJava.TYPE_ADAPTER);
 	}
     
 }
