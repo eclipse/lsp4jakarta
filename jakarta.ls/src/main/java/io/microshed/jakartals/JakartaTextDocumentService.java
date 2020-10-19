@@ -12,7 +12,9 @@ import org.eclipse.lsp4mp.ls.commons.TextDocuments;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -49,27 +51,27 @@ import io.microshed.jakartals.commons.SnippetRegistry;
 
 public class JakartaTextDocumentService implements TextDocumentService {
 
-  private static final Logger LOGGER = Logger.getLogger(JakartaTextDocumentService.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(JakartaTextDocumentService.class.getName());
 
-  private final JakartaLanguageServer jakartaLanguageServer;
+	private final JakartaLanguageServer jakartaLanguageServer;
 
-  private SnippetRegistry snippetRegistry = new SnippetRegistry();
+	private SnippetRegistry snippetRegistry = new SnippetRegistry();
 
 	// Text document manager that maintains the contexts of the text documents
-  private final TextDocuments<TextDocument> documents = new TextDocuments<TextDocument>();
+	private final TextDocuments<TextDocument> documents = new TextDocuments<TextDocument>();
 
-  public JakartaTextDocumentService(JakartaLanguageServer jls) {
-	this.jakartaLanguageServer = jls;
-  }
+	public JakartaTextDocumentService(JakartaLanguageServer jls) {
+		this.jakartaLanguageServer = jls;
+	}
 
-  @Override
-  public void didOpen(DidOpenTextDocumentParams params) {
+	@Override
+	public void didOpen(DidOpenTextDocumentParams params) {
 		TextDocument document = documents.onDidOpenTextDocument(params);
 		String uri = document.getUri();
 		triggerValidationFor(Arrays.asList(uri));
-  }
+	}
 
-  @Override
+	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
 		TextDocument document = documents.onDidChangeTextDocument(params);
 		String uri = document.getUri();
@@ -87,13 +89,27 @@ public class JakartaTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
 		/*
-		Code completion functionality for eclipse Jakarta EE.
-		This method is automatically called by the Language Server Client
-		provided it has provided a java-completion-computer extension on the client side.
-		*/
-		return CompletableFuture.completedFuture(Either.forLeft(
-			snippetRegistry.getCompletionItemNoContext(new Range(position.getPosition(), position.getPosition()), "\n", true)
-		));
+		 * Code completion functionality for eclipse Jakarta EE. This method is
+		 * automatically called by the Language Server Client provided it has provided a
+		 * java-completion-computer extension on the client side.
+		 */
+		String uri = position.getTextDocument().getUri();
+		return CompletableFuture.completedFuture(Either.forLeft(snippetRegistry
+				.getCompletionItemNoContext(new Range(position.getPosition(), position.getPosition()), "\n", true)));
+	}
+
+	/**
+	 * 
+	 * @param uri
+	 * @return the classpath of the file to be used in context based filtering
+	 * @author Ankush Sharma
+	 */
+	private void getClassPath(String uri) {
+		// Query the Java JDT with the provided URI
+		jakartaLanguageServer.getLanguageClient().getClassPathFromURI(uri).thenApply(classpath -> {
+			LOGGER.info(classpath.toString());
+			return classpath;
+		});
 	}
 
 	@Override
@@ -120,7 +136,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
 	}
 
 
-  private void triggerValidationFor(List<String> uris) {
+  	private void triggerValidationFor(List<String> uris) {
 		if (uris.isEmpty()) {
 			return;
 		}
@@ -143,3 +159,5 @@ public class JakartaTextDocumentService implements TextDocumentService {
 				});
 	}
 }
+
+

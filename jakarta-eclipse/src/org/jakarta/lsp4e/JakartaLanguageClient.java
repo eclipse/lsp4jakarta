@@ -3,13 +3,17 @@ package org.jakarta.lsp4e;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.IMethod;
@@ -59,6 +63,37 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 			return testHover;
 		});
 	}
+	
+	/**
+	 * @author ankushsharma
+	 * @param uri - String representing file from which to derive project classpath
+	 * @return List<String>
+	 */
+	@Override
+	public CompletableFuture<List<String>> getClassPathFromURI(String uri) {
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			// Initialize the list that will hold the classpath
+			List<String> classpath = new ArrayList<String>();
+			// Convert URI into a compilation unit
+			ICompilationUnit unit = JDTUtils.resolveCompilationUnit(JDTUtils.toURI(uri));
+			if (unit != null) {
+				try {
+					IType[] alltypes = unit.getAllTypes();
+					for (IType t: alltypes) {
+						IJavaProject project = t.getJavaProject();
+						// Get the Raw class path from the project
+						IClasspathEntry[] class_path_entries = project.getRawClasspath();
+						for (IClasspathEntry entry: class_path_entries) {
+							classpath.add(entry.getPath().toOSString());
+						}
+					}
+				} catch (Exception e) {
+					Activator.logException("Failed to retrieve classpath", e);
+				}
+			}
+			return classpath;
+		});
+	}
 
 	@Override
 	public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
@@ -74,6 +109,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 
 				URI u = JDTUtils.toURI(uri);
 				ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
+				
 				if (unit != null) {
 					// System.out.println("--class name: " + unit.getElementName());
 					IType[] alltypes;

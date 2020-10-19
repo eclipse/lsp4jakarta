@@ -17,7 +17,7 @@ import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
  * Client then delegates that request to the IDEs built in java language support. 
  */
 public interface JakartaLanguageClientAPI extends LanguageClient {
-  @JsonRequest("jakarta/java/hover")
+  	@JsonRequest("jakarta/java/hover")
 	default CompletableFuture<Hover> getJavaHover(HoverParams params) {
 		return CompletableFuture.completedFuture(null);
 	}
@@ -27,4 +27,14 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
 			JakartaDiagnosticsParams javaParams) {
 		return CompletableFuture.completedFuture(null);
 	}
+
+	/**
+	 * @param uri
+	 * @return A List of Strings, each representing an item in the project classpath
+	 */
+	@JsonRequest("jakarta/java/classpath")
+	default CompletableFuture<List<String>> getClassPathFromURI(String uri) {
+		return CompletableFuture.completedFuture(null);
+	}
+
 }
