@@ -2,9 +2,11 @@ package org.jakarta.lsp4e;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -16,6 +18,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4e.LanguageClientImpl;
@@ -67,29 +70,33 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 	/**
 	 * @author ankushsharma
 	 * @param uri - String representing file from which to derive project classpath
+	 * @param snippetContext - get all the context fields from the snippets and check if they exist in this method
 	 * @return List<String>
 	 */
 	@Override
-	public CompletableFuture<List<String>> getClassPathFromURI(String uri) {
+	public CompletableFuture<List<String>> getClassPathFromURI(String uri, List<String> snippetContexts) {
 		return CompletableFutures.computeAsync((cancelChecker) -> {
-			// Initialize the list that will hold the classpath
-			List<String> classpath = new ArrayList<String>();
+			// Initialize the list that will hold the classpath with default null values
+			List<String> classpath = new ArrayList<>();
 			// Convert URI into a compilation unit
 			ICompilationUnit unit = JDTUtils.resolveCompilationUnit(JDTUtils.toURI(uri));
-			if (unit != null) {
-				try {
-					IType[] alltypes = unit.getAllTypes();
-					for (IType t: alltypes) {
-						IJavaProject project = t.getJavaProject();
-						// Get the Raw class path from the project
-						IClasspathEntry[] class_path_entries = project.getRawClasspath();
-						for (IClasspathEntry entry: class_path_entries) {
-							classpath.add(entry.getPath().toOSString());
-						}
+			// Use compilation unit to get handle on the project
+			JavaProject project = (JavaProject) unit.getJavaProject();
+			if (project != null) {
+				// Check if the contexts exist
+				snippetContexts.forEach(context -> {
+					IType classPathCtx = null;
+					try {
+						classPathCtx = project.findType(context);
+					} catch (JavaModelException e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					Activator.logException("Failed to retrieve classpath", e);
-				}
+					if (classPathCtx != null) {
+						classpath.add(context);
+					} else {
+						classpath.add(null);
+					}
+				});
 			}
 			return classpath;
 		});

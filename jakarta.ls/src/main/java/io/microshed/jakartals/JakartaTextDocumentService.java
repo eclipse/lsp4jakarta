@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CodeAction;
@@ -44,6 +45,9 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+
+// Import for getting snippet contexts
+import io.microshed.jakartals.commons.SnippetContextForJava;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
 
@@ -94,21 +98,22 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		 * java-completion-computer extension on the client side.
 		 */
 		String uri = position.getTextDocument().getUri();
-		return CompletableFuture.completedFuture(Either.forLeft(snippetRegistry
-				.getCompletionItemNoContext(new Range(position.getPosition(), position.getPosition()), "\n", true)));
-	}
-
-	/**
-	 * 
-	 * @param uri
-	 * @return the classpath of the file to be used in context based filtering
-	 * @author Ankush Sharma
-	 */
-	private void getClassPath(String uri) {
-		// Query the Java JDT with the provided URI
-		jakartaLanguageServer.getLanguageClient().getClassPathFromURI(uri).thenApply(classpath -> {
-			LOGGER.info(classpath.toString());
+		
+		// Method that gets all the snippet contexts and send to JDT to find which exist in classpath
+		CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(()-> {
+			return snippetRegistry.getSnippets().stream().map(snippet -> {
+				return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
+			}).collect(Collectors.toList());
+		}).thenCompose(snippetctx -> {
+			return jakartaLanguageServer.getLanguageClient().getClassPathFromURI(uri, snippetctx);
+		}).thenApply(classpath -> {
 			return classpath;
+		});
+
+		// An array of snippet contexts is provided to the snippet registry to determine which snippets to show
+		return getSnippetContexts.thenApply(ctx -> {
+			return Either.forLeft(snippetRegistry
+			.getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
 		});
 	}
 

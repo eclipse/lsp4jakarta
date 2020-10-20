@@ -29,12 +29,15 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
 	}
 
 	/**
+	 * @author Ankush Sharma
 	 * @param uri
+	 * @param snippetContext
 	 * @return A List of Strings, each representing an item in the project classpath
+	 * This method compares JavaProject classpath to the snippets contexts, returning a String for the
+	 * snippets contexts that exist in the classpath and null for those that do not
 	 */
 	@JsonRequest("jakarta/java/classpath")
-	default CompletableFuture<List<String>> getClassPathFromURI(String uri) {
+	default CompletableFuture<List<String>> getClassPathFromURI(String uri, List<String> snippetContexts) {
 		return CompletableFuture.completedFuture(null);
 	}
-
 }

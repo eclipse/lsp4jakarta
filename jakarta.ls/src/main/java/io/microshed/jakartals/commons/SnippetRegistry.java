@@ -154,22 +154,29 @@ public class SnippetRegistry {
 	 * @param contextFilter      the context filter.
 	 * @return the snippet completion items according to the context filter.
 	 */
-	public List<CompletionItem> getCompletionItem(final Range replaceRange, final String lineDelimiter,
-			boolean canSupportMarkdown, Predicate<ISnippetContext<?>> contextFilter) {
-        // TODO Add context based filtering
-        return getSnippets().stream().map(snippet -> { 
-            String label = snippet.getPrefixes().get(0);
-            CompletionItem item = new CompletionItem();
+	public List<CompletionItem> getCompletionItem(final Range replaceRange, final String lineDelimeter, boolean canSupportMarkdown, List<String> context) {
+		return getSnippets().stream().map(snippet -> {
+			if (context.get(getSnippets().indexOf(snippet)) == null) {
+				return null;
+			}
+			String label = snippet.getPrefixes().get(0);
+			CompletionItem item = new CompletionItem();
             item.setLabel(label);
             item.setDetail(snippet.getDescription());
-            String insertText = getInsertText(snippet, false, lineDelimiter);
+			String insertText = getInsertText(snippet, false, lineDelimeter);
+
             item.setKind(CompletionItemKind.Snippet);
-            item.setDocumentation(Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimiter)));
-            item.setFilterText(label);
-			item.setTextEdit(new TextEdit(replaceRange, insertText));
-            item.setInsertTextFormat(InsertTextFormat.Snippet);
+            item.setDocumentation(Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimeter)));
+			item.setFilterText(label);
+			
+			TextEdit textEdit = new TextEdit(replaceRange, insertText);
+			formatTextEdit(textEdit); // Fixes indentation on the lines based on tabs
+			item.setTextEdit(textEdit);
+			item.setInsertTextFormat(InsertTextFormat.Snippet);
             return item;
-        }).collect(Collectors.toList());
+		})
+		.filter(completionItems ->  completionItems != null)
+		.collect(Collectors.toList());
 	}
 
     /**
@@ -183,8 +190,6 @@ public class SnippetRegistry {
 
 	public List<CompletionItem> getCompletionItemNoContext(final Range replaceRange, final String lineDelimeter, boolean canSupportMarkdown) {
 		return getSnippets().stream().map(snippet -> {
-			// To filter by context, I just need to provide document contexts, and then perform a match and include or remove
-			// List<String> snippetTypes = ((SnippetContextForJava) snippet.getContext()).getTypes();
 			String label = snippet.getPrefixes().get(0);
 			CompletionItem item = new CompletionItem();
             item.setLabel(label);
