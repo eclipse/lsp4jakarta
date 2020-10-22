@@ -2,20 +2,13 @@ package org.jakarta.lsp4e;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaProject;
@@ -26,7 +19,6 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.MarkedString;
-import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
@@ -88,13 +80,13 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 					IType classPathCtx = null;
 					try {
 						classPathCtx = project.findType(context);
+						if (classPathCtx != null) {
+							classpath.add(context);
+						} else {
+							classpath.add(null);
+						}
 					} catch (JavaModelException e) {
-						e.printStackTrace();
-					}
-					if (classPathCtx != null) {
-						classpath.add(context);
-					} else {
-						classpath.add(null);
+						Activator.logException("Failed to retrieve projectContext from JDT...", e);
 					}
 				});
 			}
