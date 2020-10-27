@@ -26,12 +26,27 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 				alltypes = unit.getAllTypes();
 				for (IType type : alltypes) {
 					allAnnotations = type.getAnnotations();
+					
+					
 					boolean isWebServletAnnotated = false;
 					boolean isHttpServletExtended = false;
+					
+					boolean isWebFilterAnnotated = false;
+					boolean isFilterImplemented = false;
+					
+					boolean isWebListenerAnnotated = false;
+					boolean isWebListenerInterfaceImplemented = false;
+					
 					for (IAnnotation annotation : allAnnotations) {
 						if (annotation.getElementName() == "WebServlet") {
 //							System.out.println("--Annotation name: " + annotation.getElementName());
 							isWebServletAnnotated = true;
+						}
+						if (annotation.getElementName() == "WebFilter") {
+							isWebFilterAnnotated = true;
+						}
+						if (annotation.getElementName() == "WebListener") {
+							isWebListenerAnnotated = true;
 						}
 					}
 
@@ -40,14 +55,64 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 					if ((typeExtension != null) && typeExtension.compareTo("HttpServlet") == 0) {
 						isHttpServletExtended = true;
 					}
+					
+					String[] implementedInterfaces = type.getSuperInterfaceNames();
+					
+					for(String in: implementedInterfaces) {
+						if (in.compareTo("Filter") == 0) {
+							isFilterImplemented = true;
+						}
+						
+						if (in.compareTo("Filter") == 0) {
+							isFilterImplemented = true;
+						}
+						
+						if (in.compareTo("ServletContextListener") == 0) {
+							isWebListenerInterfaceImplemented = true;
+						}
+						if (in.compareTo("ServletContextAttributeListener") == 0) {
+							isWebListenerInterfaceImplemented = true;
+						}
+						if (in.compareTo("ServletRequestListener") == 0) {
+							isWebListenerInterfaceImplemented = true;
+						}
+						if (in.compareTo("ServletRequestAttributeListener") == 0) {
+							isWebListenerInterfaceImplemented = true;
+						}
+						if (in.compareTo("HttpSessionAttributeListener") == 0) {
+							isWebListenerInterfaceImplemented = true;
+						}
+						if (in.compareTo("HttpSessionAttributeListener") == 0) {
+							isWebListenerInterfaceImplemented = true;
+						}
+						if (in.compareTo("HttpSessionIdListener") == 0) {
+							isWebListenerInterfaceImplemented = true;
+						}
+					}
+
 
 					if (isWebServletAnnotated && !isHttpServletExtended) {
 						ISourceRange nameRange = JDTUtils.getNameRange(type);
 						Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-						diagnostics.add(new Diagnostic(range, "classes annotated with @WebServlet must extend the HttpServlet class."));
+						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebServlet must extend the HttpServlet class."));
+					}
+					
+					if (isWebFilterAnnotated && !isFilterImplemented) {
+						ISourceRange nameRange = JDTUtils.getNameRange(type);
+						Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebFilter must implement the Filter interface."));
+					}
+					
+					if (isWebListenerAnnotated && !isWebListenerInterfaceImplemented) {
+						ISourceRange nameRange = JDTUtils.getNameRange(type);
+						Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebListener must implement "
+								+ "must implement one or more of the ServletContextListener, ServletContextAttributeListener,"
+								+ " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener,"
+								+ " HttpSessionAttributeListener, or HttpSessionIdListener interfaces."));
 					}
 				}
-			}catch (JavaModelException e) {
+			} catch (JavaModelException e) {
 				Activator.logException("Cannot calculate diagnostics", e);
 			}
 		}
