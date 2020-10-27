@@ -45,30 +45,6 @@ public class JDTServicesManager {
 				d.collectDiagnostics(unit, diagnostics);
 			}
 			
-			
-			if (unit != null) {
-				// System.out.println("--class name: " + unit.getElementName());
-				IType[] alltypes;
-				try {
-					alltypes = unit.getAllTypes();
-					for (IType type : alltypes) {
-
-						IMethod[] methods = type.getMethods();
-						for (IMethod method : methods) {
-							// System.out.println("--Method name: " + method.getElementName());
-							// nameRange only has offset and the length of method here
-							ISourceRange nameRange = JDTUtils.getNameRange(method);
-							// System.out.println("--MethodOffset: " + nameRange.getOffset());
-							// System.out.println("--MethodLength: " + nameRange.getLength());
-							Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-							Range diagRangeMe = range;
-							diagnostics.add(new Diagnostic(diagRangeMe, "A Diagnostic message on every method"));
-						}
-					}
-				} catch (JavaModelException e) {
-					Activator.logException("Cannot calculate diagnostics", e);
-				}
-			}
 			PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
 			publishDiagnostics.add(publishDiagnostic);
 		}
