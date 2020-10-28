@@ -90,7 +90,6 @@ public class JDTServicesManager {
 				classpath.add(null);
 			});
 		}
-		System.out.println("Classpath:" + classpath.toString());
 		return classpath;
 	}
 	
