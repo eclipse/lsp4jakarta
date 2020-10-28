@@ -155,9 +155,12 @@ public class SnippetRegistry {
 	 * @return the snippet completion items according to the context filter.
 	 */
 	public List<CompletionItem> getCompletionItem(final Range replaceRange, final String lineDelimiter,
-			boolean canSupportMarkdown, Predicate<ISnippetContext<?>> contextFilter) {
+			boolean canSupportMarkdown, List<String> context) {
         // TODO Add context based filtering
-        return getSnippets().stream().map(snippet -> { 
+        return getSnippets().stream().map(snippet -> {
+			if (context.get(getSnippets().indexOf(snippet)) == null) {
+				return null;
+			} 
             String label = snippet.getPrefixes().get(0);
             CompletionItem item = new CompletionItem();
             item.setLabel(label);
@@ -169,7 +172,9 @@ public class SnippetRegistry {
 			item.setTextEdit(new TextEdit(replaceRange, insertText));
             item.setInsertTextFormat(InsertTextFormat.Snippet);
             return item;
-        }).collect(Collectors.toList());
+		})
+		.filter(completionItems ->  completionItems != null)
+		.collect(Collectors.toList());
 	}
 
     /**

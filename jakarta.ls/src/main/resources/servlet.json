@@ -46,7 +46,7 @@
         ],
         "description": "HttpServlet - supports HTTP GET requests",
         "context":{
-            "type": "jakarta.servlet.HttpServlet"
+            "type": "jakarta.servlet.http.HttpServlet"
         }
     },
     "HttpServlet - supports HTTP POST requests": {
@@ -74,7 +74,7 @@
         ],
         "description": "HttpServlet - supports HTTP POST requests",
         "context":{
-            "type": "jakarta.servlet.HttpServlet"
+            "type": "jakarta.servlet.http.HttpServlet"
         }
     }
 }
