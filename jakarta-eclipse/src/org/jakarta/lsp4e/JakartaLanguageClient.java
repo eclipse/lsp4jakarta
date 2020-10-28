@@ -51,7 +51,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 	
 	/**
 	 * @author ankushsharma
-	 * @brief creates a filter to let the language server know which contexts exist in the Java Project
+	 * @brief Creates a filter to let the language server know which contexts exist in the Java Project
 	 * @param uri - String representing file from which to derive project classpath
 	 * @param snippetContext - get all the context fields from the snippets and check if they exist in this method
 	 * @return List<String>
