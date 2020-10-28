@@ -15,8 +15,8 @@ import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
 
-import org.jakarta.jdt.DiagnosticsCollecter;
-import org.jakarta.jdt.ServletDiagnosticsCollecter;
+import org.jakarta.jdt.DiagnosticsCollector;
+import org.jakarta.jdt.ServletDiagnosticsCollector;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
 
@@ -26,9 +26,9 @@ import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
  */
 
 public class JDTServicesManager {
-	private List<DiagnosticsCollecter> diagnosticsCollectors = new ArrayList<>();
+	private List<DiagnosticsCollector> diagnosticsCollectors = new ArrayList<>();
 	public JDTServicesManager() {
-		diagnosticsCollectors.add(new ServletDiagnosticsCollecter());
+		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
 	}
 
 	public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
@@ -41,7 +41,7 @@ public class JDTServicesManager {
 			URI u = JDTUtils.toURI(uri);
 
 			ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
-			for (DiagnosticsCollecter d : diagnosticsCollectors) {
+			for (DiagnosticsCollector d : diagnosticsCollectors) {
 				d.collectDiagnostics(unit, diagnostics);
 			}
 			

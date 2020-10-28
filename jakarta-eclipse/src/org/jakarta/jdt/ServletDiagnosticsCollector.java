@@ -11,8 +11,8 @@ import org.jakarta.lsp4e.Activator;
 
 import java.util.List;
 
-public class ServletDiagnosticsCollecter implements DiagnosticsCollecter{
-	public ServletDiagnosticsCollecter() {
+public class ServletDiagnosticsCollector implements DiagnosticsCollector{
+	public ServletDiagnosticsCollector() {
 		
 	}
 	
