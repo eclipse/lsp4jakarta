@@ -37,7 +37,7 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
 	 * snippets contexts that exist in the classpath and null for those that do not
 	 */
 	@JsonRequest("jakarta/java/classpath")
-	default CompletableFuture<List<String>> getClassPathFromURI(String uri, List<String> snippetContexts) {
+	default CompletableFuture<List<String>> getContextBasedFilter(String uri, List<String> snippetContexts) {
 		return CompletableFuture.completedFuture(null);
 	}
 }

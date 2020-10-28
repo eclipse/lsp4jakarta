@@ -87,7 +87,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
 				return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
 			}).collect(Collectors.toList());
 		}).thenCompose(snippetctx -> {
-			return jakartaLanguageServer.getLanguageClient().getClassPathFromURI(uri, snippetctx);
+			return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(uri, snippetctx);
 		}).thenApply(classpath -> {
 			return classpath;
 		});
