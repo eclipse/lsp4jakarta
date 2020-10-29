@@ -43,6 +43,9 @@ import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
+// Import for getting snippet contexts
+import io.microshed.jakartals.commons.SnippetContextForJava;
+
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
 
 import io.microshed.jakartals.commons.SnippetRegistry;
@@ -91,9 +94,23 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		This method is automatically called by the Language Server Client
 		provided it has provided a java-completion-computer extension on the client side.
 		*/
-		return CompletableFuture.completedFuture(Either.forLeft(
-			snippetRegistry.getCompletionItemNoContext(new Range(position.getPosition(), position.getPosition()), "\n", true)
-		));
+		String uri = position.getTextDocument().getUri();
+		// Method that gets all the snippet contexts and send to JDT to find which exist in classpath
+		CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(()-> {
+			return snippetRegistry.getSnippets().stream().map(snippet -> {
+				return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
+			}).collect(Collectors.toList());
+		}).thenCompose(snippetctx -> {
+			return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(uri, snippetctx);
+		}).thenApply(classpath -> {
+			return classpath;
+		});
+
+		 // An array of snippet contexts is provided to the snippet registry to determine which snippets to show
+		return getSnippetContexts.thenApply(ctx -> {
+			return Either.forLeft(snippetRegistry
+			.getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
+		});
 	}
 
 	@Override
