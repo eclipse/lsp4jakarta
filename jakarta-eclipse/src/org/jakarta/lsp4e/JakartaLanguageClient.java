@@ -39,15 +39,16 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 
 	@Override
 	public CompletableFuture<Hover> getJavaHover(HoverParams params) {
+		return CompletableFuture.completedFuture(null);
 		// return dummy test hover object
-		return CompletableFutures.computeAsync((cancelChecker) -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			Hover testHover = new Hover();
-			List<Either<String, MarkedString>> contents = new ArrayList<>();
-			contents.add(Either.forLeft("this is test hover"));
-			testHover.setContents(contents);
-			return testHover;
-		});
+//		return CompletableFutures.computeAsync((cancelChecker) -> {
+//			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+//			Hover testHover = new Hover();
+//			List<Either<String, MarkedString>> contents = new ArrayList<>();
+//			contents.add(Either.forLeft("this is test hover"));
+//			testHover.setContents(contents);
+//			return testHover;
+//		});
 	}
 
 	@Override
@@ -58,9 +59,8 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 		return CompletableFutures.computeAsync((cancelChecker) -> {
 			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
 
-			JDTServicesManager manager = new JDTServicesManager();
 			List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-			publishDiagnostics = manager.getJavaDiagnostics(javaParams);
+			publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(javaParams);
 			return publishDiagnostics;
 		});
 	}
@@ -75,8 +75,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
  	@Override
  	public CompletableFuture<List<String>> getContextBasedFilter(String uri, List<String> snippetContexts) {
  		return CompletableFutures.computeAsync((cancelChecker) -> {
- 			JDTServicesManager manager = new JDTServicesManager();
- 			return manager.getExistingContextsFromClassPath(uri, snippetContexts);
+ 			return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetContexts);
  		});
  	}
 }

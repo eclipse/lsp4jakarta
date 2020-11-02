@@ -8,30 +8,36 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
-import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
-
-import org.jakarta.jdt.DiagnosticsCollector;
-import org.jakarta.jdt.ServletDiagnosticsCollector;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
 
 /**
- * JDT service manager.
+ * JDT manager for Java files
  *
  */
-
 public class JDTServicesManager {
+
 	private List<DiagnosticsCollector> diagnosticsCollectors = new ArrayList<>();
+
+	private static final JDTServicesManager INSTANCE = new JDTServicesManager();
+
+	public static JDTServicesManager getInstance() {
+		return INSTANCE;
+	}
+
 	public JDTServicesManager() {
 		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
 	}
 
+	/**
+	 * Returns diagnostics for the given uris from the JakartaDiagnosticsParams.
+	 * 
+	 * @param javaParams the diagnostics parameters
+	 * @return diagnostics
+	 */
 	public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
 		List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
 		List<Diagnostic> diagnostics = new ArrayList<>();
