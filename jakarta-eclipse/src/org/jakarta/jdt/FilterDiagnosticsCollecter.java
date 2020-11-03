@@ -11,14 +11,13 @@ import org.jakarta.lsp4e.Activator;
 
 import java.util.List;
 
-public class ServletDiagnosticsCollector implements DiagnosticsCollector{
-	public ServletDiagnosticsCollector() {
+public class FilterDiagnosticsCollecter implements DiagnosticsCollecter {
+	public FilterDiagnosticsCollecter() {
 		
 	}
 	
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 		if (unit != null) {
-			// System.out.println("--class name: " + unit.getElementName());
 			IType[] alltypes;
 			IAnnotation[] allAnnotations;
 		
@@ -26,27 +25,33 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 				alltypes = unit.getAllTypes();
 				for (IType type : alltypes) {
 					allAnnotations = type.getAnnotations();
-									
-					boolean isWebServletAnnotated = false;
-					boolean isHttpServletExtended = false;
+					
+					boolean isWebFilterAnnotated = false;
+					boolean isFilterImplemented = false;
+				
 					
 					for (IAnnotation annotation : allAnnotations) {
-						if (annotation.getElementName() == "WebServlet") {
-//							System.out.println("--Annotation name: " + annotation.getElementName());
-							isWebServletAnnotated = true;
+						if (annotation.getElementName() == "WebFilter") {
+							isWebFilterAnnotated = true;
 						}
 					}
 
 					String typeExtension = type.getSuperclassName();
-//					System.out.println("--extension name: " + type.getSuperclassName());
-					if ((typeExtension != null) && typeExtension.equals("HttpServlet")) {
-						isHttpServletExtended = true;
+					
+					String[] implementedInterfaces = type.getSuperInterfaceNames();
+					
+					for(String in: implementedInterfaces) {
+						if (in.equals("Filter")) {
+							isFilterImplemented = true;
+						}
 					}
 
-					if (isWebServletAnnotated && !isHttpServletExtended) {
+
+					
+					if (isWebFilterAnnotated && !isFilterImplemented) {
 						ISourceRange nameRange = JDTUtils.getNameRange(type);
 						Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebServlet must extend the HttpServlet class."));
+						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebFilter must implement the Filter interface."));
 					}
 					
 				}
@@ -55,4 +60,5 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 			}
 		}
 	}
+
 }
