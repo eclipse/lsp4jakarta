@@ -12,9 +12,7 @@ import org.jakarta.lsp4e.Activator;
 import java.util.List;
 
 public class FilterDiagnosticsCollector implements DiagnosticsCollector {
-	
-	
-	
+
 	public FilterDiagnosticsCollector() {
 		
 	}
