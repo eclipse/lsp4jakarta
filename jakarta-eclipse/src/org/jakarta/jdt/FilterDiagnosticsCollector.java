@@ -11,8 +11,8 @@ import org.jakarta.lsp4e.Activator;
 
 import java.util.List;
 
-public class FilterDiagnosticsCollecter implements DiagnosticsCollecter {
-	public FilterDiagnosticsCollecter() {
+public class FilterDiagnosticsCollector implements DiagnosticsCollector {
+	public FilterDiagnosticsCollector() {
 		
 	}
 	
@@ -31,7 +31,7 @@ public class FilterDiagnosticsCollecter implements DiagnosticsCollecter {
 				
 					
 					for (IAnnotation annotation : allAnnotations) {
-						if (annotation.getElementName() == "WebFilter") {
+						if (annotation.getElementName().equals("WebFilter")) {
 							isWebFilterAnnotated = true;
 						}
 					}

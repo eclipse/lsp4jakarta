@@ -11,8 +11,8 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.lsp4e.Activator;
 
-public class ListenerDiagnosticsCollecter implements DiagnosticsCollecter {
-	public ListenerDiagnosticsCollecter() {
+public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
+	public ListenerDiagnosticsCollector() {
 		
 	}
 	
@@ -30,7 +30,7 @@ public class ListenerDiagnosticsCollecter implements DiagnosticsCollecter {
 					boolean isWebListenerInterfaceImplemented = false;
 					
 					for (IAnnotation annotation : allAnnotations) {
-						if (annotation.getElementName() == "WebListener") {
+						if (annotation.getElementName().equals("WebListener")) {
 							isWebListenerAnnotated = true;
 						}
 					}

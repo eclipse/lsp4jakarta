@@ -29,9 +29,9 @@ public class JDTServicesManager {
 	}
 
 	public JDTServicesManager() {
-		diagnosticsCollectors.add(new ServletDiagnosticsCollecter());
-		diagnosticsCollectors.add(new FilterDiagnosticsCollecter());
-		diagnosticsCollectors.add(new ListenerDiagnosticsCollecter());
+		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
+		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
+		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
 	}
 
 	/**
