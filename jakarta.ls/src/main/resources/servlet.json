@@ -78,11 +78,10 @@
         }
     },
     "Jakarta Servlet WebFilter": {
-        "prefix": "servletfilter",
+        "prefix": "servletwebfilter",
         "body": [
           "package ${1:packagename};",
           "",
-          "/* Filter Dependencies */",
           "import jakarta.servlet.Filter;",
           "import jakarta.servlet.FilterChain;",
           "import jakarta.servlet.ServletException;",
