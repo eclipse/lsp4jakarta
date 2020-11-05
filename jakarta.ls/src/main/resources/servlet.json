@@ -76,5 +76,32 @@
         "context":{
             "type": "jakarta.servlet.http.HttpServlet"
         }
-    }
+    },
+    "Jakarta Servlet WebFilter": {
+        "prefix": "servletwebfilter",
+        "body": [
+          "package ${1:packagename};",
+          "",
+          "import jakarta.servlet.Filter;",
+          "import jakarta.servlet.FilterChain;",
+          "import jakarta.servlet.ServletException;",
+          "import jakarta.servlet.ServletRequest;",
+          "import jakarta.servlet.ServletResponse;",
+          "import jakarta.servlet.annotation.WebFilter;",
+          "",
+          "import java.io.IOException;",
+          "",
+          "@WebFilter(filterName = \"${2:filterName}\", urlPatterns = {\"${3:urlPattern}\"})",
+          "public class ${4:className} implements Filter {",
+          "\t@Override",
+          "\tpublic void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException{",
+          "\t\tchain.doFilter(req, res);",
+          "\t}",
+          "}"
+        ],
+        "description": "Jakarta Servlet WebFilter",
+        "context":{
+            "type": "jakarta.servlet.Filter"
+        }
+      }
 }
