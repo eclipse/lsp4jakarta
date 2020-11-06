@@ -14,7 +14,6 @@ import java.util.List;
 public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 	
 	
-	
 	public ServletDiagnosticsCollector() {
 		
 	}
