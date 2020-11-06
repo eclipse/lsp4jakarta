@@ -13,8 +13,6 @@ import org.jakarta.lsp4e.Activator;
 
 public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
 	
-	public static final String WEB_LISTENER = "WebListener";
-	
 	
 	public ListenerDiagnosticsCollector() {
 
@@ -34,7 +32,7 @@ public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
 					boolean isWebListenerInterfaceImplemented = false;
 
 					for (IAnnotation annotation : allAnnotations) {
-						if (annotation.getElementName().equals(WEB_LISTENER)) {
+						if (annotation.getElementName().equals(ServletConstants.WEB_LISTENER)) {
 							isWebListenerAnnotated = true;
 							break;
 						}

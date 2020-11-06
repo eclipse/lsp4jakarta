@@ -13,7 +13,6 @@ import java.util.List;
 
 public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 	
-	public static final String WEB_SERVLET = "WebServlet";
 	
 	
 	public ServletDiagnosticsCollector() {
@@ -35,7 +34,7 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 					boolean isHttpServletExtended = false;
 					
 					for (IAnnotation annotation : allAnnotations) {
-						if (annotation.getElementName().equals(WEB_SERVLET)) {
+						if (annotation.getElementName().equals(ServletConstants.WEB_SERVLET)) {
 							isWebServletAnnotated = true;
 							break;
 						}
