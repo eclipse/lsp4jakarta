@@ -34,7 +34,6 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 					for (IAnnotation annotation : allAnnotations) {
 						if (annotation.getElementName().equals(ServletConstants.WEBFILTER)) {
 							isWebFilterAnnotated = true;
-							break;
 						}
 					}
 
@@ -45,7 +44,6 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 					for(String in: implementedInterfaces) {
 						if (in.equals(ServletConstants.FILTER)) {
 							isFilterImplemented = true;
-							break;
 						}
 					}
 
