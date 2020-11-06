@@ -2,6 +2,7 @@ package org.jakarta.jdt;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -27,13 +28,17 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 				for (IType type : alltypes) {
 					allAnnotations = type.getAnnotations();
 					
-					boolean isWebFilterAnnotated = false;
-					boolean isFilterImplemented = false;
-				
+					ISourceRange nameRange = JDTUtils.getNameRange(type);
+					Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 					
+					boolean isWebFilterAnnotated = false;
+					boolean isFilterImplemented = false;	
+					
+					IAnnotation WebFilterAnnotation = null;
 					for (IAnnotation annotation : allAnnotations) {
 						if (annotation.getElementName().equals(ServletConstants.WEBFILTER)) {
 							isWebFilterAnnotated = true;
+							WebFilterAnnotation = annotation;
 						}
 					}
 
@@ -50,10 +55,40 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 
 					
 					if (isWebFilterAnnotated && !isFilterImplemented) {
-						ISourceRange nameRange = JDTUtils.getNameRange(type);
-						Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebFilter must implement the Filter interface."));
 					}
+					
+					/* URL pattern diagnostic check */
+					if(WebFilterAnnotation != null) {
+						IMemberValuePair[] memberValues = WebFilterAnnotation.getMemberValuePairs();
+						
+						boolean isUrlpatternSpecified = false;
+						boolean isServletNamesSpecified = false;
+						boolean isValueSpecified = false;
+						for (IMemberValuePair mv : memberValues) {
+							if(mv.getMemberName().equals(ServletConstants.URL_PATTERNS)) {
+								isUrlpatternSpecified = true;
+								continue;
+							}
+							if(mv.getMemberName().equals(ServletConstants.SERVLET_NAMES)) {
+								isServletNamesSpecified = true;
+								continue;
+							}
+							if(mv.getMemberName().equals(ServletConstants.VALUE)) {
+								isValueSpecified = true;
+							}
+							
+						}
+						
+						if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
+							diagnostics.add(new Diagnostic(range, "The urlPatterns attribute, servletNames attribute or the value attribute of the annotation MUST be specified."));
+						}
+						if (isUrlpatternSpecified && isValueSpecified) {
+							diagnostics.add(new Diagnostic(range, "It is illegal to have both value and urlPatterns attribute used together on the same annotation."));
+						}
+						
+					}
+					
 					
 				}
 			} catch (JavaModelException e) {

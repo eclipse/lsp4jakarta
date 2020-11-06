@@ -21,6 +21,9 @@ public class ServletConstants {
 	public static final String WEBFILTER = "WebFilter";
 	public static final String FILTER = "Filter";
 	
-	
+	/* Annotation Member Value names */ 
+	public static final String URL_PATTERNS = "urlPatterns";
+	public static final String VALUE = "value";
+	public static final String SERVLET_NAMES = "servletNames";
 
 }
