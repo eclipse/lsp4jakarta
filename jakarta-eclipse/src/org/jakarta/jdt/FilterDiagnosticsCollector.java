@@ -12,6 +12,10 @@ import org.jakarta.lsp4e.Activator;
 import java.util.List;
 
 public class FilterDiagnosticsCollector implements DiagnosticsCollector {
+	
+	public static final String WEBFILTER = "WebFilter";
+	
+	
 	public FilterDiagnosticsCollector() {
 		
 	}
@@ -31,8 +35,9 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 				
 					
 					for (IAnnotation annotation : allAnnotations) {
-						if (annotation.getElementName().equals("WebFilter")) {
+						if (annotation.getElementName().equals(WEBFILTER)) {
 							isWebFilterAnnotated = true;
+							break;
 						}
 					}
 
@@ -41,8 +46,9 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 					String[] implementedInterfaces = type.getSuperInterfaceNames();
 					
 					for(String in: implementedInterfaces) {
-						if (in.equals("Filter")) {
+						if (in.equals(ServletConstants.FILTER)) {
 							isFilterImplemented = true;
+							break;
 						}
 					}
 

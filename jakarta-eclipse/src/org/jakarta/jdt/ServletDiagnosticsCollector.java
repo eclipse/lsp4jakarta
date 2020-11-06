@@ -12,13 +12,17 @@ import org.jakarta.lsp4e.Activator;
 import java.util.List;
 
 public class ServletDiagnosticsCollector implements DiagnosticsCollector{
+	
+	public static final String WEB_SERVLET = "WebServlet";
+	
+	
 	public ServletDiagnosticsCollector() {
 		
 	}
 	
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 		if (unit != null) {
-			// System.out.println("--class name: " + unit.getElementName());
+
 			IType[] alltypes;
 			IAnnotation[] allAnnotations;
 		
@@ -31,15 +35,14 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 					boolean isHttpServletExtended = false;
 					
 					for (IAnnotation annotation : allAnnotations) {
-						if (annotation.getElementName() == "WebServlet") {
-//							System.out.println("--Annotation name: " + annotation.getElementName());
+						if (annotation.getElementName().equals(WEB_SERVLET)) {
 							isWebServletAnnotated = true;
+							break;
 						}
 					}
 
 					String typeExtension = type.getSuperclassName();
-//					System.out.println("--extension name: " + type.getSuperclassName());
-					if ((typeExtension != null) && typeExtension.equals("HttpServlet")) {
+					if ((typeExtension != null) && typeExtension.equals(ServletConstants.HTTP_SERVLET)) {
 						isHttpServletExtended = true;
 					}
 

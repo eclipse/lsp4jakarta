@@ -12,57 +12,52 @@ import org.eclipse.lsp4j.Range;
 import org.jakarta.lsp4e.Activator;
 
 public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
-	public ListenerDiagnosticsCollector() {
-		
-	}
 	
+	public static final String WEB_LISTENER = "WebListener";
+	
+	
+	public ListenerDiagnosticsCollector() {
+
+	}
+
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 		if (unit != null) {
 			IType[] alltypes;
 			IAnnotation[] allAnnotations;
-		
+
 			try {
 				alltypes = unit.getAllTypes();
 				for (IType type : alltypes) {
 					allAnnotations = type.getAnnotations();
-					
+
 					boolean isWebListenerAnnotated = false;
 					boolean isWebListenerInterfaceImplemented = false;
-					
+
 					for (IAnnotation annotation : allAnnotations) {
-						if (annotation.getElementName().equals("WebListener")) {
+						if (annotation.getElementName().equals(WEB_LISTENER)) {
 							isWebListenerAnnotated = true;
+							break;
 						}
 					}
 					String typeExtension = type.getSuperclassName();
-					
+
 					String[] implementedInterfaces = type.getSuperInterfaceNames();
-					
-					for(String in: implementedInterfaces) {
-						
-						if (in.equals("ServletContextListener")) {
+
+					for (String in : implementedInterfaces) {
+
+						if (in.equals(ServletConstants.SERVLET_CONTEXT_LISTENER)
+								|| in.equals(ServletConstants.SERVLET_CONTEXT_ATTRIBUTE_LISTENER)
+								|| in.equals(ServletConstants.SERVLET_REQUEST_LISTENER)
+								|| in.equals(ServletConstants.SERVLET_REQUEST_ATTRIBUTE_LISTENER)
+								|| in.equals(ServletConstants.HTTP_SESSION_LISTENER)
+								|| in.equals(ServletConstants.HTTP_SESSION_ATTRIBUTE_LISTENER)
+								|| in.equals(ServletConstants.HTTP_SESSION_ID_LISTENER)) {
+
 							isWebListenerInterfaceImplemented = true;
-						}
-						if (in.equals("ServletContextAttributeListener")) {
-							isWebListenerInterfaceImplemented = true;
-						}
-						if (in.equals("ServletRequestListener")) {
-							isWebListenerInterfaceImplemented = true;
-						}
-						if (in.equals("ServletRequestAttributeListener")) {
-							isWebListenerInterfaceImplemented = true;
-						}
-						if (in.equals("HttpSessionAttributeListener")) {
-							isWebListenerInterfaceImplemented = true;
-						}
-						if (in.equals("HttpSessionAttributeListener")) {
-							isWebListenerInterfaceImplemented = true;
-						}
-						if (in.equals("HttpSessionIdListener")) {
-							isWebListenerInterfaceImplemented = true;
+							break;
 						}
 					}
-					
+
 					if (isWebListenerAnnotated && !isWebListenerInterfaceImplemented) {
 						ISourceRange nameRange = JDTUtils.getNameRange(type);
 						Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
