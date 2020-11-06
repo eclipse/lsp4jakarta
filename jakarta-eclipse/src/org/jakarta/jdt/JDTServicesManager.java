@@ -30,6 +30,8 @@ public class JDTServicesManager {
 
 	public JDTServicesManager() {
 		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
+		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
+		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
 	}
 
 	/**

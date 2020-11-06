@@ -10,6 +10,7 @@
  * Contributors:
  *     Red Hat Inc. - initial API and implementation
  *******************************************************************************/
+
 package org.jakarta.jdt;
 
 import org.eclipse.jdt.core.IBuffer;
