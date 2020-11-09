@@ -12,11 +12,10 @@ import org.jakarta.lsp4e.Activator;
 import java.util.List;
 
 public class ServletDiagnosticsCollector implements DiagnosticsCollector{
-	
+	private ISourceRange nameRange;
 	
 	
 	public ServletDiagnosticsCollector() {
-		
 	}
 	
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
@@ -46,7 +45,7 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 					}
 
 					if (isWebServletAnnotated && !isHttpServletExtended) {
-						ISourceRange nameRange = JDTUtils.getNameRange(type);
+						nameRange = JDTUtils.getNameRange(type);
 						Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebServlet must extend the HttpServlet class."));
 					}
@@ -56,5 +55,9 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 				Activator.logException("Cannot calculate diagnostics", e);
 			}
 		}
+	}
+	
+	public ISourceRange getRange() {
+		return this.nameRange;
 	}
 }

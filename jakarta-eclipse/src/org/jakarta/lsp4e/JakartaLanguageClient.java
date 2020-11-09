@@ -8,18 +8,21 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4e.LanguageClientImpl;
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
-import org.eclipse.lsp4j.MarkedString;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.jakarta.jdt.JDTServicesManager;
+import org.jakarta.jdt.JDTUtils;
 
 import io.microshed.jakartals.api.JakartaLanguageClientAPI;
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
+import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
 
@@ -78,4 +81,18 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
  			return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetContexts);
  		});
  	}
+
+	public CompletableFuture<List<CodeAction>> getCodeAction(CodeActionParams params){
+		JDTUtils utils = new JDTUtils();
+		JakartaJavaCodeActionParams JakartaParams = new JakartaJavaCodeActionParams(params.getTextDocument(), params.getRange(), params.getContext());
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			try {
+				return JDTServicesManager.getInstance().getCodeAction(JakartaParams, utils, monitor);
+			} catch (JavaModelException e) {
+				return null;
+			}
+		});
+	}
+	
 }

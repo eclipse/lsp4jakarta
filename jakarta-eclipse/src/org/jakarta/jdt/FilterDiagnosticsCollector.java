@@ -63,5 +63,9 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 			}
 		}
 	}
+	
+	public ISourceRange getRange() {
+		return null;
+	}
 
 }

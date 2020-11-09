@@ -4,15 +4,20 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.jakarta.lsp4e.Activator;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
+import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
+
+import org.jakarta.codeAction.CodeActionHandler;
 
 /**
  * JDT manager for Java files
@@ -24,6 +29,8 @@ public class JDTServicesManager {
 
 	private static final JDTServicesManager INSTANCE = new JDTServicesManager();
 
+	private final CodeActionHandler codeActionHandler;
+
 	public static JDTServicesManager getInstance() {
 		return INSTANCE;
 	}
@@ -32,6 +39,7 @@ public class JDTServicesManager {
 		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
 		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
 		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
+		this.codeActionHandler = new CodeActionHandler();
 	}
 
 	/**
@@ -48,8 +56,8 @@ public class JDTServicesManager {
 		for (String uri : uris) {
 			
 			URI u = JDTUtils.toURI(uri);
-
 			ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
+//			System.out.println("--compiled unit: " + unit);
 			for (DiagnosticsCollector d : diagnosticsCollectors) {
 				d.collectDiagnostics(unit, diagnostics);
 			}
@@ -96,5 +104,10 @@ public class JDTServicesManager {
  			});
  		}
  		return classpath;
+ 	}
+ 	
+	public List<CodeAction> getCodeAction(JakartaJavaCodeActionParams params,
+			JDTUtils utils, IProgressMonitor monitor) throws JavaModelException {
+		return codeActionHandler.codeAction(params, utils, monitor, diagnosticsCollectors.get(0));
  	}
 }
