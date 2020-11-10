@@ -79,12 +79,14 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 							}
 							
 						}
+						ISourceRange annotationNameRange = JDTUtils.getNameRange(WebFilterAnnotation);
+						Range annotationrange = JDTUtils.toRange(unit, annotationNameRange.getOffset(), annotationNameRange.getLength());
 						
 						if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
-							diagnostics.add(new Diagnostic(range, "The urlPatterns attribute, servletNames attribute or the value attribute of the annotation MUST be specified."));
+							diagnostics.add(new Diagnostic(annotationrange, "The 'urlPatterns' attribute, 'servletNames' attribute or the 'value' attribute of the WebFilter annotation MUST be specified."));
 						}
 						if (isUrlpatternSpecified && isValueSpecified) {
-							diagnostics.add(new Diagnostic(range, "It is illegal to have both value and urlPatterns attribute used together on the same annotation."));
+							diagnostics.add(new Diagnostic(annotationrange, "The WebFilter annotation cannot have both the 'value' and 'urlPatterns' attributes specified at once."));
 						}
 						
 					}

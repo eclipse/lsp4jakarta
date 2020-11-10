@@ -70,12 +70,14 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 							}
 							
 						}
+						ISourceRange annotationNameRange = JDTUtils.getNameRange(WebServletAnnotation);
+						Range annotationrange = JDTUtils.toRange(unit, annotationNameRange.getOffset(), annotationNameRange.getLength());
 						
 						if (!isUrlpatternSpecified && !isValueSpecified) {
-							diagnostics.add(new Diagnostic(range, "The annotated servlet MUST specify at least one url pattern to be deployed."));
+							diagnostics.add(new Diagnostic(annotationrange, "The 'urlPatterns' attribute or the 'value' attribute of the WebServlet annotation MUST be specified."));
 						}
 						if (isUrlpatternSpecified && isValueSpecified) {
-							diagnostics.add(new Diagnostic(range, "It is illegal to have both value and urlPatterns attribute used together on the same annotation."));
+							diagnostics.add(new Diagnostic(annotationrange, "The WebServlet annotation cannot have both the 'value' and 'urlPatterns' attributes specified at once."));
 						}
 						
 					}
