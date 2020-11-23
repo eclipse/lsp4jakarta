@@ -32,7 +32,7 @@ public class JDTServicesManager {
 		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
 		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
 		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
-		diagnosticsCollectors.add(new PersistenceDiagnosticsCollector());
+		diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
 	}
 
 	/**

@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Collection;
 
 
-public class PersistenceDiagnosticsCollector implements DiagnosticsCollector {
+public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollector {
 	
-	public PersistenceDiagnosticsCollector() {
+	public PersistenceEntityDiagnosticsCollector() {
 		
 	}
 	
