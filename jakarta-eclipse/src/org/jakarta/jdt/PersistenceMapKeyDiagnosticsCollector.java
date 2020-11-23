@@ -49,7 +49,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 					Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 					
 
-					// Go through each method to ensure they do not have both MapKey and MapKeyColumn Annotations
+					/* ========= MapKey and MapKeyColumn Annotations Checks ========= */
 					for (IMethod method: type.getMethods()) {
 						IAnnotation MapKeyAnnotation = null;
 						IAnnotation MapKeyClassAnnotation = null;
@@ -78,7 +78,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 						
 					}
 					
-					// MapKeyJoinColumn Diagnostic Checks
+					/* ======== MapKeyJoinColumn Diagnostic Checks ========= */
 					for (IMethod method: type.getMethods()) {
 						List<IAnnotation> mapKeyJoinCols = new ArrayList<IAnnotation>();
 						for (IAnnotation annotation: method.getAnnotations()) {
