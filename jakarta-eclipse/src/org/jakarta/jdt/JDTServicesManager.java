@@ -33,6 +33,7 @@ public class JDTServicesManager {
 		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
 		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
 		diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
+		diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
 	}
 
 	/**
