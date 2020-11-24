@@ -56,9 +56,6 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 
 	@Override
 	public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
-		Activator.log(new Status(IStatus.INFO, "diagnostic request received", "diagnostic request receieved"));
-		// creating a test diagnostic
-		// problem! the Async leads to diagnostic msg not sync with the changes on the client side
 		return CompletableFutures.computeAsync((cancelChecker) -> {
 			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
 
@@ -84,11 +81,12 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 
 	public CompletableFuture<List<CodeAction>> getCodeAction(CodeActionParams params){
 		JDTUtils utils = new JDTUtils();
-		JakartaJavaCodeActionParams JakartaParams = new JakartaJavaCodeActionParams(params.getTextDocument(), params.getRange(), params.getContext());
+
 		return CompletableFutures.computeAsync((cancelChecker) -> {
 			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
 			try {
-				return JDTServicesManager.getInstance().getCodeAction(JakartaParams, utils, monitor);
+				JakartaJavaCodeActionParams JakartaParams = new JakartaJavaCodeActionParams(params.getTextDocument(), params.getRange(), params.getContext());
+				return (List<CodeAction>) JDTServicesManager.getInstance().getCodeAction(JakartaParams, utils, monitor);
 			} catch (JavaModelException e) {
 				return null;
 			}

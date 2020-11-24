@@ -56,8 +56,5 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 			}
 		}
 	}
-	
-	public ISourceRange getRange() {
-		return this.nameRange;
-	}
+
 }

@@ -9,5 +9,4 @@ import org.eclipse.jdt.core.ISourceRange;
 
 public interface DiagnosticsCollector {
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics);
-	public ISourceRange getRange();
 }
