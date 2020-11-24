@@ -2,6 +2,7 @@ package org.jakarta.jdt;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,7 +36,7 @@ public class JDTServicesManager {
 		return INSTANCE;
 	}
 
-	public JDTServicesManager() {
+	private JDTServicesManager() {
 		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
 		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
 		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
@@ -49,19 +50,19 @@ public class JDTServicesManager {
 	 * @return diagnostics
 	 */
 	public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
-		List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-		List<Diagnostic> diagnostics = new ArrayList<>();
 		List<String> uris = javaParams.getUris();
+		if (uris == null) {
+			return Collections.emptyList();
+		}
 		
+		List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
 		for (String uri : uris) {
-			
+			List<Diagnostic> diagnostics = new ArrayList<>();
 			URI u = JDTUtils.toURI(uri);
 			ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
-//			System.out.println("--compiled unit: " + unit);
 			for (DiagnosticsCollector d : diagnosticsCollectors) {
 				d.collectDiagnostics(unit, diagnostics);
 			}
-			
 			PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
 			publishDiagnostics.add(publishDiagnostic);
 		}
@@ -108,6 +109,6 @@ public class JDTServicesManager {
  	
 	public List<CodeAction> getCodeAction(JakartaJavaCodeActionParams params,
 			JDTUtils utils, IProgressMonitor monitor) throws JavaModelException {
-		return codeActionHandler.codeAction(params, utils, monitor, diagnosticsCollectors.get(0));
+		return codeActionHandler.codeAction(params, utils, monitor);
  	}
 }

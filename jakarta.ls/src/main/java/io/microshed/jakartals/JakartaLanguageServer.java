@@ -7,6 +7,7 @@ import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.TextDocumentSyncKind;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
@@ -39,6 +40,8 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
     LOGGER.info("Initializing Jakarta EE server");
     this.parentProcessId = params.getProcessId();
     ServerCapabilities serverCapabilities = new ServerCapabilities();
+    serverCapabilities.setTextDocumentSync(TextDocumentSyncKind.Incremental);
+
     InitializeResult initializeResult = new InitializeResult(serverCapabilities);
     // Provide Completion Capability to the LS
     initializeResult.getCapabilities().setCompletionProvider(new CompletionOptions());

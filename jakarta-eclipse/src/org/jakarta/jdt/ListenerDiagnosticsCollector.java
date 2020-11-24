@@ -70,8 +70,5 @@ public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
 			}
 		}
 	}
-	
-	public ISourceRange getRange() {
-		return null;
-	}
+
 }
