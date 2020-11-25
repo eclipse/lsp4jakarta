@@ -1,0 +1,13 @@
+{
+    "@Email": {
+      "prefix": "@Email",
+      "body": [
+        "@Email",
+        "\tprivate String emailAddress;"
+      ],
+      "description": "Denotes an email address constraint, which validates a well-formed email address.",
+      "context": {
+        "type": "jakarta.validation.constraints.Email"
+      }
+    }
+  }
