@@ -1,5 +1,7 @@
 package org.jakarta.jdt;
 
+import org.eclipse.lsp4j.DiagnosticSeverity;
+
 public class ServletConstants {
 	
 	
@@ -26,4 +28,14 @@ public class ServletConstants {
 	public static final String VALUE = "value";
 	public static final String SERVLET_NAMES = "servletNames";
 
+	/* Diagnostics fields constants */
+	public static final String DIAGNOSTIC_SOURCE="jakarta-servlet";
+	public static final String DIAGNOSTIC_CODE = "ExtendHttpServlet";
+	public static final String DIAGNOSTIC_CODE_MISSING_ATTRIBUTE = "CompleteHttpServletAttributes";
+	public static final String DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES = "InvalidHttpServletAttribute";
+	public static final String DIAGNOSTIC_CODE_FILTER = "ImplementFilter";
+	public static final String DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE = "CompleteWebFilterAttributes";
+	public static final String DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES = "InvalidWebFilterAttribute";
+	public static final String DIAGNOSTIC_CODE_LISTENER = "ImplementListener";
+	public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 }

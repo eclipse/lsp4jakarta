@@ -1,4 +1,4 @@
-package org.jakarta.jdt;
+package org.jakarta.jdt.diagnostics;
 
 import java.util.List;
 
@@ -8,5 +8,6 @@ import org.eclipse.jdt.core.ISourceRange;
 
 
 public interface DiagnosticsCollector {
+	public void completeDiagnostic(Diagnostic diagnostic);
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics);
 }
