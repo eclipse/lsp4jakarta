@@ -49,5 +49,6 @@ public class JakartaJavaCompletionProposalComputer implements IJavaCompletionPro
 	}
 	@Override
 	public void sessionEnded() {
+		
 	}
 }
