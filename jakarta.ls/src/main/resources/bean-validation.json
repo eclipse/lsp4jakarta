@@ -1,11 +1,11 @@
 {
-    "@Email string field containing an email address": {
-      "prefix": "beanvalidationemail",
+    "@Email": {
+      "prefix": "@Email",
       "body": [
         "@Email",
         "\tprivate String emailAddress;"
       ],
-      "description": "Bean Validation Constraint on Email string field",
+      "description": "Denotes an email address constraint, which validates a well-formed email address.",
       "context": {
         "type": "jakarta.validation.constraints.Email"
       }
