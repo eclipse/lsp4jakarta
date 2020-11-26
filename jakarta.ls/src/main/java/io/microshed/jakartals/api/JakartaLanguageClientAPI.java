@@ -3,14 +3,18 @@ package io.microshed.jakartals.api;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.CodeActionParams;
+import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-
+import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 /**
  * API of the client consuming the Jakarta EE Language Server
  * Used to send messages back to the client to ask for information about the Java project 
@@ -38,6 +42,11 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
 	*/
 	@JsonRequest("jakarta/java/classpath")
 	default CompletableFuture<List<String>> getContextBasedFilter(String uri, List<String> snippetContexts) {
+		return CompletableFuture.completedFuture(null);
+	}
+	
+	@JsonRequest("jakarta/java/codeaction")
+	default CompletableFuture<List<CodeAction>> getCodeAction(CodeActionParams params){
 		return CompletableFuture.completedFuture(null);
 	}
 }

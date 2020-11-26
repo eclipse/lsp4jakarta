@@ -40,14 +40,13 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolInformation;
-import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 // Import for getting snippet contexts
 import io.microshed.jakartals.commons.SnippetContextForJava;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-
+import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 import io.microshed.jakartals.commons.SnippetRegistry;
 
 public class JakartaTextDocumentService implements TextDocumentService {
@@ -128,12 +127,24 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		List<String> allDocs = documents.all().stream().map(doc -> doc.getUri()).collect(Collectors.toList());
 		triggerValidationFor(allDocs);
 	}
-	
-	
+
 	@Override
 	public CompletableFuture<Hover> hover(HoverParams params) {
 		LOGGER.info("received textDocument/hover request");
 		return jakartaLanguageServer.getLanguageClient().getJavaHover(params);
+	}
+
+	@Override
+	public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
+		return jakartaLanguageServer.getLanguageClient().getCodeAction(params) //
+				.thenApply(codeActions -> {
+					return codeActions.stream() //
+							.map(ca -> {
+								Either<Command, CodeAction> e = Either.forRight(ca);
+								return e;
+							}).collect(Collectors.toList());
+				});
+
 	}
 
 
