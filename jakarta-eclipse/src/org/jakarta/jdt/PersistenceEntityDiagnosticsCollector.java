@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.lsp4j.Diagnostic;
@@ -74,6 +75,17 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 		}
 		return false;
 	}
+	
+	private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg) {
+		try {
+			ISourceRange nameRange = JDTUtils.getNameRange(el);
+			Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+			return new Diagnostic(range, msg);
+		} catch(JavaModelException e) {
+			Activator.logException("Cannot calculate diagnostics", e);
+		}
+		return null;
+	}
 
 	@Override
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
@@ -123,6 +135,7 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 							
 							// All Methods of this class should not be final
 							if (this.isFinal(method.getFlags())) {
+								diagnostics.add(createDiagnostic(method, unit, "Class with @Entity annotation cannot contain any final methods or persistent instance variables."));
 								isMethodsOrPersistentVariablesFinal = true;
 							}
 						}
@@ -138,6 +151,7 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 							
 							// If we find a non-static variable that is final, this is a problem
 							if (this.isFinal(field.getFlags())) {
+								diagnostics.add(createDiagnostic(field, unit, "Class with @Entity annotation cannot contain any final methods or persistent instance variables."));
 								isMethodsOrPersistentVariablesFinal = true;
 							}
 							
@@ -149,15 +163,11 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 						
 						// Create Diagnostics if needed
 						if (!hasPublicOrProtectedNoArgConstructor) {
-							diagnostics.add(new Diagnostic(annotationrange, "Class with @Entity annotation must contain a public or protected constructor with no arguments."));
+							diagnostics.add(createDiagnostic(EntityAnnotation, unit, "Class with @Entity annotation must contain a public or protected constructor with no arguments."));
 						}
 
 						if (isEntityClassFinal) {
-							diagnostics.add(new Diagnostic(annotationrange, "Class with @Entity annotation must not be final."));
-						}
-
-						if (isMethodsOrPersistentVariablesFinal) {
-							diagnostics.add(new Diagnostic(annotationrange, "Class with @Entity annotation cannot contain any final methods or persistent instance variables."));
+							diagnostics.add(createDiagnostic(type, unit,  "Class with @Entity annotation must not be final."));
 						}
 					}
 				}
