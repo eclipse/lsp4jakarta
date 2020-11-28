@@ -1,4 +1,4 @@
-package org.jakarta.jdt;
+package org.jakarta.jdt.diagnostics;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -8,6 +8,8 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
+import org.jakarta.jdt.JDTUtils;
+import org.jakarta.jdt.ServletConstants;
 import org.jakarta.lsp4e.Activator;
 
 import java.util.List;
@@ -18,7 +20,13 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 	public ServletDiagnosticsCollector() {
 	}
 	
+	public void completeDiagnostic(Diagnostic diagnostic) {
+		diagnostic.setSource(ServletConstants.DIAGNOSTIC_SOURCE);
+		diagnostic.setSeverity(ServletConstants.SEVERITY);
+	}
+
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
+		Diagnostic diagnostic;
 		if (unit != null) {
 
 			IType[] alltypes;
@@ -50,7 +58,10 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 					}
 
 					if (isWebServletAnnotated && !isHttpServletExtended) {
-						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebServlet must extend the HttpServlet class."));
+						diagnostic = new Diagnostic(range, "Classes annotated with @WebServlet must extend the HttpServlet class.");
+						completeDiagnostic(diagnostic);
+						diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE);
+						diagnostics.add(diagnostic);
 					}
 					
 					/* URL pattern diagnostic check */
@@ -73,10 +84,16 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 						Range annotationrange = JDTUtils.toRange(unit, annotationNameRange.getOffset(), annotationNameRange.getLength());
 						
 						if (!isUrlpatternSpecified && !isValueSpecified) {
-							diagnostics.add(new Diagnostic(annotationrange, "The 'urlPatterns' attribute or the 'value' attribute of the WebServlet annotation MUST be specified."));
+							diagnostic = new Diagnostic(annotationrange, "The 'urlPatterns' attribute or the 'value' attribute of the WebServlet annotation MUST be specified.");
+							completeDiagnostic(diagnostic);
+							diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE);
+							diagnostics.add(diagnostic);
 						}
 						if (isUrlpatternSpecified && isValueSpecified) {
-							diagnostics.add(new Diagnostic(annotationrange, "The WebServlet annotation cannot have both the 'value' and 'urlPatterns' attributes specified at once."));
+							diagnostic = new Diagnostic(annotationrange, "The WebServlet annotation cannot have both the 'value' and 'urlPatterns' attributes specified at once.");
+							completeDiagnostic(diagnostic);
+							diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES);
+							diagnostics.add(diagnostic);
 						}
 						
 					}
