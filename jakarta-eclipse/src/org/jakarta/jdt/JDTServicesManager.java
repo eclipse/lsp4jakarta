@@ -2,17 +2,23 @@ package org.jakarta.jdt;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.jakarta.lsp4e.Activator;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
+import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
+
+import org.jakarta.codeAction.CodeActionHandler;
 
 /**
  * JDT manager for Java files
@@ -24,16 +30,19 @@ public class JDTServicesManager {
 
 	private static final JDTServicesManager INSTANCE = new JDTServicesManager();
 
+	private final CodeActionHandler codeActionHandler;
+
 	public static JDTServicesManager getInstance() {
 		return INSTANCE;
 	}
 
-	public JDTServicesManager() {
+	private JDTServicesManager() {
 		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
 		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
 		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
 		diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
 		diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
+		this.codeActionHandler = new CodeActionHandler();
 	}
 
 	/**
@@ -43,19 +52,19 @@ public class JDTServicesManager {
 	 * @return diagnostics
 	 */
 	public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
-		List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-		List<Diagnostic> diagnostics = new ArrayList<>();
 		List<String> uris = javaParams.getUris();
+		if (uris == null) {
+			return Collections.emptyList();
+		}
 		
+		List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
 		for (String uri : uris) {
-			
+			List<Diagnostic> diagnostics = new ArrayList<>();
 			URI u = JDTUtils.toURI(uri);
-
 			ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
 			for (DiagnosticsCollector d : diagnosticsCollectors) {
 				d.collectDiagnostics(unit, diagnostics);
 			}
-			
 			PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
 			publishDiagnostics.add(publishDiagnostic);
 		}
@@ -98,5 +107,10 @@ public class JDTServicesManager {
  			});
  		}
  		return classpath;
+ 	}
+ 	
+	public List<CodeAction> getCodeAction(JakartaJavaCodeActionParams params,
+			JDTUtils utils, IProgressMonitor monitor) throws JavaModelException {
+		return codeActionHandler.codeAction(params, utils, monitor);
  	}
 }
