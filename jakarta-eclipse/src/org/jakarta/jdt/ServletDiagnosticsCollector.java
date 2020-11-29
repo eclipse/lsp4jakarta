@@ -13,10 +13,9 @@ import org.jakarta.lsp4e.Activator;
 import java.util.List;
 
 public class ServletDiagnosticsCollector implements DiagnosticsCollector{
-	
+	private ISourceRange nameRange;
 	
 	public ServletDiagnosticsCollector() {
-		
 	}
 	
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
@@ -90,4 +89,5 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector{
 			}
 		}
 	}
+
 }
