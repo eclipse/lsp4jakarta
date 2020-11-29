@@ -1,6 +1,10 @@
 package org.jakarta.jdt;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -12,6 +16,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.lsp4e.Activator;
 import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.core.Flags;
 
 public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector {
 
@@ -34,6 +39,8 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 	private static final String POSITIVE = "Positive";
 	private static final String NOT_BLANK = "NotBlank";
 	private static final String PATTERN = "Pattern";
+	private static final String SIZE = "Size";
+	private static final String NOT_EMPTY = "NotEmpty";
 	
 	/* Types */
 	private static final String THAI_BUDDHIST_DATE = "ThaiBuddhistDate";
@@ -64,6 +71,31 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 	private static final String BIG_INTEGER = "BigInteger";
 	private static final String BIG_DECIMAL = "BigDecimal";
 	
+    public final static Set<String> SET_OF_ANNOTATIONS = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(
+            		ASSERT_TRUE, 
+            		ASSERT_FALSE,
+            		DIGITS,
+            		DECIMAL_MAX,
+            		DECIMAL_MIN,
+            		EMAIL,
+            		PAST_OR_PRESENT,
+            		FUTURE_OR_PRESENT,
+            		PAST,
+            		FUTURE,
+            		MIN,
+            		MAX,
+            		NEGATIVE_OR_ZERO,
+            		POSTIVE_OR_ZERO,
+            		NEGATIVE,
+            		POSITIVE,
+            		NOT_BLANK,
+            		PATTERN,
+            		SIZE,
+            		NOT_EMPTY
+                  )));
+
+	
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 
 		if (unit != null) {
@@ -81,11 +113,19 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 						allFieldAnnotations = field.getAnnotations();
 						String fieldType = field.getTypeSignature();
 
-						System.out.println("--Field name: " + field.getElementName());
-						System.out.println("--Field type: " + field.getTypeSignature());
-
 						for (IAnnotation annotation : allFieldAnnotations) {
-							checkAnnoatationAllowedTypes(unit, diagnostics, fieldType, annotation);
+							if(SET_OF_ANNOTATIONS.contains(annotation.getElementName())) {
+								checkAnnoatationAllowedTypes(unit, diagnostics, fieldType, annotation);
+								
+								
+								if (Flags.isStatic(field.getFlags())) {
+									ISourceRange fieldAnnotationNameRange = JDTUtils.getNameRange(annotation);
+									Range fieldAnnotationrange = JDTUtils.toRange(unit, fieldAnnotationNameRange.getOffset(),
+											fieldAnnotationNameRange.getLength());
+									diagnostics.add(new Diagnostic(fieldAnnotationrange,
+											"Constraint Annotations are not allowed on static fields"));	
+								}
+							}
 							
 						}
 
@@ -114,8 +154,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
 						"This annotation can only be used on boolean and Boolean type fields."));	
 			}
-		}
-		if (annotation.getElementName().equals(DECIMAL_MAX)|| annotation.getElementName().equals(DECIMAL_MIN) 
+		} else if (annotation.getElementName().equals(DECIMAL_MAX)|| annotation.getElementName().equals(DECIMAL_MIN) 
 				|| annotation.getElementName().equals(DIGITS) ) {
 
 			if (	!fieldType.equals(getSignatureFormatOfType(BIG_DECIMAL)) &&
@@ -134,8 +173,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 						"This annotation can only be used on BigDecimal, BigInteger, CharSequence"
 						+ "byte, short, int, long (and their respective wrappers) type fields."));	
 			}
-		}
-		if (annotation.getElementName().equals(EMAIL)) {
+		} else if (annotation.getElementName().equals(EMAIL)) {
 
 			if (	!fieldType.equals(getSignatureFormatOfType(STRING)) &&
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
@@ -143,8 +181,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
 						"This annotation can only be used on String and CharSequence type fields."));	
 			}
-		}
-		if (annotation.getElementName().equals(FUTURE)|| annotation.getElementName().equals(FUTURE_OR_PRESENT) 
+		} else if (annotation.getElementName().equals(FUTURE)|| annotation.getElementName().equals(FUTURE_OR_PRESENT) 
 				|| annotation.getElementName().equals(PAST) || annotation.getElementName().equals(PAST_OR_PRESENT)) {
 
 			if (	!fieldType.equals(getSignatureFormatOfType(DATE)) &&
@@ -171,8 +208,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 						+ "HijrahDate, JapaneseDate, JapaneseDate, MinguoDate, "
 						+ "ThaiBuddhistDate type fields."));	
 			}
-		}
-		if (annotation.getElementName().equals(MIN)|| annotation.getElementName().equals(MAX)) {
+		} else if (annotation.getElementName().equals(MIN)|| annotation.getElementName().equals(MAX)) {
 
 			if (	!fieldType.equals(getSignatureFormatOfType(BIG_DECIMAL)) &&
 					!fieldType.equals(getSignatureFormatOfType(BIG_INTEGER)) &&
@@ -189,8 +225,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 						"This annotation can only be used on BigDecimal, BigInteger"
 						+ "byte, short, int, long (and their respective wrappers) type fields."));	
 			}
-		}
-		if (annotation.getElementName().equals(NEGATIVE)|| annotation.getElementName().equals(NEGATIVE_OR_ZERO) || 
+		} else if (annotation.getElementName().equals(NEGATIVE)|| annotation.getElementName().equals(NEGATIVE_OR_ZERO) || 
 				annotation.getElementName().equals(POSITIVE)|| annotation.getElementName().equals(POSTIVE_OR_ZERO)) {
 
 			if (	!fieldType.equals(getSignatureFormatOfType(BIG_DECIMAL)) &&
@@ -212,8 +247,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 						"This annotation can only be used on BigDecimal, BigInteger"
 						+ "byte, short, int, long, float, double (and their respective wrappers) type fields."));	
 			}
-		}
-		if (annotation.getElementName().equals(NOT_BLANK)) {
+		} else if (annotation.getElementName().equals(NOT_BLANK)) {
 
 			if (	!fieldType.equals(getSignatureFormatOfType(STRING)) &&
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
@@ -221,8 +255,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
 						"This annotation can only be used on String and CharSequence type fields."));	
 			}
-		}
-		if (annotation.getElementName().equals(PATTERN)) {
+		} else if (annotation.getElementName().equals(PATTERN)) {
 			
 			if (	!fieldType.equals(getSignatureFormatOfType(STRING)) &&
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
@@ -237,11 +270,11 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 		// have to resolve it and get the super interfaces and check to see if Collection, Map or Array was implemented 
 		// for that custom type (which could as well be a user made subtype) 
 		
-//		if (annotation.getElementName().equals("NotEmpty") || annotation.getElementName().equals("Size")) {
+//		else if (annotation.getElementName().equals(NOT_EMPTY) || annotation.getElementName().equals(SIZE)) {
 //			
-////			System.out.println("--Field name: " + Signature.getTypeSignatureKind(fieldType));
-////			System.out.println("--Field name: " + Signature.getParameterTypes(fieldType));			
-//			if (	!fieldType.equals(getSignatureFormatOfType("CharSequence")) &&
+//			System.out.println("--Field name: " + Signature.getTypeSignatureKind(fieldType));
+//			System.out.println("--Field name: " + Signature.getParameterTypes(fieldType));			
+//			if (	!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE)) &&
 //					!fieldType.contains("List") &&
 //					!fieldType.contains("Set") &&
 //					!fieldType.contains("Collection") &&
@@ -262,6 +295,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 		
 		
 	}
+	
 	/* Refer to Class signature documentation for the formating
 	 * https://www.ibm.com/support/knowledgecenter/sl/SS5JSH_9.5.0/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/Signature.html
 	 */
