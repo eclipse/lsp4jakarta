@@ -3,7 +3,7 @@
         "prefix": "persistctx",
         "body": [
           "@PersistenceContext(name=\"${1:name}\")",
-          "\t${2:EntityManager} ${3:em};"
+          "${2:EntityManager} ${3:em};"
         ],
         "description": "PersistenceContext annotation - express a dependency on a container-managed entity manager and its associated persistence context.",
         "context": {
@@ -14,7 +14,7 @@
         "prefix": "persistctxext",
         "body": [
           "@PersistenceContext(type=PersistenceContextType.EXTENDED)",
-          "\t${2:EntityManager} ${3:em};"
+          "${2:EntityManager} ${3:em};"
         ],
         "description": "PersistenceContext annotation - express a dependency on a container-managed entity manager that exists beyond the scope of a single transaction.",
         "context": {
@@ -25,7 +25,7 @@
         "prefix": "persistunsync",
         "body": [
             "@PersistenceContext(type=PersistenceContextType.EXTENDED, synchronization = SynchronizationType.UNSYNCHRONIZED)",
-            "\t${1:EntityManager} {2:em};"
+            "${1:EntityManager} {2:em};"
         ],
         "description": "PersistenceContext annotation - express a dependency on a container-managed entity manager, that must be explcitly joined to the current transaction. ",
         "context": {
@@ -76,10 +76,6 @@
               "\tpublic void set${4:columnName}(String example) {",
               "\t\tthis.${4:columnName} = example;",
               "\t}",
-              "",
-              "",
-              "",
-              "",
               "}"
             ],
             "description": "Generate a Generic Jakarta Persistence Entity Model",

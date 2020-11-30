@@ -10,11 +10,11 @@
         "import javax.ws.rs.core.MediaType;",
         "",
         "@Path(\"${2:/path}\")",
-        "public class ${TM_FILENAME_BASE} {",
+        "public class ${3:className} {",
         "",
         "\t@GET",
         "\t@Produces(MediaType.TEXT_PLAIN)",
-        "\tpublic String ${3:methodname}() {",
+        "\tpublic String ${4:methodname}() {",
         "\t\treturn \"hello\";",
         "\t}",
         "}"
