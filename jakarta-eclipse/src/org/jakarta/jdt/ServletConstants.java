@@ -7,7 +7,7 @@ public class ServletConstants {
 	
 	/* @WEBListener */
 	public static final String WEB_LISTENER = "WebListener";
-	public static final String SERVLET_CONTEXT_LISTENER = "ServletContextListner";
+	public static final String SERVLET_CONTEXT_LISTENER = "ServletContextListener";
 	public static final String SERVLET_CONTEXT_ATTRIBUTE_LISTENER = "ServletContextAttributeListener";
 	public static final String SERVLET_REQUEST_LISTENER = "ServletRequestListener";
 	public static final String SERVLET_REQUEST_ATTRIBUTE_LISTENER = "ServletRequestAttributeListener";
