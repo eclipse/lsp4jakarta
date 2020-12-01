@@ -29,22 +29,27 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite.ImportRewriteContext;
+import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.internal.core.manipulation.dom.ASTResolving;
 import org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels;
 import org.eclipse.jdt.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeActionKind;
 
+/**
+ * QuickFix for implementing interface
+ *
+ * copied from /org.eclipse.jdt.ui/src/org/eclipse/jdt/internal/ui/text/correction/proposals/ImplementInterfaceProposal.java
+ */
+public class ImplementInterfaceProposal extends ChangeCorrectionProposal {
 
-public class ExtendClassProposal extends ChangeCorrectionProposal {
-
-	private static final String TITLE_MESSAGE = "Let ''{0}'' extend ''{1}''";
+	private static final String TITLE_MESSAGE = "Let ''{0}'' implement ''{1}''";
 
 	private IBinding fBinding;
 	private CompilationUnit fAstRoot;
 	private String interfaceType;
 
-	public ExtendClassProposal(String name, ICompilationUnit targetCU, ITypeBinding binding, CompilationUnit astRoot,
+	public ImplementInterfaceProposal(String name, ICompilationUnit targetCU, ITypeBinding binding, CompilationUnit astRoot,
 			String interfaceType, int relevance) {
 		super(name, CodeActionKind.QuickFix, targetCU, null, relevance);
 
@@ -83,7 +88,8 @@ public class ExtendClassProposal extends ChangeCorrectionProposal {
 
 			ASTRewrite rewrite = ASTRewrite.create(ast);
 
-			rewrite.set(declNode, TypeDeclaration.SUPERCLASS_TYPE_PROPERTY, newInterface, null);
+			ListRewrite listRewrite = rewrite.getListRewrite(declNode, TypeDeclaration.SUPER_INTERFACE_TYPES_PROPERTY);
+			listRewrite.insertLast(newInterface, null);
 
 			return rewrite;
 		}
