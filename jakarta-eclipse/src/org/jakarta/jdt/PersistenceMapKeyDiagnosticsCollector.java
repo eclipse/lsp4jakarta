@@ -106,7 +106,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 									}
 								}
 								if (!isNameSpecified || !isReferencedColumnNameSpecified) {
-									diagnostics.add(createDiagnostic(method, unit, "A method with multiple @MapKeyJoinColumn Annotations must specify both name and referencedColumnName"));
+									diagnostics.add(createDiagnostic(method, unit, "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations."));
 								}
 							} catch (JavaModelException e) {
 								Activator.logException("Error while retrieving member values of @MapKeyJoinColumn Annotation", e);
@@ -141,7 +141,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 									}
 								}
 								if (!isNameSpecified || !isReferencedColumnNameSpecified) {
-									diagnostics.add(createDiagnostic(field, unit, "A field with multiple @MapKeyJoinColumn Annotations must specify both name and referencedColumnName"));
+									diagnostics.add(createDiagnostic(field, unit, "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations."));
 								}
 							} catch (JavaModelException e) {
 								Activator.logException("Error while retrieving member values of @MapKeyJoinColumn Annotation", e);

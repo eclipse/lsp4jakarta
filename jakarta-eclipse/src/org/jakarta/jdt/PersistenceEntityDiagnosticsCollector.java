@@ -135,7 +135,7 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 							
 							// All Methods of this class should not be final
 							if (this.isFinal(method.getFlags())) {
-								diagnostics.add(createDiagnostic(method, unit, "Class with @Entity annotation cannot contain any final methods or persistent instance variables."));
+								diagnostics.add(createDiagnostic(method, unit, "A class using the @Entity annotation cannot contain any methods that are declared final"));
 								isMethodsOrPersistentVariablesFinal = true;
 							}
 						}
@@ -151,7 +151,7 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 							
 							// If we find a non-static variable that is final, this is a problem
 							if (this.isFinal(field.getFlags())) {
-								diagnostics.add(createDiagnostic(field, unit, "Class with @Entity annotation cannot contain any final methods or persistent instance variables."));
+								diagnostics.add(createDiagnostic(field, unit, "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final"));
 								isMethodsOrPersistentVariablesFinal = true;
 							}
 							
@@ -163,11 +163,11 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 						
 						// Create Diagnostics if needed
 						if (!hasPublicOrProtectedNoArgConstructor) {
-							diagnostics.add(createDiagnostic(EntityAnnotation, unit, "Class with @Entity annotation must contain a public or protected constructor with no arguments."));
+							diagnostics.add(createDiagnostic(EntityAnnotation, unit, "A class using the @Entity annotation must contain a public or protected constructor with no arguments."));
 						}
 
 						if (isEntityClassFinal) {
-							diagnostics.add(createDiagnostic(type, unit,  "Class with @Entity annotation must not be final."));
+							diagnostics.add(createDiagnostic(type, unit,  "A class using the @Entity annotation must not be final."));
 						}
 					}
 				}
