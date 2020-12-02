@@ -51,7 +51,6 @@ public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
 					String[] implementedInterfaces = type.getSuperInterfaceNames();
 
 					for (String in : implementedInterfaces) {
-
 						if (in.equals(ServletConstants.SERVLET_CONTEXT_LISTENER)
 								|| in.equals(ServletConstants.SERVLET_CONTEXT_ATTRIBUTE_LISTENER)
 								|| in.equals(ServletConstants.SERVLET_REQUEST_LISTENER)
@@ -59,7 +58,6 @@ public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
 								|| in.equals(ServletConstants.HTTP_SESSION_LISTENER)
 								|| in.equals(ServletConstants.HTTP_SESSION_ATTRIBUTE_LISTENER)
 								|| in.equals(ServletConstants.HTTP_SESSION_ID_LISTENER)) {
-
 							isWebListenerInterfaceImplemented = true;
 							break;
 						}
