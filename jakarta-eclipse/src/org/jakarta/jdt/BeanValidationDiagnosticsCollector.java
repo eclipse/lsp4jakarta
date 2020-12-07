@@ -115,7 +115,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 
 						for (IAnnotation annotation : allFieldAnnotations) {
 							if(SET_OF_ANNOTATIONS.contains(annotation.getElementName())) {
-								checkAnnoatationAllowedTypes(unit, diagnostics, fieldType, annotation);
+								checkAnnotationAllowedTypes(unit, diagnostics, fieldType, annotation);
 								
 								
 								if (Flags.isStatic(field.getFlags())) {
@@ -123,7 +123,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 									Range fieldAnnotationrange = JDTUtils.toRange(unit, fieldAnnotationNameRange.getOffset(),
 											fieldAnnotationNameRange.getLength());
 									diagnostics.add(new Diagnostic(fieldAnnotationrange,
-											"Constraint Annotations are not allowed on static fields"));	
+											"Constraint annotations are not allowed on static fields"));	
 								}
 							}
 							
@@ -139,7 +139,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 
 	}
 
-	private void checkAnnoatationAllowedTypes(ICompilationUnit unit, List<Diagnostic> diagnostics, String fieldType,
+	private void checkAnnotationAllowedTypes(ICompilationUnit unit, List<Diagnostic> diagnostics, String fieldType,
 			IAnnotation annotation) throws JavaModelException {
 		
 		ISourceRange fieldAnnotationNameRange = JDTUtils.getNameRange(annotation);
@@ -152,7 +152,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(Signature.SIG_BOOLEAN)) {
 				
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"This annotation can only be used on boolean and Boolean type fields."));	
+						"The @" + annotation.getElementName() + " annotation can only be used on boolean and Boolean type fields."));	
 			}
 		} else if (annotation.getElementName().equals(DECIMAL_MAX)|| annotation.getElementName().equals(DECIMAL_MIN) 
 				|| annotation.getElementName().equals(DIGITS) ) {
@@ -170,8 +170,8 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(Signature.SIG_LONG)) {
 				
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"This annotation can only be used on BigDecimal, BigInteger, CharSequence"
-						+ "byte, short, int, long (and their respective wrappers) type fields."));	
+						"The @" + annotation.getElementName() + " annotation can only be used on: \n- BigDecimal \n- BigInteger \n- CharSequence"
+						+ "\n- byte, short, int, long (and their respective wrappers) \n type fields."));	
 			}
 		} else if (annotation.getElementName().equals(EMAIL)) {
 
@@ -179,7 +179,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 				
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"This annotation can only be used on String and CharSequence type fields."));	
+						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields."));	
 			}
 		} else if (annotation.getElementName().equals(FUTURE)|| annotation.getElementName().equals(FUTURE_OR_PRESENT) 
 				|| annotation.getElementName().equals(PAST) || annotation.getElementName().equals(PAST_OR_PRESENT)) {
@@ -202,10 +202,10 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(getSignatureFormatOfType(THAI_BUDDHIST_DATE))) {
 				
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"This annotation can only be used on Date, Calendar, Instant"
-						+ "LocalDate, LocalDateTime, LocalTime, MonthDay, OffsetDateTime, "
-						+ "OffsetTime, Year, YearMonth, ZonedDateTime, "
-						+ "HijrahDate, JapaneseDate, JapaneseDate, MinguoDate, "
+						"The @" + annotation.getElementName() + " annotation can only be used on: - Date - Calendar - Instant"
+						+ "- LocalDate - LocalDateTime - LocalTime - MonthDay - OffsetDateTime "
+						+ "- OffsetTime - Year - YearMonth - ZonedDateTime - "
+						+ "HijrahDate - JapaneseDate - JapaneseDate - MinguoDate - "
 						+ "ThaiBuddhistDate type fields."));	
 			}
 		} else if (annotation.getElementName().equals(MIN)|| annotation.getElementName().equals(MAX)) {
@@ -222,8 +222,8 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(Signature.SIG_LONG)) {
 				
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"This annotation can only be used on BigDecimal, BigInteger"
-						+ "byte, short, int, long (and their respective wrappers) type fields."));	
+						"The @" + annotation.getElementName() + " annotation can only be used on \n- BigDecimal \n- BigInteger"
+						+ "\n- byte, short, int, long (and their respective wrappers) \n type fields."));	
 			}
 		} else if (annotation.getElementName().equals(NEGATIVE)|| annotation.getElementName().equals(NEGATIVE_OR_ZERO) || 
 				annotation.getElementName().equals(POSITIVE)|| annotation.getElementName().equals(POSTIVE_OR_ZERO)) {
@@ -244,8 +244,8 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(Signature.SIG_DOUBLE)) {
 				
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"This annotation can only be used on BigDecimal, BigInteger"
-						+ "byte, short, int, long, float, double (and their respective wrappers) type fields."));	
+						"The @" + annotation.getElementName() + " annotation can only be used on \n- BigDecimal \n- BigInteger"
+						+ "\n- byte, short, int, long, float, double (and their respective wrappers) \n type fields."));	
 			}
 		} else if (annotation.getElementName().equals(NOT_BLANK)) {
 
@@ -253,7 +253,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 				
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"This annotation can only be used on String and CharSequence type fields."));	
+						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields."));	
 			}
 		} else if (annotation.getElementName().equals(PATTERN)) {
 			
@@ -261,7 +261,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 				
 				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"This annotation can only be used on String and CharSequence type fields."));	
+						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields."));	
 			}
 		}
 		
