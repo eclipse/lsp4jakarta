@@ -74,7 +74,7 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 	
 	
 	
-	public static final String DIAGNOSTIC_SOURCE="jakarta-servlet";
+	public static final String DIAGNOSTIC_SOURCE="jakarta-bean-validation";
 	public static final String DIAGNOSTIC_CODE = "FixTypeOfField";
 	public static final String DIAGNOSTIC_CODE_Static = "MakeFieldNotStatic";
 	public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
@@ -215,10 +215,10 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(getSignatureFormatOfType(THAI_BUDDHIST_DATE))) {
 				
 				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
-						"The @" + annotation.getElementName() + " annotation can only be used on: - Date - Calendar - Instant"
-						+ "- LocalDate - LocalDateTime - LocalTime - MonthDay - OffsetDateTime "
-						+ "- OffsetTime - Year - YearMonth - ZonedDateTime - "
-						+ "HijrahDate - JapaneseDate - JapaneseDate - MinguoDate - "
+						"The @" + annotation.getElementName() + " annotation can only be used on: Date, Calendar, Instant, "
+						+ "LocalDate, LocalDateTime, LocalTime, MonthDay, OffsetDateTime, "
+						+ "OffsetTime, Year, YearMonth, ZonedDateTime, "
+						+ "HijrahDate, JapaneseDate, JapaneseDate, MinguoDate and "
 						+ "ThaiBuddhistDate type fields.")));	
 			}
 		} else if (annotation.getElementName().equals(MIN)|| annotation.getElementName().equals(MAX)) {
