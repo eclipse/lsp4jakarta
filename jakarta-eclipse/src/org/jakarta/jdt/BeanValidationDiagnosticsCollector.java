@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.lsp4e.Activator;
 import org.eclipse.jdt.core.Signature;
@@ -71,6 +72,13 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 	private static final String BIG_INTEGER = "BigInteger";
 	private static final String BIG_DECIMAL = "BigDecimal";
 	
+	
+	
+	public static final String DIAGNOSTIC_SOURCE="jakarta-servlet";
+	public static final String DIAGNOSTIC_CODE = "FixTypeOfField";
+	public static final String DIAGNOSTIC_CODE_Static = "MakeFieldNotStatic";
+	public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
+	
     public final static Set<String> SET_OF_ANNOTATIONS = Collections.unmodifiableSet(
             new HashSet<String>(Arrays.asList(
             		ASSERT_TRUE, 
@@ -122,8 +130,13 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 									ISourceRange fieldAnnotationNameRange = JDTUtils.getNameRange(annotation);
 									Range fieldAnnotationrange = JDTUtils.toRange(unit, fieldAnnotationNameRange.getOffset(),
 											fieldAnnotationNameRange.getLength());
-									diagnostics.add(new Diagnostic(fieldAnnotationrange,
-											"Constraint annotations are not allowed on static fields"));	
+									
+									Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange,
+											"Constraint annotations are not allowed on static fields");
+									diagnostic.setSource(DIAGNOSTIC_SOURCE);
+									diagnostic.setCode(DIAGNOSTIC_CODE_Static);
+									diagnostic.setSeverity(SEVERITY);
+									diagnostics.add(diagnostic);	
 								}
 							}
 							
@@ -151,8 +164,8 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 			if (	!fieldType.equals(getSignatureFormatOfType(BOOLEAN)) &&
 					!fieldType.equals(Signature.SIG_BOOLEAN)) {
 				
-				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"The @" + annotation.getElementName() + " annotation can only be used on boolean and Boolean type fields."));	
+				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
+						"The @" + annotation.getElementName() + " annotation can only be used on boolean and Boolean type fields.")));	
 			}
 		} else if (annotation.getElementName().equals(DECIMAL_MAX)|| annotation.getElementName().equals(DECIMAL_MIN) 
 				|| annotation.getElementName().equals(DIGITS) ) {
@@ -169,17 +182,17 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(Signature.SIG_INT) &&
 					!fieldType.equals(Signature.SIG_LONG)) {
 				
-				diagnostics.add(new Diagnostic(fieldAnnotationrange,
+				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
 						"The @" + annotation.getElementName() + " annotation can only be used on: \n- BigDecimal \n- BigInteger \n- CharSequence"
-						+ "\n- byte, short, int, long (and their respective wrappers) \n type fields."));	
+						+ "\n- byte, short, int, long (and their respective wrappers) \n type fields.")));	
 			}
 		} else if (annotation.getElementName().equals(EMAIL)) {
 
 			if (	!fieldType.equals(getSignatureFormatOfType(STRING)) &&
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 				
-				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields."));	
+				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
+						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields.")));	
 			}
 		} else if (annotation.getElementName().equals(FUTURE)|| annotation.getElementName().equals(FUTURE_OR_PRESENT) 
 				|| annotation.getElementName().equals(PAST) || annotation.getElementName().equals(PAST_OR_PRESENT)) {
@@ -201,12 +214,12 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(getSignatureFormatOfType(MINGUO_DATE)) &&
 					!fieldType.equals(getSignatureFormatOfType(THAI_BUDDHIST_DATE))) {
 				
-				diagnostics.add(new Diagnostic(fieldAnnotationrange,
+				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
 						"The @" + annotation.getElementName() + " annotation can only be used on: - Date - Calendar - Instant"
 						+ "- LocalDate - LocalDateTime - LocalTime - MonthDay - OffsetDateTime "
 						+ "- OffsetTime - Year - YearMonth - ZonedDateTime - "
 						+ "HijrahDate - JapaneseDate - JapaneseDate - MinguoDate - "
-						+ "ThaiBuddhistDate type fields."));	
+						+ "ThaiBuddhistDate type fields.")));	
 			}
 		} else if (annotation.getElementName().equals(MIN)|| annotation.getElementName().equals(MAX)) {
 
@@ -221,9 +234,9 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(Signature.SIG_INT) &&
 					!fieldType.equals(Signature.SIG_LONG)) {
 				
-				diagnostics.add(new Diagnostic(fieldAnnotationrange,
+				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
 						"The @" + annotation.getElementName() + " annotation can only be used on \n- BigDecimal \n- BigInteger"
-						+ "\n- byte, short, int, long (and their respective wrappers) \n type fields."));	
+						+ "\n- byte, short, int, long (and their respective wrappers) \n type fields.")));	
 			}
 		} else if (annotation.getElementName().equals(NEGATIVE)|| annotation.getElementName().equals(NEGATIVE_OR_ZERO) || 
 				annotation.getElementName().equals(POSITIVE)|| annotation.getElementName().equals(POSTIVE_OR_ZERO)) {
@@ -243,25 +256,25 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 					!fieldType.equals(Signature.SIG_FLOAT) &&
 					!fieldType.equals(Signature.SIG_DOUBLE)) {
 				
-				diagnostics.add(new Diagnostic(fieldAnnotationrange,
+				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
 						"The @" + annotation.getElementName() + " annotation can only be used on \n- BigDecimal \n- BigInteger"
-						+ "\n- byte, short, int, long, float, double (and their respective wrappers) \n type fields."));	
+						+ "\n- byte, short, int, long, float, double (and their respective wrappers) \n type fields.")));	
 			}
 		} else if (annotation.getElementName().equals(NOT_BLANK)) {
 
 			if (	!fieldType.equals(getSignatureFormatOfType(STRING)) &&
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 				
-				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields."));	
+				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
+						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields.")));	
 			}
 		} else if (annotation.getElementName().equals(PATTERN)) {
 			
 			if (	!fieldType.equals(getSignatureFormatOfType(STRING)) &&
 					!fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 				
-				diagnostics.add(new Diagnostic(fieldAnnotationrange,
-						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields."));	
+				diagnostics.add(completeDiagnostic(new Diagnostic(fieldAnnotationrange,
+						"The @" + annotation.getElementName() + " annotation can only be used on String and CharSequence type fields.")));	
 			}
 		}
 		
@@ -295,7 +308,14 @@ public class BeanValidationDiagnosticsCollector  implements DiagnosticsCollector
 		
 		
 	}
-	
+	private Diagnostic completeDiagnostic(Diagnostic diagnostic) {
+		diagnostic.setSource(DIAGNOSTIC_SOURCE);
+		diagnostic.setCode(DIAGNOSTIC_CODE);
+		diagnostic.setSeverity(SEVERITY);
+		return diagnostic;
+	}
+
+
 	/* Refer to Class signature documentation for the formating
 	 * https://www.ibm.com/support/knowledgecenter/sl/SS5JSH_9.5.0/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/Signature.html
 	 */
