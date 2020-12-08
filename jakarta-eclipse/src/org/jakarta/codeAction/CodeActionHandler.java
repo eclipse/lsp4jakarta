@@ -32,6 +32,7 @@ import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
 import org.jakarta.lsp4e.Activator;
+import org.jakarta.jdt.ServletConstants;
 
 import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
@@ -63,9 +64,20 @@ public class CodeActionHandler {
 			List<CodeAction> codeActions = new ArrayList<>();
 
 			HttpServletQuickFix HttpServletQuickFix = new HttpServletQuickFix();
+			FilterImplementationQuickFix FilterImplementationQuickFix = new FilterImplementationQuickFix();
+			ListenerImplementationQuickFix ListenerImplementationQuickFix = new ListenerImplementationQuickFix();
+
 			for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
 				try {
-					codeActions.addAll(HttpServletQuickFix.getCodeActions(context, diagnostic, monitor));
+					if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
+						codeActions.addAll(HttpServletQuickFix.getCodeActions(context, diagnostic, monitor));
+					}
+					if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER)) {
+						codeActions.addAll(FilterImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
+					}
+					if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_LISTENER)) {
+						codeActions.addAll(ListenerImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
+					}
 				} catch (CoreException e) {
 					e.printStackTrace();
 				}

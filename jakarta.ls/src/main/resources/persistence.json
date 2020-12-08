@@ -3,7 +3,7 @@
         "prefix": "persistctx",
         "body": [
           "@PersistenceContext(name=\"${1:name}\")",
-          "${2:EntityManager} ${3:em}"
+          "${2:EntityManager} ${3:em};"
         ],
         "description": "PersistenceContext annotation - express a dependency on a container-managed entity manager and its associated persistence context.",
         "context": {
@@ -14,7 +14,7 @@
         "prefix": "persistctxext",
         "body": [
           "@PersistenceContext(type=PersistenceContextType.EXTENDED)",
-          "${2:EntityManager} ${3:em}"
+          "${2:EntityManager} ${3:em};"
         ],
         "description": "PersistenceContext annotation - express a dependency on a container-managed entity manager that exists beyond the scope of a single transaction.",
         "context": {
@@ -46,7 +46,7 @@
               "import jakarta.persistence.GenerationType;",
               "",
               "@Entity",
-              "@Table(name = ${2:entityName})",
+              "@Table(name = \"${2:entityName}\")",
               "@NamedQuery(name=\"\", query=\"\")",
               "public class ${2:entityName} {",
               "",
@@ -69,17 +69,13 @@
               "\t\tthis.id = id;",
               "\t}",
               "",
-              "\tpublic int get${4:columnName}() {",
+              "\tpublic String get${4:columnName}() {",
               "\t\treturn ${4:columnName};",
               "\t}",
               "",
               "\tpublic void set${4:columnName}(String example) {",
               "\t\tthis.${4:columnName} = example;",
               "\t}",
-              "",
-              "",
-              "",
-              "",
               "}"
             ],
             "description": "Generate a Generic Jakarta Persistence Entity Model",

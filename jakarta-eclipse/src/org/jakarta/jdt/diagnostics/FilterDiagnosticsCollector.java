@@ -1,4 +1,4 @@
-package org.jakarta.jdt;
+package org.jakarta.jdt.diagnostics;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -8,6 +8,8 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
+import org.jakarta.jdt.JDTUtils;
+import org.jakarta.jdt.ServletConstants;
 import org.jakarta.lsp4e.Activator;
 
 import java.util.List;
@@ -18,7 +20,13 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 		
 	}
 	
+	public void completeDiagnostic(Diagnostic diagnostic) {
+		diagnostic.setSource(ServletConstants.DIAGNOSTIC_SOURCE);
+		diagnostic.setSeverity(ServletConstants.SEVERITY);
+	}
+
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
+		Diagnostic diagnostic;
 		if (unit != null) {
 			IType[] alltypes;
 			IAnnotation[] allAnnotations;
@@ -55,7 +63,10 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 
 					
 					if (isWebFilterAnnotated && !isFilterImplemented) {
-						diagnostics.add(new Diagnostic(range, "Classes annotated with @WebFilter must implement the Filter interface."));
+						diagnostic = new Diagnostic(range, "Classes annotated with @WebFilter must implement the Filter interface.");
+						completeDiagnostic(diagnostic);
+						diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER);
+						diagnostics.add(diagnostic);
 					}
 					
 					/* URL pattern diagnostic check */
@@ -83,15 +94,19 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 						Range annotationrange = JDTUtils.toRange(unit, annotationNameRange.getOffset(), annotationNameRange.getLength());
 						
 						if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
-							diagnostics.add(new Diagnostic(annotationrange, "The 'urlPatterns' attribute, 'servletNames' attribute or the 'value' attribute of the WebFilter annotation MUST be specified."));
+							diagnostic = new Diagnostic(annotationrange, "The 'urlPatterns' attribute, 'servletNames' attribute or the 'value' attribute of the WebFilter annotation MUST be specified.");
+							completeDiagnostic(diagnostic);
+							diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE);
+							diagnostics.add(diagnostic);
 						}
 						if (isUrlpatternSpecified && isValueSpecified) {
-							diagnostics.add(new Diagnostic(annotationrange, "The WebFilter annotation cannot have both the 'value' and 'urlPatterns' attributes specified at once."));
+							diagnostic = new Diagnostic(annotationrange, "The WebFilter annotation cannot have both the 'value' and 'urlPatterns' attributes specified at once.");
+							completeDiagnostic(diagnostic);
+							diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES);
+							diagnostics.add(diagnostic);
 						}
 						
 					}
-					
-					
 				}
 			} catch (JavaModelException e) {
 				Activator.logException("Cannot calculate diagnostics", e);

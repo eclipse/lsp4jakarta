@@ -168,8 +168,12 @@ public class SnippetRegistry {
             String insertText = getInsertText(snippet, false, lineDelimiter);
             item.setKind(CompletionItemKind.Snippet);
             item.setDocumentation(Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimiter)));
-            item.setFilterText(label);
-			item.setTextEdit(new TextEdit(replaceRange, insertText));
+			item.setFilterText(label);
+			
+			TextEdit textEdit = new TextEdit(replaceRange, insertText);
+			formatTextEdit(textEdit); // Fixes indentation on the lines based on tabs
+			item.setTextEdit(textEdit);
+			item.setInsertTextFormat(InsertTextFormat.Snippet);
             item.setInsertTextFormat(InsertTextFormat.Snippet);
             return item;
 		})

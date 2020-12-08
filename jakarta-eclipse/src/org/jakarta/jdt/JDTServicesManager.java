@@ -13,6 +13,12 @@ import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.jakarta.jdt.diagnostics.DiagnosticsCollector;
+import org.jakarta.jdt.diagnostics.FilterDiagnosticsCollector;
+import org.jakarta.jdt.diagnostics.ListenerDiagnosticsCollector;
+import org.jakarta.jdt.diagnostics.PersistenceEntityDiagnosticsCollector;
+import org.jakarta.jdt.diagnostics.PersistenceMapKeyDiagnosticsCollector;
+import org.jakarta.jdt.diagnostics.ServletDiagnosticsCollector;
 import org.jakarta.lsp4e.Activator;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
@@ -41,6 +47,8 @@ public class JDTServicesManager {
 		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
 		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
 		diagnosticsCollectors.add(new BeanValidationDiagnosticsCollector());
+		diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
+		diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
 		this.codeActionHandler = new CodeActionHandler();
 	}
 

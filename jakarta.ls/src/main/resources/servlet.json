@@ -2,7 +2,7 @@
     "GenericServlet - protocol independent servlet": {
         "prefix": "genericservlet",
         "body": [
-          "package ${1: packagename}",
+          "package ${1: packagename};",
           "",
           "import jakarta.servlet.GenericServlet;",
           "import jakarta.servlet.ServletRequest;",
@@ -26,7 +26,7 @@
     "HttpServlet - supports HTTP GET requests": {
         "prefix": "httpservletget",
         "body": [
-            "package ${1: packagename}",
+            "package ${1: packagename};",
             "",
             "import jakarta.servlet.ServletException;",
             "import jakarta.servlet.annotation.WebServlet;",
@@ -35,7 +35,7 @@
             "import jakarta.servlet.http.HttpServletResponse;",
             "import java.io.IOException;",
             "",
-            "@WebServlet(name = \"servletName\", urlPatterns = { \"/path\" })",
+            "@WebServlet(name = \"${2:servletName}\", urlPatterns = { \"/${3:path}\" })",
             "public class ${4: classname} extends HttpServlet {",
             "\t@Override",
             "\tprotected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
@@ -52,7 +52,7 @@
     "HttpServlet - supports HTTP POST requests": {
         "prefix": "httpservletpost",
         "body": [
-            "package ${1: packagename}",
+            "package ${1: packagename};",
             "",
             "import jakarta.servlet.ServletException;",
             "import jakarta.servlet.annotation.WebServlet;",
@@ -61,7 +61,7 @@
             "import jakarta.servlet.http.HttpServletResponse;",
             "import java.io.IOException;",
             "",
-            "@WebServlet(name = \"servletName\", urlPatterns = { \"/path\" })",
+            "@WebServlet(name = \"${2:servletName}\", urlPatterns = { \"/${3:path}\" })",
             "public class ${4: classname} extends HttpServlet {",
             "\t@Override",
             "\tprotected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
