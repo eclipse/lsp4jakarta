@@ -1,6 +1,5 @@
 package io.microshed.jakartals.commons;
 
-import java.io.File;
 import java.util.logging.Logger;
 
 /**

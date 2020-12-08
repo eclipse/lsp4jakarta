@@ -1,5 +1,9 @@
 package org.jakarta.jdt.persistence;
 
+import java.util.List;
+
+import org.eclipse.jdt.core.Flags;
+
 /**
  * @author ankushsharma
  * @brief Diagnostics implementation for Jakarta Persistence 3.0
@@ -8,22 +12,17 @@ package org.jakarta.jdt.persistence;
 // Imports
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IMemberValuePair;
-import org.eclipse.jdt.core.ISourceRange;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ISourceRange;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.Flags;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.DiagnosticsCollector;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
-
-import java.util.List;
-import java.util.Collection;
 
 public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollector {
 

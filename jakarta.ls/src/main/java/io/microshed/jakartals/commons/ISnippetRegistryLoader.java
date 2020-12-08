@@ -1,7 +1,5 @@
 package io.microshed.jakartals.commons;
 
-import io.microshed.jakartals.commons.SnippetRegistry;
-
 /**
  * Loader used to load snippets in a given registry for a language id
  * 

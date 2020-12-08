@@ -9,8 +9,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
-import io.microshed.jakartals.commons.ProjectLabelInfoEntry;
-
 /**
  * A snippet context for Java files which matches java scope and dependency.
  *
