@@ -46,6 +46,7 @@ public class JDTServicesManager {
 		diagnosticsCollectors.add(new ServletDiagnosticsCollector());
 		diagnosticsCollectors.add(new FilterDiagnosticsCollector());
 		diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
+		diagnosticsCollectors.add(new BeanValidationDiagnosticsCollector());
 		diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
 		diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
 		this.codeActionHandler = new CodeActionHandler();
