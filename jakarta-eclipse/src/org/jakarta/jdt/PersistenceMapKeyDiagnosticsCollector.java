@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
+import org.jakarta.jdt.diagnostics.DiagnosticsCollector;
 import org.jakarta.lsp4e.Activator;
 
 import java.util.ArrayList;
@@ -158,6 +159,12 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 			}
 					
 		}
+		
+	}
+
+	@Override
+	public void completeDiagnostic(Diagnostic diagnostic) {
+		// TODO Auto-generated method stub
 		
 	}
 

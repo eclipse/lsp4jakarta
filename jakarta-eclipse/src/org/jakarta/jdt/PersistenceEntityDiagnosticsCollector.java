@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
+import org.jakarta.jdt.diagnostics.DiagnosticsCollector;
 import org.jakarta.lsp4e.Activator;
 
 import java.util.List;
@@ -118,6 +119,7 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 										
 						// Define boolean requirements for the diagnostics
 						boolean hasPublicOrProtectedNoArgConstructor = false;
+						boolean hasArgConstructor = false;
 						boolean isEntityClassFinal = false;
 						boolean isMethodsOrPersistentVariablesFinal = false;
 						
@@ -125,7 +127,10 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 						for (IMethod method: type.getMethods()) {
 							if (method.isConstructor()) {
 								// We have found a method that is a constructor
-								if (method.getNumberOfParameters() > 0) continue;
+								if (method.getNumberOfParameters() > 0)  {
+									hasArgConstructor = true;
+									continue;
+								}
 								
 								// Don't need to perform subtractions to check flags because eclipse notifies on illegal constructor modifiers
 								if (method.getFlags() != Flags.AccPublic && method.getFlags() != Flags.AccProtected) continue;
@@ -162,8 +167,8 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 						
 						
 						// Create Diagnostics if needed
-						if (!hasPublicOrProtectedNoArgConstructor) {
-							diagnostics.add(createDiagnostic(EntityAnnotation, unit, "A class using the @Entity annotation must contain a public or protected constructor with no arguments."));
+						if (!hasPublicOrProtectedNoArgConstructor && hasArgConstructor) {
+							diagnostics.add(createDiagnostic(type, unit, "A class using the @Entity annotation must contain a public or protected constructor with no arguments."));
 						}
 
 						if (isEntityClassFinal) {
@@ -176,6 +181,13 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 			}
 		}
 		// We do not do anything if the found unit is null
+	}
+
+
+	@Override
+	public void completeDiagnostic(Diagnostic diagnostic) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
