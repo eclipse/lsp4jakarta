@@ -1,4 +1,4 @@
-package org.jakarta.jdt;
+package org.jakarta.jdt.diagnostics;
 
 /**
  * @author ankushsharma
@@ -18,7 +18,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.diagnostics.DiagnosticsCollector;
+import org.jakarta.jdt.JDTUtils;
+import org.jakarta.jdt.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
 
 import java.util.List;
@@ -77,17 +78,27 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 		return false;
 	}
 	
-	private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg) {
+	private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
 		try {
 			ISourceRange nameRange = JDTUtils.getNameRange(el);
 			Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-			return new Diagnostic(range, msg);
+			Diagnostic diagnostic = new Diagnostic(range, msg);
+			diagnostic.setCode(code);
+			return diagnostic;
 		} catch(JavaModelException e) {
 			Activator.logException("Cannot calculate diagnostics", e);
 		}
 		return null;
 	}
 
+	
+	@Override
+	public void completeDiagnostic(Diagnostic diagnostic) {
+		diagnostic.setSource(PersistenceConstants.DIAGNOSTIC_SOURCE);
+		diagnostic.setSeverity(PersistenceConstants.SEVERITY);
+	}
+	
+	
 	@Override
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 		// TODO Auto-generated method stub
@@ -140,7 +151,7 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 							
 							// All Methods of this class should not be final
 							if (this.isFinal(method.getFlags())) {
-								diagnostics.add(createDiagnostic(method, unit, "A class using the @Entity annotation cannot contain any methods that are declared final"));
+								diagnostics.add(createDiagnostic(method, unit, "A class using the @Entity annotation cannot contain any methods that are declared final", PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS));
 								isMethodsOrPersistentVariablesFinal = true;
 							}
 						}
@@ -156,7 +167,7 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 							
 							// If we find a non-static variable that is final, this is a problem
 							if (this.isFinal(field.getFlags())) {
-								diagnostics.add(createDiagnostic(field, unit, "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final"));
+								diagnostics.add(createDiagnostic(field, unit, "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final", PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES));
 								isMethodsOrPersistentVariablesFinal = true;
 							}
 							
@@ -168,11 +179,11 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 						
 						// Create Diagnostics if needed
 						if (!hasPublicOrProtectedNoArgConstructor && hasArgConstructor) {
-							diagnostics.add(createDiagnostic(type, unit, "A class using the @Entity annotation must contain a public or protected constructor with no arguments."));
+							diagnostics.add(createDiagnostic(type, unit, "A class using the @Entity annotation must contain a public or protected constructor with no arguments.", PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR));
 						}
 
 						if (isEntityClassFinal) {
-							diagnostics.add(createDiagnostic(type, unit,  "A class using the @Entity annotation must not be final."));
+							diagnostics.add(createDiagnostic(type, unit,  "A class using the @Entity annotation must not be final.", PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS));
 						}
 					}
 				}
@@ -181,13 +192,6 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 			}
 		}
 		// We do not do anything if the found unit is null
-	}
-
-
-	@Override
-	public void completeDiagnostic(Diagnostic diagnostic) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 }

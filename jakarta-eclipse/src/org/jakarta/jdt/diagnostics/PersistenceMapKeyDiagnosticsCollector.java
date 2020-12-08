@@ -1,4 +1,4 @@
-package org.jakarta.jdt;
+package org.jakarta.jdt.diagnostics;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -11,7 +11,8 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.diagnostics.DiagnosticsCollector;
+import org.jakarta.jdt.JDTUtils;
+import org.jakarta.jdt.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
 
 import java.util.ArrayList;
@@ -23,17 +24,26 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 		
 	}
 	
-	private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg) {
+	private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
 		try {
 			ISourceRange nameRange = JDTUtils.getNameRange(el);
 			Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-			return new Diagnostic(range, msg);
+			Diagnostic diagnostic = new Diagnostic(range, msg);
+			diagnostic.setCode(code);
+			return diagnostic;
 		} catch(JavaModelException e) {
 			Activator.logException("Cannot calculate diagnostics", e);
 		}
 		return null;
 	}
 
+	@Override
+	public void completeDiagnostic(Diagnostic diagnostic) {
+		diagnostic.setSource(PersistenceConstants.DIAGNOSTIC_SOURCE);
+		diagnostic.setSeverity(PersistenceConstants.SEVERITY);
+	}
+
+	
 	@Override
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 		// TODO Auto-generated method stub
@@ -60,7 +70,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 						}
 						if (MapKeyAnnotation != null && MapKeyClassAnnotation != null) {
 							// A single field cannot have the same
-							diagnostics.add(createDiagnostic(method, unit, "@MapKeyClass and @MapKey annotations cannot be used on the same field or property"));
+							diagnostics.add(createDiagnostic(method, unit, "@MapKeyClass and @MapKey annotations cannot be used on the same field or property", PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION));
 						}
 					}
 					
@@ -74,7 +84,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 						}
 						if (MapKeyAnnotation != null && MapKeyClassAnnotation != null) {
 							// A single field cannot have the same
-							diagnostics.add(createDiagnostic(field, unit, "@MapKeyClass and @MapKey annotations cannot be used on the same field or property"));
+							diagnostics.add(createDiagnostic(field, unit, "@MapKeyClass and @MapKey annotations cannot be used on the same field or property", PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION));
 						}
 						
 					}
@@ -107,7 +117,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 									}
 								}
 								if (!isNameSpecified || !isReferencedColumnNameSpecified) {
-									diagnostics.add(createDiagnostic(method, unit, "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations."));
+									diagnostics.add(createDiagnostic(method, unit, "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.", PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
 								}
 							} catch (JavaModelException e) {
 								Activator.logException("Error while retrieving member values of @MapKeyJoinColumn Annotation", e);
@@ -142,7 +152,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 									}
 								}
 								if (!isNameSpecified || !isReferencedColumnNameSpecified) {
-									diagnostics.add(createDiagnostic(field, unit, "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations."));
+									diagnostics.add(createDiagnostic(field, unit, "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.", PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
 								}
 							} catch (JavaModelException e) {
 								Activator.logException("Error while retrieving member values of @MapKeyJoinColumn Annotation", e);
@@ -161,11 +171,4 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 		}
 		
 	}
-
-	@Override
-	public void completeDiagnostic(Diagnostic diagnostic) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

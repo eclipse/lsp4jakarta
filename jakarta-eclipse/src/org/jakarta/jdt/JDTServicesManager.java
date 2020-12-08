@@ -16,6 +16,8 @@ import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.jakarta.jdt.diagnostics.DiagnosticsCollector;
 import org.jakarta.jdt.diagnostics.FilterDiagnosticsCollector;
 import org.jakarta.jdt.diagnostics.ListenerDiagnosticsCollector;
+import org.jakarta.jdt.diagnostics.PersistenceEntityDiagnosticsCollector;
+import org.jakarta.jdt.diagnostics.PersistenceMapKeyDiagnosticsCollector;
 import org.jakarta.jdt.diagnostics.ServletDiagnosticsCollector;
 import org.jakarta.lsp4e.Activator;
 
