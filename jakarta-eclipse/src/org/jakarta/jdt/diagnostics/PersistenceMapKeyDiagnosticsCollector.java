@@ -30,6 +30,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 			Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 			Diagnostic diagnostic = new Diagnostic(range, msg);
 			diagnostic.setCode(code);
+			completeDiagnostic(diagnostic);
 			return diagnostic;
 		} catch(JavaModelException e) {
 			Activator.logException("Cannot calculate diagnostics", e);
