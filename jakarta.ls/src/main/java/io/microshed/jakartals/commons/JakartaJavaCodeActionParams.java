@@ -20,35 +20,35 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 
 /**
- * Java codeAction parameters.
- * reused from https://github.com/eclipse/lsp4mp/blob/master/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaCodeActionParams.java
+ * Java codeAction parameters. reused from
+ * https://github.com/eclipse/lsp4mp/blob/master/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaCodeActionParams.java
  *
  * @author credit to Angelo ZERR
  *
  */
 public class JakartaJavaCodeActionParams extends CodeActionParams {
 
-	private boolean resourceOperationSupported;
+    private boolean resourceOperationSupported;
 
-	public JakartaJavaCodeActionParams() {
-		super();
-	}
+    public JakartaJavaCodeActionParams() {
+        super();
+    }
 
-	public JakartaJavaCodeActionParams(final TextDocumentIdentifier textDocument, final Range range,
-			final CodeActionContext context) {
-		super(textDocument, range, context);
-	}
+    public JakartaJavaCodeActionParams(final TextDocumentIdentifier textDocument, final Range range,
+            final CodeActionContext context) {
+        super(textDocument, range, context);
+    }
 
-	public String getUri() {
-		return getTextDocument().getUri();
-	}
+    public String getUri() {
+        return getTextDocument().getUri();
+    }
 
-	public boolean isResourceOperationSupported() {
-		return resourceOperationSupported;
-	}
+    public boolean isResourceOperationSupported() {
+        return resourceOperationSupported;
+    }
 
-	public void setResourceOperationSupported(boolean resourceOperationSupported) {
-		this.resourceOperationSupported = resourceOperationSupported;
-	}
+    public void setResourceOperationSupported(boolean resourceOperationSupported) {
+        this.resourceOperationSupported = resourceOperationSupported;
+    }
 
 }

@@ -19,70 +19,70 @@ import io.microshed.jakartals.commons.ProjectLabelInfoEntry;
  */
 public class SnippetContextForJava implements ISnippetContext<ProjectLabelInfoEntry> {
 
-	public static final TypeAdapter<SnippetContextForJava> TYPE_ADAPTER = new SnippetContextForJavaAdapter();
-	private List<String> types;
+    public static final TypeAdapter<SnippetContextForJava> TYPE_ADAPTER = new SnippetContextForJavaAdapter();
+    private List<String> types;
 
-	public SnippetContextForJava(List<String> types) {
-		this.types = types;
-	}
+    public SnippetContextForJava(List<String> types) {
+        this.types = types;
+    }
 
-	public List<String> getTypes() {
-		return types;
-	}
+    public List<String> getTypes() {
+        return types;
+    }
 
-	@Override
-	public boolean isMatch(ProjectLabelInfoEntry context) {
-		if (context == null) {
-			return true;
-		}
-		if (types == null || types.isEmpty()) {
-			return true;
-		}
-		for (String type : types) {
-			if (context.hasLabel(type)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    @Override
+    public boolean isMatch(ProjectLabelInfoEntry context) {
+        if (context == null) {
+            return true;
+        }
+        if (types == null || types.isEmpty()) {
+            return true;
+        }
+        for (String type : types) {
+            if (context.hasLabel(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private static class SnippetContextForJavaAdapter extends TypeAdapter<SnippetContextForJava> {
+    private static class SnippetContextForJavaAdapter extends TypeAdapter<SnippetContextForJava> {
 
-		@Override
-		public SnippetContextForJava read(final JsonReader in) throws IOException {
-			JsonToken nextToken = in.peek();
-			if (nextToken == JsonToken.NULL) {
-				return null;
-			}
+        @Override
+        public SnippetContextForJava read(final JsonReader in) throws IOException {
+            JsonToken nextToken = in.peek();
+            if (nextToken == JsonToken.NULL) {
+                return null;
+            }
 
-			List<String> types = new ArrayList<>();
-			in.beginObject();
-			while (in.hasNext()) {
-				String name = in.nextName();
-				switch (name) {
-				case "type":
-					if (in.peek() == JsonToken.BEGIN_ARRAY) {
-						in.beginArray();
-						while (in.peek() != JsonToken.END_ARRAY) {
-							types.add(in.nextString());
-						}
-						in.endArray();
-					} else {
-						types.add(in.nextString());
-					}
-					break;
-				default:
-					in.skipValue();
-				}
-			}
-			in.endObject();
-			return new SnippetContextForJava(types);
-		}
+            List<String> types = new ArrayList<>();
+            in.beginObject();
+            while (in.hasNext()) {
+                String name = in.nextName();
+                switch (name) {
+                case "type":
+                    if (in.peek() == JsonToken.BEGIN_ARRAY) {
+                        in.beginArray();
+                        while (in.peek() != JsonToken.END_ARRAY) {
+                            types.add(in.nextString());
+                        }
+                        in.endArray();
+                    } else {
+                        types.add(in.nextString());
+                    }
+                    break;
+                default:
+                    in.skipValue();
+                }
+            }
+            in.endObject();
+            return new SnippetContextForJava(types);
+        }
 
-		@Override
-		public void write(JsonWriter out, SnippetContextForJava value) throws IOException {
-			// Do nothing
-		}
-	}
+        @Override
+        public void write(JsonWriter out, SnippetContextForJava value) throws IOException {
+            // Do nothing
+        }
+    }
 
 }

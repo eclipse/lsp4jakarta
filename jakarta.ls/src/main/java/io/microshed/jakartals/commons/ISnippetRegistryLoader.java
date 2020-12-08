@@ -10,6 +10,7 @@ import io.microshed.jakartals.commons.SnippetRegistry;
 public interface ISnippetRegistryLoader {
     /**
      * Register a given snippet in the register
+     * 
      * @param registry <SnippetRegistry>
      * @throws Exception
      */

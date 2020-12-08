@@ -10,55 +10,54 @@ public class Snippet {
     private String scope;
     private ISnippetContext<?> context;
 
-
     public List<String> getPrefixes() {
-		return prefixes;
-	}
+        return prefixes;
+    }
 
-	public void setPrefixes(List<String> prefixes) {
-		this.prefixes = prefixes;
-	}
+    public void setPrefixes(List<String> prefixes) {
+        this.prefixes = prefixes;
+    }
 
-	public List<String> getBody() {
-		return body;
-	}
+    public List<String> getBody() {
+        return body;
+    }
 
-	public void setBody(List<String> body) {
-		this.body = body;
-	}
+    public void setBody(List<String> body) {
+        this.body = body;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getScope() {
-		return scope;
-	}
+    public String getScope() {
+        return scope;
+    }
 
-	public void setScope(String scope) {
-		this.scope = scope;
-	}
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
 
-	public ISnippetContext<?> getContext() {
-		return context;
-	}
+    public ISnippetContext<?> getContext() {
+        return context;
+    }
 
-	public void setContext(ISnippetContext<?> context) {
-		this.context = context;
-	}
+    public void setContext(ISnippetContext<?> context) {
+        this.context = context;
+    }
 
-	public boolean hasContext() {
-		return getContext() != null;
-	}
+    public boolean hasContext() {
+        return getContext() != null;
+    }
 
-	public boolean match(Predicate<ISnippetContext<?>> contextFilter) {
-		if (!hasContext()) {
-			return true;
-		}
-		return contextFilter.test(getContext());
-	}
+    public boolean match(Predicate<ISnippetContext<?>> contextFilter) {
+        if (!hasContext()) {
+            return true;
+        }
+        return contextFilter.test(getContext());
+    }
 }
