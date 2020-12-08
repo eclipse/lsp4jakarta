@@ -65,6 +65,7 @@ public class CodeActionHandler {
 
 			HttpServletQuickFix HttpServletQuickFix = new HttpServletQuickFix();
 			FilterImplementationQuickFix FilterImplementationQuickFix = new FilterImplementationQuickFix();
+			ListenerImplementationQuickFix ListenerImplementationQuickFix = new ListenerImplementationQuickFix();
 
 			for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
 				try {
@@ -73,6 +74,9 @@ public class CodeActionHandler {
 					}
 					if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER)) {
 						codeActions.addAll(FilterImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
+					}
+					if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_LISTENER)) {
+						codeActions.addAll(ListenerImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
 					}
 				} catch (CoreException e) {
 					e.printStackTrace();
