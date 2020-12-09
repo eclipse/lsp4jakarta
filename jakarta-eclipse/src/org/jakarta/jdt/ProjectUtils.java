@@ -24,15 +24,15 @@ import org.eclipse.jdt.core.JavaCore;
  *
  */
 public class ProjectUtils {
-	public static boolean hasNature(IProject project, String natureId) {
-		try {
-			return project != null && project.hasNature(natureId);
-		} catch (CoreException e) {
-			return false;
-		}
-	}
+    public static boolean hasNature(IProject project, String natureId) {
+        try {
+            return project != null && project.hasNature(natureId);
+        } catch (CoreException e) {
+            return false;
+        }
+    }
 
-	public static boolean isJavaProject(IProject project) {
-		return hasNature(project, JavaCore.NATURE_ID);
-	}
+    public static boolean isJavaProject(IProject project) {
+        return hasNature(project, JavaCore.NATURE_ID);
+    }
 }

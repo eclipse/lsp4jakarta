@@ -4,42 +4,42 @@ import org.eclipse.lsp4mp.commons.DocumentFormat;
 import java.util.List;
 
 public class JakartaDiagnosticsParams {
-  
-	private List<String> uris;
 
-	private DocumentFormat documentFormat;
+    private List<String> uris;
 
-	public JakartaDiagnosticsParams() {
-		this(null);
-	}
+    private DocumentFormat documentFormat;
 
-	public JakartaDiagnosticsParams(List<String> uris) {
-		setUris(uris);
-	}
+    public JakartaDiagnosticsParams() {
+        this(null);
+    }
 
-	/**
-	 * Returns the java file uris list.
-	 *
-	 * @return the java file uris list.
-	 */
-	public List<String> getUris() {
-		return uris;
-	}
+    public JakartaDiagnosticsParams(List<String> uris) {
+        setUris(uris);
+    }
 
-	/**
-	 * Set the java file uris list.
-	 *
-	 * @param uris the java file uris list.
-	 */
-	public void setUris(List<String> uris) {
-		this.uris = uris;
-	}
+    /**
+     * Returns the java file uris list.
+     *
+     * @return the java file uris list.
+     */
+    public List<String> getUris() {
+        return uris;
+    }
 
-	public DocumentFormat getDocumentFormat() {
-		return documentFormat;
-	}
+    /**
+     * Set the java file uris list.
+     *
+     * @param uris the java file uris list.
+     */
+    public void setUris(List<String> uris) {
+        this.uris = uris;
+    }
 
-	public void setDocumentFormat(DocumentFormat documentFormat) {
-		this.documentFormat = documentFormat;
-	}
+    public DocumentFormat getDocumentFormat() {
+        return documentFormat;
+    }
+
+    public void setDocumentFormat(DocumentFormat documentFormat) {
+        this.documentFormat = documentFormat;
+    }
 }

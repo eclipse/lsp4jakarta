@@ -31,8 +31,11 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
+import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
+import org.jakarta.jdt.servlet.HttpServletQuickFix;
+import org.jakarta.jdt.servlet.ListenerImplementationQuickFix;
+import org.jakarta.jdt.servlet.ServletConstants;
 import org.jakarta.lsp4e.Activator;
-import org.jakarta.jdt.ServletConstants;
 
 import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
@@ -47,54 +50,54 @@ import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
  */
 public class CodeActionHandler {
 
-	public List<CodeAction> codeAction(JakartaJavaCodeActionParams params, JDTUtils utils, IProgressMonitor monitor) {
-		String uri = params.getUri();
-		ICompilationUnit unit = utils.resolveCompilationUnit(uri);
-		if (unit == null) {
-			return Collections.emptyList();
-		}
-		try {
-			Range range = params.getRange();
-			int startOffset = toOffset(unit.getBuffer(), range.getStart().getLine(), range.getStart().getCharacter());
-			int endOffset = toOffset(unit.getBuffer(), range.getEnd().getLine(), range.getEnd().getCharacter());
-			JavaCodeActionContext context = new JavaCodeActionContext(unit, startOffset, endOffset - startOffset, utils,
-					params);
-			context.setASTRoot(getASTRoot(unit, monitor));
+    public List<CodeAction> codeAction(JakartaJavaCodeActionParams params, JDTUtils utils, IProgressMonitor monitor) {
+        String uri = params.getUri();
+        ICompilationUnit unit = utils.resolveCompilationUnit(uri);
+        if (unit == null) {
+            return Collections.emptyList();
+        }
+        try {
+            Range range = params.getRange();
+            int startOffset = toOffset(unit.getBuffer(), range.getStart().getLine(), range.getStart().getCharacter());
+            int endOffset = toOffset(unit.getBuffer(), range.getEnd().getLine(), range.getEnd().getCharacter());
+            JavaCodeActionContext context = new JavaCodeActionContext(unit, startOffset, endOffset - startOffset, utils,
+                    params);
+            context.setASTRoot(getASTRoot(unit, monitor));
 
-			List<CodeAction> codeActions = new ArrayList<>();
+            List<CodeAction> codeActions = new ArrayList<>();
 
-			HttpServletQuickFix HttpServletQuickFix = new HttpServletQuickFix();
-			FilterImplementationQuickFix FilterImplementationQuickFix = new FilterImplementationQuickFix();
-			ListenerImplementationQuickFix ListenerImplementationQuickFix = new ListenerImplementationQuickFix();
+            HttpServletQuickFix HttpServletQuickFix = new HttpServletQuickFix();
+            FilterImplementationQuickFix FilterImplementationQuickFix = new FilterImplementationQuickFix();
+            ListenerImplementationQuickFix ListenerImplementationQuickFix = new ListenerImplementationQuickFix();
 
-			for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
-				try {
-					if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
-						codeActions.addAll(HttpServletQuickFix.getCodeActions(context, diagnostic, monitor));
-					}
-					if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER)) {
-						codeActions.addAll(FilterImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
-					}
-					if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_LISTENER)) {
-						codeActions.addAll(ListenerImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
-					}
-				} catch (CoreException e) {
-					e.printStackTrace();
-				}
-			}
-			return codeActions;
+            for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
+                try {
+                    if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
+                        codeActions.addAll(HttpServletQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER)) {
+                        codeActions.addAll(FilterImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_LISTENER)) {
+                        codeActions.addAll(ListenerImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                } catch (CoreException e) {
+                    e.printStackTrace();
+                }
+            }
+            return codeActions;
 
-		} catch (JavaModelException e) {
-			Activator.logException("Failed to retrieve Jakarta code action", e);
-		}
-		return null;
-	}
+        } catch (JavaModelException e) {
+            Activator.logException("Failed to retrieve Jakarta code action", e);
+        }
+        return null;
+    }
 
-	private static CompilationUnit getASTRoot(ICompilationUnit unit, IProgressMonitor monitor) {
-		return CoreASTProvider.getInstance().getAST(unit, CoreASTProvider.WAIT_YES, monitor);
-	}
+    private static CompilationUnit getASTRoot(ICompilationUnit unit, IProgressMonitor monitor) {
+        return CoreASTProvider.getInstance().getAST(unit, CoreASTProvider.WAIT_YES, monitor);
+    }
 
-	public int toOffset(IBuffer buffer, int line, int column) {
-		return JsonRpcHelpers.toOffset(buffer, line, column);
-	}
+    public int toOffset(IBuffer buffer, int line, int column) {
+        return JsonRpcHelpers.toOffset(buffer, line, column);
+    }
 }

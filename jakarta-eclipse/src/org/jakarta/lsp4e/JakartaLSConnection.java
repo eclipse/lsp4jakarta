@@ -22,13 +22,14 @@ import org.eclipse.lsp4e.server.ProcessStreamConnectionProvider;
 /**
  * Connects to Jakarta Language Server
  * 
- * Referenced: https://github.com/jbosstools/jbosstools-quarkus/blob/master/plugins/org.jboss.tools.quarkus.lsp4e/src/org/jboss/tools/quarkus/lsp4e/QuarkusLanguageServer.java
+ * Referenced:
+ * https://github.com/jbosstools/jbosstools-quarkus/blob/master/plugins/org.jboss.tools.quarkus.lsp4e/src/org/jboss/tools/quarkus/lsp4e/QuarkusLanguageServer.java
  *
  * @author kathrynkodama
  *
  */
 public class JakartaLSConnection extends ProcessStreamConnectionProvider {
-    
+
     public JakartaLSConnection() {
         List<String> commands = new ArrayList<>();
         commands.add(computeJavaPath());
@@ -39,19 +40,19 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
             setCommands(commands);
             setWorkingDirectory(System.getProperty("user.dir"));
         } catch (IOException e) {
-            Activator.getDefault().getLog().log(new Status(IStatus.ERROR,
-                    Activator.getDefault().getBundle().getSymbolicName(), e.getMessage(), e));
+            Activator.getDefault().getLog().log(
+                    new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), e.getMessage(), e));
         }
-        
+
     }
-    
+
     private String computeClasspath() throws IOException {
         StringBuilder builder = new StringBuilder();
         URL url = FileLocator.toFileURL(getClass().getResource("/jakarta.ls-1.0-SNAPSHOT-jar-with-dependencies.jar"));
         builder.append(new java.io.File(url.getPath()).getAbsolutePath());
         return builder.toString();
     }
-    
+
     private String computeJavaPath() {
         String javaPath = "java";
         boolean existsInPath = Stream.of(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))).map(Paths::get)

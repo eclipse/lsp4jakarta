@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4e.LanguageClientImpl;
 import org.eclipse.lsp4j.CodeAction;
@@ -26,24 +24,24 @@ import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
 
-	public JakartaLanguageClient() {
-		// do nothing
-	}
+    public JakartaLanguageClient() {
+        // do nothing
+    }
 
-	private IProgressMonitor getProgressMonitor(CancelChecker cancelChecker) {
-		IProgressMonitor monitor = new NullProgressMonitor() {
-			public boolean isCanceled() {
-				cancelChecker.checkCanceled();
-				return false;
-			};
-		};
-		return monitor;
-	}
+    private IProgressMonitor getProgressMonitor(CancelChecker cancelChecker) {
+        IProgressMonitor monitor = new NullProgressMonitor() {
+            public boolean isCanceled() {
+                cancelChecker.checkCanceled();
+                return false;
+            };
+        };
+        return monitor;
+    }
 
-	@Override
-	public CompletableFuture<Hover> getJavaHover(HoverParams params) {
-		return CompletableFuture.completedFuture(null);
-		// return dummy test hover object
+    @Override
+    public CompletableFuture<Hover> getJavaHover(HoverParams params) {
+        return CompletableFuture.completedFuture(null);
+        // return dummy test hover object
 //		return CompletableFutures.computeAsync((cancelChecker) -> {
 //			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
 //			Hover testHover = new Hover();
@@ -52,45 +50,49 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 //			testHover.setContents(contents);
 //			return testHover;
 //		});
-	}
+    }
 
-	@Override
-	public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
-		return CompletableFutures.computeAsync((cancelChecker) -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+    @Override
+    public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
 
-			List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-			publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(javaParams);
-			return publishDiagnostics;
-		});
-	}
-	
-	/**
- 	 * @author ankushsharma
- 	 * @brief creates a filter to let the language server know which contexts exist in the Java Project
- 	 * @param uri - String representing file from which to derive project classpath
- 	 * @param snippetContext - get all the context fields from the snippets and check if they exist in this method
- 	 * @return List<String>
- 	 */
- 	@Override
- 	public CompletableFuture<List<String>> getContextBasedFilter(String uri, List<String> snippetContexts) {
- 		return CompletableFutures.computeAsync((cancelChecker) -> {
- 			return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetContexts);
- 		});
- 	}
+            List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
+            publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(javaParams);
+            return publishDiagnostics;
+        });
+    }
 
-	public CompletableFuture<List<CodeAction>> getCodeAction(CodeActionParams params){
-		JDTUtils utils = new JDTUtils();
+    /**
+     * @author ankushsharma
+     * @brief creates a filter to let the language server know which contexts exist
+     *        in the Java Project
+     * @param uri            - String representing file from which to derive project
+     *                       classpath
+     * @param snippetContext - get all the context fields from the snippets and
+     *                       check if they exist in this method
+     * @return List<String>
+     */
+    @Override
+    public CompletableFuture<List<String>> getContextBasedFilter(String uri, List<String> snippetContexts) {
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetContexts);
+        });
+    }
 
-		return CompletableFutures.computeAsync((cancelChecker) -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			try {
-				JakartaJavaCodeActionParams JakartaParams = new JakartaJavaCodeActionParams(params.getTextDocument(), params.getRange(), params.getContext());
-				return (List<CodeAction>) JDTServicesManager.getInstance().getCodeAction(JakartaParams, utils, monitor);
-			} catch (JavaModelException e) {
-				return null;
-			}
-		});
-	}
-	
+    public CompletableFuture<List<CodeAction>> getCodeAction(CodeActionParams params) {
+        JDTUtils utils = new JDTUtils();
+
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            try {
+                JakartaJavaCodeActionParams JakartaParams = new JakartaJavaCodeActionParams(params.getTextDocument(),
+                        params.getRange(), params.getContext());
+                return (List<CodeAction>) JDTServicesManager.getInstance().getCodeAction(JakartaParams, utils, monitor);
+            } catch (JavaModelException e) {
+                return null;
+            }
+        });
+    }
+
 }

@@ -26,92 +26,92 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.WorkspaceEdit;
 
 import org.jakarta.jdt.JDTUtils;
-
+import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.jdt.ChangeUtil;
-import org.jakarta.codeActionProposal.ChangeCorrectionProposal;
 
 import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 /**
- * Java codeAction context for a given compilation unit.
- * Reused from https://github.com/eclipse/lsp4mp/blob/b88710cc54170844717f655b9bff8bb4c4649a8d/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/JavaCodeActionContext.java
+ * Java codeAction context for a given compilation unit. Reused from
+ * https://github.com/eclipse/lsp4mp/blob/b88710cc54170844717f655b9bff8bb4c4649a8d/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/JavaCodeActionContext.java
+ * 
  * @author credit to Angelo ZERR
  *
  */
-public class JavaCodeActionContext extends AbtractJavaContext implements IInvocationContext {
+public class JavaCodeActionContext extends AbstractJavaContext implements IInvocationContext {
 
-	private final int selectionOffset;
-	private final int selectionLength;
+    private final int selectionOffset;
+    private final int selectionLength;
 
-	private final JakartaJavaCodeActionParams params;
-	private NodeFinder fNodeFinder;
+    private final JakartaJavaCodeActionParams params;
+    private NodeFinder fNodeFinder;
 
-	public JavaCodeActionContext(ITypeRoot typeRoot, int selectionOffset, int selectionLength, JDTUtils utils,
-			JakartaJavaCodeActionParams params) {
-		super(params.getUri(), typeRoot, utils);
-		this.selectionOffset = selectionOffset;
-		this.selectionLength = selectionLength;
-		this.params = params;
-	}
+    public JavaCodeActionContext(ITypeRoot typeRoot, int selectionOffset, int selectionLength, JDTUtils utils,
+            JakartaJavaCodeActionParams params) {
+        super(params.getUri(), typeRoot, utils);
+        this.selectionOffset = selectionOffset;
+        this.selectionLength = selectionLength;
+        this.params = params;
+    }
 
-	public JakartaJavaCodeActionParams getParams() {
-		return params;
-	}
+    public JakartaJavaCodeActionParams getParams() {
+        return params;
+    }
 
-	@Override
-	public ICompilationUnit getCompilationUnit() {
-		return (ICompilationUnit) getTypeRoot();
-	}
+    @Override
+    public ICompilationUnit getCompilationUnit() {
+        return (ICompilationUnit) getTypeRoot();
+    }
 
-	/**
-	 * Returns the length.
-	 *
-	 * @return int
-	 */
-	@Override
-	public int getSelectionLength() {
-		return selectionLength;
-	}
+    /**
+     * Returns the length.
+     *
+     * @return int
+     */
+    @Override
+    public int getSelectionLength() {
+        return selectionLength;
+    }
 
-	/**
-	 * Returns the offset.
-	 *
-	 * @return int
-	 */
-	@Override
-	public int getSelectionOffset() {
-		return selectionOffset;
-	}
+    /**
+     * Returns the offset.
+     *
+     * @return int
+     */
+    @Override
+    public int getSelectionOffset() {
+        return selectionOffset;
+    }
 
-	@Override
-	public ASTNode getCoveringNode() {
-		if (fNodeFinder == null) {
-			fNodeFinder = new NodeFinder(getASTRoot(), selectionOffset, selectionLength);
-		}
-		return fNodeFinder.getCoveringNode();
-	}
+    @Override
+    public ASTNode getCoveringNode() {
+        if (fNodeFinder == null) {
+            fNodeFinder = new NodeFinder(getASTRoot(), selectionOffset, selectionLength);
+        }
+        return fNodeFinder.getCoveringNode();
+    }
 
-	@Override
-	public ASTNode getCoveredNode() {
-		if (fNodeFinder == null) {
-			fNodeFinder = new NodeFinder(getASTRoot(), selectionOffset, selectionLength);
-		}
-		return fNodeFinder.getCoveredNode();
-	}
+    @Override
+    public ASTNode getCoveredNode() {
+        if (fNodeFinder == null) {
+            fNodeFinder = new NodeFinder(getASTRoot(), selectionOffset, selectionLength);
+        }
+        return fNodeFinder.getCoveredNode();
+    }
 
-	public CodeAction convertToCodeAction(ChangeCorrectionProposal proposal, Diagnostic... diagnostics)
-			throws CoreException {
-		String name = proposal.getName();
-		WorkspaceEdit edit = ChangeUtil.convertToWorkspaceEdit(proposal.getChange(), getUri(), getUtils(),
-				params.isResourceOperationSupported());
-		if (!ChangeUtil.hasChanges(edit)) {
-			return null;
-		}
-		CodeAction codeAction = new CodeAction();
-		codeAction.setKind(proposal.getKind());
-		codeAction.setEdit(edit);
-		codeAction.setDiagnostics(Arrays.asList(diagnostics));
-		return codeAction;
-	}
+    public CodeAction convertToCodeAction(ChangeCorrectionProposal proposal, Diagnostic... diagnostics)
+            throws CoreException {
+        String name = proposal.getName();
+        WorkspaceEdit edit = ChangeUtil.convertToWorkspaceEdit(proposal.getChange(), getUri(), getUtils(),
+                params.isResourceOperationSupported());
+        if (!ChangeUtil.hasChanges(edit)) {
+            return null;
+        }
+        CodeAction codeAction = new CodeAction();
+        codeAction.setKind(proposal.getKind());
+        codeAction.setEdit(edit);
+        codeAction.setDiagnostics(Arrays.asList(diagnostics));
+        return codeAction;
+    }
 
 }
