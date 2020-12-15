@@ -1,3 +1,17 @@
+/*******************************************************************************
+* Copyright (c) 2020 Red Hat Inc. and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0, or the Apache License, Version 2.0
+* which is available at https://www.apache.org/licenses/LICENSE-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
+*
+* Contributors:
+*     Red Hat Inc. - initial API and implementation
+*******************************************************************************/
+
 package io.microshed.jakartals.commons;
 
 import java.lang.reflect.Type;
@@ -13,6 +27,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 
+/**
+ * Reused from https://github.com/eclipse/lsp4mp/blob/master/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/commons/snippets/SnippetDeserializer.java
+ * @author Ankush Sharma, credit to Angelo ZERR
+ *
+ */
 class SnippetDeserializer implements JsonDeserializer<Snippet> {
     private static final String PREFIX_ELT = "prefix";
     private static final String DESCRIPTION_ELT = "description";

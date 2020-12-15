@@ -1,3 +1,14 @@
+/******************************************************************************* 
+ * Copyright (c) 2019 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
+
 package org.jakarta.lsp4e;
 
 import java.io.File;
@@ -24,7 +35,8 @@ import org.eclipse.lsp4e.server.ProcessStreamConnectionProvider;
  * 
  * Referenced:
  * https://github.com/jbosstools/jbosstools-quarkus/blob/master/plugins/org.jboss.tools.quarkus.lsp4e/src/org/jboss/tools/quarkus/lsp4e/QuarkusLanguageServer.java
- *
+ * Modified to fit the purposes of the Jakarta Language Server and client.
+ * 
  * @author kathrynkodama
  *
  */
