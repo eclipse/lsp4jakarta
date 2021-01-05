@@ -31,7 +31,6 @@ import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
 import org.jakarta.jdt.servlet.CompleteServletAnnotationQuickFix;
-import org.jakarta.jdt.servlet.CorrectingAnnotationQuickFix;
 import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
 import org.jakarta.jdt.servlet.HttpServletQuickFix;
 import org.jakarta.jdt.servlet.ListenerImplementationQuickFix;
