@@ -26,29 +26,31 @@ import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ModifyAnnotationProposal;
 
 /**
- * QuickFix for fixing {@link ServletConstants#DIAGNOSTIC_CODE_MISSING_ATTRIBUTE} error
- * and {@link ServletConstants#DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES} error
+ * QuickFix for fixing {@link ServletConstants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE} error
+ * and {@link ServletConstants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE} error
  * by providing several code actions:
  *
- * {@link ServletConstants#DIAGNOSTIC_CODE_MISSING_ATTRIBUTE}
+ *
+ * {@link ServletConstants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE}
  * <ul>
- * <li> Add the `value` attribute to the `@WebServlet` annotation
- * <li> Add the `urlPatterns` attribute to the `@WebServlet` annotation
+ * <li> Add the `value` attribute to the `@WebFilter` annotation
+ * <li> Add the `urlPatterns` attribute to the `@WebFilter` annotation
+ * <li> Add the `servletNames` attribute to the `@WebFilter` annotation
  * </ul>
  *
- * {@link ServletConstants#DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES}
+ * {@link ServletConstants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE}
  * <ul>
- * <li> Remove the `value` attribute to the `@WebServlet` annotation
- * <li> Remove the `urlPatterns` attribute to the `@WebServlet` annotation
+ * <li> Remove the `value` attribute from the `@WebFilter` annotation
+ * <li> Remove the `urlPatterns` attribute from the `@WebFilter` annotation
  * </ul>
  *
  * @author Kathryn Kodama
  *
  */
-public class CompleteServletAnnotationQuickFix extends InsertAnnotationMissingQuickFix {
+public class CompleteFilterAnnotationQuickFix extends InsertAnnotationMissingQuickFix {
 
-    public CompleteServletAnnotationQuickFix() {
-        super("jakarta.servlet.annotation.WebServlet");
+    public CompleteFilterAnnotationQuickFix() {
+        super("jakarta.servlet.annotation.WebFilter");
     }
 
     @Override
@@ -68,9 +70,9 @@ public class CompleteServletAnnotationQuickFix extends InsertAnnotationMissingQu
 
     	
     	// if missing an attribute, do value insertion
-    	if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE)) {
+    	if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE)) {
     		ArrayList<String> attributes = new ArrayList<>();
-    		attributes.add("value"); attributes.add("urlPatterns");
+    		attributes.add("value"); attributes.add("urlPatterns");attributes.add("servletNames");
     		// Code Action 1: add value attribute to the WebServlet annotation
     		// Code Action 2: add urlPatterns attribute to the WebServlet annotation
     		for (int i = 0; i < attributes.size(); i++) {
@@ -90,7 +92,7 @@ public class CompleteServletAnnotationQuickFix extends InsertAnnotationMissingQu
     		}
     	}
     	// if duplicate attributes exist in annotations, remove attributes from annotation
-    	if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES)) {
+    	if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES)) {
     		ArrayList<String> attributes = new ArrayList<>();
     		attributes.add("value"); attributes.add("urlPatterns");
     		// Code Action 1: remove value attribute from the WebServlet annotation

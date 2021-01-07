@@ -146,7 +146,6 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
 
                 // add new String attributes
                 for (String newAttr : this.attributesToAdd) {
-                    // "value" parameter
                     MemberValuePair memberValuePair = ast.newMemberValuePair();
                     memberValuePair.setName(ast.newSimpleName(newAttr));
                     StringLiteral stringValue = ast.newStringLiteral();
