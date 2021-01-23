@@ -11,4 +11,6 @@ target/
 .target/
 
 .DS_Store*
-.vscode/
+
+.metadata
+**/*.jar
