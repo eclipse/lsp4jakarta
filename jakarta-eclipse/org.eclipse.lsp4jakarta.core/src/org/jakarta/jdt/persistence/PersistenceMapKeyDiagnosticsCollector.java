@@ -139,10 +139,18 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
                                         continue;
                                     }
                                 }
-                                if (!isNameSpecified || !isReferencedColumnNameSpecified) {
+                                if (!isNameSpecified && !isReferencedColumnNameSpecified) {
                                     diagnostics.add(createDiagnostic(method, unit,
                                             "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
                                             PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
+                                } else if (!isNameSpecified) {
+                                    diagnostics.add(createDiagnostic(method, unit,
+                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_NAME));
+                                } else if (!isReferencedColumnNameSpecified) {
+                                    diagnostics.add(createDiagnostic(method, unit,
+                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_MAPKEYJOINCOLUMN));
                                 }
                             } catch (JavaModelException e) {
                                 Activator.logException(
@@ -178,10 +186,18 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
                                         continue;
                                     }
                                 }
-                                if (!isNameSpecified || !isReferencedColumnNameSpecified) {
+                                if (!isNameSpecified && !isReferencedColumnNameSpecified) {
                                     diagnostics.add(createDiagnostic(field, unit,
                                             "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
                                             PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
+                                } else if (!isNameSpecified) {
+                                    diagnostics.add(createDiagnostic(field, unit,
+                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_NAME));
+                                } else if (!isReferencedColumnNameSpecified) {
+                                    diagnostics.add(createDiagnostic(field, unit,
+                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_MAPKEYJOINCOLUMN));
                                 }
                             } catch (JavaModelException e) {
                                 Activator.logException(

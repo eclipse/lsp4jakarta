@@ -40,7 +40,7 @@ public class NewAnnotationProposal extends ChangeCorrectionProposal {
     private final CompilationUnit fInvocationNode;
     private final IBinding fBinding;
 
-    private final String[] annotations;
+    protected final String[] annotations;
 
     public NewAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
             IBinding binding, int relevance, String... annotations) {

@@ -30,6 +30,8 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
+import org.jakarta.jdt.persistence.PersistenceAnnotationQuickFix;
+import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.jdt.servlet.CompleteFilterAnnotationQuickFix;
 import org.jakarta.jdt.servlet.CompleteServletAnnotationQuickFix;
 import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
@@ -72,7 +74,7 @@ public class CodeActionHandler {
             ListenerImplementationQuickFix ListenerImplementationQuickFix = new ListenerImplementationQuickFix();
             CompleteServletAnnotationQuickFix CompleteServletAnnotationQuickFix = new CompleteServletAnnotationQuickFix();
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
-
+            PersistenceAnnotationQuickFix PersistenceAnnotationQuickFix = new PersistenceAnnotationQuickFix();
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
@@ -92,7 +94,11 @@ public class CodeActionHandler {
                         || diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES)) {
                         codeActions.addAll(CompleteFilterAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-
+                    if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES)
+                		|| diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_MAPKEYJOINCOLUMN)
+                		|| diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_NAME)) {
+                    	codeActions.addAll(PersistenceAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
                 } catch (CoreException e) {
                     e.printStackTrace();
                 }
