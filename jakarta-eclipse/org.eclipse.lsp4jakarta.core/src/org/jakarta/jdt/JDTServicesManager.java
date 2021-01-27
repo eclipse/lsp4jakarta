@@ -28,11 +28,13 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.jakarta.jdt.beanvalidation.BeanValidationDiagnosticsCollector;
+import org.jakarta.jdt.jax_rs.ResourceMethodDiagnosticsCollector;
 import org.jakarta.jdt.persistence.PersistenceEntityDiagnosticsCollector;
 import org.jakarta.jdt.persistence.PersistenceMapKeyDiagnosticsCollector;
 import org.jakarta.jdt.servlet.FilterDiagnosticsCollector;
 import org.jakarta.jdt.servlet.ListenerDiagnosticsCollector;
 import org.jakarta.jdt.servlet.ServletDiagnosticsCollector;
+import org.jakarta.jdt.servlet.TestDiagnosticsCollector;
 import org.jakarta.lsp4e.Activator;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
@@ -65,6 +67,7 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new BeanValidationDiagnosticsCollector());
         diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
         diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
+        diagnosticsCollectors.add(new ResourceMethodDiagnosticsCollector());
         this.codeActionHandler = new CodeActionHandler();
     }
 
