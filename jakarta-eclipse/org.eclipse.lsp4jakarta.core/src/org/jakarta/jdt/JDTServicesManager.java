@@ -30,6 +30,7 @@ import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.jakarta.jdt.beanvalidation.BeanValidationDiagnosticsCollector;
 import org.jakarta.jdt.jax_rs.ResourceMethodDiagnosticsCollector;
 import org.jakarta.jdt.jsonb.JsonbCreatorDiagnosticsCollector;
+import org.jakarta.jdt.cdi.ManagedBeanDiagnosticsCollector;
 import org.jakarta.jdt.persistence.PersistenceEntityDiagnosticsCollector;
 import org.jakarta.jdt.persistence.PersistenceMapKeyDiagnosticsCollector;
 import org.jakarta.jdt.servlet.FilterDiagnosticsCollector;
@@ -43,9 +44,10 @@ import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 import org.jakarta.codeAction.CodeActionHandler;
 
 /**
- * JDT manager for Java files
- * Modified from https://github.com/eclipse/lsp4mp/blob/master/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/PropertiesManagerForJava.java
- * with methods modified and removed to fit the purposes of the Jakarta Language Server
+ * JDT manager for Java files Modified from
+ * https://github.com/eclipse/lsp4mp/blob/master/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/PropertiesManagerForJava.java
+ * with methods modified and removed to fit the purposes of the Jakarta Language
+ * Server
  * 
  */
 public class JDTServicesManager {
@@ -69,6 +71,7 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
         diagnosticsCollectors.add(new ResourceMethodDiagnosticsCollector());
         diagnosticsCollectors.add(new JsonbCreatorDiagnosticsCollector());
+        diagnosticsCollectors.add(new ManagedBeanDiagnosticsCollector());
         this.codeActionHandler = new CodeActionHandler();
     }
 
