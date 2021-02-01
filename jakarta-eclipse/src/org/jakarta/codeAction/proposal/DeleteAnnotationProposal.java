@@ -33,6 +33,7 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
 	 private final IBinding fBinding;
 
 	 private final String[] annotations;
+	 
 	 public DeleteAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
 	            IBinding binding, int relevance, String... annotations) {
 		 super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
@@ -80,7 +81,7 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
 	    	 	.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
 	         Annotation existingAnnotation = null;
 
-	            // find and save existing annotation, then remove it from ast
+	         // find and save existing annotation, then remove it from ast
 	         for (ASTNode child : children) {
 	        	 if (child instanceof Annotation) {
 	        		 Annotation annotation = (Annotation) child;
