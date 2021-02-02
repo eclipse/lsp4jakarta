@@ -26,6 +26,7 @@ public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickF
 	                context.getASTRoot(), parentType, 0, annotations);
 	        // Convert the proposal to LSP4J CodeAction
 	        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
+	        codeAction.setTitle(name);
 	        if (codeAction != null) {
 	            codeActions.add(codeAction);
 	        }

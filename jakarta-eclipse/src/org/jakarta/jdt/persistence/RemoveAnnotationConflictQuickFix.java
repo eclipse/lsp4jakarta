@@ -109,7 +109,7 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
     }
 	
 	private static String getLabel(String[] annotations) {
-        StringBuilder name = new StringBuilder("Insert ");
+        StringBuilder name = new StringBuilder("Remove ");
         for (int i = 0; i < annotations.length; i++) {
             String annotation = annotations[i];
             String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
