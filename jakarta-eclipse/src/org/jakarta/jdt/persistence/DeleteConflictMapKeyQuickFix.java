@@ -13,7 +13,7 @@ import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
 public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickFix {
 	
 	public DeleteConflictMapKeyQuickFix() {
-		super(true, "jakarta.persistence.annotation.MapKey");
+		super("jakarta.persistence.annotation.MapKey");
 	}
 	
 	@Override
@@ -32,7 +32,17 @@ public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickF
 		}
 	}
 	
-//	private static String getLabel(String[] annotations) {
-//		
-//	}
+	private static String getLabel(String[] annotations) {
+        StringBuilder name = new StringBuilder("Remove ");
+        for (int i = 0; i < annotations.length; i++) {
+            String annotation = annotations[i];
+            String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
+            if (i > 0) {
+                name.append(", ");
+            }
+            name.append("@");
+            name.append(annotationName);
+        }
+        return name.toString();
+    }
 }
