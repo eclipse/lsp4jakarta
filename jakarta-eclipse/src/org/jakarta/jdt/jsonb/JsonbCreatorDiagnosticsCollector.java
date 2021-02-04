@@ -1,9 +1,21 @@
+/*******************************************************************************
+* Copyright (c) 2020 IBM Corporation, Matheus Cruz and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation, Matheus Cruz - initial API and implementation
+*******************************************************************************/
+
 package org.jakarta.jdt.jsonb;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -38,8 +50,10 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
 			IType[] types = unit.getAllTypes();
 
-			boolean annotationOnConstructor = false;
-			boolean anyStaticMethodAnnotatedWithJsonbCreator = false;
+			boolean annotationTwice = false;
+			boolean alreadyAnnotaded = false;
+
+			List<IAnnotation> annotations = new ArrayList<>();
 
 			for (IType type : types) {
 
@@ -47,33 +61,36 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
 				for (IMethod method : methods) {
 
+					IAnnotation jsonbCreatorAnnotation = method.getAnnotation(JsonbConstants.JSONB_CREATOR);
+
 					if (method.isConstructor()) {
-						
-						IAnnotation jsonbCreatorAnnotation = method.getAnnotation(JsonbConstants.JSONB_CREATOR);
-						
+
 						if (!Objects.isNull(jsonbCreatorAnnotation)) {
-							
-							if (annotationOnConstructor) {
-								
-								Diagnostic diagnostic = createDiagnosticBy(unit, jsonbCreatorAnnotation);
-								
-								diagnostics.add(diagnostic);
+
+							if (method.isConstructor() && alreadyAnnotaded) {
+								annotations.add(jsonbCreatorAnnotation);
+								annotationTwice = true;
 							}
-							
-							annotationOnConstructor = true;
+
+							if (method.isConstructor()) {
+								annotations.add(jsonbCreatorAnnotation);
+								alreadyAnnotaded = true;
+							}
 						}
+
 					}
 
-					method.getReturnType();
-					
-					if (Flags.isStatic(method.getFlags())
-							&& !Objects.isNull(method.getAnnotation(JsonbConstants.JSONB_CREATOR))) {
-						
-						if (anyStaticMethodAnnotatedWithJsonbCreator || annotationOnConstructor) {
-							
-						}
-						
-						anyStaticMethodAnnotatedWithJsonbCreator = true;
+					if (Flags.isStatic(method.getFlags()) && alreadyAnnotaded) {
+						annotations.add(jsonbCreatorAnnotation);
+						annotationTwice = true;
+					}
+				}
+
+				if (annotationTwice) {
+
+					for (IAnnotation annotation : annotations) {
+						Diagnostic diagnostic = createDiagnosticBy(unit, annotation);
+						diagnostics.add(diagnostic);
 					}
 				}
 			}
@@ -82,15 +99,15 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 			Activator.logException("Cannot calculate jakarta-jsonb diagnostics", e);
 		}
 	}
-	
 
-	private Diagnostic createDiagnosticBy(ICompilationUnit unit, IAnnotation jsonbCreatorAnnotation) throws JavaModelException {
-		
+	private Diagnostic createDiagnosticBy(ICompilationUnit unit, IAnnotation jsonbCreatorAnnotation)
+			throws JavaModelException {
+
 		ISourceRange sourceRange = JDTUtils.getNameRange(jsonbCreatorAnnotation);
-		
-		Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
-		
-		return new Diagnostic(range, JsonbConstants.ERROR_MESSAGE);
-	}
 
+		Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
+
+		return new Diagnostic(range, JsonbConstants.ERROR_MESSAGE);
+
+	}
 }
