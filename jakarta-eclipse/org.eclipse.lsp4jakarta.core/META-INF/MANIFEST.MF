@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.jakartaee.lsp4e;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.1.0.qualifier
 Bundle-Activator: org.jakarta.lsp4e.Activator
 Require-Bundle: 
  org.eclipse.lsp4e,
@@ -28,9 +28,11 @@ Require-Bundle:
  org.jsoup;bundle-version="1.8.3",
  org.apache.commons.io,
  org.apache.commons.lang3
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: jakartaee.eclipse
 Bundle-ActivationPolicy: lazy
-Export-Package: org.jakarta.lsp4e
 Bundle-ClassPath: jakarta.ls-1.0-SNAPSHOT-jar-with-dependencies.jar,
  .
+Export-Package: 
+ io.microshed.jakartals.commons,
+ org.jakarta.jdt
