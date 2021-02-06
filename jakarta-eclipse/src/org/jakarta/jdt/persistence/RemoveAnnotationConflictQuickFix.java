@@ -24,7 +24,6 @@ import org.jakarta.codeAction.proposal.NewAnnotationProposal;
  * @author Angelo ZERR
  *
  */
-
 public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticipant {
 	
 	private final String[] annotations;
@@ -88,7 +87,7 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
         // API
         String name = getLabel(annotations);
         ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
-                context.getASTRoot(), parentType, 0, annotations);
+                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotations);
         // Convert the proposal to LSP4J CodeAction
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
         if (codeAction != null) {

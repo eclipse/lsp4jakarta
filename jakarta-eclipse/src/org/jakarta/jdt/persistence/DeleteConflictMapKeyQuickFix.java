@@ -10,6 +10,13 @@ import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
 
+/**
+ * 
+ * Quick fix for removing @MapKey when @MapKeyClass is used for the same field or property
+ * 
+ * @author Jianing Xu
+ *
+ */
 public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickFix {
 	
 	public DeleteConflictMapKeyQuickFix() {
@@ -23,7 +30,7 @@ public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickF
 		if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
 			String name = getLabel(annotations);
 	        ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
-	                context.getASTRoot(), parentType, 0, annotations);
+	                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotations);
 	        // Convert the proposal to LSP4J CodeAction
 	        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
 	        codeAction.setTitle(name);

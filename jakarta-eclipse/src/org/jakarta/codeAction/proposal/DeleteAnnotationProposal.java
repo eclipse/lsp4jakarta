@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
@@ -24,41 +25,38 @@ import org.eclipse.lsp4j.CodeActionKind;
 
 /**
  * 
- * Code action proposal for deleting an existing annotation. 
+ * Code action proposal for deleting an existing annotation for MethodDeclaration/Field.
  *
  */
-
 public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
 	 private final CompilationUnit fInvocationNode;
 	 private final IBinding fBinding;
 
 	 private final String[] annotations;
+	 private final ASTNode declaringNode;
+	 
 	 
 	 public DeleteAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-	            IBinding binding, int relevance, String... annotations) {
+	            IBinding binding, int relevance, ASTNode declaringNode, String... annotations) {
 		 super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-	     fInvocationNode = invocationNode;
-	     fBinding = binding;
+	     this.fInvocationNode = invocationNode;
+	     this.fBinding = binding;
+	     this.declaringNode = declaringNode;
 	     this.annotations = annotations;
 	 }
 	
 	 @Override
 	 protected ASTRewrite getRewrite() throws CoreException {
-		 ASTNode declNode = null;
+		 ASTNode declNode = this.declaringNode;
 	     ASTNode boundNode = fInvocationNode.findDeclaringNode(fBinding);
 	     CompilationUnit newRoot = fInvocationNode;
-	     if (boundNode != null) {
-	    	 declNode = boundNode; // is same CU
-	     } else {
+	     if (boundNode == null) {
 	    	 newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
-	    	 declNode = newRoot.findDeclaringNode(fBinding.getKey());
 	     }
 	     ImportRewrite imports = createImportRewrite(newRoot);
 	     
 	     boolean isField = declNode instanceof VariableDeclarationFragment;
-	     if (isField) {
-	    	 declNode = declNode.getParent();
-	     }
+	     boolean isMethod = declNode instanceof MethodDeclaration;
 	     
 	     String[] annotations = getAnnotations();
 
@@ -69,7 +67,7 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
 	         annotationShortNames[i] = shortName;
 	     }
 	     
-	     if (declNode instanceof TypeDeclaration || isField) {
+	     if (isField || isMethod) {
 	    	 AST ast = declNode.getAST();
 	    	 ASTRewrite rewrite = ASTRewrite.create(ast);
 	    	 
@@ -77,23 +75,28 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
 	    	 
 	    	 // remove annotations in the removeAnnotations list
 	    	 @SuppressWarnings("unchecked")
-	    	 List<? extends ASTNode> children = (List<? extends ASTNode>) declNode
-	    	 	.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
-	         Annotation existingAnnotation = null;
+	    	 List<? extends ASTNode> children;
+	    	 if(isMethod) {
+	    		 children = (List<? extends ASTNode>) declNode
+	    		    	 	.getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
+	    	 } else {
+	    		 declNode = declNode.getParent();
+	    		 children = (List<? extends ASTNode>) declNode
+	    		    	 	.getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
+	    	 }
+	    	 
 
 	         // find and save existing annotation, then remove it from ast
 	         for (ASTNode child : children) {
 	        	 if (child instanceof Annotation) {
 	        		 Annotation annotation = (Annotation) child;
-	        		 IAnnotationBinding annotationBinding = annotation.resolveAnnotationBinding();
+	        		 // IAnnotationBinding annotationBinding = annotation.resolveAnnotationBinding();
 
 	        		 boolean containsAnnotation = Arrays.stream(annotationShortNames)
-	        				 .anyMatch(annotation.getTypeName().toString()::contains);
+	        				 .anyMatch(annotation.getTypeName().toString()::equals);
 	        		 if (containsAnnotation) {
-	        			 existingAnnotation = annotation;
 	        			 rewrite.remove(child, null);
 	        		 }
-	        		 rewrite.remove(child, null);
 	        	 }
 	         }
 	         
