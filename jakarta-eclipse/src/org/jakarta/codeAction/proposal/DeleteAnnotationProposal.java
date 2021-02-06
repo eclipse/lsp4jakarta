@@ -26,6 +26,8 @@ import org.eclipse.lsp4j.CodeActionKind;
 /**
  * 
  * Code action proposal for deleting an existing annotation for MethodDeclaration/Field.
+ * 
+ * Author: Jianing Xu
  *
  */
 public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
