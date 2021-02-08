@@ -32,82 +32,82 @@ import org.jakarta.lsp4e.Activator;
 
 public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
-	@Override
-	public void completeDiagnostic(Diagnostic diagnostic) {
+    @Override
+    public void completeDiagnostic(Diagnostic diagnostic) {
 
-		diagnostic.setSource(JsonbConstants.DIAGNOSTIC_SOURCE);
-		diagnostic.setSeverity(DiagnosticSeverity.Error);
-	}
+        diagnostic.setSource(JsonbConstants.DIAGNOSTIC_SOURCE);
+        diagnostic.setSeverity(DiagnosticSeverity.Error);
+    }
 
-	@Override
-	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
+    @Override
+    public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 
-		if (Objects.isNull(unit)) {
-			return;
-		}
+        if (Objects.isNull(unit)) {
+            return;
+        }
 
-		try {
+        try {
 
-			IType[] types = unit.getAllTypes();
+            IType[] types = unit.getAllTypes();
 
-			boolean annotationTwice = false;
-			boolean alreadyAnnotaded = false;
+            boolean annotationTwice = false;
+            boolean alreadyAnnotaded = false;
 
-			List<IAnnotation> annotations = new ArrayList<>();
+            List<IAnnotation> annotations = new ArrayList<>();
 
-			for (IType type : types) {
+            for (IType type : types) {
 
-				IMethod[] methods = type.getMethods();
+                IMethod[] methods = type.getMethods();
 
-				for (IMethod method : methods) {
+                for (IMethod method : methods) {
 
-					IAnnotation jsonbCreatorAnnotation = method.getAnnotation(JsonbConstants.JSONB_CREATOR);
+                    IAnnotation jsonbCreatorAnnotation = method.getAnnotation(JsonbConstants.JSONB_CREATOR);
 
-					if (method.isConstructor()) {
+                    if (method.isConstructor()) {
 
-						if (!Objects.isNull(jsonbCreatorAnnotation)) {
+                        if (!Objects.isNull(jsonbCreatorAnnotation)) {
 
-							if (method.isConstructor() && alreadyAnnotaded) {
-								annotations.add(jsonbCreatorAnnotation);
-								annotationTwice = true;
-							}
+                            if (method.isConstructor() && alreadyAnnotaded) {
+                                annotations.add(jsonbCreatorAnnotation);
+                                annotationTwice = true;
+                            }
 
-							if (method.isConstructor()) {
-								annotations.add(jsonbCreatorAnnotation);
-								alreadyAnnotaded = true;
-							}
-						}
+                            if (method.isConstructor()) {
+                                annotations.add(jsonbCreatorAnnotation);
+                                alreadyAnnotaded = true;
+                            }
+                        }
 
-					}
+                    }
 
-					if (Flags.isStatic(method.getFlags()) && alreadyAnnotaded) {
-						annotations.add(jsonbCreatorAnnotation);
-						annotationTwice = true;
-					}
-				}
+                    if (Flags.isStatic(method.getFlags()) && alreadyAnnotaded) {
+                        annotations.add(jsonbCreatorAnnotation);
+                        annotationTwice = true;
+                    }
+                }
 
-				if (annotationTwice) {
+                if (annotationTwice) {
 
-					for (IAnnotation annotation : annotations) {
-						Diagnostic diagnostic = createDiagnosticBy(unit, annotation);
-						diagnostics.add(diagnostic);
-					}
-				}
-			}
+                    for (IAnnotation annotation : annotations) {
+                        Diagnostic diagnostic = createDiagnosticBy(unit, annotation);
+                        diagnostics.add(diagnostic);
+                    }
+                }
+            }
 
-		} catch (JavaModelException e) {
-			Activator.logException("Cannot calculate jakarta-jsonb diagnostics", e);
-		}
-	}
+        } catch (JavaModelException e) {
+            Activator.logException("Cannot calculate jakarta-jsonb diagnostics", e);
+        }
+    }
 
-	private Diagnostic createDiagnosticBy(ICompilationUnit unit, IAnnotation jsonbCreatorAnnotation)
-			throws JavaModelException {
+    private Diagnostic createDiagnosticBy(ICompilationUnit unit, IAnnotation jsonbCreatorAnnotation)
+            throws JavaModelException {
 
-		ISourceRange sourceRange = JDTUtils.getNameRange(jsonbCreatorAnnotation);
+        ISourceRange sourceRange = JDTUtils.getNameRange(jsonbCreatorAnnotation);
 
-		Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
+        Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
 
-		return new Diagnostic(range, JsonbConstants.ERROR_MESSAGE);
+        return new Diagnostic(range, JsonbConstants.ERROR_MESSAGE);
 
-	}
+    }
 }
