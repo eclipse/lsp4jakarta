@@ -13,27 +13,18 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.core;
 
-import static org.junit.Assert.assertEquals;
-
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionContext;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.Hover;
-import org.eclipse.lsp4j.LocationLink;
-import org.eclipse.lsp4j.MarkupContent;
-import org.eclipse.lsp4j.MarkupKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
@@ -43,15 +34,8 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-//import org.eclipse.lsp4mp.commons.DocumentFormat;
-//import org.eclipse.lsp4mp.commons.MicroProfileDefinition;
-//import org.eclipse.lsp4mp.commons.MicroProfileJavaCodeActionParams;
-//import org.eclipse.lsp4mp.commons.MicroProfileJavaDefinitionParams;
 import org.jakarta.jdt.JDTServicesManager;
 import org.jakarta.jdt.JDTUtils;
-//import org.eclipse.lsp4mp.jdt.core.PropertiesManagerForJava;
-//import org.eclipse.lsp4mp.jdt.core.java.diagnostics.IJavaErrorCode;
-//import org.eclipse.lsp4mp.jdt.core.utils.IJDTUtils;
 import org.junit.Assert;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;

@@ -50,4 +50,13 @@
             needsSortingAfterFiltering="false">
       </javaCompletionProposalComputer>
    </extension>
+   <extension
+   		 id="jakartajava-hover-provider"
+         point="org.eclipse.jdt.ui.javaEditorTextHovers">
+      <hover
+            activate="true"
+            class="org.jakarta.lsp4e.JakartaJavaHoverProvider"
+            id="org.jakarta.lsp4e.hoverprovider">
+      </hover>
+   </extension>
 </plugin>

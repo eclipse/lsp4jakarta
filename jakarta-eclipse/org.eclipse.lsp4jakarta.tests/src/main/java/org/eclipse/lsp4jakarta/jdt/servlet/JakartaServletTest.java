@@ -26,7 +26,7 @@ public class JakartaServletTest extends BaseJakartaTest {
     public void ExtendWebServlet() throws Exception {
 
         JDTUtils utils = JDT_UTILS;
-        IJavaProject javaProject = loadJavaProject("jakarta-servlet-project", "");
+        IJavaProject javaProject = loadJavaProject("jakarta-servlet", "");
         IFile javaFile = javaProject.getProject()
                 .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/DontExtendHttpServlet.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
