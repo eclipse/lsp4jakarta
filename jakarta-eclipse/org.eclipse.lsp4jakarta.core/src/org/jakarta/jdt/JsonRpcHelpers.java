@@ -17,7 +17,7 @@ import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.jakarta.lsp4e.Activator;
-import org.eclipse.jdt.internal.ui.javaeditor.DocumentAdapter;
+//import org.eclipse.jdt.internal.ui.javaeditor.DocumentAdapter;
 
 /**
  * This class is a copy/paste of JDT LS
@@ -104,12 +104,13 @@ public class JsonRpcHelpers {
         }
         if (buffer instanceof IDocument) {
             return (IDocument) buffer;
-        } else if (buffer instanceof DocumentAdapter) {
-            IDocument document = ((DocumentAdapter) buffer).getDocument();
-            if (document != null) {
-                return document;
-            }
         }
+//        } else if (buffer instanceof DocumentAdapter) {
+//            IDocument document = ((DocumentAdapter) buffer).getDocument();
+//            if (document != null) {
+//                return document;
+//            }
+//        }
         return new org.eclipse.jdt.internal.core.DocumentAdapter(buffer);
     }
 

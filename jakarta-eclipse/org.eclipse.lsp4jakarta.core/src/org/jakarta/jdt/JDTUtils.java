@@ -303,17 +303,6 @@ public class JDTUtils {
                 // was configured
             IResource resource = null;
             for (IResource f : resources) {
-                // delete linked resource
-                if (false /*
-                           * JavaLanguageServerPlugin.getProjectsManager().getDefaultProject().equals(f.
-                           * getProject())
-                           */) {
-                    try {
-                        f.delete(true, null);
-                    } catch (CoreException e) {
-                        // JavaLanguageServerPlugin.logException(e.getMessage(), e);
-                    }
-                }
                 // find closest project containing that file, in case of nested projects
                 if (resource == null || f.getProjectRelativePath().segmentCount() < resource.getProjectRelativePath()
                         .segmentCount()) {
