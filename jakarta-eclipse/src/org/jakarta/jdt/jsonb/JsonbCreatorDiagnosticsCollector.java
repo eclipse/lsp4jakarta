@@ -51,7 +51,7 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
             IType[] types = unit.getAllTypes();
 
             boolean annotationTwice = false;
-            boolean alreadyAnnotaded = false;
+            boolean alreadyAnnotated = false;
 
             List<IAnnotation> annotations = new ArrayList<>();
 
@@ -63,24 +63,18 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
                     IAnnotation jsonbCreatorAnnotation = method.getAnnotation(JsonbConstants.JSONB_CREATOR);
 
-                    if (method.isConstructor()) {
+                    if (method.isConstructor() && !Objects.isNull(jsonbCreatorAnnotation)) {
 
-                        if (!Objects.isNull(jsonbCreatorAnnotation)) {
-
-                            if (method.isConstructor() && alreadyAnnotaded) {
-                                annotations.add(jsonbCreatorAnnotation);
-                                annotationTwice = true;
-                            }
-
-                            if (method.isConstructor()) {
-                                annotations.add(jsonbCreatorAnnotation);
-                                alreadyAnnotaded = true;
-                            }
+                        if (alreadyAnnotated) {
+                            annotations.add(jsonbCreatorAnnotation);
+                            annotationTwice = true;
+                        } else {
+                            annotations.add(jsonbCreatorAnnotation);
+                            alreadyAnnotated = true;
                         }
-
                     }
 
-                    if (Flags.isStatic(method.getFlags()) && alreadyAnnotaded) {
+                    if (Flags.isStatic(method.getFlags()) && alreadyAnnotated) {
                         annotations.add(jsonbCreatorAnnotation);
                         annotationTwice = true;
                     }
