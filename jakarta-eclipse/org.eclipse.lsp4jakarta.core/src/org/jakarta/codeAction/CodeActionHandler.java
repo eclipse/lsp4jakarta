@@ -30,6 +30,8 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
+import org.jakarta.jdt.jax_rs.Jax_RSConstants;
+import org.jakarta.jdt.jax_rs.ResourceMethodQuickFix;
 import org.jakarta.jdt.servlet.CompleteFilterAnnotationQuickFix;
 import org.jakarta.jdt.servlet.CompleteServletAnnotationQuickFix;
 import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
@@ -72,6 +74,7 @@ public class CodeActionHandler {
             ListenerImplementationQuickFix ListenerImplementationQuickFix = new ListenerImplementationQuickFix();
             CompleteServletAnnotationQuickFix CompleteServletAnnotationQuickFix = new CompleteServletAnnotationQuickFix();
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
+            ResourceMethodQuickFix ResourceMethodQuickFix = new ResourceMethodQuickFix();
 
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -91,6 +94,9 @@ public class CodeActionHandler {
                     if(diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE)
                         || diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES)) {
                         codeActions.addAll(CompleteFilterAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE)) {
+                        codeActions.addAll(ResourceMethodQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
                 } catch (CoreException e) {
