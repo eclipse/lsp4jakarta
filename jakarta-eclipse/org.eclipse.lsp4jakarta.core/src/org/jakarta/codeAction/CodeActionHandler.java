@@ -28,7 +28,6 @@ import org.eclipse.jdt.core.manipulation.CoreASTProvider;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.codeAction.proposal.DeleteConflictMapKeyClassQuickFix;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
 import org.jakarta.jdt.servlet.CompleteFilterAnnotationQuickFix;
@@ -38,6 +37,7 @@ import org.jakarta.jdt.servlet.HttpServletQuickFix;
 import org.jakarta.jdt.servlet.ListenerImplementationQuickFix;
 import org.jakarta.jdt.servlet.ServletConstants;
 import org.jakarta.jdt.persistence.DeleteConflictMapKeyQuickFix;
+import org.jakarta.jdt.persistence.DeleteConflictMapKeyClassQuickFix;
 import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
 
