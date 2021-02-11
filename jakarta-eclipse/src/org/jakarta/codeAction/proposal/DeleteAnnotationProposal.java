@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.jakarta.codeAction.proposal;
 
 import java.util.Arrays;
@@ -31,107 +43,107 @@ import org.eclipse.lsp4j.CodeActionKind;
  *
  */
 public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
-	 private final CompilationUnit fInvocationNode;
-	 private final IBinding fBinding;
+    private final CompilationUnit fInvocationNode;
+	private final IBinding fBinding;
 
-	 private final String[] annotations;
-	 private final ASTNode declaringNode;
+	private final String[] annotations;
+	private final ASTNode declaringNode;
 	 
 	 
-	 public DeleteAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+	public DeleteAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
 	            IBinding binding, int relevance, ASTNode declaringNode, String... annotations) {
-		 super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-	     this.fInvocationNode = invocationNode;
-	     this.fBinding = binding;
-	     this.declaringNode = declaringNode;
-	     this.annotations = annotations;
-	 }
+	    super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
+	    this.fInvocationNode = invocationNode;
+	    this.fBinding = binding;
+	    this.declaringNode = declaringNode;
+	    this.annotations = annotations;
+	}
 	
 	 @Override
-	 protected ASTRewrite getRewrite() throws CoreException {
-		 ASTNode declNode = this.declaringNode;
-	     ASTNode boundNode = fInvocationNode.findDeclaringNode(fBinding);
-	     CompilationUnit newRoot = fInvocationNode;
-	     if (boundNode == null) {
-	    	 newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
-	     }
-	     ImportRewrite imports = createImportRewrite(newRoot);
+	protected ASTRewrite getRewrite() throws CoreException {
+	    ASTNode declNode = this.declaringNode;
+	    ASTNode boundNode = fInvocationNode.findDeclaringNode(fBinding);
+	    CompilationUnit newRoot = fInvocationNode;
+	    if (boundNode == null) {
+	    	newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
+	    }
+	    ImportRewrite imports = createImportRewrite(newRoot);
 	     
-	     boolean isField = declNode instanceof VariableDeclarationFragment;
-	     boolean isMethod = declNode instanceof MethodDeclaration;
+	    boolean isField = declNode instanceof VariableDeclarationFragment;
+	    boolean isMethod = declNode instanceof MethodDeclaration;
 	     
-	     String[] annotations = getAnnotations();
+	    String[] annotations = getAnnotations();
 
-	     // get short name of annotations
-	     String[] annotationShortNames = new String[annotations.length];
-	     for (int i = 0; i < annotations.length; i++) {
-	    	 String shortName = annotations[i].substring(annotations[i].lastIndexOf(".") + 1, annotations[i].length());
-	         annotationShortNames[i] = shortName;
-	     }
+	    // get short name of annotations
+	    String[] annotationShortNames = new String[annotations.length];
+	    for (int i = 0; i < annotations.length; i++) {
+	    	String shortName = annotations[i].substring(annotations[i].lastIndexOf(".") + 1, annotations[i].length());
+	        annotationShortNames[i] = shortName;
+	    }
 	     
-	     if (isField || isMethod) {
-	    	 AST ast = declNode.getAST();
-	    	 ASTRewrite rewrite = ASTRewrite.create(ast);
+	    if (isField || isMethod) {
+	        AST ast = declNode.getAST();
+	    	ASTRewrite rewrite = ASTRewrite.create(ast);
 	    	 
-	    	 ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
+	    	ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
 	    	 
-	    	 // remove annotations in the removeAnnotations list
-	    	 @SuppressWarnings("unchecked")
-	    	 List<? extends ASTNode> children;
-	    	 if(isMethod) {
-	    		 children = (List<? extends ASTNode>) declNode
-	    		    	 	.getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
-	    	 } else {
-	    		 declNode = declNode.getParent();
-	    		 children = (List<? extends ASTNode>) declNode
+	    	// remove annotations in the removeAnnotations list
+	    	@SuppressWarnings("unchecked")
+	    	List<? extends ASTNode> children;
+	    	if(isMethod) {
+	    	    children = (List<? extends ASTNode>) declNode
+	    	    			.getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
+	    	} else {
+	    		declNode = declNode.getParent();
+	    		children = (List<? extends ASTNode>) declNode
 	    		    	 	.getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
-	    	 }
+	    	}
 	    	 
 
-	         // find and save existing annotation, then remove it from ast
-	         for (ASTNode child : children) {
-	        	 if (child instanceof Annotation) {
-	        		 Annotation annotation = (Annotation) child;
-	        		 // IAnnotationBinding annotationBinding = annotation.resolveAnnotationBinding();
+	        // find and save existing annotation, then remove it from ast
+	    	for (ASTNode child : children) {
+	            if (child instanceof Annotation) {
+	        	    Annotation annotation = (Annotation) child;
+	        		// IAnnotationBinding annotationBinding = annotation.resolveAnnotationBinding();
 
-	        		 boolean containsAnnotation = Arrays.stream(annotationShortNames)
-	        				 .anyMatch(annotation.getTypeName().toString()::equals);
-	        		 if (containsAnnotation) {
-	        			 rewrite.remove(child, null);
-	        		 }
-	        	 }
-	         }
+	        		boolean containsAnnotation = Arrays.stream(annotationShortNames)
+	        				.anyMatch(annotation.getTypeName().toString()::equals);
+	        		if (containsAnnotation) {
+	        		    rewrite.remove(child, null);
+	        		}
+	        	}
+	        }
 	         
-	         return rewrite;
-	     }
+	        return rewrite;
+	    }
 	     
-	     return null;
-	 }
+	    return null;
+	}
 	 
-	 /**
-	  * Returns the Compilation Unit node
-	  *
-	  * @return the invocation node for the Compilation Unit
-	  */
-	  protected CompilationUnit getInvocationNode() {
-		  return this.fInvocationNode;
-	  }
+    /**
+	 * Returns the Compilation Unit node
+	 *
+	 * @return the invocation node for the Compilation Unit
+	 */
+    protected CompilationUnit getInvocationNode() {
+    	return this.fInvocationNode;
+	}
 
-	  /**
-	   * Returns the Binding object associated with the new annotation change
-	   * 
-	   * @return the binding object
-	   */
-	   protected IBinding getBinding() {
-		   return this.fBinding;
-	   }
-
-	  /**
-	   * Returns the annotations list
-	   * 
-	   * @return the list of new annotations to add
-	   */
-	   protected String[] getAnnotations() {
-		   return this.annotations;
-	   }
+    /**
+	 * Returns the Binding object associated with the new annotation change
+	 * 
+	 * @return the binding object
+	 */
+    protected IBinding getBinding() {
+    	return this.fBinding;
+    }
+    
+    /**
+	 * Returns the annotations list
+	 * 
+	 * @return the list of new annotations to add
+	 */
+    protected String[] getAnnotations() {
+    	return this.annotations;
+	}
 }
