@@ -49,7 +49,19 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
 	private final String[] annotations;
 	private final ASTNode declaringNode;
 	 
-	 
+	/**
+	 * Constructor for DeleteAnnotationProposal
+	 * 
+	 * @param label - annotation label
+	 * @param targetCU - context.getCompilationUnit()
+	 * @param invocationNode - context.getASTRoot()
+	 * @param binding
+	 * @param relevance
+	 * @param declaringNode - context.getCoveredNode().getParent()
+	 * @param annotations
+	 * 
+	 * context is JavaCodeActionContext 
+	 */
 	public DeleteAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
 	            IBinding binding, int relevance, ASTNode declaringNode, String... annotations) {
 	    super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
