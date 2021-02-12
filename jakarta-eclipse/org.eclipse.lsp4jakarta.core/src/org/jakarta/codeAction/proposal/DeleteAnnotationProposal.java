@@ -1,15 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
- * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2021 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0, or the Apache License, Version 2.0
+* which is available at https://www.apache.org/licenses/LICENSE-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
+*
+* Contributors:
+*     IBM Corporation, Jianing Xu - initial API and implementation
+*******************************************************************************/
 package org.jakarta.codeAction.proposal;
 
 import java.util.Arrays;
@@ -53,14 +54,13 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
 	 * Constructor for DeleteAnnotationProposal
 	 * 
 	 * @param label - annotation label
-	 * @param targetCU - context.getCompilationUnit()
-	 * @param invocationNode - context.getASTRoot()
+	 * @param targetCU - the entire Java compilation unit
+	 * @param invocationNode
 	 * @param binding
 	 * @param relevance
-	 * @param declaringNode - context.getCoveredNode().getParent()
+	 * @param declaringNode - declaringNode covered node of diagnostic
 	 * @param annotations
 	 * 
-	 * context is JavaCodeActionContext 
 	 */
 	public DeleteAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
 	            IBinding binding, int relevance, ASTNode declaringNode, String... annotations) {
