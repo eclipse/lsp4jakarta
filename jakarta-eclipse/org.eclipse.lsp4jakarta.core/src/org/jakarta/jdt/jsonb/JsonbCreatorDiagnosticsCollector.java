@@ -16,6 +16,7 @@ package org.jakarta.jdt.jsonb;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -34,7 +35,6 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
-
         diagnostic.setSource(JsonbConstants.DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(DiagnosticSeverity.Error);
     }
@@ -48,42 +48,27 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
         try {
 
-            IType[] types = unit.getAllTypes();
+            List<IMethod> methods = new ArrayList<>();
 
-            boolean annotationTwice = false;
-            boolean alreadyAnnotated = false;
+            for (IType type : unit.getAllTypes()) {
 
-            List<IAnnotation> annotations = new ArrayList<>();
+                for (IMethod method : type.getMethods()) {
 
-            for (IType type : types) {
+                    for (IAnnotation annotation : method.getAnnotations()) {
 
-                IMethod[] methods = type.getMethods();
+                        if (method.isConstructor() || Flags.isStatic(method.getFlags())) {
 
-                for (IMethod method : methods) {
-
-                    IAnnotation jsonbCreatorAnnotation = method.getAnnotation(JsonbConstants.JSONB_CREATOR);
-
-                    if (method.isConstructor() && !Objects.isNull(jsonbCreatorAnnotation)) {
-
-                        if (alreadyAnnotated) {
-                            annotations.add(jsonbCreatorAnnotation);
-                            annotationTwice = true;
-                        } else {
-                            annotations.add(jsonbCreatorAnnotation);
-                            alreadyAnnotated = true;
+                            if (annotation.getElementName().equals(JsonbConstants.JSONB_CREATOR)) {
+                                methods.add(method);
+                            }
                         }
-                    }
-
-                    if (Flags.isStatic(method.getFlags()) && alreadyAnnotated) {
-                        annotations.add(jsonbCreatorAnnotation);
-                        annotationTwice = true;
                     }
                 }
 
-                if (annotationTwice) {
+                if (methods.size() > JsonbConstants.MAX_METHOD_WITH_JSONBCREATOR) {
 
-                    for (IAnnotation annotation : annotations) {
-                        Diagnostic diagnostic = createDiagnosticBy(unit, annotation);
+                    for (IMethod method : methods) {
+                        Diagnostic diagnostic = createDiagnosticBy(unit, method);
                         diagnostics.add(diagnostic);
                     }
                 }
@@ -92,12 +77,11 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
         } catch (JavaModelException e) {
             Activator.logException("Cannot calculate jakarta-jsonb diagnostics", e);
         }
-    }
+    }   
 
-    private Diagnostic createDiagnosticBy(ICompilationUnit unit, IAnnotation jsonbCreatorAnnotation)
-            throws JavaModelException {
+    private Diagnostic createDiagnosticBy(ICompilationUnit unit, IMethod method) throws JavaModelException {
 
-        ISourceRange sourceRange = JDTUtils.getNameRange(jsonbCreatorAnnotation);
+        ISourceRange sourceRange = JDTUtils.getNameRange(method);
 
         Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
 
