@@ -41,7 +41,7 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
 	
 	private final String[] annotations;
 
-    private final boolean generateOnlyOneCodeAction;
+    protected final boolean generateOnlyOneCodeAction;
     
     /**
      * Constructor for insert annotation quick fix.

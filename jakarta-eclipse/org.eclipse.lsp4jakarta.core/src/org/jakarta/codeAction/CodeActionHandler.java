@@ -37,7 +37,6 @@ import org.jakarta.jdt.servlet.HttpServletQuickFix;
 import org.jakarta.jdt.servlet.ListenerImplementationQuickFix;
 import org.jakarta.jdt.servlet.ServletConstants;
 import org.jakarta.jdt.persistence.DeleteConflictMapKeyQuickFix;
-import org.jakarta.jdt.persistence.DeleteConflictMapKeyClassQuickFix;
 import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
 
@@ -76,7 +75,6 @@ public class CodeActionHandler {
             CompleteServletAnnotationQuickFix CompleteServletAnnotationQuickFix = new CompleteServletAnnotationQuickFix();
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
             DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
-            DeleteConflictMapKeyClassQuickFix DeleteConflictMapKeyClassQuickFix = new DeleteConflictMapKeyClassQuickFix();
 
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -99,7 +97,6 @@ public class CodeActionHandler {
                     }
                     if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
                     	codeActions.addAll(DeleteConflictMapKeyQuickFix.getCodeActions(context, diagnostic, monitor));
-                    	codeActions.addAll(DeleteConflictMapKeyClassQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
                 } catch (CoreException e) {

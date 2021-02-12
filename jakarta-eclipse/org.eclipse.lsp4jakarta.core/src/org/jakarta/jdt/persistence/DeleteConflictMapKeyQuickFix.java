@@ -26,45 +26,43 @@ import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
 
 /**
  * 
- * Quick fix for removing @MapKey when @MapKeyClass is used for the same field or property
+ * Quick fix for removing @MapKey when @MapKeyClass is used for the same field
+ * or property
  * 
  * @author Jianing Xu
  *
  */
 public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickFix {
-	
+
 	public DeleteConflictMapKeyQuickFix() {
-		super("jakarta.persistence.annotation.MapKey");
+	    super("jakarta.persistence.annotation.MapKey", "jakarta.persistence.annotation.MapKeyClass");
 	}
-	
+
 	@Override
-	protected void removeAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
-            List<CodeAction> codeActions) throws CoreException {
-		String[] annotations = getAnnotations();
-		if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
-			String name = getLabel(annotations);
-	        ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
-	                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotations);
-	        // Convert the proposal to LSP4J CodeAction
-	        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-	        codeAction.setTitle(name);
-	        if (codeAction != null) {
-	            codeActions.add(codeAction);
-	        }
-		}
-	}
-	
-	private static String getLabel(String[] annotations) {
-        StringBuilder name = new StringBuilder("Remove ");
-        for (int i = 0; i < annotations.length; i++) {
-            String annotation = annotations[i];
-            String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
-            if (i > 0) {
-                name.append(", ");
+    protected void removeAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
+			List<CodeAction> codeActions) throws CoreException {
+	    String[] annotations = getAnnotations();
+	    if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION) 
+	    		&& !generateOnlyOneCodeAction) {
+	    	for (String annotation : annotations) {
+                String name = getLabel(annotation);
+                ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
+                        context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotation);
+                // Convert the proposal to LSP4J CodeAction
+                CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
+                codeAction.setTitle(name);
+                if (codeAction != null) {
+                    codeActions.add(codeAction);
+                }
             }
-            name.append("@");
-            name.append(annotationName);
-        }
-        return name.toString();
+	    }    
+    }
+
+	private static String getLabel(String annotation) {
+	    StringBuilder name = new StringBuilder("Remove ");
+        String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
+        name.append("@");
+        name.append(annotationName);
+	    return name.toString();
     }
 }
