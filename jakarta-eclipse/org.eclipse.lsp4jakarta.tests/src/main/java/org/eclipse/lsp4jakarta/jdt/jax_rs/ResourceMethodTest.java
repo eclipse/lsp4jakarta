@@ -25,7 +25,7 @@ public class ResourceMethodTest extends BaseJakartaTest {
     @Test
     public void NonPublicMethod() throws Exception {
         JDTUtils utils = JDT_UTILS;
-        IJavaProject javaProject = loadJavaProject("PLACEHOLDER", "");
+        IJavaProject javaProject = loadJavaProject("JAX-RS", ""); // TODO: create project called JAX-RS
         IFile javaFile = javaProject.getProject()
                 .getFile(new Path("PLACEHOLDER FILE"));
         String uri = javaFile.getLocation().toFile().toURI().toString();

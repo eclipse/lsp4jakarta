@@ -80,7 +80,7 @@ public class ResourceMethodDiagnosticsCollector implements DiagnosticsCollector 
                                     "Only public methods may be exposed as resource methods");
                             diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE);
                             completeDiagnostic(diagnostic);
-                            diagnostics.add(diagnostic);											
+                            diagnostics.add(diagnostic);
                         }	
                     }
                 }

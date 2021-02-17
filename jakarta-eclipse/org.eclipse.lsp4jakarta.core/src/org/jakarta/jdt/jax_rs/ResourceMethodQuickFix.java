@@ -44,7 +44,7 @@ public class ResourceMethodQuickFix implements IJavaCodeActionParticipant {
             final String TITLE_MESSAGE = "Make method public";
             
             ChangeCorrectionProposal proposal = new ChangeVisibilityProposal(TITLE_MESSAGE,
-                    context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0);
+                    context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, "public");
             
             // Convert the proposal to LSP4J CodeAction
             CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);

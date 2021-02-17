@@ -25,22 +25,22 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
-import org.eclipse.jdt.core.dom.rewrite.ImportRewrite.ImportRewriteContext;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.internal.core.manipulation.dom.ASTResolving;
-import org.eclipse.jdt.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import org.eclipse.lsp4j.CodeActionKind;
 
 public class ChangeVisibilityProposal extends ChangeCorrectionProposal {
 
     private final CompilationUnit fInvocationNode;
     private final IBinding fBinding;
+    private final String fVisibility;
     
     public ChangeVisibilityProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-            IBinding binding, int relevance) {
+            IBinding binding, int relevance, String visibility) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
         fInvocationNode = invocationNode;
         fBinding = binding;
+        fVisibility = visibility;
     }
     
     @Override
@@ -63,27 +63,26 @@ public class ChangeVisibilityProposal extends ChangeCorrectionProposal {
         AST ast = declNode.getAST();
         ASTRewrite rewrite = ASTRewrite.create(ast);
         
-        ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
-        
-        Modifier marker = newASTModifier(ast, "public");
+        Modifier marker = ast.newModifier(Modifier.ModifierKeyword.toKeyword(fVisibility));
         
         ListRewrite modifiersList = rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY);
         List<ASTNode> modifiers = (List<ASTNode>) declNode.getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
         
         for (ASTNode modifier : modifiers) {
             if (modifier instanceof Modifier) {
-                // TODO: Check it's not final or static modifier
-                modifiersList.replace(modifier, marker, null);
+                Modifier.ModifierKeyword modKeyword = ((Modifier) modifier).getKeyword();
+                // Check if the modifier is private, public or protected
+                if ((modKeyword.equals(Modifier.ModifierKeyword.PRIVATE_KEYWORD) ||
+                        modKeyword.equals(Modifier.ModifierKeyword.PUBLIC_KEYWORD) ||
+                        modKeyword.equals(Modifier.ModifierKeyword.PROTECTED_KEYWORD))) {
+                    modifiersList.replace(modifier, marker, null);
+                    return rewrite;
+                }
             }
         }
-        
+        // If no visibility modifier, add to the end of list
+        modifiersList.insertLast(marker, null);
         
         return rewrite;
     }
-    
-    public Modifier newASTModifier(AST ast, String modifier) {
-        Modifier publicModifier = ast.newModifier(Modifier.ModifierKeyword.toKeyword(modifier));
-        return publicModifier;
-    }
-
 }
