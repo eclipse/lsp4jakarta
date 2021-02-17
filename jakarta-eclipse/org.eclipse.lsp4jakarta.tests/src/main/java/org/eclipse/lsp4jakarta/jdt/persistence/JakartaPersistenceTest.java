@@ -19,29 +19,30 @@ import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
 import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 public class JakartaPersistenceTest extends BaseJakartaTest {
-	protected static JDTUtils JDT_UTILS = new JDTUtils();
-	
-	@Test
-	public void deleteMapKeyOrMapKeyClass() throws Exception {
-		JDTUtils utils = this.JDT_UTILS;
+    protected static JDTUtils JDT_UTILS = new JDTUtils();
+
+    @Test
+    public void deleteMapKeyOrMapKeyClass() throws Exception {
+        JDTUtils utils = this.JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-servlet", "");
-        
-        IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/persistence/MapKeyAndMapKeyClassTogether.java"));
+
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/persistence/MapKeyAndMapKeyClassTogether.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        
-        Diagnostic d1 = d(16, 32, 42, "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
+
+        Diagnostic d1 = d(16, 32, 42,
+                "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveMapKeyorMapKeyClass");
-        
-        Diagnostic d2 = d(11, 25, 32, "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
+
+        Diagnostic d2 = d(11, 25, 32,
+                "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveMapKeyorMapKeyClass");
-        
-        
+
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
-        
+
         // test associated quick-fix code action
 //        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
 //        
@@ -61,7 +62,6 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 //        CodeAction ca4 = ca(uri, "Remove @MapKey", d2, te4);
 //        
 //        assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
-	}
-	
+    }
 
 }

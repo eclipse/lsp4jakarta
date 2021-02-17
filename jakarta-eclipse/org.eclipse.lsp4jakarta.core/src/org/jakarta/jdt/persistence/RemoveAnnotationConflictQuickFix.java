@@ -31,18 +31,18 @@ import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
 import org.jakarta.codeAction.proposal.NewAnnotationProposal;
 
 /**
- * QuickFix for removing annotations.
- * Modified from https://github.com/eclipse/lsp4mp/blob/6f2d700a88a3262e39cc2ba04beedb429e162246/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/InsertAnnotationMissingQuickFix.java
+ * QuickFix for removing annotations. Modified from
+ * https://github.com/eclipse/lsp4mp/blob/6f2d700a88a3262e39cc2ba04beedb429e162246/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/InsertAnnotationMissingQuickFix.java
  *
  * @author Angelo ZERR
  *
  */
 public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticipant {
-	
-	private final String[] annotations;
+
+    private final String[] annotations;
 
     protected final boolean generateOnlyOneCodeAction;
-    
+
     /**
      * Constructor for insert annotation quick fix.
      *
@@ -68,11 +68,11 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
         this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;
         this.annotations = annotations;
     }
-    
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		ASTNode node = context.getCoveredNode();
+
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+            IProgressMonitor monitor) throws CoreException {
+        ASTNode node = context.getCoveredNode();
         IBinding parentType = getBinding(node);
         if (parentType != null) {
             List<CodeAction> codeActions = new ArrayList<>();
@@ -80,23 +80,23 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
             return codeActions;
         }
         return null;
-        
-	}
-	
-	protected void removeAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
+
+    }
+
+    protected void removeAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
             List<CodeAction> codeActions) throws CoreException {
-		if (generateOnlyOneCodeAction) {
+        if (generateOnlyOneCodeAction) {
             removeAnnotation(diagnostic, context, parentType, codeActions, annotations);
         } else {
             for (String annotation : annotations) {
                 removeAnnotation(diagnostic, context, parentType, codeActions, annotation);
             }
         }
-	}
-	
-	protected static void removeAnnotation(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
+    }
+
+    protected static void removeAnnotation(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
             List<CodeAction> codeActions, String... annotations) throws CoreException {
-		// Remove the annotation and the proper import by using JDT Core Manipulation
+        // Remove the annotation and the proper import by using JDT Core Manipulation
         // API
         String name = getLabel(annotations);
         ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
@@ -106,21 +106,21 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
         if (codeAction != null) {
             codeActions.add(codeAction);
         }
-	}
-	
-	protected IBinding getBinding(ASTNode node) {
+    }
+
+    protected IBinding getBinding(ASTNode node) {
         if (node.getParent() instanceof VariableDeclarationFragment) {
             VariableDeclarationFragment fragment = (VariableDeclarationFragment) node.getParent();
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
         }
         return Bindings.getBindingOfParentType(node);
     }
-	
-	protected String[] getAnnotations() {
+
+    protected String[] getAnnotations() {
         return this.annotations;
     }
-	
-	private static String getLabel(String[] annotations) {
+
+    private static String getLabel(String[] annotations) {
         StringBuilder name = new StringBuilder("Remove ");
         for (int i = 0; i < annotations.length; i++) {
             String annotation = annotations[i];
