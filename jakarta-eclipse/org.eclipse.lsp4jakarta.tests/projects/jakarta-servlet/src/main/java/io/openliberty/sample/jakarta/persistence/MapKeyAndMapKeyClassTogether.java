@@ -1,4 +1,4 @@
-package io.openliberty.sample.jakarta.servlet;
+package io.openliberty.sample.jakarta.persistence;
 
 import java.util.HashMap;
 import java.util.Map;
