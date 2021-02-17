@@ -184,7 +184,6 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                         rewrite.remove(child, null);
                         break;
                     }
-                    rewrite.remove(child, null);
                 }
             }
 

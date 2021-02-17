@@ -38,6 +38,8 @@ import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
 import org.jakarta.jdt.servlet.HttpServletQuickFix;
 import org.jakarta.jdt.servlet.ListenerImplementationQuickFix;
 import org.jakarta.jdt.servlet.ServletConstants;
+import org.jakarta.jdt.persistence.DeleteConflictMapKeyQuickFix;
+import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
 
 import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
@@ -75,6 +77,8 @@ public class CodeActionHandler {
             CompleteServletAnnotationQuickFix CompleteServletAnnotationQuickFix = new CompleteServletAnnotationQuickFix();
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
             PersistenceAnnotationQuickFix PersistenceAnnotationQuickFix = new PersistenceAnnotationQuickFix();
+            DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
+
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
@@ -95,9 +99,12 @@ public class CodeActionHandler {
                         codeActions.addAll(CompleteFilterAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES)
-                		|| diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_MAPKEYJOINCOLUMN)
-                		|| diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_NAME)) {
+                        || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_MAPKEYJOINCOLUMN)
+                        || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_NAME)) {
                     	codeActions.addAll(PersistenceAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
+                    	codeActions.addAll(DeleteConflictMapKeyQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();
