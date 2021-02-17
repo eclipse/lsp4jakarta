@@ -8,7 +8,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -22,6 +25,8 @@ jobs:
       - name: Copy jakarta.ls jar
         working-directory: ./jakarta.ls
         run: mv target/jakarta.ls-1.0-SNAPSHOT-jar-with-dependencies.jar ../jakarta-eclipse/org.eclipse.lsp4jakarta.core
-      - name: Build jakarta-eclipse with Maven
+      - name: Build jakarta-eclipse with Maven (Linux)
+        if: runner.os == 'Linux'
         working-directory: ./jakarta-eclipse
-        run: mvn -B package verify --file pom.xml
+        run: xvfb-run -a mvn -B package verify --file pom.xml
+          

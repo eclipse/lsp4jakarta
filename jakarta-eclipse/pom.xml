@@ -13,8 +13,9 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<jdt.ls.version>0.57.0.20200619102332</jdt.ls.version>
 		<tycho.generateSourceReferences>true</tycho.generateSourceReferences>
-		<tycho.test.platformArgs />
-    	<tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
+		<!-- <tycho.test.platformArgs>-XstartOnFirstThread</tycho.test.platformArgs> -->
+		<tycho.test.jvmArgs>-Xmx512m</tycho.test.jvmArgs>
+		<surefire.timeout>600</surefire.timeout>
 	</properties>
 	<modules>
 		<module>org.eclipse.lsp4jakarta.core</module>
@@ -50,6 +51,12 @@
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-surefire-plugin</artifactId>
 				<version>${tycho-version}</version>
+				<configuration>
+					<useUIHarness>false</useUIHarness>
+					<argLine>${tycho.test.jvmArgs}</argLine>
+					<!-- kill test JVM if tests take more than 1 minute (60 seconds) to finish -->
+					<forkedProcessTimeoutInSeconds>${surefire.timeout}</forkedProcessTimeoutInSeconds>
+				</configuration>
 			</plugin>
 			<!-- tycho-source-plugin -->
 			<plugin>
