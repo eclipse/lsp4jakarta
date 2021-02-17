@@ -78,7 +78,7 @@ public class ResourceMethodDiagnosticsCollector implements DiagnosticsCollector 
                         if (isResourceMethod && !isPublic) { 
                             diagnostic = new Diagnostic(methodRange, 
                                     "Only public methods may be exposed as resource methods");
-                            diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE);
+                            diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC);
                             completeDiagnostic(diagnostic);
                             diagnostics.add(diagnostic);
                         }	

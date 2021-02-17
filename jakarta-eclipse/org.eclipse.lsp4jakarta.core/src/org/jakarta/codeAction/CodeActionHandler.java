@@ -95,7 +95,7 @@ public class CodeActionHandler {
                         || diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES)) {
                         codeActions.addAll(CompleteFilterAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE)) {
+                    if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC)) {
                         codeActions.addAll(ResourceMethodQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 

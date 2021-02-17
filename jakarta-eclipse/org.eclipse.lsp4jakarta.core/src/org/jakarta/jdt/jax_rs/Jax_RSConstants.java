@@ -33,6 +33,6 @@ public class Jax_RSConstants {
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
     
     /* Diagnostics fields constants */
-    public static final String DIAGNOSTIC_CODE = "AddPublicResourceMethod";
+    public static final String DIAGNOSTIC_CODE_NON_PUBLIC = "AddPublicResourceMethod";
 
 }
