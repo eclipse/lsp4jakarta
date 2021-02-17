@@ -36,6 +36,8 @@ import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
 import org.jakarta.jdt.servlet.HttpServletQuickFix;
 import org.jakarta.jdt.servlet.ListenerImplementationQuickFix;
 import org.jakarta.jdt.servlet.ServletConstants;
+import org.jakarta.jdt.persistence.DeleteConflictMapKeyQuickFix;
+import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
 
 import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
@@ -72,6 +74,7 @@ public class CodeActionHandler {
             ListenerImplementationQuickFix ListenerImplementationQuickFix = new ListenerImplementationQuickFix();
             CompleteServletAnnotationQuickFix CompleteServletAnnotationQuickFix = new CompleteServletAnnotationQuickFix();
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
+            DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
 
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -91,6 +94,9 @@ public class CodeActionHandler {
                     if(diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE)
                         || diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES)) {
                         codeActions.addAll(CompleteFilterAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
+                    	codeActions.addAll(DeleteConflictMapKeyQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
                 } catch (CoreException e) {

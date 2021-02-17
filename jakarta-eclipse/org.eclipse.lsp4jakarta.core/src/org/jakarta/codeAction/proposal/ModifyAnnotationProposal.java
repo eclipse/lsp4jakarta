@@ -108,7 +108,6 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                         existingAnnotation = annotation;
                         rewrite.remove(child, null);
                     }
-                    rewrite.remove(child, null);
                 }
             }
 
