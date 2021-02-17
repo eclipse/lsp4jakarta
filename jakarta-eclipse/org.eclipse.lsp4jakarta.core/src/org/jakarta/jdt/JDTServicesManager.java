@@ -34,6 +34,7 @@ import org.jakarta.jdt.persistence.PersistenceMapKeyDiagnosticsCollector;
 import org.jakarta.jdt.servlet.FilterDiagnosticsCollector;
 import org.jakarta.jdt.servlet.ListenerDiagnosticsCollector;
 import org.jakarta.jdt.servlet.ServletDiagnosticsCollector;
+import org.jakarta.jdt.servlet.TestDiagnosticsCollector;
 import org.jakarta.lsp4e.Activator;
 
 import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
