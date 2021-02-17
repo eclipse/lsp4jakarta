@@ -1,3 +1,15 @@
+/*******************************************************************************
+* Copyright (c) 2021 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.servlet;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.*;
@@ -24,9 +36,7 @@ public class JakartaServletTest extends BaseJakartaTest {
 
     @Test
     public void ExtendWebServlet() throws Exception {
-
-        JDTUtils utils = JDT_UTILS;
-        IJavaProject javaProject = loadJavaProject("jakarta-servlet", "");
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
                 .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/DontExtendHttpServlet.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
@@ -38,13 +48,38 @@ public class JakartaServletTest extends BaseJakartaTest {
         Diagnostic d = d(10, 13, 34, "Classes annotated with @WebServlet must extend the HttpServlet class.",
                 DiagnosticSeverity.Error, "jakarta-servlet", "ExtendHttpServlet");
 
-        assertJavaDiagnostics(diagnosticsParams, utils, d);
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
         // test associated quick-fix code action
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
         TextEdit te = te(10, 34, 10, 34, " extends HttpServlet");
         CodeAction ca = ca(uri, "Let 'DontExtendHttpServlet' extend 'HttpServlet'", d, te);
-        assertJavaCodeAction(codeActionParams, utils, ca);
+        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
+    }
+
+    @Test
+    public void CompleteWebServletAnnotation() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/InvalidWebServlet.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic d = d(9, 0, 13,
+                "The 'urlPatterns' attribute or the 'value' attribute of the WebServlet annotation MUST be specified.",
+                DiagnosticSeverity.Error, "jakarta-servlet", "CompleteHttpServletAttributes");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
+        TextEdit te1 = te(9, 0, 10, 0, "@WebServlet(value = \"\")\n");
+        CodeAction ca1 = ca(uri, "Add the `value` attribute to @WebServlet", d, te1);
+
+        TextEdit te2 = te(9, 0, 10, 0, "@WebServlet(urlPatterns = \"\")\n");
+        CodeAction ca2 = ca(uri, "Add the `urlPatterns` attribute to @WebServlet", d, te2);
+        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca1, ca2);
     }
 
 }

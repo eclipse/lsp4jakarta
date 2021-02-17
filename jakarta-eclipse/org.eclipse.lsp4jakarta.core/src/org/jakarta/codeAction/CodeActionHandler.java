@@ -38,6 +38,8 @@ import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
 import org.jakarta.jdt.servlet.HttpServletQuickFix;
 import org.jakarta.jdt.servlet.ListenerImplementationQuickFix;
 import org.jakarta.jdt.servlet.ServletConstants;
+import org.jakarta.jdt.persistence.DeleteConflictMapKeyQuickFix;
+import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
 
 import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
@@ -75,6 +77,8 @@ public class CodeActionHandler {
             CompleteServletAnnotationQuickFix CompleteServletAnnotationQuickFix = new CompleteServletAnnotationQuickFix();
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
             ResourceMethodQuickFix ResourceMethodQuickFix = new ResourceMethodQuickFix();
+            DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
+
 
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -97,6 +101,8 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC)) {
                         codeActions.addAll(ResourceMethodQuickFix.getCodeActions(context, diagnostic, monitor));
+                    if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
+                    	codeActions.addAll(DeleteConflictMapKeyQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
                 } catch (CoreException e) {
