@@ -34,17 +34,17 @@ import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
  */
 public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickFix {
 
-	public DeleteConflictMapKeyQuickFix() {
-	    super("jakarta.persistence.annotation.MapKey", "jakarta.persistence.annotation.MapKeyClass");
-	}
+    public DeleteConflictMapKeyQuickFix() {
+        super(false, "jakarta.persistence.annotation.MapKeyClass", "jakarta.persistence.annotation.MapKey");
+    }
 
-	@Override
+    @Override
     protected void removeAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
-			List<CodeAction> codeActions) throws CoreException {
-	    String[] annotations = getAnnotations();
-	    if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION) 
-	    		&& !generateOnlyOneCodeAction) {
-	    	for (String annotation : annotations) {
+            List<CodeAction> codeActions) throws CoreException {
+        String[] annotations = getAnnotations();
+        if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)
+                && !generateOnlyOneCodeAction) {
+            for (String annotation : annotations) {
                 String name = getLabel(annotation);
                 ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
                         context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotation);
@@ -55,14 +55,14 @@ public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickF
                     codeActions.add(codeAction);
                 }
             }
-	    }    
+        }
     }
 
-	private static String getLabel(String annotation) {
-	    StringBuilder name = new StringBuilder("Remove ");
+    private static String getLabel(String annotation) {
+        StringBuilder name = new StringBuilder("Remove ");
         String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
         name.append("@");
         name.append(annotationName);
-	    return name.toString();
+        return name.toString();
     }
 }
