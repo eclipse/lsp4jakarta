@@ -8,10 +8,5 @@ public class NotPublicResourceMethod {
     private void privateMethod() {
         
     }
-    
-    @HEAD
-    void defaultMethod() {
-        
-    }
 
 }
