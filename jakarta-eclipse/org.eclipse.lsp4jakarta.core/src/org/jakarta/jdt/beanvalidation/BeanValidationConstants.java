@@ -82,5 +82,8 @@ public class BeanValidationConstants {
             .unmodifiableSet(new HashSet<String>(Arrays.asList(ASSERT_TRUE, ASSERT_FALSE, DIGITS, DECIMAL_MAX,
                     DECIMAL_MIN, EMAIL, PAST_OR_PRESENT, FUTURE_OR_PRESENT, PAST, FUTURE, MIN, MAX, NEGATIVE_OR_ZERO,
                     POSTIVE_OR_ZERO, NEGATIVE, POSITIVE, NOT_BLANK, PATTERN, SIZE, NOT_EMPTY)));
+    
+    public final static Set<String> SIZE_SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet(Arrays.asList()));
+    public final static Set<String> EMPTY_SUPPORTED_TYPES = Collections.unmodifiableSet(new HashSet(Arrays.asList()));
 
 }
