@@ -47,14 +47,14 @@ public class ResourceMethodTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         
-        Diagnostic d = d(7, 17, 30, "Only public methods may be exposed as resource methods",
+        Diagnostic d = d(20, 17, 30, "Only public methods may be exposed as resource methods",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "AddPublicResourceMethod");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d);
         
         // Test for quick-fix code action
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(7, 4, 7, 11, "public"); // range may need to change
+        TextEdit te = te(20, 4, 20, 11, "public"); // range may need to change
         CodeAction ca = ca(uri, "Make method public", d, te);
         assertJavaCodeAction(codeActionParams, utils, ca);
     }
