@@ -1,6 +1,6 @@
 package io.openliberty.sample.jakarta.cdi;
 
-import javax.enterprise.context.*;
+import jakarta.exterprise.context.*;
 
 @RequestScoped
 public class ManagedBean {

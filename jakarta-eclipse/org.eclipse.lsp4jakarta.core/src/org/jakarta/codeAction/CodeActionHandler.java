@@ -32,6 +32,8 @@ import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
 import org.jakarta.jdt.jax_rs.Jax_RSConstants;
 import org.jakarta.jdt.jax_rs.ResourceMethodQuickFix;
+import org.jakarta.jdt.cdi.ManagedBeanConstants;
+import org.jakarta.jdt.cdi.ManagedBeanQuickFix;
 import org.jakarta.jdt.servlet.CompleteFilterAnnotationQuickFix;
 import org.jakarta.jdt.servlet.CompleteServletAnnotationQuickFix;
 import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
@@ -78,8 +80,7 @@ public class CodeActionHandler {
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
             DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
             ResourceMethodQuickFix ResourceMethodQuickFix = new ResourceMethodQuickFix();
-
-
+            ManagedBeanQuickFix ManagedBeanQuickFix = new ManagedBeanQuickFix();
 
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -93,18 +94,28 @@ public class CodeActionHandler {
                         codeActions.addAll(ListenerImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE)
-                        || diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES)) {
-                        codeActions.addAll(CompleteServletAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                            || diagnostic.getCode().getLeft()
+                                    .equals(ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES)) {
+                        codeActions
+                                .addAll(CompleteServletAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if(diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE)
-                        || diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES)) {
-                        codeActions.addAll(CompleteFilterAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE)
+                            || diagnostic.getCode().getLeft()
+                                    .equals(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES)) {
+                        codeActions
+                                .addAll(CompleteFilterAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC)) {
                         codeActions.addAll(ResourceMethodQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
                         codeActions.addAll(DeleteConflictMapKeyQuickFix.getCodeActions(context, diagnostic, monitor));
+                    if (diagnostic.getCode().getLeft()
+                            .equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
+                        codeActions.addAll(DeleteConflictMapKeyQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE)) {
+                        codeActions.addAll(ManagedBeanQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();

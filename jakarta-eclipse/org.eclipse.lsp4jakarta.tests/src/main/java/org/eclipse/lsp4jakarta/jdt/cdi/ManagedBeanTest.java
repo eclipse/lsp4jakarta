@@ -24,7 +24,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
 
     @Test
     public void managedBeanAnnotations() throws Exception {
-        IJavaProject javaProject = loadJavaProject("jakarta-samples", "");
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
                 .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/cdi/ManagedBean.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
@@ -35,7 +35,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
         // expected
         Diagnostic d = d(6, 12, 13,
                 "A managed bean with a non-static public field must not declare any scope other than @Dependent",
-                DiagnosticSeverity.Error, "jakarta-cdi", null);
+                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }

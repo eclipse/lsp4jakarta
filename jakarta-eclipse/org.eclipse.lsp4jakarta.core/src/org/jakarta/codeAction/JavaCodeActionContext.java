@@ -108,6 +108,7 @@ public class JavaCodeActionContext extends AbstractJavaContext implements IInvoc
             return null;
         }
         CodeAction codeAction = new CodeAction();
+        codeAction.setTitle(name);
         codeAction.setKind(proposal.getKind());
         codeAction.setEdit(edit);
         codeAction.setDiagnostics(Arrays.asList(diagnostics));
