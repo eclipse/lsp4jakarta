@@ -49,7 +49,6 @@ public class ChangeVisibilityProposal extends ChangeCorrectionProposal {
         ASTNode boundNode = fInvocationNode.findDeclaringNode(fBinding);
         CompilationUnit newRoot = fInvocationNode;
         
-        
         declNode = boundNode;
         if (boundNode != null) {
             declNode = boundNode;
@@ -58,11 +57,10 @@ public class ChangeVisibilityProposal extends ChangeCorrectionProposal {
             declNode = newRoot.findDeclaringNode(fBinding.getKey());
         }
         
-        ImportRewrite imports = createImportRewrite(newRoot);
-        
         AST ast = declNode.getAST();
         ASTRewrite rewrite = ASTRewrite.create(ast);
         
+        // Make visibility marker
         Modifier marker = ast.newModifier(Modifier.ModifierKeyword.toKeyword(fVisibility));
         
         ListRewrite modifiersList = rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY);
@@ -75,6 +73,7 @@ public class ChangeVisibilityProposal extends ChangeCorrectionProposal {
                 if ((modKeyword.equals(Modifier.ModifierKeyword.PRIVATE_KEYWORD) ||
                         modKeyword.equals(Modifier.ModifierKeyword.PUBLIC_KEYWORD) ||
                         modKeyword.equals(Modifier.ModifierKeyword.PROTECTED_KEYWORD))) {
+                    
                     modifiersList.replace(modifier, marker, null);
                     return rewrite;
                 }

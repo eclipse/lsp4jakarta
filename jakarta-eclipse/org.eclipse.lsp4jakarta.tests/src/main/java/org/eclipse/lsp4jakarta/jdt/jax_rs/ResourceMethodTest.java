@@ -25,24 +25,24 @@ public class ResourceMethodTest extends BaseJakartaTest {
     @Test
     public void NonPublicMethod() throws Exception {
         JDTUtils utils = JDT_UTILS;
-        IJavaProject javaProject = loadJavaProject("JAX-RS", ""); // TODO: create project called JAX-RS
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path("PLACEHOLDER FILE"));
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/NotPublicResourceMethod.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
         
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         
-        Diagnostic d = d(0, 0, 0, "Only public methods may be exposed as resource methods",
+        Diagnostic d = d(8, 18, 31, "Only public methods may be exposed as resource methods",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "AddPublicResourceMethod");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d);
         
         // Test for quick-fix code action
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(0, 0, 0, 0, "PLACEHOLDER");
-        CodeAction ca = ca(uri, "PLACEHOLDER", d, te);
+        TextEdit te = te(8, 5, 8, 5, "public"); // range may need to change
+        CodeAction ca = ca(uri, "Make method public", d, te);
         assertJavaCodeAction(codeActionParams, utils, ca);
     }
 
