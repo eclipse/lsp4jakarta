@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2021 IBM Corporation, Matthew Shocrylas and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation, Matthew Shocrylas - initial API and implementation
+ *******************************************************************************/
+
 package org.eclipse.lsp4jakarta.jdt.jax_rs;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.*;
@@ -41,7 +54,7 @@ public class ResourceMethodTest extends BaseJakartaTest {
         
         // Test for quick-fix code action
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(7, 4, 7, 4, "public"); // range may need to change
+        TextEdit te = te(7, 4, 7, 11, "public"); // range may need to change
         CodeAction ca = ca(uri, "Make method public", d, te);
         assertJavaCodeAction(codeActionParams, utils, ca);
     }
