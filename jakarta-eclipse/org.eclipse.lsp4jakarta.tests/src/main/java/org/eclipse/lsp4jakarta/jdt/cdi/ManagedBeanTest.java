@@ -32,12 +32,18 @@ public class ManagedBeanTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        // expected
+        // test expected diagnostic
         Diagnostic d = d(6, 12, 13,
                 "A managed bean with a non-static public field must not declare any scope other than @Dependent",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+        
+        // test expected quick-fix      
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
+        TextEdit te = te(2, 0, 5, 0, "import jakarta.enterprise.context.Dependent;\nimport jakarta.exterprise.context.*;\n\n@Dependent\n");
+        CodeAction ca = ca(uri, "Replace current scope with @Dependent", d, te);
+        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
     }
 
 }
