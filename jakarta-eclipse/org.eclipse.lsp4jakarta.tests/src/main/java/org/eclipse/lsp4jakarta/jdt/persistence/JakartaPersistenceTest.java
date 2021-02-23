@@ -64,4 +64,49 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 //        assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
     }
 
+    
+    @Test
+    public void persistenceAnnotationQuickFix() throws Exception {
+        JDTUtils utils = this.JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-servlet", "");
+        
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/persistence/MultipleMapKeyAnnotations.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+        
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        // test diagnostics are present
+        Diagnostic d1 = d(12, 25, 30,
+                "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                DiagnosticSeverity.Error, "jakarta-persistence", "SupplyAttributesToAnnotations");
+        Diagnostic d2 = d(12, 25, 30,
+                "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                DiagnosticSeverity.Error, "jakarta-persistence", "SupplyAttributesToAnnotations");
+
+        Diagnostic d3 = d(16, 25, 30,
+                "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                DiagnosticSeverity.Error, "jakarta-persistence", "SupplyAttributesToAnnotations");
+        Diagnostic d4 = d(16, 25, 30,
+                "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                DiagnosticSeverity.Error, "jakarta-persistence", "SupplyAttributesToAnnotations");
+
+        Diagnostic d5 = d(20, 25, 30,
+                "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                DiagnosticSeverity.Error, "jakarta-persistence", "SupplyAttributesToAnnotations");
+        
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5); 
+        
+        // test quick fixes
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
+        
+        TextEdit te1 = te(10, 4, 11, 23,  "@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")\n @MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")");
+        CodeAction ca1 = ca(uri, "Add the missing attributes to the @MapKeyJoinColumn annotation", d1, te1);
+        ca1.setKind("quickfix");
+
+        assertJavaCodeAction(codeActionParams1, utils, ca1);
+
+    }
+
 }

@@ -84,8 +84,8 @@ public class JakartaForJavaAssert {
 
         Assert.assertEquals(expected.length, actual.size());
         for (int i = 0; i < expected.length; i++) {
-            Assert.assertEquals("Assert title [" + i + "]", expected[i].getTitle(), actual.get(i).getTitle());
-            Assert.assertEquals("Assert edit [" + i + "]", expected[i].getEdit(), actual.get(i).getEdit());
+            Assert.assertEquals("Assert title [" + i + "]", expected[i].getTitle(), ((CodeAction) actual.get(i)).getTitle());
+            Assert.assertEquals("Assert edit [" + i + "]", expected[i].getEdit(), ((CodeAction) actual.get(i)).getEdit());
         }
     }
 
