@@ -29,6 +29,7 @@ import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollector {
@@ -107,7 +108,6 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
                                     "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
                                     PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION));
                         }
-
                     }
 
                     /* ======== MapKeyJoinColumn Diagnostic Checks ========= */
@@ -124,33 +124,16 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
                         // If we have multiple MapKeyJoinColumn annotations on a single method we must
                         // ensure each has a name and referencedColumnName
                         mapKeyJoinCols.forEach((annotation) -> {
-                            boolean isNameSpecified = false;
-                            boolean isReferencedColumnNameSpecified = false;
+                            boolean allNamesSpecified, allReferencedColumnNameSpecified;
                             try {
-                                IMemberValuePair[] memberValues = annotation.getMemberValuePairs();
-                                for (IMemberValuePair mv : memberValues) {
-                                    if (mv.getMemberName().equals(PersistenceConstants.NAME)) {
-                                        isNameSpecified = true;
-                                        continue;
-                                    }
-
-                                    if (mv.getMemberName().equals(PersistenceConstants.REFERENCEDCOLUMNNAME)) {
-                                        isReferencedColumnNameSpecified = true;
-                                        continue;
-                                    }
-                                }
-                                if (!isNameSpecified && !isReferencedColumnNameSpecified) {
-                                    diagnostics.add(createDiagnostic(method, unit,
-                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
-                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
-                                } else if (!isNameSpecified) {
-                                    diagnostics.add(createDiagnostic(method, unit,
-                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
-                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_NAME));
-                                } else if (!isReferencedColumnNameSpecified) {
-                                    diagnostics.add(createDiagnostic(method, unit,
-                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
-                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_MAPKEYJOINCOLUMN));
+                                List<IMemberValuePair> memberValues = Arrays.asList(annotation.getMemberValuePairs());
+                                allNamesSpecified = memberValues.stream().anyMatch((mv) -> mv.getMemberName().equals(PersistenceConstants.NAME));
+                                allReferencedColumnNameSpecified = memberValues.stream().anyMatch((mv) -> mv.getMemberName().equals(PersistenceConstants.REFERENCEDCOLUMNNAME));
+                                
+                                if (!allNamesSpecified || !allReferencedColumnNameSpecified) {
+                                  diagnostics.add(createDiagnostic(method, unit, 
+                                          "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                                          PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
                                 }
                             } catch (JavaModelException e) {
                                 Activator.logException(
@@ -171,33 +154,16 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
                             continue;
 
                         mapKeyJoinCols.forEach((annotation) -> {
-                            boolean isNameSpecified = false;
-                            boolean isReferencedColumnNameSpecified = false;
+                            boolean allNamesSpecified, allReferencedColumnNameSpecified;
                             try {
-                                IMemberValuePair[] memberValues = annotation.getMemberValuePairs();
-                                for (IMemberValuePair mv : memberValues) {
-                                    if (mv.getMemberName().equals(PersistenceConstants.NAME)) {
-                                        isNameSpecified = true;
-                                        continue;
-                                    }
-
-                                    if (mv.getMemberName().equals(PersistenceConstants.REFERENCEDCOLUMNNAME)) {
-                                        isReferencedColumnNameSpecified = true;
-                                        continue;
-                                    }
-                                }
-                                if (!isNameSpecified && !isReferencedColumnNameSpecified) {
-                                    diagnostics.add(createDiagnostic(field, unit,
-                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
-                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
-                                } else if (!isNameSpecified) {
-                                    diagnostics.add(createDiagnostic(field, unit,
-                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
-                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_NAME));
-                                } else if (!isReferencedColumnNameSpecified) {
-                                    diagnostics.add(createDiagnostic(field, unit,
-                                            "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
-                                            PersistenceConstants.DIAGNOSTIC_CODE_MISSING_MAPKEYJOINCOLUMN));
+                                List<IMemberValuePair> memberValues = Arrays.asList(annotation.getMemberValuePairs());
+                                allNamesSpecified = memberValues.stream().anyMatch((mv) -> mv.getMemberName().equals(PersistenceConstants.NAME));
+                                allReferencedColumnNameSpecified = memberValues.stream().anyMatch((mv) -> mv.getMemberName().equals(PersistenceConstants.REFERENCEDCOLUMNNAME));
+                                
+                                if (!allNamesSpecified || !allReferencedColumnNameSpecified) {
+                                  diagnostics.add(createDiagnostic(field, unit, 
+                                          "A field with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                                          PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
                                 }
                             } catch (JavaModelException e) {
                                 Activator.logException(

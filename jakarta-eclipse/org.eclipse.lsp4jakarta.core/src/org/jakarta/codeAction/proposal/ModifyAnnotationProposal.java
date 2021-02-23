@@ -3,6 +3,9 @@ package org.jakarta.codeAction.proposal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import static java.util.stream.Collectors.toList;
 
 import org.checkerframework.checker.units.qual.A;
 import org.eclipse.core.runtime.CoreException;
@@ -55,7 +58,12 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
         this.attributesToAdd = attributesToAdd;
         this.attributesToRemove = new ArrayList<>();
     }
-    
+    public ModifyAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+            IBinding binding, int relevance, List<String> attributesToAdd, String... annotations) {
+        super(label, targetCU, invocationNode, binding, relevance, annotations);
+        this.attributesToAdd = attributesToAdd;
+        this.attributesToRemove = new ArrayList<>();
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -96,72 +104,81 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
             List<? extends ASTNode> children = (List<? extends ASTNode>) declNode
             		.getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
 
-	        // find and save existing annotation, then remove it from ast
-			for (ASTNode child : children) {
-			    if (child instanceof NormalAnnotation) {
-			    	NormalAnnotation annotation = (NormalAnnotation) child;
-			    	List<MemberValuePair> existingValues = ((NormalAnnotation) annotation).values();
-			    	if (existingValues.stream().anyMatch(mvp -> attributesToAdd.contains(mvp.getName().toString()))) continue;
-			        boolean containsAnnotation = Arrays.stream(annotationShortNames)
-			                .anyMatch(annotation.getTypeName().toString()::contains);
-			        if (containsAnnotation) {
-			            existingAnnotations.add(annotation);
-			        }
-			        rewrite.remove(child, null);
-			        break; // we only ever actually do one annotation at a time
-			    }
-			}
+			 // for all existing annotations (that are the annotation we want)
+            for (ASTNode child : children) {
+                if (child instanceof Annotation) {
+                    Annotation annotation = (Annotation) child;
+                    boolean containsAnnotation = Arrays.stream(annotationShortNames)
+                            .anyMatch(annotation.getTypeName().toString()::contains);
+                    
+                    // check if current child annotation has all attributes to add already or any to remove 
+                    if (containsAnnotation && child instanceof NormalAnnotation) {
+                        List<String> existingValues = (List<String>) ((NormalAnnotation) child).values().stream()
+                                .map(mvp -> ((MemberValuePair) mvp).getName().toString()).collect(toList());
 
-            // add new annotation with fields from existing annotation
-            for (String annotation : annotations) {
-                NormalAnnotation marker = ast.newNormalAnnotation();
-                marker.setTypeName(ast.newName(imports.addImport(annotation, importRewriteContext)));
-                List<MemberValuePair> values = marker.values();
-
-                if (!existingAnnotations.isEmpty()) {
-                	for (Annotation a : existingAnnotations) {
-                		if (a instanceof NormalAnnotation) {
-                			List<MemberValuePair> existingValues = ((NormalAnnotation) a).values();
-                			for (MemberValuePair mvp : existingValues) {
-
-                				boolean removeAttribute = this.attributesToRemove
-                						.contains(mvp.getName().getFullyQualifiedName());
-
-                				// do not add attribute to be removed
-                				if (!removeAttribute) {
-                					MemberValuePair memberValuePair = ast.newMemberValuePair();
-                					memberValuePair.setName(ast.newSimpleName(mvp.getName().getFullyQualifiedName()));
-                					StringLiteral stringValue = ast.newStringLiteral();
-
-                					if (mvp.getValue() instanceof StringLiteral) {
-                						StringLiteral stringLiteral = (StringLiteral) mvp.getValue();
-                						stringValue.setLiteralValue(stringLiteral.getLiteralValue());
-                					} else {
-                						stringValue.setLiteralValue("");
-                					}
-                					memberValuePair.setValue(stringValue);
-                					values.add(memberValuePair);
-                				}
-                			}
-                		}
-                	}
-            	}
-
-                // add new String attributes
-                for (String newAttr : this.attributesToAdd) {
-                    MemberValuePair memberValuePair = ast.newMemberValuePair();
-                    memberValuePair.setName(ast.newSimpleName(newAttr));
-                    StringLiteral stringValue = ast.newStringLiteral();
-                    stringValue.setLiteralValue("");
-                    memberValuePair.setValue(stringValue);
-                    values.add(memberValuePair);
+                        boolean containsAllToAdd = this.attributesToAdd.stream()
+                                .allMatch(attr -> existingValues.stream().anyMatch(v -> v.equals(attr)));
+                        boolean containsAnyToRemove = this.attributesToRemove.stream()
+                                .anyMatch(attr -> existingValues.stream().anyMatch(v -> v.equals(attr)));
+                                
+                        if (!containsAllToAdd || containsAnyToRemove) {
+                            existingAnnotations.add(annotation);
+                            rewrite.remove(child, null);
+                        }
+                    }
                 }
-
-                rewrite.getListRewrite(declNode,
-                        isField ? FieldDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY)
-                        .insertFirst(marker, null);
             }
 
+
+            // add new annotations to proposal (restoring those that were removed)
+            for (Annotation a : existingAnnotations) {
+                if (a instanceof NormalAnnotation) {
+                    NormalAnnotation marker = ast.newNormalAnnotation();
+                    marker.setTypeName(ast.newName(imports.addImport(a.getTypeName().toString(), importRewriteContext)));
+                    List<MemberValuePair> values = marker.values();
+                    
+                    // add existing attributes to annotation
+                    List<MemberValuePair> existingValues = ((NormalAnnotation) a).values();
+                    for (MemberValuePair mvp : existingValues) {
+                        boolean removeAttribute = this.attributesToRemove
+                                .contains(mvp.getName().getFullyQualifiedName());
+                        
+                        // do not add attributes to be removed
+                        if (!removeAttribute) {
+                            MemberValuePair memberValuePair = ast.newMemberValuePair();
+                            memberValuePair.setName(ast.newSimpleName(mvp.getName().getFullyQualifiedName()));
+                            StringLiteral stringValue = ast.newStringLiteral();
+
+                            if (mvp.getValue() instanceof StringLiteral) {
+                                StringLiteral stringLiteral = (StringLiteral) mvp.getValue();
+                                stringValue.setLiteralValue(stringLiteral.getLiteralValue());
+                            } else {
+                                stringValue.setLiteralValue("");
+                            }
+                            memberValuePair.setValue(stringValue);
+                            values.add(memberValuePair);
+                        }
+                    }
+                    
+                    // add new attributes
+                    for (String newAttr : this.attributesToAdd) {
+                        // dont add duplicate attributes to an annotation
+                        if (values.stream().noneMatch(v -> v.getName().toString().equals(newAttr))) {
+                            MemberValuePair memberValuePair = ast.newMemberValuePair();
+                            memberValuePair.setName(ast.newSimpleName(newAttr));
+                            StringLiteral stringValue = ast.newStringLiteral();
+                            stringValue.setLiteralValue("");
+                            memberValuePair.setValue(stringValue);
+                            values.add(memberValuePair);
+                        }
+                    }
+                    
+                    rewrite.getListRewrite(declNode,
+                            isField ? FieldDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY)
+                            .insertFirst(marker, null);
+                }    
+            }
+            
             return rewrite;
         } else if (declNode instanceof TypeDeclaration || isField) {
             AST ast = declNode.getAST();
@@ -174,19 +191,17 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
 
             // find and save existing annotation, then remove it from ast
             for (ASTNode child : children) {
-            	if (child instanceof Annotation) {
-            		Annotation annotation = (Annotation) child;
-
+                if (child instanceof Annotation) {
+                    Annotation annotation = (Annotation) child;
                     boolean containsAnnotation = Arrays.stream(annotationShortNames)
                             .anyMatch(annotation.getTypeName().toString()::contains);
                     if (containsAnnotation) {
                         existingAnnotations.add(annotation);
                         rewrite.remove(child, null);
-                        break;
                     }
                 }
             }
-
+           
             // add new annotation with fields from existing annotation
             for (String annotation : annotations) {
                 NormalAnnotation marker = ast.newNormalAnnotation();
@@ -195,10 +210,9 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                 
                 if (!existingAnnotations.isEmpty()) {
                 	for (Annotation a : existingAnnotations) {
-                		if (a instanceof NormalAnnotation) {
-                			List<MemberValuePair> existingValues = ((NormalAnnotation) a).values();
+                	    if (a instanceof NormalAnnotation) {
+                	        List<MemberValuePair> existingValues = ((NormalAnnotation) a).values();
                             for (MemberValuePair mvp : existingValues) {
-
                             	boolean removeAttribute = this.attributesToRemove
                             			.contains(mvp.getName().getFullyQualifiedName());
 
@@ -231,12 +245,11 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                     memberValuePair.setValue(stringValue);
                     values.add(memberValuePair);	
                 }
-
+                
                 rewrite.getListRewrite(declNode,
                         isField ? FieldDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY)
                         .insertFirst(marker, null);
             }
-
             return rewrite;
         }
         return null;

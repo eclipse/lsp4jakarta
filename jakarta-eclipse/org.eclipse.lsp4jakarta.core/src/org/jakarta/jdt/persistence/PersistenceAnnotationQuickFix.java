@@ -43,52 +43,24 @@ public class PersistenceAnnotationQuickFix extends InsertAnnotationMissingQuickF
     protected void insertAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
             List<CodeAction> codeActions) throws CoreException {
         String[] annotations = getAnnotations();
-        for (String annotation : annotations) {
-            insertAndReplaceAnnotation(diagnostic, context, parentType, codeActions, annotation);
-        }
+        insertAndReplaceAnnotation(diagnostic, context, parentType, codeActions, annotations);
     }
 
     private static void insertAndReplaceAnnotation(Diagnostic diagnostic, JavaCodeActionContext context,
-            IBinding parentType, List<CodeAction> codeActions, String annotation) throws CoreException {
-
-        // Insert the annotation and the proper import by using JDT Core Manipulation API
-
-        // insert correct missing attributes
+            IBinding parentType, List<CodeAction> codeActions, String... annotations) throws CoreException {
         ArrayList<String> attributes = new ArrayList<>();
-        if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_NAME) 
-                || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES)) {
-            attributes.add("name"); 
-        }
-        if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_MAPKEYJOINCOLUMN) 
-                || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES)) {
-            attributes.add("referencedColumnName");
-        }
+        attributes.add("name"); 
+        attributes.add("referencedColumnName");
+        String name = "Add the missing attributes to the @MapKeyJoinColumn annotation";
+        
+        ChangeCorrectionProposal proposal = new ModifyAnnotationProposal(name, context.getCompilationUnit(),
+                context.getASTRoot(), parentType, 0, attributes, annotations);
 
-        // for each attribute create a proposal
-        for (String attribute : attributes) {
-            ArrayList<String> attributesToAdd = new ArrayList<>();
-            attributesToAdd.add(attribute);
-            String name = getLabel(annotation, attribute, "Add");
-            ChangeCorrectionProposal proposal = new ModifyAnnotationProposal(name, context.getCompilationUnit(),
-                    context.getASTRoot(), parentType, 0, annotation, attributesToAdd);
-
-            // Convert the proposal to LSP4J CodeAction
-            CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-            codeAction.setTitle(name);
-            if (codeAction != null) {
-                codeActions.add(codeAction);
-            }
+        // Convert the proposal to LSP4J CodeAction
+        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
+        codeAction.setTitle(name);
+        if (codeAction != null) {
+            codeActions.add(codeAction);
         }
-    }
-
-    private static String getLabel(String annotation, String attribute, String labelType) {
-        StringBuilder name = new StringBuilder("Add the `" + attribute + "` attribute to ");
-        if (labelType.equals("Remove")) {
-            name = new StringBuilder("Remove the `" + attribute + "` attribute from ");
-        }
-        String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
-        name.append("@");
-        name.append(annotationName);
-        return name.toString();
     }
 }
