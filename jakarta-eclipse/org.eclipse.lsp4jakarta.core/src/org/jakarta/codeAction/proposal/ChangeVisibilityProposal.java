@@ -29,12 +29,27 @@ import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.internal.core.manipulation.dom.ASTResolving;
 import org.eclipse.lsp4j.CodeActionKind;
 
+/**
+ * Code action proposal for changing the visibility modifier of a class method.
+ * Used by JAX-RS ResourceMethodQuickFix.
+ * 
+ * @author  Matthew Shocrylas
+ * @see     CodeActionHandler
+ * @see     ResourceMethodQuickFix
+ * 
+ */
 public class ChangeVisibilityProposal extends ChangeCorrectionProposal {
 
     private final CompilationUnit fInvocationNode;
     private final IBinding fBinding;
     private final String fVisibility;
     
+    /**
+     * Constructor for ChangeVisibilityProposal. 
+     * 
+     * @param visibility    a valid visibility modifier which will replace the method's current one.
+     * 
+     */
     public ChangeVisibilityProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
             IBinding binding, int relevance, String visibility) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
@@ -70,9 +85,9 @@ public class ChangeVisibilityProposal extends ChangeCorrectionProposal {
             if (modifier instanceof Modifier) {
                 Modifier.ModifierKeyword modKeyword = ((Modifier) modifier).getKeyword();
                 // Check if the modifier is private, public or protected
-                if ((modKeyword.equals(Modifier.ModifierKeyword.PRIVATE_KEYWORD) ||
+                if (modKeyword.equals(Modifier.ModifierKeyword.PRIVATE_KEYWORD) ||
                         modKeyword.equals(Modifier.ModifierKeyword.PUBLIC_KEYWORD) ||
-                        modKeyword.equals(Modifier.ModifierKeyword.PROTECTED_KEYWORD))) {
+                        modKeyword.equals(Modifier.ModifierKeyword.PROTECTED_KEYWORD)) {
                     
                     modifiersList.replace(modifier, marker, null);
                     return rewrite;

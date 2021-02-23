@@ -28,7 +28,12 @@ import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ChangeVisibilityProposal;
 
-
+/**
+ * Quick fix for ResourceMethodDiagnosticsCollector that uses ChangeVisibilityProposal.
+ * 
+ * @author Matthew Shocrylas
+ *
+ */
 public class ResourceMethodQuickFix implements IJavaCodeActionParticipant {
 
     @Override
