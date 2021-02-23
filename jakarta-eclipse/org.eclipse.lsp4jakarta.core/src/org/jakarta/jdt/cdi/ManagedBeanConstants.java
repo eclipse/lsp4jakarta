@@ -1,0 +1,28 @@
+/*******************************************************************************
+* Copyright (c) 2021 IBM Corporation.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     Hani Damlaj
+*******************************************************************************/
+
+package org.jakarta.jdt.cdi;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.lsp4j.DiagnosticSeverity;
+
+public class ManagedBeanConstants {
+    public static final String DIAGNOSTIC_SOURCE = "jakarta-cdi";
+    public static final String DIAGNOSTIC_CODE = "InvalidManagedBeanAnnotation";
+    public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
+    public static final Set<String> SCOPES = new HashSet<String>(
+            Arrays.asList("Dependent", "ApplicationScoped", "ConversationScoped", "RequestScoped", "SessionScoped"));
+}
