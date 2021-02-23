@@ -41,5 +41,5 @@ public class PersistenceConstants {
     /* MapKey Codes */
     public static final String DIAGNOSTIC_CODE_INVALID_ANNOTATION = "RemoveMapKeyorMapKeyClass";
     public static final String DIAGNOSTIC_CODE_MISSING_ATTRIBUTES = "SupplyAttributesToAnnotations";
-    
+
 }

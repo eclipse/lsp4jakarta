@@ -102,9 +102,9 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
             List<Annotation> existingAnnotations = new ArrayList<Annotation>();
 
             List<? extends ASTNode> children = (List<? extends ASTNode>) declNode
-            		.getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
+                    .getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
 
-			 // for all existing annotations (that are the annotation we want)
+            // for all existing annotations (that are the annotation we want)
             for (ASTNode child : children) {
                 if (child instanceof Annotation) {
                     Annotation annotation = (Annotation) child;
@@ -187,7 +187,7 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
             ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
             List<Annotation> existingAnnotations = new ArrayList<Annotation>();
             List<? extends ASTNode> children = (List<? extends ASTNode>) declNode
-            		.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
+                    .getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
 
             // find and save existing annotation, then remove it from ast
             for (ASTNode child : children) {
@@ -209,31 +209,31 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                 List<MemberValuePair> values = marker.values();
                 
                 if (!existingAnnotations.isEmpty()) {
-                	for (Annotation a : existingAnnotations) {
-                	    if (a instanceof NormalAnnotation) {
-                	        List<MemberValuePair> existingValues = ((NormalAnnotation) a).values();
+                    for (Annotation a : existingAnnotations) {
+                        if (a instanceof NormalAnnotation) {
+                            List<MemberValuePair> existingValues = ((NormalAnnotation) a).values();
                             for (MemberValuePair mvp : existingValues) {
-                            	boolean removeAttribute = this.attributesToRemove
-                            			.contains(mvp.getName().getFullyQualifiedName());
+                                boolean removeAttribute = this.attributesToRemove
+                                        .contains(mvp.getName().getFullyQualifiedName());
 
-                                 // do not add attribute to be removed
-                            	if (!removeAttribute) {
-                            		MemberValuePair memberValuePair = ast.newMemberValuePair();
-                            		memberValuePair.setName(ast.newSimpleName(mvp.getName().getFullyQualifiedName()));
-                            		StringLiteral stringValue = ast.newStringLiteral();
-                            		
-                            		if (mvp.getValue() instanceof StringLiteral) {
-                            			StringLiteral stringLiteral = (StringLiteral) mvp.getValue();
-                            			stringValue.setLiteralValue(stringLiteral.getLiteralValue());
-                            		} else {
-                            			stringValue.setLiteralValue("");
-                            		}
-                            		memberValuePair.setValue(stringValue);
-                            		values.add(memberValuePair);
-                            	}
+                                // do not add attribute to be removed
+                                if (!removeAttribute) {
+                                    MemberValuePair memberValuePair = ast.newMemberValuePair();
+                                    memberValuePair.setName(ast.newSimpleName(mvp.getName().getFullyQualifiedName()));
+                                    StringLiteral stringValue = ast.newStringLiteral();
+
+                                    if (mvp.getValue() instanceof StringLiteral) {
+                                        StringLiteral stringLiteral = (StringLiteral) mvp.getValue();
+                                        stringValue.setLiteralValue(stringLiteral.getLiteralValue());
+                                    } else {
+                                        stringValue.setLiteralValue("");
+                                    }
+                                    memberValuePair.setValue(stringValue);
+                                    values.add(memberValuePair);
+                                }
                             }
-                		}
-                	}
+                        }
+                    }
                 }
 
                 // add new String attributes
@@ -243,7 +243,7 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                     StringLiteral stringValue = ast.newStringLiteral();
                     stringValue.setLiteralValue("");
                     memberValuePair.setValue(stringValue);
-                    values.add(memberValuePair);	
+                    values.add(memberValuePair);
                 }
                 
                 rewrite.getListRewrite(declNode,

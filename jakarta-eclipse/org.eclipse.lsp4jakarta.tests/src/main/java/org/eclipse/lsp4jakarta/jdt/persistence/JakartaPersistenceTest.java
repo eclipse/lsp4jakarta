@@ -76,10 +76,10 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 
     
     @Test
-    public void persistenceAnnotationQuickFix() throws Exception {
+    public void completeMapKeyJoinColumnAnnotation() throws Exception {
         JDTUtils utils = JDT_UTILS;
 
-        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");        
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject().getFile(
                 new Path("src/main/java/io/openliberty/sample/jakarta/persistence/MultipleMapKeyAnnotations.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();

@@ -1,3 +1,15 @@
+/*******************************************************************************
+* Copyright (c) 2021 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 package org.jakarta.jdt.persistence;
 
 import java.util.ArrayList;
@@ -14,11 +26,6 @@ import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ModifyAnnotationProposal;
 import org.jakarta.jdt.servlet.InsertAnnotationMissingQuickFix;
 
-/**
- * If more than one @MapKeyJoinColumn annotation is applied to a field 
- * or property, both the name and the referencedColumnName elements must
- * be specified in each such @MapKeyJoinColumn annotation.
- */
 
 /**
  * QuickFix for fixing {@link PersistenceConstants#DIAGNOSTIC_CODE_MISSING_ATTRIBUTES} error
