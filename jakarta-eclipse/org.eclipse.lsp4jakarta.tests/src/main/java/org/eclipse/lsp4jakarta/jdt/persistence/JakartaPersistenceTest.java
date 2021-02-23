@@ -35,6 +35,7 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 
     @Test
     public void deleteMapKeyOrMapKeyClass() throws Exception {
+        JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
 
         IFile javaFile = javaProject.getProject().getFile(
@@ -52,7 +53,7 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
                 "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveMapKeyorMapKeyClass");
 
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
 
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
 
@@ -61,7 +62,7 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
         CodeAction ca1 = ca(uri, "Remove @MapKeyClass", d1, te1);
         CodeAction ca2 = ca(uri, "Remove @MapKey", d1, te2);
 
-        assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca1, ca2);
+        assertJavaCodeAction(codeActionParams1, utils, ca1, ca2);
 
         JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
 
@@ -70,15 +71,15 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
         CodeAction ca3 = ca(uri, "Remove @MapKeyClass", d2, te3);
         CodeAction ca4 = ca(uri, "Remove @MapKey", d2, te4);
 
-        assertJavaCodeAction(codeActionParams2, JDT_UTILS, ca3, ca4);
+        assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
     }
 
     
     @Test
     public void persistenceAnnotationQuickFix() throws Exception {
-        JDTUtils utils = this.JDT_UTILS;
-        IJavaProject javaProject = loadJavaProject("jakarta-servlet", "");
-        
+        JDTUtils utils = JDT_UTILS;
+
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");        
         IFile javaFile = javaProject.getProject().getFile(
                 new Path("src/main/java/io/openliberty/sample/jakarta/persistence/MultipleMapKeyAnnotations.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
@@ -110,7 +111,7 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
         // test quick fixes
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
         
-        TextEdit te1 = te(10, 4, 11, 23,  "@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")\n @MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")");
+        TextEdit te1 = te(10, 4, 11, 23,  "@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")\n@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")");
         CodeAction ca1 = ca(uri, "Add the missing attributes to the @MapKeyJoinColumn annotation", d1, te1);
         ca1.setKind("quickfix");
 
