@@ -110,13 +110,21 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
         
         // test quick fixes
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
-        
-        TextEdit te1 = te(10, 4, 11, 23,  "@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")\n@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")");
+        TextEdit te1 = te(10, 4, 11, 23,  "@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")\n\t@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")");
         CodeAction ca1 = ca(uri, "Add the missing attributes to the @MapKeyJoinColumn annotation", d1, te1);
-        ca1.setKind("quickfix");
 
         assertJavaCodeAction(codeActionParams1, utils, ca1);
+        
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d3);
+        TextEdit te2 = te(14, 4, 15, 52,  "@MapKeyJoinColumn(referencedColumnName = \"rcn2\", name = \"\")\n\t@MapKeyJoinColumn(name = \"n1\", referencedColumnName = \"\")");
+        CodeAction ca2 = ca(uri, "Add the missing attributes to the @MapKeyJoinColumn annotation", d3, te2);
 
+        assertJavaCodeAction(codeActionParams2, utils, ca2);
+        
+        JakartaJavaCodeActionParams codeActionParams3 = createCodeActionParams(uri, d5);
+        TextEdit te3 = te(18, 4, 19, 23,  "@MapKeyJoinColumn(name = \"\", referencedColumnName = \"\")\n\t@MapKeyJoinColumn(name = \"n1\", referencedColumnName = \"rcn1\")");
+        CodeAction ca3 = ca(uri, "Add the missing attributes to the @MapKeyJoinColumn annotation", d5, te3);
+
+        assertJavaCodeAction(codeActionParams3, utils, ca3);
     }
-
 }
