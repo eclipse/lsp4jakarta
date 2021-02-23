@@ -81,7 +81,7 @@ public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipa
         return null;
     }
 
-    protected IBinding getBinding(ASTNode node) {
+    protected static IBinding getBinding(ASTNode node) {
         if (node.getParent() instanceof VariableDeclarationFragment) {
             VariableDeclarationFragment fragment = (VariableDeclarationFragment) node.getParent();
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
