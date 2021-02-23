@@ -4,10 +4,10 @@
       "body": [
         "package ${1:packagename};",
         "",
-        "import javax.ws.rs.GET;",
-        "import javax.ws.rs.Path;",
-        "import javax.ws.rs.Produces;",
-        "import javax.ws.rs.core.MediaType;",
+        "import jakarta.ws.rs.GET;",
+        "import jakarta.ws.rs.Path;",
+        "import jakarta.ws.rs.Produces;",
+        "import jakarta.ws.rs.core.MediaType;",
         "",
         "@Path(\"${2:/path}\")",
         "public class ${3:className} {",
@@ -21,7 +21,7 @@
       ],
       "description": "JAX-RS REST resource class",
       "context": {
-        "type": "javax.ws.rs.GET"
+        "type": "jakarta.ws.rs.GET"
       }
     },
     "JAX-RS - new GET resource method": {
@@ -35,7 +35,7 @@
       ],
       "description": "JAX-RS GET resource method",
       "context": {
-        "type": "javax.ws.rs.GET"
+        "type": "jakarta.ws.rs.GET"
       }
     },
     "JAX-RS - new POST resource method": {
@@ -49,7 +49,7 @@
       ],
       "description": "JAX-RS POST resource method",
       "context": {
-        "type": "javax.ws.rs.POST"
+        "type": "jakarta.ws.rs.POST"
       }
     },
     "JAX-RS - new PUT resource method": {
@@ -63,7 +63,7 @@
       ],
       "description": "JAX-RS PUT resource method",
       "context": {
-        "type": "javax.ws.rs.PUT"
+        "type": "jakarta.ws.rs.PUT"
       }
     },
     "JAX-RS - new DELETE resource method": {
@@ -77,7 +77,7 @@
       ],
       "description": "JAX-RS DELETE resource method",
       "context": {
-        "type": "javax.ws.rs.DELETE"
+        "type": "jakarta.ws.rs.DELETE"
       }
     },
     "JAX-RS - new HEAD resource method": {
@@ -91,7 +91,7 @@
       ],
       "description": "JAX-RS HEAD resource method",
       "context": {
-        "type": "javax.ws.rs.HEAD"
+        "type": "jakarta.ws.rs.HEAD"
       }
     }
   }

@@ -139,7 +139,6 @@ public class JakartaForJavaAssert {
     public static void assertJavaDiagnostics(JakartaDiagnosticsParams params, JDTUtils utils,
             Diagnostic... expected) throws JavaModelException {
         List<PublishDiagnosticsParams> actual = JDTServicesManager.getInstance().getJavaDiagnostics(params);
-//        List<PublishDiagnosticsParams> publishDiagnostics = servicesManager.getJavaDiagnostics(params);
 
         assertDiagnostics(
                 actual != null && actual.size() > 0 ? actual.get(0).getDiagnostics() : Collections.emptyList(),

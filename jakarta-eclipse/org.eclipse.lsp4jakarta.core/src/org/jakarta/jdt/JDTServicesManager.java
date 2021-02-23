@@ -28,6 +28,7 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.jakarta.jdt.beanvalidation.BeanValidationDiagnosticsCollector;
+import org.jakarta.jdt.jax_rs.ResourceMethodDiagnosticsCollector;
 import org.jakarta.jdt.jsonb.JsonbCreatorDiagnosticsCollector;
 import org.jakarta.jdt.persistence.PersistenceEntityDiagnosticsCollector;
 import org.jakarta.jdt.persistence.PersistenceMapKeyDiagnosticsCollector;
@@ -66,6 +67,7 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new BeanValidationDiagnosticsCollector());
         diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
         diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
+        diagnosticsCollectors.add(new ResourceMethodDiagnosticsCollector());
         diagnosticsCollectors.add(new JsonbCreatorDiagnosticsCollector());
         this.codeActionHandler = new CodeActionHandler();
     }
