@@ -30,6 +30,8 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
+import org.jakarta.jdt.persistence.PersistenceAnnotationQuickFix;
+import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.jdt.jax_rs.Jax_RSConstants;
 import org.jakarta.jdt.jax_rs.ResourceMethodQuickFix;
 import org.jakarta.jdt.cdi.ManagedBeanConstants;
@@ -78,6 +80,7 @@ public class CodeActionHandler {
             ListenerImplementationQuickFix ListenerImplementationQuickFix = new ListenerImplementationQuickFix();
             CompleteServletAnnotationQuickFix CompleteServletAnnotationQuickFix = new CompleteServletAnnotationQuickFix();
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
+            PersistenceAnnotationQuickFix PersistenceAnnotationQuickFix = new PersistenceAnnotationQuickFix();
             DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
             ResourceMethodQuickFix ResourceMethodQuickFix = new ResourceMethodQuickFix();
             ManagedBeanQuickFix ManagedBeanQuickFix = new ManagedBeanQuickFix();
@@ -107,6 +110,9 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC)) {
                         codeActions.addAll(ResourceMethodQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES)) {
+                    	codeActions.addAll(PersistenceAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft()
                             .equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
