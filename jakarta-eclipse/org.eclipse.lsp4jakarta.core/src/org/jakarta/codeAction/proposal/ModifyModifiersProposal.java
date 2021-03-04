@@ -46,7 +46,7 @@ import org.eclipse.lsp4j.CodeActionKind;
  * @see     ResourceMethodQuickFix
  * 
  */
-public class ModifyVisibilityProposal extends ChangeCorrectionProposal {
+public class ModifyModifiersProposal extends ChangeCorrectionProposal {
 
     private final CompilationUnit invocationNode;
     private final IBinding binding;
@@ -64,7 +64,7 @@ public class ModifyVisibilityProposal extends ChangeCorrectionProposal {
      * @param visibility    a valid visibility modifier which will replace the method's current one.
      * 
      */
-    public ModifyVisibilityProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+    public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
             IBinding binding, int relevance, String visibility) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
         this.invocationNode = invocationNode;
@@ -74,7 +74,7 @@ public class ModifyVisibilityProposal extends ChangeCorrectionProposal {
         this.modifiersToRemove = new ArrayList<>();
     }
 
-    public ModifyVisibilityProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+    public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
             IBinding binding, int relevance, List<String> modifiersToAdd, List<String> modifiersToRemove) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
         this.invocationNode = invocationNode;
@@ -84,7 +84,7 @@ public class ModifyVisibilityProposal extends ChangeCorrectionProposal {
         this.modifiersToRemove = modifiersToRemove;
     }
     
-    public ModifyVisibilityProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+    public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
             IBinding binding, int relevance, List<String> modifiersToAdd) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
         this.invocationNode = invocationNode;

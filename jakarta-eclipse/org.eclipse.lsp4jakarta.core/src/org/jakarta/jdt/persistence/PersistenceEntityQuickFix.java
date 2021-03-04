@@ -27,9 +27,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.IJavaCodeActionParticipant;
 import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
-import org.jakarta.codeAction.proposal.ModifyAnnotationProposal;
-import org.jakarta.codeAction.proposal.ModifyVisibilityProposal;
-import org.jakarta.jdt.servlet.ServletConstants;
+import org.jakarta.codeAction.proposal.ModifyModifiersProposal;
 
 /**
  * QuickFix for fixing {@link PersistenceConstants#DIAGNOSTIC_CODE_MISSING_ATTRIBUTES} error
@@ -111,7 +109,7 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         
         String name = "Remove the 'final' modifier from this ";
         name = name.concat(type);
-        ChangeCorrectionProposal proposal = new ModifyVisibilityProposal(name, context.getCompilationUnit(), 
+        ChangeCorrectionProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
                 context.getASTRoot(), parentType, 0, new ArrayList<>(), Arrays.asList("final"));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
         
