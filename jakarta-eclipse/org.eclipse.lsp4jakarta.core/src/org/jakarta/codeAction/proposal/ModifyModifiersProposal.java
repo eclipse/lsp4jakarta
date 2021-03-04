@@ -50,7 +50,7 @@ public class ModifyModifiersProposal extends ChangeCorrectionProposal {
 
     private final CompilationUnit invocationNode;
     private final IBinding binding;
-    private final String visibility;
+    private final ASTNode coveredNode;
     
     // list of modifiers to add
     private final List<String> modifiersToAdd;
@@ -65,31 +65,31 @@ public class ModifyModifiersProposal extends ChangeCorrectionProposal {
      * 
      */
     public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-            IBinding binding, int relevance, String visibility) {
+            IBinding binding, int relevance, ASTNode coveredNode, String visibility) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
         this.invocationNode = invocationNode;
         this.binding = binding;
-        this.visibility = visibility;
+        this.coveredNode = coveredNode;
         this.modifiersToAdd = Arrays.asList(visibility);
         this.modifiersToRemove = new ArrayList<>();
     }
 
     public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-            IBinding binding, int relevance, List<String> modifiersToAdd, List<String> modifiersToRemove) {
+            IBinding binding, int relevance, ASTNode coveredNode, List<String> modifiersToAdd, List<String> modifiersToRemove) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
         this.invocationNode = invocationNode;
         this.binding = binding;
-        this.visibility = "";
+        this.coveredNode = coveredNode;
         this.modifiersToAdd = modifiersToAdd;        
         this.modifiersToRemove = modifiersToRemove;
     }
     
     public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-            IBinding binding, int relevance, List<String> modifiersToAdd) {
+            IBinding binding, int relevance, ASTNode coveredNode, List<String> modifiersToAdd) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
         this.invocationNode = invocationNode;
         this.binding = binding;
-        this.visibility = "";
+        this.coveredNode = coveredNode;
         this.modifiersToAdd = modifiersToAdd;        
         this.modifiersToRemove = new ArrayList<>();
     }
@@ -110,6 +110,9 @@ public class ModifyModifiersProposal extends ChangeCorrectionProposal {
         boolean isField = declNode instanceof VariableDeclarationFragment;
         if (isField) {
             declNode = declNode.getParent();
+        }
+        if (coveredNode != null) {
+            declNode = coveredNode.getParent();
         }
         
         AST ast = declNode.getAST();
