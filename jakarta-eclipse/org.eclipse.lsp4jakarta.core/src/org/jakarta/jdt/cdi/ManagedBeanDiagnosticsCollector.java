@@ -13,11 +13,7 @@
 
 package org.jakarta.jdt.cdi;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -33,9 +29,10 @@ import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
 
 import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
+import static org.jakarta.jdt.cdi.Utils.getManagedBeanAnnotations;
 
 public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
-	
+
     private Diagnostic createDiagnostic(ICompilationUnit unit, IJavaElement el, String message)
             throws JavaModelException {
         ISourceRange nameRange = JDTUtils.getNameRange(el);
@@ -56,16 +53,9 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
         if (unit == null)
             return;
 
-        List<String> managedBeanAnnotations;
-
         try {
             for (IType type : unit.getAllTypes()) {
-                // Construct a stream of only the annotations applied to the type that are also
-                // recognised managed bean annotations.
-                managedBeanAnnotations = Arrays.stream(type.getAnnotations())
-                        .map(annotation -> annotation.getElementName()).filter(SCOPES::contains).distinct()
-                        .collect(Collectors.toList());
-
+                List<String> managedBeanAnnotations = getManagedBeanAnnotations(type);
                 boolean isManagedBean = managedBeanAnnotations.size() > 0;
 
                 for (IField field : type.getFields()) {
