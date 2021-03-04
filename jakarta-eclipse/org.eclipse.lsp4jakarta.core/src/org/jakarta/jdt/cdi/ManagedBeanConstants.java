@@ -23,6 +23,10 @@ public class ManagedBeanConstants {
     public static final String DIAGNOSTIC_SOURCE = "jakarta-cdi";
     public static final String DIAGNOSTIC_CODE = "InvalidManagedBeanAnnotation";
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
+
+    // List can be found in the cdi doc here:
+    // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#bean_defining_annotations
     public static final Set<String> SCOPES = new HashSet<String>(
-            Arrays.asList("Dependent", "ApplicationScoped", "ConversationScoped", "RequestScoped", "SessionScoped"));
+            Arrays.asList("Dependent", "ApplicationScoped", "ConversationScoped", "RequestScoped", "SessionScoped",
+                    "NormalScope", "Interceptor", "Decorator", "Stereotype"));
 }
