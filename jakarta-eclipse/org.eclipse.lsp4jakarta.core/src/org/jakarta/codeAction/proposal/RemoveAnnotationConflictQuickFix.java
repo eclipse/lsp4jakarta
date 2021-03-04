@@ -11,7 +11,7 @@
 * Contributors:
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
-package org.jakarta.jdt.persistence;
+package org.jakarta.codeAction.proposal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +26,6 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.IJavaCodeActionParticipant;
 import org.jakarta.codeAction.JavaCodeActionContext;
-import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
-import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
-import org.jakarta.codeAction.proposal.NewAnnotationProposal;
 
 /**
  * QuickFix for removing annotations. Modified from
