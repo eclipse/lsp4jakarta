@@ -5,4 +5,8 @@ import jakarta.exterprise.context.*;
 @RequestScoped
 public class ManagedBean {
 	public int a;
+	
+	public ManagedBean(int a) {
+		this.a = a;
+	}
 }
