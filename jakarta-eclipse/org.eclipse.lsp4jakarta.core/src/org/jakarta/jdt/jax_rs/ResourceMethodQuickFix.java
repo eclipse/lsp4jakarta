@@ -14,6 +14,7 @@
 package org.jakarta.jdt.jax_rs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -26,7 +27,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.IJavaCodeActionParticipant;
 import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
-import org.jakarta.codeAction.proposal.ChangeVisibilityProposal;
+import org.jakarta.codeAction.proposal.ModifyVisibilityProposal;
 
 /**
  * Quick fix for ResourceMethodDiagnosticsCollector that uses ChangeVisibilityProposal.
@@ -48,8 +49,8 @@ public class ResourceMethodQuickFix implements IJavaCodeActionParticipant {
             
             final String TITLE_MESSAGE = "Make method public";
             
-            ChangeCorrectionProposal proposal = new ChangeVisibilityProposal(TITLE_MESSAGE,
-                    context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, "public");
+            ChangeCorrectionProposal proposal = new ModifyVisibilityProposal(TITLE_MESSAGE,
+                    context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, Arrays.asList("public"));
             
             // Convert the proposal to LSP4J CodeAction
             CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
