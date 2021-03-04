@@ -45,5 +45,27 @@ public class ManagedBeanTest extends BaseJakartaTest {
         CodeAction ca = ca(uri, "Replace current scope with @Dependent", d, te);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
     }
+    
+    @Test
+    public void peoducesAndInject() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/cdi/ProducesAndInjectTogether.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+        
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+        
+        Diagnostic d1 = d(12, 18, 23,
+                "@Produces and @Inject annotations cannot be used on the same field or property",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrInject");
+
+        Diagnostic d2 = d(7, 19, 27,
+                "@Produces and @Inject annotations cannot be used on the same field or property",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrInject");
+
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
+    }
 
 }
