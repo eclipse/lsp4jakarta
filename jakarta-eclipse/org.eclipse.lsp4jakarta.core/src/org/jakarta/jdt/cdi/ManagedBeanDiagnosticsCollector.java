@@ -8,7 +8,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     Hani Damlaj
+*     Hani Damlaj, Jianing Xu
 *******************************************************************************/
 
 package org.jakarta.jdt.cdi;
@@ -112,7 +112,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                             InjectClassAnnotation = annotation;
                     }
                     if (ProducesAnnotation != null && InjectClassAnnotation != null) {
-                        // A single field cannot have the same
+                        // A single method cannot have the same
                         diagnostics.add(createDiagnostic(method, unit,
                                 "@Produces and @Inject annotations cannot be used on the same field or property",
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT));
