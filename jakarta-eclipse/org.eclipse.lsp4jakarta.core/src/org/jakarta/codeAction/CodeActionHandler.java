@@ -34,6 +34,7 @@ import org.jakarta.jdt.persistence.PersistenceAnnotationQuickFix;
 import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.jdt.jax_rs.Jax_RSConstants;
 import org.jakarta.jdt.jax_rs.ResourceMethodQuickFix;
+import org.jakarta.jdt.cdi.ConflictProducesInjectQuickFix;
 import org.jakarta.jdt.cdi.ManagedBeanConstants;
 import org.jakarta.jdt.cdi.ManagedBeanQuickFix;
 import org.jakarta.jdt.servlet.CompleteFilterAnnotationQuickFix;
@@ -84,6 +85,7 @@ public class CodeActionHandler {
             DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
             ResourceMethodQuickFix ResourceMethodQuickFix = new ResourceMethodQuickFix();
             ManagedBeanQuickFix ManagedBeanQuickFix = new ManagedBeanQuickFix();
+            ConflictProducesInjectQuickFix ConflictProducesInjectQuickFix = new ConflictProducesInjectQuickFix();
 
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -120,6 +122,9 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE)) {
                         codeActions.addAll(ManagedBeanQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT)) {
+                        codeActions.addAll(ConflictProducesInjectQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();

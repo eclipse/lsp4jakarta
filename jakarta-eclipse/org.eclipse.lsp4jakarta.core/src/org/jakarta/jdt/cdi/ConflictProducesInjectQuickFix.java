@@ -12,7 +12,7 @@
 *     IBM Corporation, Jianing Xu - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.persistence;
+package org.jakarta.jdt.cdi;
 
 import java.util.List;
 
@@ -23,26 +23,27 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
+import org.jakarta.jdt.persistence.RemoveAnnotationConflictQuickFix;
 
 /**
  * 
- * Quick fix for removing @MapKey/@MapKeyClass when they are used for the same field
+ * Quick fix for removing @Produces/@Inject when they are used for the same field
  * or property
  * 
  * @author Jianing Xu
  *
  */
-public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickFix {
-
-    public DeleteConflictMapKeyQuickFix() {
-        super(false, "jakarta.persistence.annotation.MapKeyClass", "jakarta.persistence.annotation.MapKey");
+public class ConflictProducesInjectQuickFix extends RemoveAnnotationConflictQuickFix {
+    
+    public ConflictProducesInjectQuickFix() {
+        super(false, "jakarta.enterprise.inject.Produces", "jakarta.inject.Inject");
     }
-
+    
     @Override
     protected void removeAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
             List<CodeAction> codeActions) throws CoreException {
         String[] annotations = getAnnotations();
-        if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)
+        if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT)
                 && !generateOnlyOneCodeAction) {
             for (String annotation : annotations) {
                 String name = getLabel(annotation);
@@ -57,7 +58,7 @@ public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickF
             }
         }
     }
-
+    
     private static String getLabel(String annotation) {
         StringBuilder name = new StringBuilder("Remove ");
         String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
