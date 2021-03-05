@@ -14,15 +14,6 @@
 
 package org.jakarta.jdt.persistence;
 
-import java.util.List;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.Diagnostic;
-import org.jakarta.codeAction.JavaCodeActionContext;
-import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
-import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
 import org.jakarta.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 
 /**
