@@ -92,7 +92,15 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                 }
                 
                 /* ========= Produces and Inject Annotations Checks ========= */
-                // go through each field and method to make sure @Produces and @Inject are not used together
+                /* go through each field and method to make sure @Produces and @Inject are not used together
+                 * 
+                 * see:
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_field
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_injected_field
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
+                 * 
+                 */
                 for (IMethod method : type.getMethods()) {
                     IAnnotation ProducesAnnotation = null;
                     IAnnotation InjectClassAnnotation = null;

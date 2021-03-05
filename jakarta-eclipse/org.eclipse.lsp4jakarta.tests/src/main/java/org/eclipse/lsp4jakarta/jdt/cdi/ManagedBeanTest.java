@@ -57,11 +57,11 @@ public class ManagedBeanTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
         
-        Diagnostic d1 = d(12, 18, 23,
+        Diagnostic d1 = d(16, 18, 23,
                 "@Produces and @Inject annotations cannot be used on the same field or property",
                 DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrInject");
 
-        Diagnostic d2 = d(7, 19, 27,
+        Diagnostic d2 = d(11, 19, 27,
                 "@Produces and @Inject annotations cannot be used on the same field or property",
                 DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrInject");
 
@@ -69,8 +69,8 @@ public class ManagedBeanTest extends BaseJakartaTest {
         
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
 
-        TextEdit te1 = te(10, 4, 11, 4, "");
-        TextEdit te2 = te(11, 4, 12, 4, "");
+        TextEdit te1 = te(14, 4, 15, 4, "");
+        TextEdit te2 = te(15, 4, 16, 4, "");
         CodeAction ca1 = ca(uri, "Remove @Produces", d1, te1);
         CodeAction ca2 = ca(uri, "Remove @Inject", d1, te2);
 
@@ -78,8 +78,8 @@ public class ManagedBeanTest extends BaseJakartaTest {
         
         JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
 
-        TextEdit te3 = te(5, 4, 6, 4, "");
-        TextEdit te4 = te(6, 4, 7, 4, "");
+        TextEdit te3 = te(9, 4, 10, 4, "");
+        TextEdit te4 = te(10, 4, 11, 4, "");
         CodeAction ca3 = ca(uri, "Remove @Produces", d2, te3);
         CodeAction ca4 = ca(uri, "Remove @Inject", d2, te4);
 

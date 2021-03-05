@@ -11,7 +11,7 @@
 * Contributors:
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
-package org.jakarta.jdt.servlet;
+package org.jakarta.codeAction.proposal.quickfix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,20 +27,20 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.IJavaCodeActionParticipant;
 import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
-import org.jakarta.codeAction.proposal.NewAnnotationProposal;
+import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
 
 /**
- * QuickFix for inserting annotations.
- * Reused from https://github.com/eclipse/lsp4mp/blob/6f2d700a88a3262e39cc2ba04beedb429e162246/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/InsertAnnotationMissingQuickFix.java
+ * QuickFix for removing annotations. Modified from
+ * https://github.com/eclipse/lsp4mp/blob/6f2d700a88a3262e39cc2ba04beedb429e162246/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/InsertAnnotationMissingQuickFix.java
  *
  * @author Angelo ZERR
  *
  */
-public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipant {
+public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticipant {
 
     private final String[] annotations;
 
-    private final boolean generateOnlyOneCodeAction;
+    protected final boolean generateOnlyOneCodeAction;
 
     /**
      * Constructor for insert annotation quick fix.
@@ -51,7 +51,7 @@ public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipa
      *
      * @param annotations list of annotation to insert.
      */
-    public InsertAnnotationMissingQuickFix(String... annotations) {
+    public RemoveAnnotationConflictQuickFix(String... annotations) {
         this(false, annotations);
     }
 
@@ -63,7 +63,7 @@ public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipa
      *                                  annotation and false otherwise.
      * @param annotations               list of annotation to insert.
      */
-    public InsertAnnotationMissingQuickFix(boolean generateOnlyOneCodeAction, String... annotations) {
+    public RemoveAnnotationConflictQuickFix(boolean generateOnlyOneCodeAction, String... annotations) {
         this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;
         this.annotations = annotations;
     }
@@ -75,13 +75,39 @@ public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipa
         IBinding parentType = getBinding(node);
         if (parentType != null) {
             List<CodeAction> codeActions = new ArrayList<>();
-            insertAnnotations(diagnostic, context, parentType, codeActions);
+            removeAnnotations(diagnostic, context, parentType, codeActions);
             return codeActions;
         }
         return null;
+
     }
 
-    protected static IBinding getBinding(ASTNode node) {
+    protected void removeAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
+            List<CodeAction> codeActions) throws CoreException {
+        if (generateOnlyOneCodeAction) {
+            removeAnnotation(diagnostic, context, parentType, codeActions, annotations);
+        } else {
+            for (String annotation : annotations) {
+                removeAnnotation(diagnostic, context, parentType, codeActions, annotation);
+            }
+        }
+    }
+
+    protected static void removeAnnotation(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
+            List<CodeAction> codeActions, String... annotations) throws CoreException {
+        // Remove the annotation and the proper import by using JDT Core Manipulation
+        // API
+        String name = getLabel(annotations);
+        ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
+                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotations);
+        // Convert the proposal to LSP4J CodeAction
+        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
+        if (codeAction != null) {
+            codeActions.add(codeAction);
+        }
+    }
+
+    protected IBinding getBinding(ASTNode node) {
         if (node.getParent() instanceof VariableDeclarationFragment) {
             VariableDeclarationFragment fragment = (VariableDeclarationFragment) node.getParent();
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
@@ -93,33 +119,8 @@ public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipa
         return this.annotations;
     }
 
-    protected void insertAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
-            List<CodeAction> codeActions) throws CoreException {
-        if (generateOnlyOneCodeAction) {
-            insertAnnotation(diagnostic, context, parentType, codeActions, annotations);
-        } else {
-            for (String annotation : annotations) {
-                insertAnnotation(diagnostic, context, parentType, codeActions, annotation);
-            }
-        }
-    }
-
-    protected static void insertAnnotation(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
-            List<CodeAction> codeActions, String... annotations) throws CoreException {
-        // Insert the annotation and the proper import by using JDT Core Manipulation
-        // API
-        String name = getLabel(annotations);
-        ChangeCorrectionProposal proposal = new NewAnnotationProposal(name, context.getCompilationUnit(),
-                context.getASTRoot(), parentType, 0, annotations);
-        // Convert the proposal to LSP4J CodeAction
-        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-        if (codeAction != null) {
-            codeActions.add(codeAction);
-        }
-    }
-
     private static String getLabel(String[] annotations) {
-        StringBuilder name = new StringBuilder("Insert ");
+        StringBuilder name = new StringBuilder("Remove ");
         for (int i = 0; i < annotations.length; i++) {
             String annotation = annotations[i];
             String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
@@ -131,5 +132,4 @@ public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipa
         }
         return name.toString();
     }
-
 }
