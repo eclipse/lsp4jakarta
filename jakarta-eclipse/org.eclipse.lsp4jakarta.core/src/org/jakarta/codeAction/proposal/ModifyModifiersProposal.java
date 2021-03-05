@@ -59,23 +59,13 @@ public class ModifyModifiersProposal extends ChangeCorrectionProposal {
 
     // list of modifiers (if they exist) to remove
     private final List<String> modifiersToRemove;
-    
-    /**
-     * Constructor for ChangeVisibilityProposal. 
-     * 
-     * @param visibility    a valid visibility modifier which will replace the method's current one.
-     * 
-     */
-    public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-            IBinding binding, int relevance, ASTNode coveredNode, String visibility) {
-        super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-        this.invocationNode = invocationNode;
-        this.binding = binding;
-        this.coveredNode = coveredNode;
-        this.modifiersToAdd = Arrays.asList(visibility);
-        this.modifiersToRemove = new ArrayList<>();
-    }
 
+    /**
+     *  Constructor for ModifyModifiersProposal that accepts both a list of modifiers to remove as well as to add
+     * 
+     * @param modifiersToAdd        list of valid modifiers as strings to be added
+     * @param modifiersToRemove     list of modifiers as strings to be removed
+     */
     public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
             IBinding binding, int relevance, ASTNode coveredNode, List<String> modifiersToAdd, List<String> modifiersToRemove) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
@@ -86,6 +76,12 @@ public class ModifyModifiersProposal extends ChangeCorrectionProposal {
         this.modifiersToRemove = modifiersToRemove;
     }
     
+    /**
+     *  Constructor for ModifyModifiersProposal that accepts only a list of modifiers to add
+     *  If a visibility modifier is specified to be added, existing visibility modifiers will be removed
+     *
+     * @param modifiersToAdd        list of valid modifiers as strings to be added
+     */
     public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
             IBinding binding, int relevance, ASTNode coveredNode, List<String> modifiersToAdd) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
