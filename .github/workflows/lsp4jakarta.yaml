@@ -1,0 +1,32 @@
+name: Java CI - LSP4Jakarta
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Build jakarta.ls with Maven
+        working-directory: ./jakarta.ls
+        run: mvn clean install --file pom.xml
+      - name: Copy jakarta.ls jar
+        working-directory: ./jakarta.ls
+        run: mv target/jakarta.ls-1.0-SNAPSHOT-jar-with-dependencies.jar ../jakarta-eclipse/org.eclipse.lsp4jakarta.core
+      - name: Build jakarta-eclipse with Maven (Linux)
+        if: runner.os == 'Linux'
+        working-directory: ./jakarta-eclipse
+        run: xvfb-run -a mvn -B package verify --file pom.xml
+          

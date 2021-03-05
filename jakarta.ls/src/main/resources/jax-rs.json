@@ -4,10 +4,10 @@
       "body": [
         "package ${1:packagename};",
         "",
-        "import javax.ws.rs.GET;",
-        "import javax.ws.rs.Path;",
-        "import javax.ws.rs.Produces;",
-        "import javax.ws.rs.core.MediaType;",
+        "import jakarta.ws.rs.GET;",
+        "import jakarta.ws.rs.Path;",
+        "import jakarta.ws.rs.Produces;",
+        "import jakarta.ws.rs.core.MediaType;",
         "",
         "@Path(\"${2:/path}\")",
         "public class ${3:className} {",
@@ -21,11 +21,11 @@
       ],
       "description": "JAX-RS REST resource class",
       "context": {
-        "type": "javax.ws.rs.GET"
+        "type": "jakarta.ws.rs.GET"
       }
     },
-    "JAX-RS - new resource method": {
-      "prefix": "jaxrm",
+    "JAX-RS - new GET resource method": {
+      "prefix": "jaxrmget",
       "body": [
         "@GET",
         "@Produces(MediaType.TEXT_PLAIN)",
@@ -33,9 +33,65 @@
         "\treturn \"hello\";",
         "}"
       ],
-      "description": "JAX-RS REST resource method",
+      "description": "JAX-RS GET resource method",
       "context": {
-        "type": "javax.ws.rs.GET"
+        "type": "jakarta.ws.rs.GET"
+      }
+    },
+    "JAX-RS - new POST resource method": {
+      "prefix": "jaxrmpost",
+      "body": [
+        "@POST",
+        "@Consumes(MediaType.TEXT_PLAIN)",
+        "public void ${1:methodname}(String message) {",
+        "\t// Store the message",
+        "}"
+      ],
+      "description": "JAX-RS POST resource method",
+      "context": {
+        "type": "jakarta.ws.rs.POST"
+      }
+    },
+    "JAX-RS - new PUT resource method": {
+      "prefix": "jaxrmput",
+      "body": [
+        "@PUT",
+        "@Consumes(MediaType.TEXT_PLAIN)",
+        "public void ${1:methodname}(String message) {",
+        "\t// Store the message",
+        "}"
+      ],
+      "description": "JAX-RS PUT resource method",
+      "context": {
+        "type": "jakarta.ws.rs.PUT"
+      }
+    },
+    "JAX-RS - new DELETE resource method": {
+      "prefix": "jaxrmdelete",
+      "body": [
+        "@DELETE",
+        "@Consumes(MediaType.TEXT_PLAIN)",
+        "public void ${1:methodname}(String message) {",
+        "\t// Delete the message",
+        "}"
+      ],
+      "description": "JAX-RS DELETE resource method",
+      "context": {
+        "type": "jakarta.ws.rs.DELETE"
+      }
+    },
+    "JAX-RS - new HEAD resource method": {
+      "prefix": "jaxrmhead",
+      "body": [
+        "@HEAD",
+        "@Produces(MediaType.TEXT_PLAIN)",
+        "public String ${1:methodname}() {",
+        "\treturn \"this body will be ignored\";",
+        "}"
+      ],
+      "description": "JAX-RS HEAD resource method",
+      "context": {
+        "type": "jakarta.ws.rs.HEAD"
       }
     }
   }
