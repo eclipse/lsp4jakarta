@@ -25,6 +25,7 @@ import org.jakarta.codeAction.CodeActionHandler;
 import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ModifyAnnotationProposal;
+import org.jakarta.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
 
 /**
  * QuickFix for fixing

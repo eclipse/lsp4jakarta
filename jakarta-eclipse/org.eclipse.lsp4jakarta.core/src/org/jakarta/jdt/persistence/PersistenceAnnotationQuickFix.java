@@ -24,7 +24,7 @@ import org.jakarta.codeAction.IJavaCodeActionParticipant;
 import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ModifyAnnotationProposal;
-import org.jakarta.jdt.servlet.InsertAnnotationMissingQuickFix;
+import org.jakarta.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
 
 
 /**
