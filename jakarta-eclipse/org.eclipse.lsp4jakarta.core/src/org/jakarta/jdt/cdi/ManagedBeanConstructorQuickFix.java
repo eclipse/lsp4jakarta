@@ -1,3 +1,16 @@
+/*******************************************************************************
+* Copyright (c) 2021 IBM Corporation.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     Hani Damlaj
+*******************************************************************************/
+
 package org.jakarta.jdt.cdi;
 
 import java.util.ArrayList;
@@ -13,7 +26,7 @@ import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.JavaCodeActionContext;
-import org.jakarta.jdt.servlet.InsertAnnotationMissingQuickFix;
+import org.jakarta.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
 
 public class ManagedBeanConstructorQuickFix extends InsertAnnotationMissingQuickFix  {
 	public ManagedBeanConstructorQuickFix() {

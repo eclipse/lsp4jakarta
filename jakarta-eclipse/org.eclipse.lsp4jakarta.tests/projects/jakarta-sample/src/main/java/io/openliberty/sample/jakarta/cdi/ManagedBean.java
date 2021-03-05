@@ -6,7 +6,7 @@ import jakarta.enterprise.context.RequestScoped;
 public class ManagedBean {
 	public int a;
 	
-	public ManagedBean(int a) {
-		this.a = a;
+	public ManagedBean() {
+		this.a = 10;
 	}
 }

@@ -26,11 +26,8 @@ public class ManagedBeanConstants {
     
     public static final String DIAGNOSTIC_SOURCE = "jakarta-cdi";
     public static final String DIAGNOSTIC_CODE = "InvalidManagedBeanAnnotation";
-<<<<<<< HEAD
     public static final String DIAGNOSTIC_CODE_PRODUCES_INJECT = "RemoveProducesOrInject";
-=======
     public static final String CONSTRUCTOR_DIAGNOSTIC_CODE = "InvalidManagedBeanConstructor";
->>>>>>> A managed bean without an empty-parameterized constructor must have a constructor annotated with @Inject.
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 
     // List can be found in the cdi doc here:
