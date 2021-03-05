@@ -127,4 +127,33 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 
         assertJavaCodeAction(codeActionParams3, utils, ca3);
     }
+
+    @Test
+    public void addEmptyConstructor() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/persistence/EntityMissingConstructor.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        // test diagnostics are present
+        Diagnostic d = d(5, 13, 37,
+                "A class using the @Entity annotation must contain a public or protected constructor with no arguments.",
+                DiagnosticSeverity.Error, "jakarta-persistence", "MissingEmptyConstructor");
+
+        assertJavaDiagnostics(diagnosticsParams, utils, d);
+
+        // test quick fixes
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d);
+        TextEdit te1 = te(7, 4, 7, 4,  "protected EntityMissingConstructor() {\n\t}\n\n\t");
+        CodeAction ca1 = ca(uri, "Add a no-arg protected constructor to this class", d, te1);
+        TextEdit te2 = te(7, 4, 7, 4,  "public EntityMissingConstructor() {\n\t}\n\n\t");
+        CodeAction ca2 = ca(uri, "Add a no-arg public constructor to this class", d, te2);
+
+        assertJavaCodeAction(codeActionParams1, utils, ca1, ca2);
+    }
 }

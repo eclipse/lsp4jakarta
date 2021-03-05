@@ -41,9 +41,11 @@ import org.eclipse.lsp4j.CodeActionKind;
  * Code action proposal for changing the visibility modifier of a method, field, or type.
  * Used by JAX-RS ResourceMethodQuickFix.
  * 
- * @author  Matthew Shocrylas, Leslie Dawson
+ * @author  Matthew Shocrylas
+ * @author  Leslie Dawson
  * @see     CodeActionHandler
  * @see     ResourceMethodQuickFix
+ * @see     PersistenceEntityQuickFix
  * 
  */
 public class ModifyModifiersProposal extends ChangeCorrectionProposal {

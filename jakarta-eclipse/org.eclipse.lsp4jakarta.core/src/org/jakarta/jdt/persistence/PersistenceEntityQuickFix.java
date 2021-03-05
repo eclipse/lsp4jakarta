@@ -20,12 +20,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.IJavaCodeActionParticipant;
 import org.jakarta.codeAction.JavaCodeActionContext;
+import org.jakarta.codeAction.proposal.AddConstructorProposal;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ModifyModifiersProposal;
 
@@ -35,7 +37,8 @@ import org.jakarta.codeAction.proposal.ModifyModifiersProposal;
  * 
  * {@link PersistenceConstants#DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR}
  * <ul>
- * <li> Add a (no-arg) void constructor to this class
+ * <li> Add a (no-arg) void constructor to this class if the class has other constructors
+ * which do not conform to this
  * </ul>
  * 
  * {@link PersistenceConstants#DIAGNOSTIC_CODE_FINAL_METHODS}
@@ -68,7 +71,7 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
             
             // add constructor
             if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR)) {
-                codeActions.add(addConstructor(diagnostic, context));
+                codeActions.addAll(addConstructor(diagnostic, context, parentType));
             }
             
             // remove modifiers
@@ -91,8 +94,32 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         return Bindings.getBindingOfParentType(node);
     }
     
-    private CodeAction addConstructor(Diagnostic diagnostic, JavaCodeActionContext context) {
-        return null;
+    private List<CodeAction> addConstructor(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
+
+        // option for protected constructor
+        String name = "Add a no-arg protected constructor to this class";
+        ChangeCorrectionProposal proposal = new AddConstructorProposal(name,
+                context.getCompilationUnit(), context.getASTRoot(), parentType, 0);
+        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
+
+        if (codeAction != null) {
+            codeAction.setTitle(name);
+            codeActions.add(codeAction);
+        }
+
+        // option for public constructor
+        name = "Add a no-arg public constructor to this class";
+        proposal = new AddConstructorProposal(name,
+                context.getCompilationUnit(), context.getASTRoot(), parentType, 0, "public");
+         codeAction = context.convertToCodeAction(proposal, diagnostic);
+
+        if (codeAction != null) {
+            codeAction.setTitle(name);
+            codeActions.add(codeAction);
+        }
+
+        return codeActions;
     }
     
     private List<CodeAction> removeModifiers(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
@@ -119,7 +146,6 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
             codeAction.setTitle(name);
             codeActions.add(codeAction);
         }
-        
         return codeActions;
     }
     
