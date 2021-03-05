@@ -12,22 +12,22 @@
 *     IBM Corporation, Jianing Xu - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.persistence;
+package org.jakarta.jdt.cdi;
 
 import org.jakarta.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 
 /**
  * 
- * Quick fix for removing @MapKey/@MapKeyClass when they are used for the same field
+ * Quick fix for removing @Produces/@Inject when they are used for the same field
  * or property
  * 
  * @author Jianing Xu
  *
  */
-public class DeleteConflictMapKeyQuickFix extends RemoveAnnotationConflictQuickFix {
-
-    public DeleteConflictMapKeyQuickFix() {
-        super(false, "jakarta.persistence.annotation.MapKeyClass", "jakarta.persistence.annotation.MapKey");
+public class ConflictProducesInjectQuickFix extends RemoveAnnotationConflictQuickFix {
+    
+    public ConflictProducesInjectQuickFix() {
+        super(false, "jakarta.enterprise.inject.Produces", "jakarta.inject.Inject");
     }
     
 }

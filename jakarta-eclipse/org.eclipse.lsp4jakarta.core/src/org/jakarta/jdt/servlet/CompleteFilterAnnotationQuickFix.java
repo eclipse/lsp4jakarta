@@ -24,6 +24,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ModifyAnnotationProposal;
+import org.jakarta.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
 
 /**
  * QuickFix for fixing {@link ServletConstants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE} error
