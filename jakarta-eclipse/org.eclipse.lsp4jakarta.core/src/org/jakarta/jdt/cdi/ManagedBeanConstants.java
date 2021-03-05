@@ -20,8 +20,13 @@ import java.util.Set;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 
 public class ManagedBeanConstants {
+    /* Annotation Constants */
+    public static final String PRODUCES = "Produces";
+    public static final String INJECT = "Inject";
+    
     public static final String DIAGNOSTIC_SOURCE = "jakarta-cdi";
     public static final String DIAGNOSTIC_CODE = "InvalidManagedBeanAnnotation";
+    public static final String DIAGNOSTIC_CODE_PRODUCES_INJECT = "RemoveProducesOrInject";
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 
     // List can be found in the cdi doc here:
