@@ -35,15 +35,6 @@ import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
 import static org.jakarta.jdt.cdi.Utils.getManagedBeanAnnotations;
 
 public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
-
-    private Diagnostic createDiagnostic(ICompilationUnit unit, IJavaElement el, String message)
-            throws JavaModelException {
-        ISourceRange nameRange = JDTUtils.getNameRange(el);
-        Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-        Diagnostic diagnostic = new Diagnostic(range, message);
-        completeDiagnostic(diagnostic);
-        return diagnostic;
-    }
     
     private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
         try {
@@ -93,9 +84,9 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
                             && managedBeanAnnotations.stream()
                                     .anyMatch(annotation -> !annotation.equals("Dependent"))) {
-                        Diagnostic diagnostic = createDiagnostic(unit, field,
-                                "A managed bean with a non-static public field must not declare any scope other than @Dependent");
-                        diagnostic.setCode(DIAGNOSTIC_CODE);
+                        Diagnostic diagnostic = createDiagnostic(field, unit,
+                                "A managed bean with a non-static public field must not declare any scope other than @Dependent", 
+                                DIAGNOSTIC_CODE);
                         diagnostics.add(diagnostic);
                     }
                 }
