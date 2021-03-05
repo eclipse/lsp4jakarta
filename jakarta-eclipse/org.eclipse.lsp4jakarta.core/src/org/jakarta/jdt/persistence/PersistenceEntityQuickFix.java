@@ -141,7 +141,6 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
         
         if (codeAction != null) {
-            codeAction.setTitle(name);
             codeActions.add(codeAction);
         }
         return codeActions;
