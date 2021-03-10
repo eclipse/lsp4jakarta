@@ -41,7 +41,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
         
         // test expected quick-fix      
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(2, 0, 5, 0, "import jakarta.enterprise.context.Dependent;\nimport jakarta.exterprise.context.*;\n\n@Dependent\n");
+        TextEdit te = te(2, 0, 5, 0, "import jakarta.enterprise.context.Dependent;\nimport jakarta.enterprise.context.RequestScoped;\n\n@Dependent\n");
         CodeAction ca = ca(uri, "Replace current scope with @Dependent", d, te);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
     }

@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeAction;
@@ -85,6 +86,10 @@ public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipa
         if (node.getParent() instanceof VariableDeclarationFragment) {
             VariableDeclarationFragment fragment = (VariableDeclarationFragment) node.getParent();
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        }
+        if (node.getParent() instanceof MethodDeclaration) {
+        	MethodDeclaration methodDecl = (MethodDeclaration) node.getParent();
+            return methodDecl.resolveBinding();
         }
         return Bindings.getBindingOfParentType(node);
     }

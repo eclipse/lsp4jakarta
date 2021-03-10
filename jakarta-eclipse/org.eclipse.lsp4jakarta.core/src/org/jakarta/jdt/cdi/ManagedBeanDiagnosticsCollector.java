@@ -1,19 +1,22 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation.
-*
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v. 2.0 which is available at
-* http://www.eclipse.org/legal/epl-2.0.
-*
-* SPDX-License-Identifier: EPL-2.0
-*
-* Contributors:
-*     Hani Damlaj, Jianing Xu
-*******************************************************************************/
+ * Copyright (c) 2021 IBM Corporation.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Hani Damlaj, Jianing Xu
+ *******************************************************************************/
 
 package org.jakarta.jdt.cdi;
 
 import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
@@ -35,7 +38,7 @@ import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
 import static org.jakarta.jdt.cdi.Utils.getManagedBeanAnnotations;
 
 public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
-    
+
     private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
         try {
             ISourceRange nameRange = JDTUtils.getNameRange(el);
@@ -56,6 +59,14 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
         diagnostic.setSeverity(SEVERITY);
     }
 
+    private boolean isConstructorMethod(IMethod m) {
+        try {
+            return m.isConstructor();
+        } catch (JavaModelException e) {
+            return false;
+        }
+    }
+
     @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit == null)
@@ -66,7 +77,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                 List<String> managedBeanAnnotations = getManagedBeanAnnotations(type);
                 IAnnotation[] allAnnotations = type.getAnnotations();
                 boolean isManagedBean = managedBeanAnnotations.size() > 0;
-                
+
                 ISourceRange nameRange = JDTUtils.getNameRange(type);
                 Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 
@@ -85,20 +96,25 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                             && managedBeanAnnotations.stream()
                                     .anyMatch(annotation -> !annotation.equals("Dependent"))) {
                         Diagnostic diagnostic = createDiagnostic(field, unit,
-                                "A managed bean with a non-static public field must not declare any scope other than @Dependent", 
+                                "A managed bean with a non-static public field must not declare any scope other than @Dependent",
                                 DIAGNOSTIC_CODE);
                         diagnostics.add(diagnostic);
                     }
                 }
-                
+
                 /* ========= Produces and Inject Annotations Checks ========= */
-                /* go through each field and method to make sure @Produces and @Inject are not used together
+                /*
+                 * go through each field and method to make sure @Produces and @Inject are not
+                 * used together
                  * 
-                 * see:
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_field
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_injected_field
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
+                 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_producer_field
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_producer_method
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_injected_field
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_initializer
                  * 
                  */
                 for (IMethod method : type.getMethods()) {
@@ -117,7 +133,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT));
                     }
                 }
-                
+
                 for (IField field : type.getFields()) {
                     IAnnotation ProducesAnnotation = null;
                     IAnnotation InjectClassAnnotation = null;
@@ -134,7 +150,48 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT));
                     }
                 }
-                
+
+                if (isManagedBean) {
+                    /**
+                     * If the managed bean does not have a constructor that takes no parameters, it
+                     * must have a constructor annotated @Inject. No additional special annotations
+                     * are required.
+                     */
+
+                    // Find all methods on the type that are constructors.
+                    List<IMethod> constructorMethods = Arrays.stream(type.getMethods())
+                            .filter(this::isConstructorMethod).collect(Collectors.toList());
+
+                    // If there are no constructor methods, there is an implicit empty constructor
+                    // generated by the compiler.
+                    boolean hasEmptyConstructor = constructorMethods.size() == 0;
+                    boolean hasParameterizedInjectConstructor = false;
+
+                    for (IMethod m : constructorMethods) {
+                        if (m.getNumberOfParameters() == 0)
+                            hasEmptyConstructor = true;
+
+                        else if (!hasParameterizedInjectConstructor)
+                            hasParameterizedInjectConstructor = Arrays.stream(m.getAnnotations())
+                                    .map(annotation -> annotation.getElementName())
+                                    .anyMatch(annotation -> annotation.equals("Inject"));
+                    }
+
+                    if (!hasEmptyConstructor && !hasParameterizedInjectConstructor) {
+                        // Deliver a diagnostic on all parameterized constructors that they must add an
+                        // @Inject annotation
+                        List<IMethod> methodsNeedingDiagnostics = constructorMethods.stream()
+                                .filter(m -> m.getNumberOfParameters() > 0).collect(Collectors.toList());
+
+                        for (IMethod m : methodsNeedingDiagnostics) {
+                            Diagnostic diagnostic = createDiagnostic(m, unit,
+                                    "If a managed bean does not have a constructor that takes no parameters, it must have a constructor annotated @Inject",
+                                    CONSTRUCTOR_DIAGNOSTIC_CODE);
+                            diagnostics.add(diagnostic);
+                        }
+
+                    }
+                }
             }
         } catch (JavaModelException e) {
             Activator.logException("Cannot calculate diagnostics", e);
