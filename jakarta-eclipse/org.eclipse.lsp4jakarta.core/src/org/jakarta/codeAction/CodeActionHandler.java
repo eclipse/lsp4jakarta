@@ -139,7 +139,8 @@ public class CodeActionHandler {
                     if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT)) {
                         codeActions.addAll(ConflictProducesInjectQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if (diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_STATIC)) {
+                    if (diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_STATIC)
+                            || diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_INVALID_TYPE)) {
                         codeActions.addAll(BeanValidationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(ManagedBeanConstants.CONSTRUCTOR_DIAGNOSTIC_CODE)) {

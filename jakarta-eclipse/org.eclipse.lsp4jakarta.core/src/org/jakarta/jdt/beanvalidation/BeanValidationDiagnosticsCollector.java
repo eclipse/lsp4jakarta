@@ -24,8 +24,7 @@ import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.CHAR_SEQUEN
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DATE;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DECIMAL_MAX;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DECIMAL_MIN;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_FIELD;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_METHOD;
+import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_INVALID_TYPE;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_STATIC;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_SOURCE;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIGITS;
@@ -165,7 +164,6 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
     private void checkAnnotationAllowedTypes(ICompilationUnit unit, List<Diagnostic> diagnostics, String type,
             IAnnotation annotation, Range range, Boolean isMethod) throws JavaModelException {
         String source = isMethod ? "methods." : "fields.";
-        String code = isMethod ? DIAGNOSTIC_CODE_METHOD : DIAGNOSTIC_CODE_FIELD; 
         
         if (annotation.getElementName().equals(ASSERT_FALSE) || annotation.getElementName().equals(ASSERT_TRUE)) {
 
@@ -173,7 +171,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                 
                 Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
                         + " annotation can only be used on boolean and Boolean type " + source);
-                diagnostic.setCode(code);
+                diagnostic.setCode(DIAGNOSTIC_CODE_INVALID_TYPE);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
@@ -194,7 +192,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                         "The @" + annotation.getElementName()
                                 + " annotation can only be used on: \n- BigDecimal \n- BigInteger \n- CharSequence"
                                 + "\n- byte, short, int, long (and their respective wrappers) \n type " + source);
-                diagnostic.setCode(code);
+                diagnostic.setCode(DIAGNOSTIC_CODE_INVALID_TYPE);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
@@ -205,7 +203,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
 
                 Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
                         + " annotation can only be used on String and CharSequence type " + source);
-                diagnostic.setCode(code);
+                diagnostic.setCode(DIAGNOSTIC_CODE_INVALID_TYPE);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
@@ -234,7 +232,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                         + "LocalDate, LocalDateTime, LocalTime, MonthDay, OffsetDateTime, "
                         + "OffsetTime, Year, YearMonth, ZonedDateTime, "
                         + "HijrahDate, JapaneseDate, JapaneseDate, MinguoDate and " + "ThaiBuddhistDate type " + source);
-                diagnostic.setCode(code);
+                diagnostic.setCode(DIAGNOSTIC_CODE_INVALID_TYPE);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
@@ -253,7 +251,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                         "The @" + annotation.getElementName()
                                 + " annotation can only be used on \n- BigDecimal \n- BigInteger"
                                 + "\n- byte, short, int, long (and their respective wrappers) \n type " + source);
-                diagnostic.setCode(code);
+                diagnostic.setCode(DIAGNOSTIC_CODE_INVALID_TYPE);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
@@ -276,7 +274,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                 Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
                         + " annotation can only be used on \n- BigDecimal \n- BigInteger"
                         + "\n- byte, short, int, long, float, double (and their respective wrappers) \n type " + source);
-                diagnostic.setCode(code);
+                diagnostic.setCode(DIAGNOSTIC_CODE_INVALID_TYPE);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
@@ -287,7 +285,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
 
                 Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
                         + " annotation can only be used on String and CharSequence type " + source);
-                diagnostic.setCode(code);
+                diagnostic.setCode(DIAGNOSTIC_CODE_INVALID_TYPE);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
@@ -298,7 +296,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
 
                 Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
                         + " annotation can only be used on String and CharSequence type " + source);
-                diagnostic.setCode(code);
+                diagnostic.setCode(DIAGNOSTIC_CODE_INVALID_TYPE);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }

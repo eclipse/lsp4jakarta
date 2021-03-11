@@ -51,8 +51,10 @@ public class BeanValidationQuickFix implements IJavaCodeActionParticipant {
         
         List<CodeAction> codeActions = new ArrayList<>();
         codeActions.add(removeConstraintAnnotations(diagnostic, context, parentType));
-        codeActions.add(removeStaticModifier(diagnostic, context, parentType));
-    
+        if (diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_STATIC)) {
+            codeActions.add(removeStaticModifier(diagnostic, context, parentType));
+        }
+        
         return codeActions;
     }
     
