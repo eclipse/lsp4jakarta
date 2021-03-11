@@ -47,7 +47,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
     }
     
     @Test
-    public void peoducesAndInject() throws Exception {
+    public void producesAndInject() throws Exception {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
@@ -86,4 +86,29 @@ public class ManagedBeanTest extends BaseJakartaTest {
         assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
     }
 
+    @Test
+    public void injectAndDisposesObservesObservesAsync() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/cdi/InjectAndDisposesObservesObservesAsync.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+        
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+        
+        Diagnostic d1 = d(10, 18, 31,
+                "A construtor or method annotated with @Inject cannot have parameters annotated with @Disposes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrDisposes");
+        
+        Diagnostic d2 = d(16, 18, 31,
+                "A construtor or method annotated with @Inject cannot have parameters annotated with @Observes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrObserves");
+        
+        Diagnostic d3 = d(22, 18, 36,
+                "A construtor or method annotated with @Inject cannot have parameters annotated with @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrObservesAsync");
+        
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3);
+    }
 }
