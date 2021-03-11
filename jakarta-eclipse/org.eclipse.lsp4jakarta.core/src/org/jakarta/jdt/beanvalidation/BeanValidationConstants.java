@@ -75,7 +75,8 @@ public class BeanValidationConstants {
 
     public static final String DIAGNOSTIC_SOURCE = "jakarta-bean-validation";
     public static final String DIAGNOSTIC_CODE_FIELD = "FixTypeOfField";
-    public static final String DIAGNOSTIC_CODE_Static = "MakeFieldNotStatic";
+    public static final String DIAGNOSTIC_CODE_METHOD = "FixTypeOfMethod";
+    public static final String DIAGNOSTIC_CODE_STATIC = "MakeNotStatic";
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 
     public final static Set<String> SET_OF_ANNOTATIONS = Collections

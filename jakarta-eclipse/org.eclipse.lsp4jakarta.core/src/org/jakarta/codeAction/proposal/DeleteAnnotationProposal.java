@@ -81,7 +81,10 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
         }
         ImportRewrite imports = createImportRewrite(newRoot);
 
-        boolean isField = declNode instanceof VariableDeclarationFragment;
+        if (declNode instanceof VariableDeclarationFragment) {
+            declNode = declNode.getParent();
+        }
+        boolean isField = declNode instanceof FieldDeclaration;
         boolean isMethod = declNode instanceof MethodDeclaration;
 
         String[] annotations = getAnnotations();
@@ -106,7 +109,6 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
                 children = (List<? extends ASTNode>) declNode
                         .getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
             } else {
-                declNode = declNode.getParent();
                 children = (List<? extends ASTNode>) declNode
                         .getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
             }

@@ -111,7 +111,7 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         name = "Add a no-arg public constructor to this class";
         proposal = new AddConstructorProposal(name,
                 context.getCompilationUnit(), context.getASTRoot(), parentType, 0, "public");
-         codeAction = context.convertToCodeAction(proposal, diagnostic);
+        codeAction = context.convertToCodeAction(proposal, diagnostic);
 
         if (codeAction != null) {
             codeActions.add(codeAction);
@@ -137,7 +137,7 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         String name = "Remove the 'final' modifier from this ";
         name = name.concat(type);
         ChangeCorrectionProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
-                context.getASTRoot(), parentType, 0, coveredNode, new ArrayList<>(), Arrays.asList("final"));
+                context.getASTRoot(), parentType, 0, coveredNode.getParent(), new ArrayList<>(), Arrays.asList("final"));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
         
         if (codeAction != null) {

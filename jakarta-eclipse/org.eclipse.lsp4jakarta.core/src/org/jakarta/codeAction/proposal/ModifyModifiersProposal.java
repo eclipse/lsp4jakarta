@@ -110,7 +110,7 @@ public class ModifyModifiersProposal extends ChangeCorrectionProposal {
             declNode = declNode.getParent();
         }
         if (coveredNode != null) {
-            declNode = coveredNode.getParent();
+            declNode = coveredNode;
         }
         
         AST ast = declNode.getAST();

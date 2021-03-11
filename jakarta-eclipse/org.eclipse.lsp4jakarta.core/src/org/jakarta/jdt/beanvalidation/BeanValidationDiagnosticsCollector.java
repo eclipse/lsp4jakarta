@@ -25,7 +25,8 @@ import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DATE;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DECIMAL_MAX;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DECIMAL_MIN;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_FIELD;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_Static;
+import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_METHOD;
+import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_STATIC;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_SOURCE;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIGITS;
 import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DOUBLE;
@@ -70,6 +71,7 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -94,36 +96,57 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
             IType[] alltypes;
             IField[] allFields;
             IAnnotation[] allFieldAnnotations;
+            IMethod[] allMethods;
+            IAnnotation[] allMethodAnnotations;
 
             try {
                 alltypes = unit.getAllTypes();
                 for (IType type : alltypes) {
                     allFields = type.getFields();
                     for (IField field : allFields) {
-
                         allFieldAnnotations = field.getAnnotations();
                         String fieldType = field.getTypeSignature();
+                        ISourceRange fieldNameRange = JDTUtils.getNameRange(field);
+                        Range fieldRange = JDTUtils.toRange(unit, fieldNameRange.getOffset(),
+                                fieldNameRange.getLength());
 
                         for (IAnnotation annotation : allFieldAnnotations) {
                             if (SET_OF_ANNOTATIONS.contains(annotation.getElementName())) {
-                                checkAnnotationAllowedTypes(unit, diagnostics, fieldType, annotation);
+                                checkAnnotationAllowedTypes(unit, diagnostics, fieldType, annotation, fieldRange);
 
                                 if (Flags.isStatic(field.getFlags())) {
-                                    ISourceRange fieldAnnotationNameRange = JDTUtils.getNameRange(annotation);
-                                    Range fieldAnnotationrange = JDTUtils.toRange(unit,
-                                            fieldAnnotationNameRange.getOffset(), fieldAnnotationNameRange.getLength());
-
-                                    Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange,
+                                    Diagnostic diagnostic = new Diagnostic(fieldRange,
                                             "Constraint annotations are not allowed on static fields");
                                     diagnostic.setSource(DIAGNOSTIC_SOURCE);
-                                    diagnostic.setCode(DIAGNOSTIC_CODE_Static);
+                                    diagnostic.setCode(DIAGNOSTIC_CODE_STATIC);
                                     diagnostic.setSeverity(SEVERITY);
                                     diagnostics.add(diagnostic);
                                 }
                             }
-
                         }
-
+                    }
+                    allMethods = type.getMethods();
+                    for (IMethod method : allMethods) {
+                        allMethodAnnotations = method.getAnnotations();
+                        String returnType = method.getReturnType();
+                        ISourceRange methodNameRange = JDTUtils.getNameRange(method);
+                        Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
+                                methodNameRange.getLength());
+                        
+                        for (IAnnotation annotation : allMethodAnnotations) {
+                            if (SET_OF_ANNOTATIONS.contains(annotation.getElementName())) {
+                                checkAnnotationAllowedTypes(unit, diagnostics, returnType, annotation, methodRange, true);
+                                
+                                if (Flags.isStatic(method.getFlags())) {
+                                    Diagnostic diagnostic = new Diagnostic(methodRange,
+                                            "Constraint annotations are not allowed on static methods");
+                                    diagnostic.setSource(DIAGNOSTIC_SOURCE);
+                                    diagnostic.setCode(DIAGNOSTIC_CODE_STATIC);
+                                    diagnostic.setSeverity(SEVERITY);
+                                    diagnostics.add(diagnostic);
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -134,100 +157,103 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
 
     }
 
-    private void checkAnnotationAllowedTypes(ICompilationUnit unit, List<Diagnostic> diagnostics, String fieldType,
-            IAnnotation annotation) throws JavaModelException {
-
-        ISourceRange fieldAnnotationNameRange = JDTUtils.getNameRange(annotation);
-        Range fieldAnnotationrange = JDTUtils.toRange(unit, fieldAnnotationNameRange.getOffset(),
-                fieldAnnotationNameRange.getLength());
-
+    private void checkAnnotationAllowedTypes(ICompilationUnit unit, List<Diagnostic> diagnostics, String type,
+            IAnnotation annotation, Range range) throws JavaModelException {
+        checkAnnotationAllowedTypes(unit, diagnostics, type, annotation, range, false);
+    }
+    
+    private void checkAnnotationAllowedTypes(ICompilationUnit unit, List<Diagnostic> diagnostics, String type,
+            IAnnotation annotation, Range range, Boolean isMethod) throws JavaModelException {
+        String source = isMethod ? "methods." : "fields.";
+        String code = isMethod ? DIAGNOSTIC_CODE_METHOD : DIAGNOSTIC_CODE_FIELD; 
+        
         if (annotation.getElementName().equals(ASSERT_FALSE) || annotation.getElementName().equals(ASSERT_TRUE)) {
 
-            if (!fieldType.equals(getSignatureFormatOfType(BOOLEAN)) && !fieldType.equals(Signature.SIG_BOOLEAN)) {
-
-                Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange, "The @" + annotation.getElementName()
-                        + " annotation can only be used on boolean and Boolean type fields.");
-                diagnostic.setCode(DIAGNOSTIC_CODE_FIELD);
+            if (!type.equals(getSignatureFormatOfType(BOOLEAN)) && !type.equals(Signature.SIG_BOOLEAN)) {
+                
+                Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
+                        + " annotation can only be used on boolean and Boolean type " + source);
+                diagnostic.setCode(code);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
         } else if (annotation.getElementName().equals(DECIMAL_MAX) || annotation.getElementName().equals(DECIMAL_MIN)
                 || annotation.getElementName().equals(DIGITS)) {
 
-            if (!fieldType.equals(getSignatureFormatOfType(BIG_DECIMAL))
-                    && !fieldType.equals(getSignatureFormatOfType(BIG_INTEGER))
-                    && !fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))
-                    && !fieldType.equals(getSignatureFormatOfType(BYTE))
-                    && !fieldType.equals(getSignatureFormatOfType(SHORT))
-                    && !fieldType.equals(getSignatureFormatOfType(INTEGER))
-                    && !fieldType.equals(getSignatureFormatOfType(LONG)) && !fieldType.equals(Signature.SIG_BYTE)
-                    && !fieldType.equals(Signature.SIG_SHORT) && !fieldType.equals(Signature.SIG_INT)
-                    && !fieldType.equals(Signature.SIG_LONG)) {
+            if (!type.equals(getSignatureFormatOfType(BIG_DECIMAL))
+                    && !type.equals(getSignatureFormatOfType(BIG_INTEGER))
+                    && !type.equals(getSignatureFormatOfType(CHAR_SEQUENCE))
+                    && !type.equals(getSignatureFormatOfType(BYTE))
+                    && !type.equals(getSignatureFormatOfType(SHORT))
+                    && !type.equals(getSignatureFormatOfType(INTEGER))
+                    && !type.equals(getSignatureFormatOfType(LONG)) && !type.equals(Signature.SIG_BYTE)
+                    && !type.equals(Signature.SIG_SHORT) && !type.equals(Signature.SIG_INT)
+                    && !type.equals(Signature.SIG_LONG)) {
 
-                Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange,
+                Diagnostic diagnostic = new Diagnostic(range,
                         "The @" + annotation.getElementName()
                                 + " annotation can only be used on: \n- BigDecimal \n- BigInteger \n- CharSequence"
-                                + "\n- byte, short, int, long (and their respective wrappers) \n type fields.");
-                diagnostic.setCode(DIAGNOSTIC_CODE_FIELD);
+                                + "\n- byte, short, int, long (and their respective wrappers) \n type " + source);
+                diagnostic.setCode(code);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
         } else if (annotation.getElementName().equals(EMAIL)) {
 
-            if (!fieldType.equals(getSignatureFormatOfType(STRING))
-                    && !fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
+            if (!type.equals(getSignatureFormatOfType(STRING))
+                    && !type.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 
-                Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange, "The @" + annotation.getElementName()
-                        + " annotation can only be used on String and CharSequence type fields.");
-                diagnostic.setCode(DIAGNOSTIC_CODE_FIELD);
+                Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
+                        + " annotation can only be used on String and CharSequence type " + source);
+                diagnostic.setCode(code);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
         } else if (annotation.getElementName().equals(FUTURE) || annotation.getElementName().equals(FUTURE_OR_PRESENT)
                 || annotation.getElementName().equals(PAST) || annotation.getElementName().equals(PAST_OR_PRESENT)) {
 
-            if (!fieldType.equals(getSignatureFormatOfType(DATE))
-                    && !fieldType.equals(getSignatureFormatOfType(CALENDAR))
-                    && !fieldType.equals(getSignatureFormatOfType(INSTANT))
-                    && !fieldType.equals(getSignatureFormatOfType(LOCAL_DATE))
-                    && !fieldType.equals(getSignatureFormatOfType(LOCAL_DATE_TIME))
-                    && !fieldType.equals(getSignatureFormatOfType(LOCAL_TIME))
-                    && !fieldType.equals(getSignatureFormatOfType(MONTH_DAY))
-                    && !fieldType.equals(getSignatureFormatOfType(OFFSET_DATE_TIME))
-                    && !fieldType.equals(getSignatureFormatOfType(OFFSET_TIME))
-                    && !fieldType.equals(getSignatureFormatOfType(YEAR))
-                    && !fieldType.equals(getSignatureFormatOfType(YEAR_MONTH))
-                    && !fieldType.equals(getSignatureFormatOfType(ZONED_DATE_TIME))
-                    && !fieldType.equals(getSignatureFormatOfType(HIJRAH_DATE))
-                    && !fieldType.equals(getSignatureFormatOfType(JAPANESE_DATE))
-                    && !fieldType.equals(getSignatureFormatOfType(MINGUO_DATE))
-                    && !fieldType.equals(getSignatureFormatOfType(THAI_BUDDHIST_DATE))) {
+            if (!type.equals(getSignatureFormatOfType(DATE))
+                    && !type.equals(getSignatureFormatOfType(CALENDAR))
+                    && !type.equals(getSignatureFormatOfType(INSTANT))
+                    && !type.equals(getSignatureFormatOfType(LOCAL_DATE))
+                    && !type.equals(getSignatureFormatOfType(LOCAL_DATE_TIME))
+                    && !type.equals(getSignatureFormatOfType(LOCAL_TIME))
+                    && !type.equals(getSignatureFormatOfType(MONTH_DAY))
+                    && !type.equals(getSignatureFormatOfType(OFFSET_DATE_TIME))
+                    && !type.equals(getSignatureFormatOfType(OFFSET_TIME))
+                    && !type.equals(getSignatureFormatOfType(YEAR))
+                    && !type.equals(getSignatureFormatOfType(YEAR_MONTH))
+                    && !type.equals(getSignatureFormatOfType(ZONED_DATE_TIME))
+                    && !type.equals(getSignatureFormatOfType(HIJRAH_DATE))
+                    && !type.equals(getSignatureFormatOfType(JAPANESE_DATE))
+                    && !type.equals(getSignatureFormatOfType(MINGUO_DATE))
+                    && !type.equals(getSignatureFormatOfType(THAI_BUDDHIST_DATE))) {
 
-                Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange, "The @" + annotation.getElementName()
+                Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
                         + " annotation can only be used on: Date, Calendar, Instant, "
                         + "LocalDate, LocalDateTime, LocalTime, MonthDay, OffsetDateTime, "
                         + "OffsetTime, Year, YearMonth, ZonedDateTime, "
-                        + "HijrahDate, JapaneseDate, JapaneseDate, MinguoDate and " + "ThaiBuddhistDate type fields.");
-                diagnostic.setCode(DIAGNOSTIC_CODE_FIELD);
+                        + "HijrahDate, JapaneseDate, JapaneseDate, MinguoDate and " + "ThaiBuddhistDate type " + source);
+                diagnostic.setCode(code);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
         } else if (annotation.getElementName().equals(MIN) || annotation.getElementName().equals(MAX)) {
 
-            if (!fieldType.equals(getSignatureFormatOfType(BIG_DECIMAL))
-                    && !fieldType.equals(getSignatureFormatOfType(BIG_INTEGER))
-                    && !fieldType.equals(getSignatureFormatOfType(BYTE))
-                    && !fieldType.equals(getSignatureFormatOfType(SHORT))
-                    && !fieldType.equals(getSignatureFormatOfType(INTEGER))
-                    && !fieldType.equals(getSignatureFormatOfType(LONG)) && !fieldType.equals(Signature.SIG_BYTE)
-                    && !fieldType.equals(Signature.SIG_SHORT) && !fieldType.equals(Signature.SIG_INT)
-                    && !fieldType.equals(Signature.SIG_LONG)) {
+            if (!type.equals(getSignatureFormatOfType(BIG_DECIMAL))
+                    && !type.equals(getSignatureFormatOfType(BIG_INTEGER))
+                    && !type.equals(getSignatureFormatOfType(BYTE))
+                    && !type.equals(getSignatureFormatOfType(SHORT))
+                    && !type.equals(getSignatureFormatOfType(INTEGER))
+                    && !type.equals(getSignatureFormatOfType(LONG)) && !type.equals(Signature.SIG_BYTE)
+                    && !type.equals(Signature.SIG_SHORT) && !type.equals(Signature.SIG_INT)
+                    && !type.equals(Signature.SIG_LONG)) {
 
-                Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange,
+                Diagnostic diagnostic = new Diagnostic(range,
                         "The @" + annotation.getElementName()
                                 + " annotation can only be used on \n- BigDecimal \n- BigInteger"
-                                + "\n- byte, short, int, long (and their respective wrappers) \n type fields.");
-                diagnostic.setCode(DIAGNOSTIC_CODE_FIELD);
+                                + "\n- byte, short, int, long (and their respective wrappers) \n type " + source);
+                diagnostic.setCode(code);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
@@ -235,44 +261,44 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                 || annotation.getElementName().equals(POSITIVE)
                 || annotation.getElementName().equals(POSTIVE_OR_ZERO)) {
 
-            if (!fieldType.equals(getSignatureFormatOfType(BIG_DECIMAL))
-                    && !fieldType.equals(getSignatureFormatOfType(BIG_INTEGER))
-                    && !fieldType.equals(getSignatureFormatOfType(BYTE))
-                    && !fieldType.equals(getSignatureFormatOfType(SHORT))
-                    && !fieldType.equals(getSignatureFormatOfType(INTEGER))
-                    && !fieldType.equals(getSignatureFormatOfType(LONG))
-                    && !fieldType.equals(getSignatureFormatOfType(FLOAT))
-                    && !fieldType.equals(getSignatureFormatOfType(DOUBLE)) && !fieldType.equals(Signature.SIG_BYTE)
-                    && !fieldType.equals(Signature.SIG_SHORT) && !fieldType.equals(Signature.SIG_INT)
-                    && !fieldType.equals(Signature.SIG_LONG) && !fieldType.equals(Signature.SIG_FLOAT)
-                    && !fieldType.equals(Signature.SIG_DOUBLE)) {
+            if (!type.equals(getSignatureFormatOfType(BIG_DECIMAL))
+                    && !type.equals(getSignatureFormatOfType(BIG_INTEGER))
+                    && !type.equals(getSignatureFormatOfType(BYTE))
+                    && !type.equals(getSignatureFormatOfType(SHORT))
+                    && !type.equals(getSignatureFormatOfType(INTEGER))
+                    && !type.equals(getSignatureFormatOfType(LONG))
+                    && !type.equals(getSignatureFormatOfType(FLOAT))
+                    && !type.equals(getSignatureFormatOfType(DOUBLE)) && !type.equals(Signature.SIG_BYTE)
+                    && !type.equals(Signature.SIG_SHORT) && !type.equals(Signature.SIG_INT)
+                    && !type.equals(Signature.SIG_LONG) && !type.equals(Signature.SIG_FLOAT)
+                    && !type.equals(Signature.SIG_DOUBLE)) {
 
-                Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange, "The @" + annotation.getElementName()
+                Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
                         + " annotation can only be used on \n- BigDecimal \n- BigInteger"
-                        + "\n- byte, short, int, long, float, double (and their respective wrappers) \n type fields.");
-                diagnostic.setCode(DIAGNOSTIC_CODE_FIELD);
+                        + "\n- byte, short, int, long, float, double (and their respective wrappers) \n type " + source);
+                diagnostic.setCode(code);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
         } else if (annotation.getElementName().equals(NOT_BLANK)) {
 
-            if (!fieldType.equals(getSignatureFormatOfType(STRING))
-                    && !fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
+            if (!type.equals(getSignatureFormatOfType(STRING))
+                    && !type.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 
-                Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange, "The @" + annotation.getElementName()
-                        + " annotation can only be used on String and CharSequence type fields.");
-                diagnostic.setCode(DIAGNOSTIC_CODE_FIELD);
+                Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
+                        + " annotation can only be used on String and CharSequence type " + source);
+                diagnostic.setCode(code);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
         } else if (annotation.getElementName().equals(PATTERN)) {
 
-            if (!fieldType.equals(getSignatureFormatOfType(STRING))
-                    && !fieldType.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
+            if (!type.equals(getSignatureFormatOfType(STRING))
+                    && !type.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
 
-                Diagnostic diagnostic = new Diagnostic(fieldAnnotationrange, "The @" + annotation.getElementName()
-                        + " annotation can only be used on String and CharSequence type fields.");
-                diagnostic.setCode(DIAGNOSTIC_CODE_FIELD);
+                Diagnostic diagnostic = new Diagnostic(range, "The @" + annotation.getElementName()
+                        + " annotation can only be used on String and CharSequence type " + source);
+                diagnostic.setCode(code);
                 completeDiagnostic(diagnostic);
                 diagnostics.add(diagnostic);
             }
