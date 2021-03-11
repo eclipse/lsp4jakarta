@@ -37,6 +37,10 @@ public class ManagedBeanConstants {
     public static final String DIAGNOSTIC_CODE_INJECT_DISPOSES = "RemoveInjectOrDisposes";
     public static final String DIAGNOSTIC_CODE_INJECT_OBSERVES = "RemoveInjectOrObserves";
     public static final String DIAGNOSTIC_CODE_INJECT_OBSERVES_ASYNC = "RemoveInjectOrObservesAsync";
+    public static final String DIAGNOSTIC_CODE_INJECT_DISPOSES_OBSERVES = "RemoveInjectOrDisposesAndObserves";
+    public static final String DIAGNOSTIC_CODE_INJECT_OBSERVES_OBSERVES_ASYNC = "RemoveInjectOrObservesAndObservesAsync";
+    public static final String DIAGNOSTIC_CODE_INJECT_DISPOSES_OBSERVES_ASYNC = "RemoveInjectOrDisposesAndObservesAsync";
+    public static final String DIAGNOSTIC_CODE_INJECT_DISPOSES_OBSERVES_OBSERVES_ASYNC = "RemoveInjectOrDisposesObservesAndObservesAsync";
     
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 

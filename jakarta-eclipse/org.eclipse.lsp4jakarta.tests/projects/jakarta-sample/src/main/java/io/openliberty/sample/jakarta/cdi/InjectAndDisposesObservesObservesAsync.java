@@ -23,4 +23,28 @@ public class InjectAndDisposesObservesObservesAsync {
     public String greetObservesAsync(@ObservesAsync String name) {
         return this.greeting + " " + name + "!";
     }
+    
+    
+    @Inject
+    public String greetDisposesObserves(@Disposes String name1, @Observes String name2) {
+        return this.greeting + " " + name + "!";
+    }
+    
+    
+    @Inject
+    public String greetObservesObservesAsync(@Observes String name1, @ObservesAsync String name2) {
+        return this.greeting + " " + name + "!";
+    }
+    
+    
+    @Inject
+    public String greetDisposesObservesAsync(@Disposes String name1, @ObservesAsync String name2) {
+        return this.greeting + " " + name + "!";
+    }
+    
+    
+    @Inject
+    public String greetDisposesObservesObservesAsync(@Disposes String name1, @Observes String name2, @ObservesAsync String name3) {
+        return this.greeting + " " + name + "!";
+    }
 }
