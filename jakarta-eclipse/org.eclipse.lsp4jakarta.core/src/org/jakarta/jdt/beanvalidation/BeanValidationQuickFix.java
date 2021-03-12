@@ -48,41 +48,42 @@ public class BeanValidationQuickFix implements IJavaCodeActionParticipant {
             IProgressMonitor monitor) throws CoreException {
         ASTNode node = context.getCoveredNode();
         IBinding parentType = getBinding(node);
-        
+
         List<CodeAction> codeActions = new ArrayList<>();
         codeActions.add(removeConstraintAnnotations(diagnostic, context, parentType));
+
         if (diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_STATIC)) {
             codeActions.add(removeStaticModifier(diagnostic, context, parentType));
         }
-        
+
         return codeActions;
     }
     
     private CodeAction removeConstraintAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
-        String name = "Remove constraint annotation";
+        String name = "Remove constraint annotation from element";
         String[] annotations = BeanValidationConstants.SET_OF_ANNOTATIONS.stream().toArray((String[]::new));
         ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
                 context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotations);
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-        
+
         if (codeAction != null) {
             return codeAction;
         }
         return null;
     }
-    
+
     private CodeAction removeStaticModifier(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
-        String name = "Remove static modifier";
+        String name = "Remove static modifier from element";
         ModifyModifiersProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
-                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), new ArrayList<>(), Arrays.asList("static"));
+                context.getASTRoot(), parentType, 0, null, new ArrayList<>(), Arrays.asList("static"));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-        
+
         if (codeAction != null) {
             return codeAction;
         }
         return null;
     }
-    
+
     protected IBinding getBinding(ASTNode node) {
         if (node.getParent() instanceof VariableDeclarationFragment) {
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
