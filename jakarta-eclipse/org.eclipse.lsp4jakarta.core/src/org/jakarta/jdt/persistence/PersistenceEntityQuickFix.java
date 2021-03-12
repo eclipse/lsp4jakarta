@@ -127,7 +127,7 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         String type = "";
         if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS)) {
             type = "method";
-            coveredNode = context.getCoveredNode();
+            coveredNode = context.getCoveredNode().getParent();
         } else if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES)) {
             type = "variable";
         } else if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS)) {
@@ -137,7 +137,7 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         String name = "Remove the 'final' modifier from this ";
         name = name.concat(type);
         ChangeCorrectionProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
-                context.getASTRoot(), parentType, 0, coveredNode.getParent(), new ArrayList<>(), Arrays.asList("final"));
+                context.getASTRoot(), parentType, 0, coveredNode, new ArrayList<>(), Arrays.asList("final"));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
         
         if (codeAction != null) {
