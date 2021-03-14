@@ -1,3 +1,15 @@
+/*******************************************************************************
+* Copyright (c) 2021 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.beanvalidation;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaCodeAction;
@@ -148,11 +160,14 @@ public class BeanValidationTest extends BaseJakartaTest {
         Diagnostic d19 = d(60, 27, 36,
                 "Constraint annotations are not allowed on static fields",
                 DiagnosticSeverity.Error, "jakarta-bean-validation", "MakeNotStatic");
-
+        Diagnostic d20 = d(63, 27, 36,
+                "Constraint annotations are not allowed on static fields",
+                DiagnosticSeverity.Error, "jakarta-bean-validation", "MakeNotStatic");
+        
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5, d6, d7, d8,
-                d9, d10, d11, d12, d13, d14, d15, d16, d17, d19);
+                d9, d10, d11, d12, d13, d14, d15, d16, d17, d19, d20);
 
-        // Test quickfix codeActions (the same for all except last)
+        // Test quickfix codeActions - type (1-17), static, static+type (should only display static)
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
         TextEdit te = te(9, 4, 10, 4, "");
         CodeAction ca = ca(uri, "Remove constraint annotation from element", d1, te);    
@@ -166,6 +181,15 @@ public class BeanValidationTest extends BaseJakartaTest {
         CodeAction ca2 = ca(uri, "Remove static modifier from element", d19, te2);
 
         assertJavaCodeAction(codeActionParams2, utils, ca1, ca2);
+        
+
+        JakartaJavaCodeActionParams codeActionParams3 = createCodeActionParams(uri, d20);
+        TextEdit te3 = te(62, 4, 63, 4, "");
+        TextEdit te4 = te(63, 11, 63, 18, "");
+        CodeAction ca3 = ca(uri, "Remove constraint annotation from element", d20, te3);
+        CodeAction ca4 = ca(uri, "Remove static modifier from element", d20, te4);
+
+        assertJavaCodeAction(codeActionParams3, utils, ca3, ca4);
     }
     
     @Test
@@ -180,20 +204,23 @@ public class BeanValidationTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        // Test diagnostics -- should only be two
+        // Test diagnostics
         Diagnostic d1 = d(20, 26, 38,
                 "Constraint annotations are not allowed on static methods",
                 DiagnosticSeverity.Error, "jakarta-bean-validation", "MakeNotStatic");
         Diagnostic d2 = d(25, 18, 28,
                 "The @AssertTrue annotation can only be used on boolean and Boolean type methods.",
                 DiagnosticSeverity.Error, "jakarta-bean-validation", "FixTypeOfElement");
-
-        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
+        Diagnostic d3 = d(30, 23, 33,
+                "Constraint annotations are not allowed on static methods",
+                DiagnosticSeverity.Error, "jakarta-bean-validation", "MakeNotStatic");
+        
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3);
 
         // Test quickfix codeActions
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
         TextEdit te = te(19, 4, 20, 4, "");
-        TextEdit te2 = te(0, 0, 0, 0, "");
+        TextEdit te2 = te(20, 10, 20, 17, "");
         CodeAction ca = ca(uri, "Remove constraint annotation from element", d1, te);
         CodeAction ca2 = ca(uri, "Remove static modifier from element", d1, te2);
 
@@ -204,5 +231,11 @@ public class BeanValidationTest extends BaseJakartaTest {
         ca = ca(uri, "Remove constraint annotation from element", d2, te);    
 
         assertJavaCodeAction(codeActionParams, utils, ca);
+        
+        codeActionParams = createCodeActionParams(uri, d3);
+        te = te(19, 4, 20, 4, "");
+        te2 = te(20, 10, 20, 17, "");
+        ca = ca(uri, "Remove constraint annotation from element", d3, te);
+        ca2 = ca(uri, "Remove static modifier from element", d3, te2);
     }
 }

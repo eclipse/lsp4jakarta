@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 IBM Corporation and others.
+* Copyright (c) 2021 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@ package org.jakarta.jdt.beanvalidation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -27,11 +26,9 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.IJavaCodeActionParticipant;
 import org.jakarta.codeAction.JavaCodeActionContext;
-import org.jakarta.codeAction.proposal.AddConstructorProposal;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
 import org.jakarta.codeAction.proposal.ModifyModifiersProposal;
-import org.jakarta.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 
 /**
  * Quickfix for fixing {@link BeanValidationConstants#DIAGNOSTIC_CODE_Static} error by either action 
@@ -58,7 +55,7 @@ public class BeanValidationQuickFix implements IJavaCodeActionParticipant {
 
         return codeActions;
     }
-    
+
     private CodeAction removeConstraintAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
         String name = "Remove constraint annotation from element";
         String[] annotations = BeanValidationConstants.SET_OF_ANNOTATIONS.stream().toArray((String[]::new));
@@ -75,7 +72,7 @@ public class BeanValidationQuickFix implements IJavaCodeActionParticipant {
     private CodeAction removeStaticModifier(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
         String name = "Remove static modifier from element";
         ModifyModifiersProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
-                context.getASTRoot(), parentType, 0, null, new ArrayList<>(), Arrays.asList("static"));
+                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), new ArrayList<>(), Arrays.asList("static"));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
 
         if (codeAction != null) {

@@ -111,8 +111,6 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
 
                         for (IAnnotation annotation : allFieldAnnotations) {
                             if (SET_OF_ANNOTATIONS.contains(annotation.getElementName())) {
-                                checkAnnotationAllowedTypes(unit, diagnostics, fieldType, annotation, fieldRange);
-
                                 if (Flags.isStatic(field.getFlags())) {
                                     Diagnostic diagnostic = new Diagnostic(fieldRange,
                                             "Constraint annotations are not allowed on static fields");
@@ -120,6 +118,8 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                                     diagnostic.setCode(DIAGNOSTIC_CODE_STATIC);
                                     diagnostic.setSeverity(SEVERITY);
                                     diagnostics.add(diagnostic);
+                                } else {
+                                    checkAnnotationAllowedTypes(unit, diagnostics, fieldType, annotation, fieldRange);
                                 }
                             }
                         }
@@ -133,9 +133,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                                 methodNameRange.getLength());
                         
                         for (IAnnotation annotation : allMethodAnnotations) {
-                            if (SET_OF_ANNOTATIONS.contains(annotation.getElementName())) {
-                                checkAnnotationAllowedTypes(unit, diagnostics, returnType, annotation, methodRange, true);
-                                
+                            if (SET_OF_ANNOTATIONS.contains(annotation.getElementName())) {                                
                                 if (Flags.isStatic(method.getFlags())) {
                                     Diagnostic diagnostic = new Diagnostic(methodRange,
                                             "Constraint annotations are not allowed on static methods");
@@ -143,6 +141,8 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                                     diagnostic.setCode(DIAGNOSTIC_CODE_STATIC);
                                     diagnostic.setSeverity(SEVERITY);
                                     diagnostics.add(diagnostic);
+                                } else {
+                                    checkAnnotationAllowedTypes(unit, diagnostics, returnType, annotation, methodRange, true);
                                 }
                             }
                         }

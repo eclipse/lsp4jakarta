@@ -18,13 +18,18 @@ public class MethodConstraintValidation {
 
     // invalid cases
     @AssertTrue
-    public static boolean anotherTruth() {
+    public static boolean anotherTruth() {  // static
         return true;
     }
 
     @AssertTrue
-    public String notBoolean() {
+    public String notBoolean() {            // invalid type
         return "aha!";
+    }
+
+    @AssertFalse
+    private static int notBoolTwo(int x) {  // invalid type, static
+        return x;
     }
    
 }
