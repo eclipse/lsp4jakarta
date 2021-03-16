@@ -69,7 +69,6 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
                     for (IMethod method : methods) {
                         Diagnostic diagnostic = createDiagnosticBy(unit, method);
-                        diagnostic.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION);
                         diagnostics.add(diagnostic);
                     }
                 }
@@ -81,12 +80,13 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
     }   
 
     private Diagnostic createDiagnosticBy(ICompilationUnit unit, IMethod method) throws JavaModelException {
-
         ISourceRange sourceRange = JDTUtils.getNameRange(method);
-
         Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
-
-        return new Diagnostic(range, JsonbConstants.ERROR_MESSAGE);
-
+        String message = JsonbConstants.ERROR_MESSAGE;
+        DiagnosticSeverity severity = DiagnosticSeverity.Error; 
+        String source = JsonbConstants.DIAGNOSTIC_SOURCE;
+        String code = JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION;
+        
+        return new Diagnostic(range, message, severity, source, code);
     }
 }
