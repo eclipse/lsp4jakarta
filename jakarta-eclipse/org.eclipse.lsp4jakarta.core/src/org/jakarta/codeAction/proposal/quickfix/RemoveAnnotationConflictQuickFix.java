@@ -130,6 +130,7 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
             name.append("@");
             name.append(annotationName);
         }
+        name.append(" annotation");
         return name.toString();
     }
 }

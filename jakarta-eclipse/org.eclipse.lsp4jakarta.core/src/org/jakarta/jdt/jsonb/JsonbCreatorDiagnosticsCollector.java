@@ -69,6 +69,7 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
                     for (IMethod method : methods) {
                         Diagnostic diagnostic = createDiagnosticBy(unit, method);
+                        diagnostic.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION);
                         diagnostics.add(diagnostic);
                     }
                 }

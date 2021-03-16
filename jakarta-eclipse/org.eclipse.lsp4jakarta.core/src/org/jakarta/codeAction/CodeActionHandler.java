@@ -35,6 +35,8 @@ import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.jdt.persistence.PersistenceEntityQuickFix;
 import org.jakarta.jdt.jax_rs.Jax_RSConstants;
 import org.jakarta.jdt.jax_rs.ResourceMethodQuickFix;
+import org.jakarta.jdt.jsonb.JsonbAnnotationQuickFix;
+import org.jakarta.jdt.jsonb.JsonbConstants;
 import org.jakarta.jdt.cdi.ConflictProducesInjectQuickFix;
 import org.jakarta.jdt.cdi.ManagedBeanConstants;
 import org.jakarta.jdt.cdi.ManagedBeanConstructorQuickFix;
@@ -90,7 +92,7 @@ public class CodeActionHandler {
             PersistenceEntityQuickFix PersistenceEntityQuickFix = new PersistenceEntityQuickFix();
             ConflictProducesInjectQuickFix ConflictProducesInjectQuickFix = new ConflictProducesInjectQuickFix();
             ManagedBeanConstructorQuickFix ManagedBeanConstructorQuickFix = new ManagedBeanConstructorQuickFix();
-
+            JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
@@ -138,6 +140,9 @@ public class CodeActionHandler {
                     }
                     if(diagnostic.getCode().getLeft().equals(ManagedBeanConstants.CONSTRUCTOR_DIAGNOSTIC_CODE)) {
                     	codeActions.addAll(ManagedBeanConstructorQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if(diagnostic.getCode().getLeft().equals(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION)) {
+                        codeActions.addAll(JsonbAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();
