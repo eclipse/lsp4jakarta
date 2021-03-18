@@ -14,7 +14,9 @@
 package org.jakarta.jdt.cdi;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Arrays;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -148,7 +150,6 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     }
                 }
 
-
                 if (isManagedBean) {
                     /**
                      * If the managed bean does not have a constructor that takes no parameters, it
@@ -191,7 +192,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     }
                 }
 
-                /* ========= Inject and Disposes, Observes, ObservesAsync Annotations Checks ========= */
+                /* ========= Inject and Disposes, Observes, ObservesAsync Annotations Checks========= */
                 /*
                  * go through each method to make sure @Inject
                  * and @Disposes, @Observes, @ObservesAsync are not used together
@@ -203,72 +204,40 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                  */
                 for (IMethod method : type.getMethods()) {
                     IAnnotation InjectAnnotation = null;
-                    IAnnotation DisposesAnnotation = null;
-                    IAnnotation ObservesAnnotation = null;
-                    IAnnotation ObservesAsyncAnnotation = null;
 
                     for (IAnnotation annotation : method.getAnnotations()) {
                         if (annotation.getElementName().equals(ManagedBeanConstants.INJECT))
                             InjectAnnotation = annotation;
                     }
 
+                    if (InjectAnnotation == null)
+                        continue;
+
+                    Set<String> invalidInjectAnnotations = new TreeSet<>();
                     for (ILocalVariable param : method.getParameters()) {
                         for (IAnnotation annotation : param.getAnnotations()) {
-                            if (annotation.getElementName().equals(ManagedBeanConstants.DISPOSES))
-                                DisposesAnnotation = annotation;
-
-                            if (annotation.getElementName().equals(ManagedBeanConstants.OBSERVES))
-                                ObservesAnnotation = annotation;
-
-                            if (annotation.getElementName().equals(ManagedBeanConstants.OBSERVES_ASYNC))
-                                ObservesAsyncAnnotation = annotation;
+                            if (ManagedBeanConstants.INVALID_INJECT_PARAMS.contains(annotation.getElementName())) {
+                                invalidInjectAnnotations.add("@" + annotation.getElementName());
+                            }
                         }
                     }
 
-                    if (InjectAnnotation == null) continue;
-
-                    if (DisposesAnnotation != null && ObservesAnnotation != null && ObservesAsyncAnnotation != null) {
-                        // a bean constructor or an initializer method annotated with @Inject cannot have a parameter annotated @Disposes, @Observes and @ObservesAsync
-                        diagnostics.add(createDiagnostic(method, unit,
-                                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Disposes, @Observes and @ObservesAsync",
-                                ManagedBeanConstants.DIAGNOSTIC_CODE_INJECT_DISPOSES_OBSERVES_OBSERVES_ASYNC));
-                    } else if (DisposesAnnotation != null && ObservesAnnotation != null) {
-                        // a bean constructor or an initializer method annotated with @Inject cannot have a parameter annotated @Disposes and @Observes
-                        diagnostics.add(createDiagnostic(method, unit,
-                                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Disposes and @Observes",
-                                ManagedBeanConstants.DIAGNOSTIC_CODE_INJECT_DISPOSES_OBSERVES));
-                    } else if (ObservesAnnotation != null && ObservesAsyncAnnotation != null) {
-                        // a bean constructor or an initializer method annotated with @Inject cannot have a parameter annotated @Disposes and @Observes
-                        diagnostics.add(createDiagnostic(method, unit,
-                                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Observes and @ObservesAsync",
-                                ManagedBeanConstants.DIAGNOSTIC_CODE_INJECT_OBSERVES_OBSERVES_ASYNC));
-                    } else if (DisposesAnnotation != null && ObservesAsyncAnnotation != null) {
-                        // a bean constructor or an initializer method annotated with @Inject cannot have a parameter annotated @Disposes and @Observes
-                        diagnostics.add(createDiagnostic(method, unit,
-                                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Disposes and @ObservesAsync",
-                                ManagedBeanConstants.DIAGNOSTIC_CODE_INJECT_DISPOSES_OBSERVES_ASYNC));
-                    } else if (DisposesAnnotation != null) {
-                        // a bean constructor or an initializer method annotated with @Inject cannot have a parameter annotated @Disposes
-                        diagnostics.add(createDiagnostic(method, unit,
-                                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Disposes",
-                                ManagedBeanConstants.DIAGNOSTIC_CODE_INJECT_DISPOSES));
-                    } else if (ObservesAnnotation != null) {
-                        // a bean constructor or an initializer method annotated with @Inject cannot have a parameter annotated @Observes
-                        diagnostics.add(createDiagnostic(method, unit,
-                                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Observes",
-                                ManagedBeanConstants.DIAGNOSTIC_CODE_INJECT_OBSERVES));
-                    } else if (ObservesAsyncAnnotation != null) {
-                        // a bean constructor or an initializer method annotated with @Inject cannot have a parameter annotated @ObservesAsync
-                        diagnostics.add(createDiagnostic(method, unit,
-                                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @ObservesAsync",
-                                ManagedBeanConstants.DIAGNOSTIC_CODE_INJECT_OBSERVES_ASYNC));
+                    if(!invalidInjectAnnotations.isEmpty()) {
+                        String label = createInvalidInjectLabel(invalidInjectAnnotations);
+                        diagnostics.add(createDiagnostic(method, unit, label, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM));
                     }
 
                 }
             }
-            
+
         } catch (JavaModelException e) {
             Activator.logException("Cannot calculate diagnostics", e);
         }
+    }
+
+    private String createInvalidInjectLabel(Set<String> invalidAnnotations) {
+        String label = "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with ";
+        label += String.join(", ", invalidAnnotations);
+        return label;
     }
 }

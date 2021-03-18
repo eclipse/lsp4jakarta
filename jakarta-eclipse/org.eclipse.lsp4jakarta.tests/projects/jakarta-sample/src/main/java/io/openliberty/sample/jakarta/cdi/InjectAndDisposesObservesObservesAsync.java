@@ -1,4 +1,4 @@
-package src.main.java.io.openliberty.sample.jakarta.cdi;
+package io.openliberty.sample.jakarta.cdi;
 
 import jakarta.inject.Inject;
 import jakarta.enterprise.inject.Disposes;
@@ -9,42 +9,42 @@ public class InjectAndDisposesObservesObservesAsync {
     
     @Inject
     public String greetDisposes(@Disposes String name) {
-        return this.greeting + " " + name + "!";
+        return "Hi " + name + "!";
     }
     
     
     @Inject
     public String greetObserves(@Observes String name) {
-        return this.greeting + " " + name + "!";
+        return "Hi " + name + "!";
     }
     
     
     @Inject
     public String greetObservesAsync(@ObservesAsync String name) {
-        return this.greeting + " " + name + "!";
+        return "Hi " + name + "!";
     }
     
     
     @Inject
     public String greetDisposesObserves(@Disposes String name1, @Observes String name2) {
-        return this.greeting + " " + name + "!";
+        return "Hi " + name1 + " and " + name2 + "!";
     }
     
     
     @Inject
     public String greetObservesObservesAsync(@Observes String name1, @ObservesAsync String name2) {
-        return this.greeting + " " + name + "!";
+        return "Hi " + name1 + " and " + name2 + "!";
     }
     
     
     @Inject
     public String greetDisposesObservesAsync(@Disposes String name1, @ObservesAsync String name2) {
-        return this.greeting + " " + name + "!";
+        return "Hi " + name1 + " and " + name2 + "!";
     }
     
     
     @Inject
     public String greetDisposesObservesObservesAsync(@Disposes String name1, @Observes String name2, @ObservesAsync String name3) {
-        return this.greeting + " " + name + "!";
+        return "Hi " + name1 + ", " + name2 + " and " + name3 + "!";
     }
 }

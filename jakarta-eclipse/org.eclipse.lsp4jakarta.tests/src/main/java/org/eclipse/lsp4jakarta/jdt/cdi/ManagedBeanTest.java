@@ -98,32 +98,32 @@ public class ManagedBeanTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         Diagnostic d1 = d(10, 18, 31,
-                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Disposes",
-                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrDisposes");
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
         
         Diagnostic d2 = d(16, 18, 31,
-                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Observes",
-                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrObserves");
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Observes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
         
         Diagnostic d3 = d(22, 18, 36,
-                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @ObservesAsync",
-                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrObservesAsync");
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
         
         Diagnostic d4 = d(28, 18, 39,
-                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Disposes and @Observes",
-                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrDisposesAndObserves");
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes, @Observes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
         
         Diagnostic d5 = d(34, 18, 44,
-                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Observes and @ObservesAsync",
-                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrObservesAndObservesAsync");
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Observes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
         
         Diagnostic d6 = d(40, 18, 44,
-                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Disposes and @ObservesAsync",
-                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrDisposesAndObservesAsync");
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
         
         Diagnostic d7 = d(46, 18, 52,
-                "A bean constructor or a method annotated with @Inject cannot have parameters annotated with @Disposes, @Observes and @ObservesAsync",
-                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrDisposesObservesAndObservesAsync");
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes, @Observes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5, d6, d7);
     }
