@@ -38,15 +38,13 @@ public class ResourceMethodDiagnosticsCollector implements DiagnosticsCollector 
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
         diagnostic.setSource(Jax_RSConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(Jax_RSConstants.SEVERITY);
+        diagnostic.setSeverity(Jax_RSConstants.SEVERITY_ERROR);
     }
 
     @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         Diagnostic diagnostic;
         ArrayList<String> methodDesignators = Jax_RSConstants.METHOD_DESIGNATORS;
-        
-        
         
         if (unit != null) {
             IType[] alltypes;
@@ -86,7 +84,7 @@ public class ResourceMethodDiagnosticsCollector implements DiagnosticsCollector 
                 }
 
             } catch (JavaModelException e) {
-                Activator.logException("Cannot calculate persistence diagnostics", e);
+                Activator.logException("Cannot calculate JAX-RS diagnostics", e);
             }
         }
 
