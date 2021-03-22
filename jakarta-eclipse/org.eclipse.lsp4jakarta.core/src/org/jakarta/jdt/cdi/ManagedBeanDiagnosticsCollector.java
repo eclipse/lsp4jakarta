@@ -223,11 +223,58 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     }
 
                     if(!invalidInjectAnnotations.isEmpty()) {
-                        String label = createInvalidInjectLabel(invalidInjectAnnotations);
+                        String label = createInvalidInjectLabel("Inject", invalidInjectAnnotations);
                         diagnostics.add(createDiagnostic(method, unit, label, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM));
                     }
 
                 }
+                
+                
+                if(isManagedBean) {
+                    /* ========= Produces and Disposes, Observes, ObservesAsync Annotations Checks========= */
+                    /*
+                     * go through each method to make sure @Produces
+                     * and @Disposes, @Observes, @ObservesAsync are not used together
+                     * 
+                     * see: 
+                     * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
+                     * 
+                     * note:
+                     * we need to check for bean defining annotations first to make sure the managed bean is discovered.
+                     * 
+                     */
+                    
+                    for (IMethod method : type.getMethods()) {
+                        IAnnotation ProducesAnnotation = null;
+
+                        for (IAnnotation annotation : method.getAnnotations()) {
+                            if (annotation.getElementName().equals(ManagedBeanConstants.PRODUCES))
+                                ProducesAnnotation = annotation;
+                        }
+
+                        if (ProducesAnnotation == null)
+                            continue;
+
+                        Set<String> invalidProducesAnnotations = new TreeSet<>();
+                        for (ILocalVariable param : method.getParameters()) {
+                            for (IAnnotation annotation : param.getAnnotations()) {
+                                if (ManagedBeanConstants.INVALID_INJECT_PARAMS.contains(annotation.getElementName())) {
+                                    invalidProducesAnnotations.add("@" + annotation.getElementName());
+                                }
+                            }
+                        }
+
+                        if(!invalidProducesAnnotations.isEmpty()) {
+                            String label = createInvalidInjectLabel("Produces", invalidProducesAnnotations);
+                            diagnostics.add(createDiagnostic(method, unit, label, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM));
+                        }
+
+                    }
+                    
+                    
+                }
+                
+                
             }
 
         } catch (JavaModelException e) {
@@ -235,8 +282,8 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    private String createInvalidInjectLabel(Set<String> invalidAnnotations) {
-        String label = "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with ";
+    private String createInvalidInjectLabel(String annotation, Set<String> invalidAnnotations) {
+        String label = "A bean constructor or a method annotated with @" + annotation + " cannot have parameter(s) annotated with ";
         label += String.join(", ", invalidAnnotations);
         return label;
     }
