@@ -36,6 +36,7 @@ public class ManagedBeanConstants {
     
     
     public static final String DIAGNOSTIC_CODE_INVALID_INJECT_PARAM = "RemoveInjectOrConflictedAnnotations";
+    public static final String DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM = "RemoveProducesOrConflictedAnnotations";
     
     public static final Set<String> INVALID_INJECT_PARAMS = new HashSet<String>(Arrays.asList(DISPOSES, OBSERVES, OBSERVES_ASYNC));
     
