@@ -202,32 +202,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                  * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
                  * 
                  */
-                for (IMethod method : type.getMethods()) {
-                    IAnnotation InjectAnnotation = null;
-
-                    for (IAnnotation annotation : method.getAnnotations()) {
-                        if (annotation.getElementName().equals(ManagedBeanConstants.INJECT))
-                            InjectAnnotation = annotation;
-                    }
-
-                    if (InjectAnnotation == null)
-                        continue;
-
-                    Set<String> invalidInjectAnnotations = new TreeSet<>();
-                    for (ILocalVariable param : method.getParameters()) {
-                        for (IAnnotation annotation : param.getAnnotations()) {
-                            if (ManagedBeanConstants.INVALID_INJECT_PARAMS.contains(annotation.getElementName())) {
-                                invalidInjectAnnotations.add("@" + annotation.getElementName());
-                            }
-                        }
-                    }
-
-                    if(!invalidInjectAnnotations.isEmpty()) {
-                        String label = createInvalidInjectLabel("Inject", invalidInjectAnnotations);
-                        diagnostics.add(createDiagnostic(method, unit, label, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM));
-                    }
-
-                }
+                invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.INJECT);
                 
                 
                 if(isManagedBean) {
@@ -243,34 +218,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * we need to check for bean defining annotations first to make sure the managed bean is discovered.
                      * 
                      */
-                    
-                    for (IMethod method : type.getMethods()) {
-                        IAnnotation ProducesAnnotation = null;
-
-                        for (IAnnotation annotation : method.getAnnotations()) {
-                            if (annotation.getElementName().equals(ManagedBeanConstants.PRODUCES))
-                                ProducesAnnotation = annotation;
-                        }
-
-                        if (ProducesAnnotation == null)
-                            continue;
-
-                        Set<String> invalidProducesAnnotations = new TreeSet<>();
-                        for (ILocalVariable param : method.getParameters()) {
-                            for (IAnnotation annotation : param.getAnnotations()) {
-                                if (ManagedBeanConstants.INVALID_INJECT_PARAMS.contains(annotation.getElementName())) {
-                                    invalidProducesAnnotations.add("@" + annotation.getElementName());
-                                }
-                            }
-                        }
-
-                        if(!invalidProducesAnnotations.isEmpty()) {
-                            String label = createInvalidInjectLabel("Produces", invalidProducesAnnotations);
-                            diagnostics.add(createDiagnostic(method, unit, label, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM));
-                        }
-
-                    }
-                    
+                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES);
                     
                 }
                 
@@ -281,7 +229,37 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
             Activator.logException("Cannot calculate diagnostics", e);
         }
     }
+    
+    
+    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String name) throws JavaModelException {
+        for (IMethod method : type.getMethods()) {
+            IAnnotation Annotation = null;
 
+            for (IAnnotation annotation : method.getAnnotations()) {
+                if (annotation.getElementName().equals(name))
+                    Annotation = annotation;
+            }
+
+            if (Annotation == null)
+                continue;
+
+            Set<String> invalidAnnotations = new TreeSet<>();
+            for (ILocalVariable param : method.getParameters()) {
+                for (IAnnotation annotation : param.getAnnotations()) {
+                    if (ManagedBeanConstants.INVALID_INJECT_PARAMS.contains(annotation.getElementName())) {
+                        invalidAnnotations.add("@" + annotation.getElementName());
+                    }
+                }
+            }
+
+            if(!invalidAnnotations.isEmpty()) {
+                String label = createInvalidInjectLabel(name, invalidAnnotations);
+                diagnostics.add(createDiagnostic(method, unit, label, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM));
+            }
+
+        }
+    }
+    
     private String createInvalidInjectLabel(String annotation, Set<String> invalidAnnotations) {
         String label = "A bean constructor or a method annotated with @" + annotation + " cannot have parameter(s) annotated with ";
         label += String.join(", ", invalidAnnotations);
