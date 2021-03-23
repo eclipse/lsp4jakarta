@@ -227,7 +227,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
     }
     
     
-    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String target, String diagnostic) throws JavaModelException {
+    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String target, String diagnosticCode) throws JavaModelException {
         for (IMethod method : type.getMethods()) {
             IAnnotation targetAnnotation = null;
 
@@ -250,7 +250,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
             if(!invalidAnnotations.isEmpty()) {
                 String label = createInvalidInjectLabel(target, invalidAnnotations);
-                diagnostics.add(createDiagnostic(method, unit, label, diagnostic));
+                diagnostics.add(createDiagnostic(method, unit, label, diagnosticCode));
             }
 
         }
