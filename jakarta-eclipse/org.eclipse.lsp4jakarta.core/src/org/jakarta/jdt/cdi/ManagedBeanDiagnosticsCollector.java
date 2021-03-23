@@ -202,7 +202,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                  * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
                  * 
                  */
-                invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.INJECT);
+                invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.INJECT, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM);
 
                 if(isManagedBean) {
                     /* ========= Produces and Disposes, Observes, ObservesAsync Annotations Checks========= */
@@ -217,7 +217,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * we need to check for bean defining annotations first to make sure the managed bean is discovered.
                      * 
                      */
-                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES); 
+                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM); 
                 }
             }
 
@@ -227,16 +227,16 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
     }
     
     
-    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String name) throws JavaModelException {
+    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String target, String diagnostic) throws JavaModelException {
         for (IMethod method : type.getMethods()) {
-            IAnnotation Annotation = null;
+            IAnnotation targetAnnotation = null;
 
             for (IAnnotation annotation : method.getAnnotations()) {
-                if (annotation.getElementName().equals(name))
-                    Annotation = annotation;
+                if (annotation.getElementName().equals(target))
+                    targetAnnotation = annotation;
             }
 
-            if (Annotation == null)
+            if (targetAnnotation == null)
                 continue;
 
             Set<String> invalidAnnotations = new TreeSet<>();
@@ -249,8 +249,8 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
             }
 
             if(!invalidAnnotations.isEmpty()) {
-                String label = createInvalidInjectLabel(name, invalidAnnotations);
-                diagnostics.add(createDiagnostic(method, unit, label, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM));
+                String label = createInvalidInjectLabel(target, invalidAnnotations);
+                diagnostics.add(createDiagnostic(method, unit, label, diagnostic));
             }
 
         }
