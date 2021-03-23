@@ -203,8 +203,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                  * 
                  */
                 invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.INJECT);
-                
-                
+
                 if(isManagedBean) {
                     /* ========= Produces and Disposes, Observes, ObservesAsync Annotations Checks========= */
                     /*
@@ -218,11 +217,8 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * we need to check for bean defining annotations first to make sure the managed bean is discovered.
                      * 
                      */
-                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES);
-                    
+                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES); 
                 }
-                
-                
             }
 
         } catch (JavaModelException e) {
