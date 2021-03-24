@@ -102,6 +102,50 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                                 DIAGNOSTIC_CODE);
                         diagnostics.add(diagnostic);
                     }
+
+                    /**
+                     * A bean class or producer method or field may specify at most one scope type
+                     * annotation. If a bean class or producer method or field specifies multiple
+                     * scope type annotations, the container automatically detects the problem and
+                     * treats it as a definition error.
+                     * 
+                     * Here we only look at the fields.
+                     */
+                    List<IAnnotation> fieldAnnotations = Arrays.asList(field.getAnnotations());
+                    List<String> fieldScopes = getManagedBeanAnnotations(field);
+
+                    boolean isProducerField = fieldAnnotations.stream()
+                            .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.PRODUCES));
+
+                    if (isProducerField && fieldScopes.size() > 1) {
+                        diagnostics.add(createDiagnostic(field, unit,
+                                "A bean class or producer method or field may specify at most one scope type annotation.",
+                                DIAGNOSTIC_CODE));
+                    }
+
+                }
+
+                for (IMethod method : type.getMethods()) {
+                    /**
+                     * A bean class or producer method or field may specify at most one scope type
+                     * annotation. If a bean class or producer method or field specifies multiple
+                     * scope type annotations, the container automatically detects the problem and
+                     * treats it as a definition error.
+                     * 
+                     * Here we only look at the methods.
+                     */
+                    List<IAnnotation> methodAnnotations = Arrays.asList(method.getAnnotations());
+                    List<String> methodScopes = getManagedBeanAnnotations(method);
+
+                    boolean isProducerMethod = methodAnnotations.stream()
+                            .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.PRODUCES));
+
+                    if (isProducerMethod && methodScopes.size() > 1) {
+                        diagnostics.add(createDiagnostic(method, unit,
+                                "A bean class or producer method or field may specify at most one scope type annotation.",
+                                DIAGNOSTIC_CODE));
+                    }
+
                 }
 
                 /* ========= Produces and Inject Annotations Checks ========= */
@@ -109,11 +153,14 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                  * go through each field and method to make sure @Produces and @Inject are not
                  * used together
                  * 
-                 * see: 
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_field
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_injected_field
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
+                 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_producer_field
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_producer_method
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_injected_field
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_initializer
                  * 
                  */
                 for (IMethod method : type.getMethods()) {
@@ -192,32 +239,41 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     }
                 }
 
-                /* ========= Inject and Disposes, Observes, ObservesAsync Annotations Checks========= */
+                /*
+                 * ========= Inject and Disposes, Observes, ObservesAsync Annotations
+                 * Checks=========
+                 */
                 /*
                  * go through each method to make sure @Inject
                  * and @Disposes, @Observes, @ObservesAsync are not used together
                  * 
-                 * see: 
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_constructor
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
+                 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_bean_constructor
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                 * declaring_initializer
                  * 
                  */
-                invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.INJECT, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM);
+                invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.INJECT,
+                        ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_INJECT_PARAM);
 
-                if(isManagedBean) {
-                    /* ========= Produces and Disposes, Observes, ObservesAsync Annotations Checks========= */
+                if (isManagedBean) {
+                    /*
+                     * ========= Produces and Disposes, Observes, ObservesAsync Annotations
+                     * Checks=========
+                     */
                     /*
                      * go through each method to make sure @Produces
                      * and @Disposes, @Observes, @ObservesAsync are not used together
                      * 
-                     * see: 
-                     * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
+                     * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                     * declaring_producer_method
                      * 
-                     * note:
-                     * we need to check for bean defining annotations first to make sure the managed bean is discovered.
+                     * note: we need to check for bean defining annotations first to make sure the
+                     * managed bean is discovered.
                      * 
                      */
-                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM); 
+                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES,
+                            ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM);
                 }
             }
 
@@ -225,9 +281,9 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
             Activator.logException("Cannot calculate diagnostics", e);
         }
     }
-    
-    
-    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String target, String diagnosticCode) throws JavaModelException {
+
+    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String target,
+            String diagnosticCode) throws JavaModelException {
         for (IMethod method : type.getMethods()) {
             IAnnotation targetAnnotation = null;
 
@@ -248,16 +304,17 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                 }
             }
 
-            if(!invalidAnnotations.isEmpty()) {
+            if (!invalidAnnotations.isEmpty()) {
                 String label = createInvalidInjectLabel(target, invalidAnnotations);
                 diagnostics.add(createDiagnostic(method, unit, label, diagnosticCode));
             }
 
         }
     }
-    
+
     private String createInvalidInjectLabel(String annotation, Set<String> invalidAnnotations) {
-        String label = "A bean constructor or a method annotated with @" + annotation + " cannot have parameter(s) annotated with ";
+        String label = "A bean constructor or a method annotated with @" + annotation
+                + " cannot have parameter(s) annotated with ";
         label += String.join(", ", invalidAnnotations);
         return label;
     }

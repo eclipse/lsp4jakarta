@@ -1,5 +1,6 @@
 package org.jakarta.jdt.cdi;
 
+import org.eclipse.jdt.core.IAnnotatable;
 import org.eclipse.jdt.core.IType;
 
 import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
@@ -28,7 +29,7 @@ public class Utils {
      * @param type the type representing the class
      * @return list of recognised managed bean defining annotations.
      */
-    static List<String> getManagedBeanAnnotations(IType type) {
+    static List<String> getManagedBeanAnnotations(IAnnotatable type) {
         try {
             // Construct a stream of only the annotations applied to the type that are also
             // recognised managed bean annotations.

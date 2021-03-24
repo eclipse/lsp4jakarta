@@ -1,6 +1,11 @@
 package io.openliberty.sample.jakarta.cdi;
 
-import jakarta.enterprise.context.RequestScoped;
+import java.util.Collections;
+import java.util.List;
+
+import jakarta.enterprise.inject.Produces;
+
+import jakarta.enterprise.context.*;
 
 @RequestScoped
 public class ManagedBean {
@@ -8,5 +13,10 @@ public class ManagedBean {
 	
 	public ManagedBean() {
 		this.a = 10;
+	}
+	
+	@Produces @ApplicationScoped @RequestScoped
+	public List<Integer> getAllProductIds() {
+		return Collections.emptyList();
 	}
 }
