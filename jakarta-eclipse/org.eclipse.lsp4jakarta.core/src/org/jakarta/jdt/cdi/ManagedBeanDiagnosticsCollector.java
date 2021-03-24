@@ -37,7 +37,7 @@ import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
 
 import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
-import static org.jakarta.jdt.cdi.Utils.getManagedBeanAnnotations;
+import static org.jakarta.jdt.cdi.Utils.getScopeAnnotations;
 
 public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
@@ -76,7 +76,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
         try {
             for (IType type : unit.getAllTypes()) {
-                List<String> managedBeanAnnotations = getManagedBeanAnnotations(type);
+                List<String> managedBeanAnnotations = getScopeAnnotations(type);
                 IAnnotation[] allAnnotations = type.getAnnotations();
                 boolean isManagedBean = managedBeanAnnotations.size() > 0;
 
@@ -112,21 +112,47 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * Here we only look at the fields.
                      */
                     List<IAnnotation> fieldAnnotations = Arrays.asList(field.getAnnotations());
-                    List<String> fieldScopes = getManagedBeanAnnotations(field);
+                    List<String> fieldScopes = getScopeAnnotations(field);
 
                     boolean isProducerField = fieldAnnotations.stream()
                             .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.PRODUCES));
+                    
+                    boolean isInjectField = fieldAnnotations.stream()
+                            .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.INJECT));
 
                     if (isProducerField && fieldScopes.size() > 1) {
                         diagnostics.add(createDiagnostic(field, unit,
                                 "A bean class or producer method or field may specify at most one scope type annotation.",
                                 DIAGNOSTIC_CODE));
                     }
+                    
+                    if(isProducerField && isInjectField) {
+                        /*
+                         * ========= Produces and Inject Annotations Checks =========
+                         * go through each field and method to make sure @Produces and @Inject are not
+                         * used together
+                         * 
+                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                         * declaring_producer_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                         * declaring_producer_method
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                         * declaring_injected_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                         * declaring_initializer
+                         */
+                        
+                        // A single field cannot have the same
+                        diagnostics.add(createDiagnostic(field, unit,
+                                "@Produces and @Inject annotations cannot be used on the same field or property",
+                                ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT));
+                    }
 
                 }
 
                 for (IMethod method : type.getMethods()) {
                     /**
+                     * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
                      * A bean class or producer method or field may specify at most one scope type
                      * annotation. If a bean class or producer method or field specifies multiple
                      * scope type annotations, the container automatically detects the problem and
@@ -135,67 +161,44 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * Here we only look at the methods.
                      */
                     List<IAnnotation> methodAnnotations = Arrays.asList(method.getAnnotations());
-                    List<String> methodScopes = getManagedBeanAnnotations(method);
+                    List<String> methodScopes = getScopeAnnotations(method);
 
                     boolean isProducerMethod = methodAnnotations.stream()
                             .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.PRODUCES));
+
+                    boolean isInjectMethod = methodAnnotations.stream()
+                            .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.INJECT));
 
                     if (isProducerMethod && methodScopes.size() > 1) {
                         diagnostics.add(createDiagnostic(method, unit,
                                 "A bean class or producer method or field may specify at most one scope type annotation.",
                                 DIAGNOSTIC_CODE));
                     }
-
-                }
-
-                /* ========= Produces and Inject Annotations Checks ========= */
-                /*
-                 * go through each field and method to make sure @Produces and @Inject are not
-                 * used together
-                 * 
-                 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                 * declaring_producer_field
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                 * declaring_producer_method
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                 * declaring_injected_field
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                 * declaring_initializer
-                 * 
-                 */
-                for (IMethod method : type.getMethods()) {
-                    IAnnotation ProducesAnnotation = null;
-                    IAnnotation InjectAnnotation = null;
-                    for (IAnnotation annotation : method.getAnnotations()) {
-                        if (annotation.getElementName().equals(ManagedBeanConstants.PRODUCES))
-                            ProducesAnnotation = annotation;
-                        if (annotation.getElementName().equals(ManagedBeanConstants.INJECT))
-                            InjectAnnotation = annotation;
-                    }
-                    if (ProducesAnnotation != null && InjectAnnotation != null) {
+                    
+                    if(isProducerMethod && isInjectMethod) {
+                        /*
+                         * ========= Produces and Inject Annotations Checks =========
+                         * go through each field and method to make sure @Produces and @Inject are not
+                         * used together
+                         * 
+                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                         * declaring_producer_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                         * declaring_producer_method
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                         * declaring_injected_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                         * declaring_initializer
+                         */
+                        
                         // A single method cannot have the same
                         diagnostics.add(createDiagnostic(method, unit,
                                 "@Produces and @Inject annotations cannot be used on the same field or property",
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT));
                     }
+
                 }
 
-                for (IField field : type.getFields()) {
-                    IAnnotation ProducesAnnotation = null;
-                    IAnnotation InjectAnnotation = null;
-                    for (IAnnotation annotation : field.getAnnotations()) {
-                        if (annotation.getElementName().equals(ManagedBeanConstants.PRODUCES))
-                            ProducesAnnotation = annotation;
-                        if (annotation.getElementName().equals(ManagedBeanConstants.INJECT))
-                            InjectAnnotation = annotation;
-                    }
-                    if (ProducesAnnotation != null && InjectAnnotation != null) {
-                        // A single field cannot have the same
-                        diagnostics.add(createDiagnostic(field, unit,
-                                "@Produces and @Inject annotations cannot be used on the same field or property",
-                                ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT));
-                    }
-                }
 
                 if (isManagedBean) {
                     /**
