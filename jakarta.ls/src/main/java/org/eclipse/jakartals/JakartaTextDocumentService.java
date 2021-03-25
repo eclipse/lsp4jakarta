@@ -11,7 +11,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals;
+package org.eclipse.jakartals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +20,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.eclipse.jakartals.commons.JakartaDiagnosticsParams;
+import org.eclipse.jakartals.commons.SnippetContextForJava;
+import org.eclipse.jakartals.commons.SnippetRegistry;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.Command;
@@ -40,11 +43,6 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4mp.commons.DocumentFormat;
 import org.eclipse.lsp4mp.ls.commons.TextDocument;
 import org.eclipse.lsp4mp.ls.commons.TextDocuments;
-
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-// Import for getting snippet contexts
-import io.microshed.jakartals.commons.SnippetContextForJava;
-import io.microshed.jakartals.commons.SnippetRegistry;
 
 public class JakartaTextDocumentService implements TextDocumentService {
 

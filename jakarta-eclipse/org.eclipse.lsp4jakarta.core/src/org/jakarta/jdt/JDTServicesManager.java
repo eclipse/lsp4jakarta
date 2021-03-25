@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jakartals.commons.JakartaDiagnosticsParams;
+import org.eclipse.jakartals.commons.JakartaJavaCodeActionParams;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -37,9 +39,6 @@ import org.jakarta.jdt.servlet.FilterDiagnosticsCollector;
 import org.jakarta.jdt.servlet.ListenerDiagnosticsCollector;
 import org.jakarta.jdt.servlet.ServletDiagnosticsCollector;
 import org.jakarta.lsp4e.Activator;
-
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 import org.jakarta.codeAction.CodeActionHandler;
 

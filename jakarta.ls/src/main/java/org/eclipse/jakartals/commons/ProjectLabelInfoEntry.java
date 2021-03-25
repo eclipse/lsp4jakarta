@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals.commons;
+package org.eclipse.jakartals.commons;
 
 import java.util.Collections;
 import java.util.List;

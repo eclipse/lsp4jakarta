@@ -11,7 +11,7 @@
 *     IBM Corporation, Ankush Sharma - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals.commons;
+package org.eclipse.jakartals.commons;
 
 import java.util.logging.Logger;
 

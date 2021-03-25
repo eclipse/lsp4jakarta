@@ -17,6 +17,7 @@ package org.jakarta.codeAction;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jakartals.commons.JakartaJavaCodeActionParams;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -28,8 +29,6 @@ import org.eclipse.lsp4j.WorkspaceEdit;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.jdt.ChangeUtil;
-
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 /**
  * Java codeAction context for a given compilation unit. Reused from

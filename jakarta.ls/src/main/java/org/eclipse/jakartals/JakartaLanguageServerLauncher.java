@@ -11,7 +11,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals;
+package org.eclipse.jakartals;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,14 +19,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
+import org.eclipse.jakartals.api.JakartaLanguageClientAPI;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.jsonrpc.MessageConsumer;
 import org.eclipse.lsp4j.launch.LSPLauncher.Builder;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4mp.ls.commons.ParentProcessWatcher;
-
-import io.microshed.jakartals.api.JakartaLanguageClientAPI;
 
 public class JakartaLanguageServerLauncher {
     public static void main(String[] args) {

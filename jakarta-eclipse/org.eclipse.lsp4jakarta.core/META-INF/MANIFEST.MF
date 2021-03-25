@@ -38,5 +38,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: jakarta.ls-1.0-SNAPSHOT-jar-with-dependencies.jar,
  .
 Export-Package: 
- io.microshed.jakartals.commons,
+ org.eclipse.jakartals.commons,
  org.jakarta.jdt

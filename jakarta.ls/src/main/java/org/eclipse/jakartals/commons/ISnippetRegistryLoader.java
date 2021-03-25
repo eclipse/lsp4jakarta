@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals.commons;
+package org.eclipse.jakartals.commons;
 
 /**
  * Loader used to load snippets in a given registry for a language id

@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jakartals.commons.JakartaDiagnosticsParams;
+import org.eclipse.jakartals.commons.JakartaJavaCodeActionParams;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
@@ -14,9 +16,6 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.jakarta.jdt.JDTUtils;
 import org.junit.Test;
-
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 public class ManagedBeanTest extends BaseJakartaTest {
 

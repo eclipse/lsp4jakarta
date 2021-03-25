@@ -11,19 +11,11 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals.commons;
+package org.eclipse.jakartals.commons;
 
 import org.eclipse.lsp4mp.commons.DocumentFormat;
 import java.util.List;
 
-/**
- * This is a duplicate JakartaDiagnosticsParams from jakarta.ls. This class is
- * required so that the eclipse test plugin (org.eclipse.lsp4jakarta.tests) can
- * make use of JakartaDiagnosticsParams.
- * 
- * @author Kathryn Kodama
- *
- */
 public class JakartaDiagnosticsParams {
 
     private List<String> uris;

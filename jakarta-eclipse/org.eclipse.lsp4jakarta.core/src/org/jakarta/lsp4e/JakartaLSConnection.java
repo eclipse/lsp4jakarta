@@ -48,7 +48,7 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
         commands.add("-classpath");
         try {
             commands.add(computeClasspath());
-            commands.add("io.microshed.jakartals.JakartaLanguageServerLauncher");
+            commands.add("org.eclipse.jakartals.JakartaLanguageServerLauncher");
             setCommands(commands);
             setWorkingDirectory(System.getProperty("user.dir"));
         } catch (IOException e) {

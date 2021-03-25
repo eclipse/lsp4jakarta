@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jakartals.commons.JakartaJavaCodeActionParams;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
@@ -50,8 +51,6 @@ import org.jakarta.jdt.servlet.ServletConstants;
 import org.jakarta.jdt.persistence.DeleteConflictMapKeyQuickFix;
 import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
-
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 /**
  * Code action handler. Partially reused from
