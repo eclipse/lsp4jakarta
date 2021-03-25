@@ -32,6 +32,7 @@ import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
 
 /**
+ * Diagnostic collector for root resource classes with multiple constructors
  * 
  * @author Matthew Shocrylas
  *
@@ -41,7 +42,6 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
         diagnostic.setSource(Jax_RSConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(Jax_RSConstants.SEVERITY_WARNING);
     }
 
     @Override
@@ -81,26 +81,40 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                             }
                         }
                         
+                        ArrayList<IMethod> equalMaxParamMethods = new ArrayList<IMethod>();
+                        
                         for (Map.Entry<IMethod, Integer> entry : constructorParamsMap.entrySet()) {
-                            if (entry.getValue() < maxParams) {
+                            if (entry.getValue() == maxParams) {
+                                equalMaxParamMethods.add(entry.getKey());
+                            }
+                            else if (entry.getValue() < maxParams) {
                                 IMethod method = entry.getKey();
                                 ISourceRange methodNameRange = JDTUtils.getNameRange(method); // TODO: maybe change the area this diagnostic underlines
                                 Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
                                 
                                 diagnostic = new Diagnostic(methodRange, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.");
+                                diagnostic.setSeverity(Jax_RSConstants.SEVERITY_WARNING);
+                                completeDiagnostic(diagnostic);
+                                diagnostics.add(diagnostic);
+                            }
+                        }
+                        if (equalMaxParamMethods.size() > 1) {
+                            for (IMethod method : equalMaxParamMethods) {
+                                ISourceRange methodNameRange = JDTUtils.getNameRange(method); // TODO: maybe change the area this diagnostic underlines
+                                Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
+                                
+                                diagnostic = new Diagnostic(methodRange, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.");
+                                diagnostic.setSeverity(Jax_RSConstants.SEVERITY_ERROR);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
                         }
                     }
-
                 }
-
             } catch (JavaModelException e) {
                 Activator.logException("Cannot calculate JAX-RS diagnostics", e);
             }
         }
-
     }
-
+    
 }
