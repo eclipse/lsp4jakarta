@@ -11,7 +11,7 @@
 *     IBM Corporation, Ankush Sharma - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.jakartals.commons;
+package org.eclipse.lsp4jakarta.commons;
 
 import java.util.logging.Logger;
 

@@ -11,7 +11,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.jakartals;
+package org.eclipse.lsp4jakarta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +20,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.eclipse.jakartals.commons.JakartaDiagnosticsParams;
-import org.eclipse.jakartals.commons.SnippetContextForJava;
-import org.eclipse.jakartals.commons.SnippetRegistry;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.Command;
@@ -40,6 +37,9 @@ import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
+import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.SnippetContextForJava;
+import org.eclipse.lsp4jakarta.commons.SnippetRegistry;
 import org.eclipse.lsp4mp.commons.DocumentFormat;
 import org.eclipse.lsp4mp.ls.commons.TextDocument;
 import org.eclipse.lsp4mp.ls.commons.TextDocuments;

@@ -48,7 +48,7 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
         commands.add("-classpath");
         try {
             commands.add(computeClasspath());
-            commands.add("org.eclipse.jakartals.JakartaLanguageServerLauncher");
+            commands.add("org.eclipse.lsp4jakarta.JakartaLanguageServerLauncher");
             setCommands(commands);
             setWorkingDirectory(System.getProperty("user.dir"));
         } catch (IOException e) {
@@ -60,7 +60,7 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
 
     private String computeClasspath() throws IOException {
         StringBuilder builder = new StringBuilder();
-        URL url = FileLocator.toFileURL(getClass().getResource("/jakarta.ls-1.0-SNAPSHOT-jar-with-dependencies.jar"));
+        URL url = FileLocator.toFileURL(getClass().getResource("/lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar"));
         builder.append(new java.io.File(url.getPath()).getAbsolutePath());
         return builder.toString();
     }

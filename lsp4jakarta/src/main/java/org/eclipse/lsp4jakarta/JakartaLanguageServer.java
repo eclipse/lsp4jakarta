@@ -11,12 +11,11 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.jakartals;
+package org.eclipse.lsp4jakarta;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
-import org.eclipse.jakartals.api.JakartaLanguageClientAPI;
 import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
@@ -26,6 +25,7 @@ import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
+import org.eclipse.lsp4jakarta.api.JakartaLanguageClientAPI;
 import org.eclipse.lsp4mp.ls.commons.ParentProcessWatcher.ProcessLanguageServer;
 
 public class JakartaLanguageServer implements LanguageServer, ProcessLanguageServer {

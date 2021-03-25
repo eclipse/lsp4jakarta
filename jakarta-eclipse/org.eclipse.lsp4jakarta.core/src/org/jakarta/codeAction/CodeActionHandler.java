@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jakartals.commons.JakartaJavaCodeActionParams;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
@@ -29,6 +28,7 @@ import org.eclipse.jdt.core.manipulation.CoreASTProvider;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
 import org.jakarta.jdt.persistence.PersistenceAnnotationQuickFix;

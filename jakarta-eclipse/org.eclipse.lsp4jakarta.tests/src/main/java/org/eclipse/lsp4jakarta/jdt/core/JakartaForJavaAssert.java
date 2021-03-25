@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jakartals.commons.JakartaDiagnosticsParams;
-import org.eclipse.jakartals.commons.JakartaJavaCodeActionParams;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionContext;
@@ -36,6 +34,8 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.jakarta.jdt.JDTServicesManager;
 import org.jakarta.jdt.JDTUtils;
 import org.junit.Assert;

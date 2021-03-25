@@ -12,21 +12,23 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.jakartals.commons;
+package org.eclipse.lsp4jakarta.commons;
 
 /**
- * Loader used to load snippets in a given registry for a language id
- * Modified from https://github.com/eclipse/lsp4mp/blob/master/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/commons/snippets/ISnippetRegistryLoader.java
+ * Snippet context used to filter the snippet
+ * Reused from https://github.com/eclipse/lsp4mp/blob/master/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/commons/snippets/ISnippetContext.java
  * 
+ * @param <T> the value type waited by the snipper
  * @author Ankush Sharma, credit to Angelo ZERR
  */
-public interface ISnippetRegistryLoader {
-    /**
-     * Register a given snippet in the register
-     * 
-     * @param registry <SnippetRegistry>
-     * @throws Exception
-     */
-    void load(SnippetRegistry registry) throws Exception;
 
+public interface ISnippetContext<T> {
+    /**
+     * Return true if the given value match the snippet context and false otherwise.
+     *
+     * @param value the value to check.
+     * @return true if the given value match the snippet context and false
+     *         otherwise.
+     */
+    boolean isMatch(T value);
 }
