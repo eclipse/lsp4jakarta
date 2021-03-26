@@ -49,11 +49,11 @@ public class JsonbTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d1 = d(18, 11, 38,
+        Diagnostic d1 = d(18, 11, 39,
                 "Only one constructor or static factory method can be annotated with @JsonbCreator in a given class.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "MultipleJsonbCreatorAnnotations");
         
-        Diagnostic d2 = d(21, 47, 60,
+        Diagnostic d2 = d(21, 48, 61,
                 "Only one constructor or static factory method can be annotated with @JsonbCreator in a given class.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "MultipleJsonbCreatorAnnotations");
 

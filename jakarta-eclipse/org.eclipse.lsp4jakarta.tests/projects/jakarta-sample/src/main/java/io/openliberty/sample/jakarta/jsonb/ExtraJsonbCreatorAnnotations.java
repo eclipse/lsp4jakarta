@@ -14,12 +14,12 @@ package io.openliberty.sample.jakarta.jsonb;
 
 import jakarta.json.bind.annotation.JsonbCreator;
 
-public class ExtraJsonbCreatorAnnotation {
+public class ExtraJsonbCreatorAnnotations {
     @JsonbCreator
-    public ExtraJsonbCreatorAnnotation() {}
+    public ExtraJsonbCreatorAnnotations() {}
     
     @JsonbCreator
-    private static ExtraJsonbCreatorAnnotation factoryMethod() {
+    private static ExtraJsonbCreatorAnnotations factoryMethod() {
         return null;
     }
 }
