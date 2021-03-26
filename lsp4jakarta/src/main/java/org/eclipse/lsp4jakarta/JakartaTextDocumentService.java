@@ -11,7 +11,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals;
+package org.eclipse.lsp4jakarta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,14 +37,12 @@ import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
+import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.SnippetContextForJava;
+import org.eclipse.lsp4jakarta.commons.SnippetRegistry;
 import org.eclipse.lsp4mp.commons.DocumentFormat;
 import org.eclipse.lsp4mp.ls.commons.TextDocument;
 import org.eclipse.lsp4mp.ls.commons.TextDocuments;
-
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-// Import for getting snippet contexts
-import io.microshed.jakartals.commons.SnippetContextForJava;
-import io.microshed.jakartals.commons.SnippetRegistry;
 
 public class JakartaTextDocumentService implements TextDocumentService {
 

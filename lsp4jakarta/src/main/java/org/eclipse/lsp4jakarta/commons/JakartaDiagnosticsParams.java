@@ -11,7 +11,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals.commons;
+package org.eclipse.lsp4jakarta.commons;
 
 import org.eclipse.lsp4mp.commons.DocumentFormat;
 import java.util.List;

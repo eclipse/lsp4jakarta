@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.manipulation.CoreASTProvider;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
 import org.jakarta.jdt.persistence.PersistenceAnnotationQuickFix;
@@ -50,8 +51,6 @@ import org.jakarta.jdt.servlet.ServletConstants;
 import org.jakarta.jdt.persistence.DeleteConflictMapKeyQuickFix;
 import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
-
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 /**
  * Code action handler. Partially reused from

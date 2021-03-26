@@ -28,12 +28,11 @@ import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
+import org.eclipse.lsp4jakarta.api.JakartaLanguageClientAPI;
+import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.jakarta.jdt.JDTServicesManager;
 import org.jakarta.jdt.JDTUtils;
-
-import io.microshed.jakartals.api.JakartaLanguageClientAPI;
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
 

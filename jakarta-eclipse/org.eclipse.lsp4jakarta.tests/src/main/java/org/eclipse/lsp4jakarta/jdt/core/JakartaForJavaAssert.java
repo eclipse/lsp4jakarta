@@ -34,12 +34,11 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.jakarta.jdt.JDTServicesManager;
 import org.jakarta.jdt.JDTUtils;
 import org.junit.Assert;
-
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 /**
  * Modified from:

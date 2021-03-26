@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package io.microshed.jakartals.commons;
+package org.eclipse.lsp4jakarta.commons;
 
 import java.lang.reflect.Type;
 
