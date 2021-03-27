@@ -57,12 +57,11 @@ public class BeanValidationQuickFix implements IJavaCodeActionParticipant {
     }
 
     private CodeAction removeConstraintAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
-        String name = "Remove constraint annotation from element";
-        String[] annotations = BeanValidationConstants.SET_OF_ANNOTATIONS.stream().toArray((String[]::new));
+        String annotationName = diagnostic.getData().toString().replace("\"", "");
+        String name = "Remove constraint annotation " + annotationName + " from element";
         ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
-                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotations);
+                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotationName);
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-
         if (codeAction != null) {
             return codeAction;
         }
