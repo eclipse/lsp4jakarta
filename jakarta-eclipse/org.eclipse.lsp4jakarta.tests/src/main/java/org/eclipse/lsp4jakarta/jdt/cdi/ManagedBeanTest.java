@@ -37,9 +37,8 @@ public class ManagedBeanTest extends BaseJakartaTest {
                 "A managed bean with a non-static public field must not declare any scope other than @Dependent",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
 
-        Diagnostic d2 = d(18, 22, 38,
-                "A bean class or producer method or field may specify at most one scope type annotation.",
-                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
+        Diagnostic d2 = d(19, 22, 38, "A producer method may specify at most one scope type annotation.",
+                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d, d2);
 

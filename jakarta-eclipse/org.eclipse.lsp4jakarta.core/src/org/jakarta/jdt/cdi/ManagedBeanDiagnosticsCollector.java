@@ -83,6 +83,13 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                 ISourceRange nameRange = JDTUtils.getNameRange(type);
                 Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 
+                if (managedBeanAnnotations.size() > 1) {
+                    Diagnostic diagnostic = createDiagnostic(type, unit,
+                            "A managed bean class may specify at most one scope type annotation.",
+                            DIAGNOSTIC_CODE_SCOPEDECL);
+                    diagnostics.add(diagnostic);
+                }
+
                 for (IField field : type.getFields()) {
                     int fieldFlags = field.getFlags();
 
@@ -104,6 +111,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     }
 
                     /**
+                     * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
                      * A bean class or producer method or field may specify at most one scope type
                      * annotation. If a bean class or producer method or field specifies multiple
                      * scope type annotations, the container automatically detects the problem and
@@ -116,21 +124,19 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                     boolean isProducerField = fieldAnnotations.stream()
                             .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.PRODUCES));
-                    
+
                     boolean isInjectField = fieldAnnotations.stream()
                             .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.INJECT));
 
                     if (isProducerField && fieldScopes.size() > 1) {
                         diagnostics.add(createDiagnostic(field, unit,
-                                "A bean class or producer method or field may specify at most one scope type annotation.",
-                                DIAGNOSTIC_CODE));
+                                "A producer field may specify at most one scope type annotation.", DIAGNOSTIC_CODE_SCOPEDECL));
                     }
-                    
-                    if(isProducerField && isInjectField) {
+
+                    if (isProducerField && isInjectField) {
                         /*
-                         * ========= Produces and Inject Annotations Checks =========
-                         * go through each field and method to make sure @Produces and @Inject are not
-                         * used together
+                         * ========= Produces and Inject Annotations Checks ========= go through each
+                         * field and method to make sure @Produces and @Inject are not used together
                          * 
                          * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
                          * declaring_producer_field
@@ -141,7 +147,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                          * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
                          * declaring_initializer
                          */
-                        
+
                         // A single field cannot have the same
                         diagnostics.add(createDiagnostic(field, unit,
                                 "@Produces and @Inject annotations cannot be used on the same field or property",
@@ -171,15 +177,13 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                     if (isProducerMethod && methodScopes.size() > 1) {
                         diagnostics.add(createDiagnostic(method, unit,
-                                "A bean class or producer method or field may specify at most one scope type annotation.",
-                                DIAGNOSTIC_CODE));
+                                "A producer method may specify at most one scope type annotation.", DIAGNOSTIC_CODE_SCOPEDECL));
                     }
-                    
-                    if(isProducerMethod && isInjectMethod) {
+
+                    if (isProducerMethod && isInjectMethod) {
                         /*
-                         * ========= Produces and Inject Annotations Checks =========
-                         * go through each field and method to make sure @Produces and @Inject are not
-                         * used together
+                         * ========= Produces and Inject Annotations Checks ========= go through each
+                         * field and method to make sure @Produces and @Inject are not used together
                          * 
                          * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
                          * declaring_producer_field
@@ -190,7 +194,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                          * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
                          * declaring_initializer
                          */
-                        
+
                         // A single method cannot have the same
                         diagnostics.add(createDiagnostic(method, unit,
                                 "@Produces and @Inject annotations cannot be used on the same field or property",
@@ -198,7 +202,6 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     }
 
                 }
-
 
                 if (isManagedBean) {
                     /**
