@@ -31,9 +31,8 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.jakarta.jdt.JDTUtils;
 import org.junit.Test;
-
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 
 public class BeanValidationTest extends BaseJakartaTest {
     protected static JDTUtils JDT_UTILS = new JDTUtils();
