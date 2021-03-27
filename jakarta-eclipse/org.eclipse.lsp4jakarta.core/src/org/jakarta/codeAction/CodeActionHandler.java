@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.manipulation.CoreASTProvider;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
 import org.jakarta.jdt.beanvalidation.BeanValidationConstants;
@@ -37,6 +38,8 @@ import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.jdt.persistence.PersistenceEntityQuickFix;
 import org.jakarta.jdt.jax_rs.Jax_RSConstants;
 import org.jakarta.jdt.jax_rs.ResourceMethodQuickFix;
+import org.jakarta.jdt.jsonb.JsonbAnnotationQuickFix;
+import org.jakarta.jdt.jsonb.JsonbConstants;
 import org.jakarta.jdt.cdi.ConflictProducesInjectQuickFix;
 import org.jakarta.jdt.cdi.ManagedBeanConstants;
 import org.jakarta.jdt.cdi.ManagedBeanConstructorQuickFix;
@@ -50,8 +53,6 @@ import org.jakarta.jdt.servlet.ServletConstants;
 import org.jakarta.jdt.persistence.DeleteConflictMapKeyQuickFix;
 import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.lsp4e.Activator;
-
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 /**
  * Code action handler. Partially reused from
@@ -93,7 +94,7 @@ public class CodeActionHandler {
             ConflictProducesInjectQuickFix ConflictProducesInjectQuickFix = new ConflictProducesInjectQuickFix();
             BeanValidationQuickFix BeanValidationQuickFix = new BeanValidationQuickFix();
             ManagedBeanConstructorQuickFix ManagedBeanConstructorQuickFix = new ManagedBeanConstructorQuickFix();
-
+            JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
@@ -145,6 +146,9 @@ public class CodeActionHandler {
                     }
                     if(diagnostic.getCode().getLeft().equals(ManagedBeanConstants.CONSTRUCTOR_DIAGNOSTIC_CODE)) {
                     	codeActions.addAll(ManagedBeanConstructorQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if(diagnostic.getCode().getLeft().equals(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION)) {
+                        codeActions.addAll(JsonbAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();

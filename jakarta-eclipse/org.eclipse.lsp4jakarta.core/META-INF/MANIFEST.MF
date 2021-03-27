@@ -35,8 +35,8 @@ Require-Bundle:
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: jakartaee.eclipse
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: jakarta.ls-1.0-SNAPSHOT-jar-with-dependencies.jar,
+Bundle-ClassPath: lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar,
  .
 Export-Package: 
- io.microshed.jakartals.commons,
+ org.eclipse.lsp4jakarta.commons,
  org.jakarta.jdt
