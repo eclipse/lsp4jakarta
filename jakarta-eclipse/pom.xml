@@ -11,7 +11,7 @@
 		<tycho-version>1.7.0</tycho-version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<jdt.ls.version>0.57.0.20200619102332</jdt.ls.version>
+		<jdt.ls.version>0.69.0.20210212052351</jdt.ls.version>
 		<tycho.generateSourceReferences>true</tycho.generateSourceReferences>
 		<!-- <tycho.test.platformArgs>-XstartOnFirstThread</tycho.test.platformArgs> -->
 		<tycho.test.jvmArgs>-Xmx512m</tycho.test.jvmArgs>
@@ -23,9 +23,9 @@
 	</modules>
 	<repositories>
 		<repository>
-			<id>2019-06</id>
+			<id>2021-03</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2019-06</url>
+			<url>http://download.eclipse.org/releases/2021-03</url>
 		</repository>
 		<repository>
 			<id>jdt.ls.p2</id>
