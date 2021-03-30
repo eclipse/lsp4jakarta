@@ -112,6 +112,14 @@ public class JakartaForJavaAssert {
     // Assert for diagnostics
 
     public static Diagnostic d(int line, int startCharacter, int endCharacter, String message,
+            DiagnosticSeverity severity, final String source, String code, Object data) {
+        Diagnostic d = new Diagnostic(r(line, startCharacter, line, endCharacter), message, severity, source,
+                code != null ? code : null);
+        d.setData(data);
+        return d;
+    }
+    
+    public static Diagnostic d(int line, int startCharacter, int endCharacter, String message,
             DiagnosticSeverity severity, final String source, String code) {
         return d(line, startCharacter, line, endCharacter, message, severity, source, code);
     }

@@ -111,7 +111,7 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         name = "Add a no-arg public constructor to this class";
         proposal = new AddConstructorProposal(name,
                 context.getCompilationUnit(), context.getASTRoot(), parentType, 0, "public");
-         codeAction = context.convertToCodeAction(proposal, diagnostic);
+        codeAction = context.convertToCodeAction(proposal, diagnostic);
 
         if (codeAction != null) {
             codeActions.add(codeAction);
@@ -127,7 +127,7 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
         String type = "";
         if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS)) {
             type = "method";
-            coveredNode = context.getCoveredNode();
+            coveredNode = context.getCoveredNode().getParent();
         } else if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES)) {
             type = "variable";
         } else if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS)) {

@@ -105,13 +105,14 @@ public class ModifyModifiersProposal extends ChangeCorrectionProposal {
             declNode = newRoot.findDeclaringNode(binding.getKey());
         }
 
+        if (coveredNode != null) {
+            declNode = coveredNode;
+        }
         boolean isField = declNode instanceof VariableDeclarationFragment;
         if (isField) {
             declNode = declNode.getParent();
         }
-        if (coveredNode != null) {
-            declNode = coveredNode.getParent();
-        }
+
         
         AST ast = declNode.getAST();
         ASTRewrite rewrite = ASTRewrite.create(ast);

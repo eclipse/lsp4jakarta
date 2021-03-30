@@ -31,6 +31,8 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.jdt.JsonRpcHelpers;
+import org.jakarta.jdt.beanvalidation.BeanValidationConstants;
+import org.jakarta.jdt.beanvalidation.BeanValidationQuickFix;
 import org.jakarta.jdt.persistence.PersistenceAnnotationQuickFix;
 import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.jdt.persistence.PersistenceEntityQuickFix;
@@ -90,6 +92,7 @@ public class CodeActionHandler {
             ManagedBeanQuickFix ManagedBeanQuickFix = new ManagedBeanQuickFix();
             PersistenceEntityQuickFix PersistenceEntityQuickFix = new PersistenceEntityQuickFix();
             ConflictProducesInjectQuickFix ConflictProducesInjectQuickFix = new ConflictProducesInjectQuickFix();
+            BeanValidationQuickFix BeanValidationQuickFix = new BeanValidationQuickFix();
             ManagedBeanConstructorQuickFix ManagedBeanConstructorQuickFix = new ManagedBeanConstructorQuickFix();
             JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
@@ -136,6 +139,10 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT)) {
                         codeActions.addAll(ConflictProducesInjectQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_STATIC)
+                            || diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_INVALID_TYPE)) {
+                        codeActions.addAll(BeanValidationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(ManagedBeanConstants.CONSTRUCTOR_DIAGNOSTIC_CODE)) {
                     	codeActions.addAll(ManagedBeanConstructorQuickFix.getCodeActions(context, diagnostic, monitor));
