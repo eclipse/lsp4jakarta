@@ -278,8 +278,41 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * managed bean is discovered.
                      * 
                      */
+<<<<<<< HEAD
                     invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES,
                             ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM);
+=======
+                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM); 
+                    
+                    for (IMethod method : type.getMethods()) {
+                        int numDisposes = 0;
+                        Set<String> invalidAnnotations = new TreeSet<>();
+                        
+                        for (ILocalVariable param : method.getParameters()) {
+                            for (IAnnotation annotation : param.getAnnotations()) {
+                                if (annotation.getElementName().equals(ManagedBeanConstants.DISPOSES)) {
+                                    numDisposes++;
+                                } else if(annotation.getElementName().equals(ManagedBeanConstants.OBSERVES)
+                                        || annotation.getElementName().equals(ManagedBeanConstants.OBSERVES_ASYNC)) {
+                                    invalidAnnotations.add("@" + annotation.getElementName());
+                                }
+                            }
+                        }
+                        
+                        if(numDisposes == 0) continue;
+                        if(numDisposes > 1) {
+                            diagnostics.add(createDiagnostic(method, unit,
+                                    "A method cannot have more than one parameter annotated @Disposes",
+                                    ManagedBeanConstants.DIAGNOSTIC_CODE_REDUNDANT_DISPOSES));
+                        }
+                        
+                        if(!invalidAnnotations.isEmpty()) {
+                            diagnostics.add(createDiagnostic(method, unit,
+                                    createInvalidDisposesLabel(invalidAnnotations),
+                                    ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_DISPOSES_PARAM));
+                        }
+                    }
+>>>>>>> Implement diagnostic
                 }
             }
 
@@ -310,17 +343,34 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                 }
             }
 
+<<<<<<< HEAD
             if (!invalidAnnotations.isEmpty()) {
                 String label = createInvalidInjectLabel(target, invalidAnnotations);
+=======
+            if(!invalidAnnotations.isEmpty()) {
+                String label = createInvalidProducesOrInjectLabel(target, invalidAnnotations);
+>>>>>>> Implement diagnostic
                 diagnostics.add(createDiagnostic(method, unit, label, diagnosticCode));
             }
 
         }
     }
+<<<<<<< HEAD
 
     private String createInvalidInjectLabel(String annotation, Set<String> invalidAnnotations) {
         String label = "A bean constructor or a method annotated with @" + annotation
                 + " cannot have parameter(s) annotated with ";
+=======
+    
+    private String createInvalidProducesOrInjectLabel(String annotation, Set<String> invalidAnnotations) {
+        String label = "A bean constructor or a method annotated with @" + annotation + " cannot have parameter(s) annotated with ";
+>>>>>>> Implement diagnostic
+        label += String.join(", ", invalidAnnotations);
+        return label;
+    }
+    
+    private String createInvalidDisposesLabel(Set<String> invalidAnnotations) {
+        String label = "A disposer method cannot have a parameter annotated with ";
         label += String.join(", ", invalidAnnotations);
         return label;
     }
