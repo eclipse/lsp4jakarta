@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.DiagnosticsCollector;
 import org.jakarta.jdt.JDTUtils;
@@ -42,7 +43,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
         diagnostic.setSource(Jax_RSConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(Jax_RSConstants.SEVERITY_WARNING);
+        diagnostic.setSeverity(DiagnosticSeverity.Warning);
     }
 
     @Override

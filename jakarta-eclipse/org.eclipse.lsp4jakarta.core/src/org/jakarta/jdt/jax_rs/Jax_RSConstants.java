@@ -28,10 +28,6 @@ public class Jax_RSConstants {
 
     /* Source */
     public static final String DIAGNOSTIC_SOURCE = "jakarta-jax_rs";
-
-    /* Severity */
-    public static final DiagnosticSeverity SEVERITY_ERROR = DiagnosticSeverity.Error;
-    public static final DiagnosticSeverity SEVERITY_WARNING = DiagnosticSeverity.Warning;
     
     /* Diagnostics fields constants */
     public static final String DIAGNOSTIC_CODE_NON_PUBLIC = "NonPublicResourceMethod";
