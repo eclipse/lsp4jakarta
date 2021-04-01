@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     IBM Corporation, Matthew Shocrylas - initial API and implementation
+ *     IBM Corporation, Matthew Shocrylas - initial API and implementation, Bera Sogut
  *******************************************************************************/
 
 package org.jakarta.jdt.jax_rs;
@@ -16,23 +16,25 @@ package org.jakarta.jdt.jax_rs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.lsp4j.DiagnosticSeverity;
-
 public class Jax_RSConstants {
 
     public static final String RESOURCE_METHOD = "ResourceMethod";
-    
+
     /* Annotation Constants */
-    public static final ArrayList<String> METHOD_DESIGNATORS = new ArrayList<String>(List.of(
-            "Path", "GET", "POST", "PUT", "DELETE", "HEAD"));
+    public static final ArrayList<String> METHOD_DESIGNATORS = new ArrayList<String>(
+            List.of("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"));
+
+    /* Annotations which make a resource method parameter a non entity parameter. */
+    public static final ArrayList<String> NON_ENTITY_PARAM_ANNOTATIONS = new ArrayList<String>(
+            List.of("FormParam", "MatrixParam", "QueryParam", "PathParam", "CookieParam", "HeaderParam", "Context"));
+
+    public static final String PATH_ANNOTATION = "Path";
 
     /* Source */
     public static final String DIAGNOSTIC_SOURCE = "jakarta-jax_rs";
 
-    /* Severity */
-    public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
-    
     /* Diagnostics fields constants */
     public static final String DIAGNOSTIC_CODE_NON_PUBLIC = "NonPublicResourceMethod";
+    public static final String DIAGNOSTIC_CODE_MULTIPLE_ENTITY_PARAMS = "ResourceMethodMultipleEntityParams";
 
 }
