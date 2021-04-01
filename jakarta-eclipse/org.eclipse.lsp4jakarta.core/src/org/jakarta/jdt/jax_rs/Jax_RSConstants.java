@@ -16,8 +16,6 @@ package org.jakarta.jdt.jax_rs;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.lsp4j.DiagnosticSeverity;
-
 public class Jax_RSConstants {
 
     public static final String RESOURCE_METHOD = "ResourceMethod";
@@ -34,9 +32,6 @@ public class Jax_RSConstants {
 
     /* Source */
     public static final String DIAGNOSTIC_SOURCE = "jakarta-jax_rs";
-
-    /* Severity */
-    public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 
     /* Diagnostics fields constants */
     public static final String DIAGNOSTIC_CODE_NON_PUBLIC = "NonPublicResourceMethod";
