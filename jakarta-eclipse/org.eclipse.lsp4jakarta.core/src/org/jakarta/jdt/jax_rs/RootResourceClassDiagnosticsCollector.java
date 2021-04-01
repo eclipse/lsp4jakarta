@@ -42,6 +42,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
         diagnostic.setSource(Jax_RSConstants.DIAGNOSTIC_SOURCE);
+        diagnostic.setSeverity(Jax_RSConstants.SEVERITY_WARNING);
     }
 
     @Override
@@ -93,7 +94,6 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                                 Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
                                 
                                 diagnostic = new Diagnostic(methodRange, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.");
-                                diagnostic.setSeverity(Jax_RSConstants.SEVERITY_WARNING);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
@@ -104,7 +104,6 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                                 Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
                                 
                                 diagnostic = new Diagnostic(methodRange, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.");
-                                diagnostic.setSeverity(Jax_RSConstants.SEVERITY_ERROR);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
