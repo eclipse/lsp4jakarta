@@ -278,11 +278,8 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * managed bean is discovered.
                      * 
                      */
-<<<<<<< HEAD
                     invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES,
                             ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM);
-=======
-                    invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES, ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM); 
                     
                     for (IMethod method : type.getMethods()) {
                         int numDisposes = 0;
@@ -312,7 +309,6 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                                     ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_DISPOSES_PARAM));
                         }
                     }
->>>>>>> Implement diagnostic
                 }
             }
 
@@ -343,34 +339,28 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                 }
             }
 
-<<<<<<< HEAD
             if (!invalidAnnotations.isEmpty()) {
-                String label = createInvalidInjectLabel(target, invalidAnnotations);
-=======
-            if(!invalidAnnotations.isEmpty()) {
-                String label = createInvalidProducesOrInjectLabel(target, invalidAnnotations);
->>>>>>> Implement diagnostic
+                String label = target.equals("Produces") ? createInvalidProducesLabel(invalidAnnotations) : createInvalidInjectLabel(invalidAnnotations);
                 diagnostics.add(createDiagnostic(method, unit, label, diagnosticCode));
             }
 
         }
     }
-<<<<<<< HEAD
 
-    private String createInvalidInjectLabel(String annotation, Set<String> invalidAnnotations) {
-        String label = "A bean constructor or a method annotated with @" + annotation
-                + " cannot have parameter(s) annotated with ";
-=======
+    private String createInvalidInjectLabel(Set<String> invalidAnnotations) {
+        String label = "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with ";
+        label += String.join(", ", invalidAnnotations);
+        return label;
+    }
     
-    private String createInvalidProducesOrInjectLabel(String annotation, Set<String> invalidAnnotations) {
-        String label = "A bean constructor or a method annotated with @" + annotation + " cannot have parameter(s) annotated with ";
->>>>>>> Implement diagnostic
+    private String createInvalidProducesLabel(Set<String> invalidAnnotations) {
+        String label = "A producer method cannot have parameter(s) annotated with ";
         label += String.join(", ", invalidAnnotations);
         return label;
     }
     
     private String createInvalidDisposesLabel(Set<String> invalidAnnotations) {
-        String label = "A disposer method cannot have a parameter annotated with ";
+        String label = "A disposer method cannot have parameter(s) annotated with ";
         label += String.join(", ", invalidAnnotations);
         return label;
     }
