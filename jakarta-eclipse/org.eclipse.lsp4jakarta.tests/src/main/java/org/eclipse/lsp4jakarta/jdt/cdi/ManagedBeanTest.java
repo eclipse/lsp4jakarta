@@ -33,20 +33,41 @@ public class ManagedBeanTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // test expected diagnostic
-        Diagnostic d = d(11, 12, 13,
+        Diagnostic d = d(6, 12, 13,
                 "A managed bean with a non-static public field must not declare any scope other than @Dependent",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
 
-        Diagnostic d2 = d(19, 22, 38, "A producer method may specify at most one scope type annotation.",
-                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
-
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d, d2);
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
         // test expected quick-fix
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(9, 0, 10, 0, "@Dependent\n");
+        TextEdit te = te(4, 0, 5, 0, "@Dependent\n");
         CodeAction ca = ca(uri, "Replace current scope with @Dependent", d, te);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
+    }
+    
+    @Test
+    public void scopeDeclaration() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/cdi/ScopeDeclaration.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        // test expected diagnostic
+        Diagnostic d1 = d(12, 16, 17,
+                "A producer field may specify at most one scope type annotation.",
+                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+
+        Diagnostic d2 = d(15, 25, 41, "A producer method may specify at most one scope type annotation.",
+                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+        
+        Diagnostic d3 = d(10, 13, 29, "A managed bean class may specify at most one scope type annotation.",
+                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);
     }
 
     @Test
