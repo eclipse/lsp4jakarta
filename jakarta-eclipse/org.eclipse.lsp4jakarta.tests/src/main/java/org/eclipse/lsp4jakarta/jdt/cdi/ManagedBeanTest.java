@@ -11,12 +11,11 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.TextEdit;
+import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.jakarta.jdt.JDTUtils;
 import org.junit.Test;
-
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 public class ManagedBeanTest extends BaseJakartaTest {
 
@@ -41,13 +40,13 @@ public class ManagedBeanTest extends BaseJakartaTest {
         
         // test expected quick-fix      
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(2, 0, 5, 0, "import jakarta.enterprise.context.Dependent;\nimport jakarta.exterprise.context.*;\n\n@Dependent\n");
+        TextEdit te = te(2, 0, 5, 0, "import jakarta.enterprise.context.Dependent;\nimport jakarta.enterprise.context.RequestScoped;\n\n@Dependent\n");
         CodeAction ca = ca(uri, "Replace current scope with @Dependent", d, te);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
     }
     
     @Test
-    public void peoducesAndInject() throws Exception {
+    public void producesAndInject() throws Exception {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
@@ -86,4 +85,88 @@ public class ManagedBeanTest extends BaseJakartaTest {
         assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
     }
 
+    @Test
+    public void injectAndDisposesObservesObservesAsync() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/cdi/InjectAndDisposesObservesObservesAsync.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+        
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+        
+        Diagnostic d1 = d(10, 18, 31,
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
+        
+        Diagnostic d2 = d(16, 18, 31,
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Observes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
+        
+        Diagnostic d3 = d(22, 18, 36,
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
+        
+        Diagnostic d4 = d(28, 18, 39,
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes, @Observes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
+        
+        Diagnostic d5 = d(34, 18, 44,
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Observes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
+        
+        Diagnostic d6 = d(40, 18, 44,
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
+        
+        Diagnostic d7 = d(46, 18, 52,
+                "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes, @Observes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveInjectOrConflictedAnnotations");
+        
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5, d6, d7);
+    }
+    
+    
+    @Test
+    public void producesAndDisposesObservesObservesAsync() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/cdi/ProducesAndDisposesObservesObservesAsync.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+        
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+        
+        Diagnostic d1 = d(12, 18, 31,
+                "A bean constructor or a method annotated with @Produces cannot have parameter(s) annotated with @Disposes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrConflictedAnnotations");
+        
+        Diagnostic d2 = d(18, 18, 31,
+                "A bean constructor or a method annotated with @Produces cannot have parameter(s) annotated with @Observes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrConflictedAnnotations");
+        
+        Diagnostic d3 = d(24, 18, 36,
+                "A bean constructor or a method annotated with @Produces cannot have parameter(s) annotated with @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrConflictedAnnotations");
+        
+        Diagnostic d4 = d(30, 18, 39,
+                "A bean constructor or a method annotated with @Produces cannot have parameter(s) annotated with @Disposes, @Observes",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrConflictedAnnotations");
+        
+        Diagnostic d5 = d(36, 18, 44,
+                "A bean constructor or a method annotated with @Produces cannot have parameter(s) annotated with @Observes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrConflictedAnnotations");
+        
+        Diagnostic d6 = d(42, 18, 44,
+                "A bean constructor or a method annotated with @Produces cannot have parameter(s) annotated with @Disposes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrConflictedAnnotations");
+        
+        Diagnostic d7 = d(48, 18, 52,
+                "A bean constructor or a method annotated with @Produces cannot have parameter(s) annotated with @Disposes, @Observes, @ObservesAsync",
+                DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrConflictedAnnotations");
+        
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5, d6, d7);
+    }
 }

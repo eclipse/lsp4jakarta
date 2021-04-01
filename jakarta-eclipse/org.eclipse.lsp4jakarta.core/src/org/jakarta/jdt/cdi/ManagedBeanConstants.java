@@ -23,10 +23,23 @@ public class ManagedBeanConstants {
     /* Annotation Constants */
     public static final String PRODUCES = "Produces";
     public static final String INJECT = "Inject";
+    public static final String DISPOSES = "Disposes";
+    public static final String OBSERVES = "Observes";
+    public static final String OBSERVES_ASYNC = "ObservesAsync";
+    
     
     public static final String DIAGNOSTIC_SOURCE = "jakarta-cdi";
     public static final String DIAGNOSTIC_CODE = "InvalidManagedBeanAnnotation";
     public static final String DIAGNOSTIC_CODE_PRODUCES_INJECT = "RemoveProducesOrInject";
+    
+    public static final String CONSTRUCTOR_DIAGNOSTIC_CODE = "InvalidManagedBeanConstructor";
+    
+    
+    public static final String DIAGNOSTIC_CODE_INVALID_INJECT_PARAM = "RemoveInjectOrConflictedAnnotations";
+    public static final String DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM = "RemoveProducesOrConflictedAnnotations";
+    
+    public static final Set<String> INVALID_INJECT_PARAMS = new HashSet<String>(Arrays.asList(DISPOSES, OBSERVES, OBSERVES_ASYNC));
+    
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 
     // List can be found in the cdi doc here:
