@@ -30,12 +30,13 @@ import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ModifyModifiersProposal;
 
 /**
- * Quick fix for ResourceMethodDiagnosticsCollector that uses ChangeVisibilityProposal.
+ * Quick fix for ResourceMethodDiagnosticsCollector that uses
+ * ModifyModifiersProposal.
  * 
  * @author Matthew Shocrylas
  *
  */
-public class ResourceMethodQuickFix implements IJavaCodeActionParticipant {
+public class NonPublicResourceMethodQuickFix implements IJavaCodeActionParticipant {
 
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
@@ -46,12 +47,12 @@ public class ResourceMethodQuickFix implements IJavaCodeActionParticipant {
 
         if (parentMethod != null) {
             List<CodeAction> codeActions = new ArrayList<>();
-            
+
             final String TITLE_MESSAGE = "Make method public";
-            
-            ChangeCorrectionProposal proposal = new ModifyModifiersProposal(TITLE_MESSAGE,
-                    context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, null, Arrays.asList("public"));
-            
+
+            ChangeCorrectionProposal proposal = new ModifyModifiersProposal(TITLE_MESSAGE, context.getCompilationUnit(),
+                    context.getASTRoot(), parentMethod, 0, null, Arrays.asList("public"));
+
             // Convert the proposal to LSP4J CodeAction
             CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
             codeAction.setTitle(TITLE_MESSAGE);

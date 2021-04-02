@@ -37,7 +37,8 @@ import org.jakarta.jdt.persistence.PersistenceAnnotationQuickFix;
 import org.jakarta.jdt.persistence.PersistenceConstants;
 import org.jakarta.jdt.persistence.PersistenceEntityQuickFix;
 import org.jakarta.jdt.jax_rs.Jax_RSConstants;
-import org.jakarta.jdt.jax_rs.ResourceMethodQuickFix;
+import org.jakarta.jdt.jax_rs.NonPublicResourceMethodQuickFix;
+import org.jakarta.jdt.jax_rs.ResourceMethodMultipleEntityParamsQuickFix;
 import org.jakarta.jdt.jsonb.JsonbAnnotationQuickFix;
 import org.jakarta.jdt.jsonb.JsonbConstants;
 import org.jakarta.jdt.cdi.ConflictProducesInjectQuickFix;
@@ -88,7 +89,8 @@ public class CodeActionHandler {
             CompleteFilterAnnotationQuickFix CompleteFilterAnnotationQuickFix = new CompleteFilterAnnotationQuickFix();
             PersistenceAnnotationQuickFix PersistenceAnnotationQuickFix = new PersistenceAnnotationQuickFix();
             DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
-            ResourceMethodQuickFix ResourceMethodQuickFix = new ResourceMethodQuickFix();
+            NonPublicResourceMethodQuickFix NonPublicResourceMethodQuickFix = new NonPublicResourceMethodQuickFix();
+            ResourceMethodMultipleEntityParamsQuickFix ResourceMethodMultipleEntityParamsQuickFix = new ResourceMethodMultipleEntityParamsQuickFix();
             ManagedBeanQuickFix ManagedBeanQuickFix = new ManagedBeanQuickFix();
             PersistenceEntityQuickFix PersistenceEntityQuickFix = new PersistenceEntityQuickFix();
             ConflictProducesInjectQuickFix ConflictProducesInjectQuickFix = new ConflictProducesInjectQuickFix();
@@ -119,19 +121,27 @@ public class CodeActionHandler {
                                 .addAll(CompleteFilterAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC)) {
-                        codeActions.addAll(ResourceMethodQuickFix.getCodeActions(context, diagnostic, monitor));
+                        codeActions
+                                .addAll(NonPublicResourceMethodQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if(diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES)) {
-                    	codeActions.addAll(PersistenceAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_MULTIPLE_ENTITY_PARAMS)) {
+                        codeActions.addAll(ResourceMethodMultipleEntityParamsQuickFix.getCodeActions(context,
+                                diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft()
+                            .equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES)) {
+                        codeActions.addAll(PersistenceAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft()
                             .equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
                         codeActions.addAll(DeleteConflictMapKeyQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS)
-                            || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES) 
+                            || diagnostic.getCode().getLeft()
+                                    .equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES)
                             || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS)
-                            || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR)) {
+                            || diagnostic.getCode().getLeft()
+                                    .equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR)) {
                         codeActions.addAll(PersistenceEntityQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE)) {
@@ -141,13 +151,14 @@ public class CodeActionHandler {
                         codeActions.addAll(ConflictProducesInjectQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_STATIC)
-                            || diagnostic.getCode().getLeft().equals(BeanValidationConstants.DIAGNOSTIC_CODE_INVALID_TYPE)) {
+                            || diagnostic.getCode().getLeft()
+                                    .equals(BeanValidationConstants.DIAGNOSTIC_CODE_INVALID_TYPE)) {
                         codeActions.addAll(BeanValidationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if(diagnostic.getCode().getLeft().equals(ManagedBeanConstants.CONSTRUCTOR_DIAGNOSTIC_CODE)) {
-                    	codeActions.addAll(ManagedBeanConstructorQuickFix.getCodeActions(context, diagnostic, monitor));
+                    if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.CONSTRUCTOR_DIAGNOSTIC_CODE)) {
+                        codeActions.addAll(ManagedBeanConstructorQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if(diagnostic.getCode().getLeft().equals(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION)) {
+                    if (diagnostic.getCode().getLeft().equals(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION)) {
                         codeActions.addAll(JsonbAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
