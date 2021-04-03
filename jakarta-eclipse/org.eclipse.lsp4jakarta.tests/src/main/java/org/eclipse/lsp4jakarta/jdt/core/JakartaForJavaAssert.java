@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
@@ -54,14 +55,13 @@ public class JakartaForJavaAssert {
         Range range = d.getRange();
         CodeActionContext context = new CodeActionContext();
         context.setDiagnostics(Arrays.asList(d));
-        JakartaJavaCodeActionParams codeActionParams = new JakartaJavaCodeActionParams(textDocument, range,
-                context);
+        JakartaJavaCodeActionParams codeActionParams = new JakartaJavaCodeActionParams(textDocument, range, context);
         codeActionParams.setResourceOperationSupported(true);
         return codeActionParams;
     }
 
-    public static void assertJavaCodeAction(JakartaJavaCodeActionParams params, JDTUtils utils,
-            CodeAction... expected) throws JavaModelException {
+    public static void assertJavaCodeAction(JakartaJavaCodeActionParams params, JDTUtils utils, CodeAction... expected)
+            throws JavaModelException {
         List<? extends CodeAction> actual = JDTServicesManager.getInstance().getCodeAction(params, utils,
                 new NullProgressMonitor());
         assertCodeActions(actual != null && actual.size() > 0 ? actual : Collections.emptyList(), expected);
@@ -83,8 +83,10 @@ public class JakartaForJavaAssert {
 
         Assert.assertEquals(expected.length, actual.size());
         for (int i = 0; i < expected.length; i++) {
-            Assert.assertEquals("Assert title [" + i + "]", expected[i].getTitle(), ((CodeAction) actual.get(i)).getTitle());
-            Assert.assertEquals("Assert edit [" + i + "]", expected[i].getEdit(), ((CodeAction) actual.get(i)).getEdit());
+            Assert.assertEquals("Assert title [" + i + "]", expected[i].getTitle(),
+                    ((CodeAction) actual.get(i)).getTitle());
+            Assert.assertEquals("Assert edit [" + i + "]", expected[i].getEdit(),
+                    ((CodeAction) actual.get(i)).getEdit());
         }
     }
 
@@ -143,8 +145,8 @@ public class JakartaForJavaAssert {
         return new Position(line, character);
     }
 
-    public static void assertJavaDiagnostics(JakartaDiagnosticsParams params, JDTUtils utils,
-            Diagnostic... expected) throws JavaModelException {
+    public static void assertJavaDiagnostics(JakartaDiagnosticsParams params, JDTUtils utils, Diagnostic... expected)
+            throws JavaModelException {
         List<PublishDiagnosticsParams> actual = JDTServicesManager.getInstance().getJavaDiagnostics(params);
 
         assertDiagnostics(
@@ -157,6 +159,22 @@ public class JakartaForJavaAssert {
     }
 
     public static void assertDiagnostics(List<Diagnostic> actual, List<Diagnostic> expected, boolean filter) {
+        /**
+         * ordering of diagnostics should not matter when testing for equality, so we
+         * sort diagnostics by their range.
+         */
+        Comparator<Position> posOrder = (a, b) -> a.getLine() == b.getLine() ? b.getCharacter() - a.getCharacter()
+                : b.getLine() - a.getLine();
+
+        Comparator<Range> rangePosOrder = (a, b) -> posOrder.compare(a.getStart(), b.getStart()) == 0
+                ? posOrder.compare(a.getEnd(), b.getEnd())
+                : posOrder.compare(a.getStart(), b.getStart());
+
+        Comparator<Diagnostic> diagnosticRangeOrder = (a, b) -> rangePosOrder.compare(a.getRange(), b.getRange());
+
+        actual.sort(diagnosticRangeOrder);
+        expected.sort(diagnosticRangeOrder);
+
         List<Diagnostic> received = actual;
         final boolean filterMessage;
         if (expected != null && !expected.isEmpty()
@@ -183,5 +201,4 @@ public class JakartaForJavaAssert {
         return uriString.replaceFirst("file:/([^/])", "file:///$1");
     }
 
-    
 }
