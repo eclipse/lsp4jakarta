@@ -135,17 +135,14 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                     if (isProducerField && isInjectField) {
                         /*
-                         * ========= Produces and Inject Annotations Checks ========= go through each
-                         * field and method to make sure @Produces and @Inject are not used together
+                         * ========= Produces and Inject Annotations Checks ========= 
                          * 
-                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_producer_field
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_producer_method
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_injected_field
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_initializer
+                         * go through each field and method to make sure @Produces and @Inject are not used together
+                         * 
+                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_injected_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
                          */
 
                         // A single field cannot have the same
@@ -182,17 +179,14 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                     if (isProducerMethod && isInjectMethod) {
                         /*
-                         * ========= Produces and Inject Annotations Checks ========= go through each
-                         * field and method to make sure @Produces and @Inject are not used together
+                         * ========= Produces and Inject Annotations Checks ========= 
                          * 
-                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_producer_field
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_producer_method
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_injected_field
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_initializer
+                         * go through each field and method to make sure @Produces and @Inject are not used together
+                         * 
+                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_injected_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
                          */
 
                         // A single method cannot have the same
@@ -246,17 +240,14 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                 }
 
                 /*
-                 * ========= Inject and Disposes, Observes, ObservesAsync Annotations
-                 * Checks=========
+                 * ========= Inject and Disposes, Observes, ObservesAsync Annotations Checks=========
                  */
                 /*
                  * go through each method to make sure @Inject
                  * and @Disposes, @Observes, @ObservesAsync are not used together
                  * 
-                 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                 * declaring_bean_constructor
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                 * declaring_initializer
+                 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_constructor
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
                  * 
                  */
                 invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.INJECT,
@@ -264,18 +255,16 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                 if (isManagedBean) {
                     /*
-                     * ========= Produces and Disposes, Observes, ObservesAsync Annotations
-                     * Checks=========
+                     * ========= Produces and Disposes, Observes, ObservesAsync Annotations Checks=========
                      */
                     /*
                      * go through each method to make sure @Produces
                      * and @Disposes, @Observes, @ObservesAsync are not used together
                      * 
-                     * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                     * declaring_producer_method
+                     * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
                      * 
-                     * note: we need to check for bean defining annotations first to make sure the
-                     * managed bean is discovered.
+                     * note: 
+                     * we need to check for bean defining annotations first to make sure the managed bean is discovered.
                      * 
                      */
                     invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES,
