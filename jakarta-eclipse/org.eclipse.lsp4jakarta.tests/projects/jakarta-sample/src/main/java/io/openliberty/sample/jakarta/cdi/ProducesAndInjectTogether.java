@@ -6,7 +6,7 @@ import jakarta.inject.Inject;
 
 
 @ApplicationScoped
-public class ProducesAndInjectTogether{
+public class ProducesAndInjectTogether {
     @Produces
     @Inject
     private String greeting = "Hello";

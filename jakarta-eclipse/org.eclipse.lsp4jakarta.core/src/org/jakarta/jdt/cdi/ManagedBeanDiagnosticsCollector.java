@@ -135,17 +135,14 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                     if (isProducerField && isInjectField) {
                         /*
-                         * ========= Produces and Inject Annotations Checks ========= go through each
-                         * field and method to make sure @Produces and @Inject are not used together
+                         * ========= Produces and Inject Annotations Checks ========= 
                          * 
-                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_producer_field
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_producer_method
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_injected_field
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_initializer
+                         * go through each field and method to make sure @Produces and @Inject are not used together
+                         * 
+                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_injected_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
                          */
 
                         // A single field cannot have the same
@@ -182,17 +179,14 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                     if (isProducerMethod && isInjectMethod) {
                         /*
-                         * ========= Produces and Inject Annotations Checks ========= go through each
-                         * field and method to make sure @Produces and @Inject are not used together
+                         * ========= Produces and Inject Annotations Checks ========= 
                          * 
-                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_producer_field
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_producer_method
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_injected_field
-                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                         * declaring_initializer
+                         * go through each field and method to make sure @Produces and @Inject are not used together
+                         * 
+                         * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_injected_field
+                         * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
                          */
 
                         // A single method cannot have the same
@@ -246,17 +240,14 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                 }
 
                 /*
-                 * ========= Inject and Disposes, Observes, ObservesAsync Annotations
-                 * Checks=========
+                 * ========= Inject and Disposes, Observes, ObservesAsync Annotations Checks=========
                  */
                 /*
                  * go through each method to make sure @Inject
                  * and @Disposes, @Observes, @ObservesAsync are not used together
                  * 
-                 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                 * declaring_bean_constructor
-                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                 * declaring_initializer
+                 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_constructor
+                 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_initializer
                  * 
                  */
                 invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.INJECT,
@@ -264,22 +255,49 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                 if (isManagedBean) {
                     /*
-                     * ========= Produces and Disposes, Observes, ObservesAsync Annotations
-                     * Checks=========
+                     * ========= Produces and Disposes, Observes, ObservesAsync Annotations Checks=========
                      */
                     /*
                      * go through each method to make sure @Produces
                      * and @Disposes, @Observes, @ObservesAsync are not used together
                      * 
-                     * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-                     * declaring_producer_method
+                     * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_producer_method
                      * 
-                     * note: we need to check for bean defining annotations first to make sure the
-                     * managed bean is discovered.
+                     * note: 
+                     * we need to check for bean defining annotations first to make sure the managed bean is discovered.
                      * 
                      */
                     invalidParamsCheck(unit, diagnostics, type, ManagedBeanConstants.PRODUCES,
                             ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_PRODUCES_PARAM);
+                    
+                    for (IMethod method : type.getMethods()) {
+                        int numDisposes = 0;
+                        Set<String> invalidAnnotations = new TreeSet<>();
+                        
+                        for (ILocalVariable param : method.getParameters()) {
+                            for (IAnnotation annotation : param.getAnnotations()) {
+                                if (annotation.getElementName().equals(ManagedBeanConstants.DISPOSES)) {
+                                    numDisposes++;
+                                } else if(annotation.getElementName().equals(ManagedBeanConstants.OBSERVES)
+                                        || annotation.getElementName().equals(ManagedBeanConstants.OBSERVES_ASYNC)) {
+                                    invalidAnnotations.add("@" + annotation.getElementName());
+                                }
+                            }
+                        }
+                        
+                        if(numDisposes == 0) continue;
+                        if(numDisposes > 1) {
+                            diagnostics.add(createDiagnostic(method, unit,
+                                    "A method cannot have more than one parameter annotated @Disposes",
+                                    ManagedBeanConstants.DIAGNOSTIC_CODE_REDUNDANT_DISPOSES));
+                        }
+                        
+                        if(!invalidAnnotations.isEmpty()) {
+                            diagnostics.add(createDiagnostic(method, unit,
+                                    createInvalidDisposesLabel(invalidAnnotations),
+                                    ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_DISPOSES_PARAM));
+                        }
+                    }
                 }
             }
 
@@ -311,16 +329,27 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
             }
 
             if (!invalidAnnotations.isEmpty()) {
-                String label = createInvalidInjectLabel(target, invalidAnnotations);
+                String label = target.equals("Produces") ? createInvalidProducesLabel(invalidAnnotations) : createInvalidInjectLabel(invalidAnnotations);
                 diagnostics.add(createDiagnostic(method, unit, label, diagnosticCode));
             }
 
         }
     }
 
-    private String createInvalidInjectLabel(String annotation, Set<String> invalidAnnotations) {
-        String label = "A bean constructor or a method annotated with @" + annotation
-                + " cannot have parameter(s) annotated with ";
+    private String createInvalidInjectLabel(Set<String> invalidAnnotations) {
+        String label = "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with ";
+        label += String.join(", ", invalidAnnotations);
+        return label;
+    }
+    
+    private String createInvalidProducesLabel(Set<String> invalidAnnotations) {
+        String label = "A producer method cannot have parameter(s) annotated with ";
+        label += String.join(", ", invalidAnnotations);
+        return label;
+    }
+    
+    private String createInvalidDisposesLabel(Set<String> invalidAnnotations) {
+        String label = "A disposer method cannot have parameter(s) annotated with ";
         label += String.join(", ", invalidAnnotations);
         return label;
     }
