@@ -24,12 +24,10 @@ import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.WorkspaceEdit;
-
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.jdt.ChangeUtil;
-
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 /**
  * Java codeAction context for a given compilation unit. Reused from

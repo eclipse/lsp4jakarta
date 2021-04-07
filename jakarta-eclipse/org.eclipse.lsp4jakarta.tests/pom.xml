@@ -54,8 +54,8 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>io.microshed</groupId>
-			<artifactId>jakarta.ls</artifactId>
+			<groupId>org.eclipse</groupId>
+			<artifactId>lsp4jakarta</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

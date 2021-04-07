@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     IBM Corporation, Matthew Shocrylas - initial API and implementation
+ *     IBM Corporation, Matthew Shocrylas - initial API and implementation, Bera Sogut
  *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.jax_rs;
@@ -24,12 +24,11 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.TextEdit;
+import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.jakarta.jdt.JDTUtils;
 import org.junit.Test;
-
-import io.microshed.jakartals.commons.JakartaDiagnosticsParams;
-import io.microshed.jakartals.commons.JakartaJavaCodeActionParams;
 
 public class ResourceMethodTest extends BaseJakartaTest {
 
@@ -57,6 +56,24 @@ public class ResourceMethodTest extends BaseJakartaTest {
         TextEdit te = te(20, 4, 20, 11, "public"); // range may need to change
         CodeAction ca = ca(uri, "Make method public", d, te);
         assertJavaCodeAction(codeActionParams, utils, ca);
+    }
+
+    @Test
+    public void multipleEntityParamsMethod() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/MultipleEntityParamsResourceMethod.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+
+        Diagnostic d = d(21, 13, 46, "Resource methods cannot have more than one entity parameter",
+                DiagnosticSeverity.Error, "jakarta-jax_rs", "ResourceMethodMultipleEntityParams");
+
+        assertJavaDiagnostics(diagnosticsParams, utils, d);
     }
 
 }
