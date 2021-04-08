@@ -37,32 +37,32 @@ import org.eclipse.lsp4j.CodeActionKind;
  * @see ResourceMethodMultipleEntityParamsQuickFix
  *
  */
-public class RemoveEntityParamsProposal extends ChangeCorrectionProposal {
+public class RemoveParamsProposal extends ChangeCorrectionProposal {
 
     private final CompilationUnit invocationNode;
     private final IBinding binding;
 
-    // the entity parameters of the function
-    private final List<SingleVariableDeclaration> entityParams;
+    // parameters to remove
+    private final List<SingleVariableDeclaration> params;
 
-    // the entity parameter to keep
-    private final SingleVariableDeclaration entityParamToKeep;
+    // parameter to keep
+    private final SingleVariableDeclaration paramToKeep;
 
     /**
-     * Constructor for RemoveEntityParamsProposal that accepts the entity parameters
-     * of the function and the entity parameter to keep.
+     * Constructor for RemoveParamsProposal that accepts parameters to remove and a
+     * parameter to keep.
      *
-     * @param entityParams      the entity parameters of the function
-     * @param entityParamToKeep the entity parameter to keep
+     * @param params      the parameters of the function to remove
+     * @param paramToKeep the parameter of the function to keep
      */
-    public RemoveEntityParamsProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-            IBinding binding, int relevance, List<SingleVariableDeclaration> entityParams,
-            SingleVariableDeclaration entityParamToKeep) {
+    public RemoveParamsProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+            IBinding binding, int relevance, List<SingleVariableDeclaration> params,
+            SingleVariableDeclaration paramToKeep) {
         super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
         this.invocationNode = invocationNode;
         this.binding = binding;
-        this.entityParams = entityParams;
-        this.entityParamToKeep = entityParamToKeep;
+        this.params = params;
+        this.paramToKeep = paramToKeep;
     }
 
     @Override
@@ -82,10 +82,10 @@ public class RemoveEntityParamsProposal extends ChangeCorrectionProposal {
 
         ListRewrite parametersList = rewrite.getListRewrite(declNode, MethodDeclaration.PARAMETERS_PROPERTY);
 
-        // remove all entity parameters except the entity parameter to keep
-        for (SingleVariableDeclaration entityParam : entityParams) {
-            if (!entityParam.equals(entityParamToKeep)) {
-                parametersList.remove(entityParam, null);
+        // remove the parameters except the parameter to keep
+        for (SingleVariableDeclaration param : params) {
+            if (!param.equals(paramToKeep)) {
+                parametersList.remove(param, null);
             }
         }
 

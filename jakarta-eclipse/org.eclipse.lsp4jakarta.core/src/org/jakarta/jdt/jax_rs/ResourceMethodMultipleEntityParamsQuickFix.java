@@ -30,11 +30,12 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.jakarta.codeAction.IJavaCodeActionParticipant;
 import org.jakarta.codeAction.JavaCodeActionContext;
 import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
-import org.jakarta.codeAction.proposal.RemoveEntityParamsProposal;
+import org.jakarta.codeAction.proposal.RemoveParamsProposal;
 
 /**
  * Quick fix for the ResourceMethodMultipleEntityParams diagnostic in
- * ResourceMethodDiagnosticsCollector.
+ * ResourceMethodDiagnosticsCollector. This class adds a quick fix for each
+ * entity parameter which removes all entity parameters except the chosen one.
  *
  * @author Bera Sogut
  *
@@ -65,7 +66,8 @@ public class ResourceMethodMultipleEntityParamsQuickFix implements IJavaCodeActi
                 final String TITLE_MESSAGE = "Remove all entity parameters except "
                         + entityParam.getName().getIdentifier();
 
-                ChangeCorrectionProposal proposal = new RemoveEntityParamsProposal(TITLE_MESSAGE,
+                // Remove all entity parameters except the current chosen one
+                ChangeCorrectionProposal proposal = new RemoveParamsProposal(TITLE_MESSAGE,
                         context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, entityParams, entityParam);
 
                 // Convert the proposal to LSP4J CodeAction
