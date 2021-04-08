@@ -36,17 +36,21 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/MultipleEntityParamsResourceMethod.java"));
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/RootResourceClassConstructors.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
         
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
         
-        
-        Diagnostic d = d(7, 8, 37, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used",
+        // test expected diagnostics
+        Diagnostic d1 = d(15, 8, 37, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
                 DiagnosticSeverity.Warning, "jakarta-jax_rs", "AmbiguousConstructors");
         
-        assertJavaDiagnostics(diagnosticsParams, utils, d);
+        Diagnostic d2 = d(11, 8, 37, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
+                DiagnosticSeverity.Warning, "jakarta-jax_rs", "AmbiguousConstructors");
+        
+        
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
 
     }
     
@@ -55,18 +59,17 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/MultipleEntityParamsResourceMethod.java"));
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/RootResourceClassConstructors.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
         
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
         
-        
-        Diagnostic d1 = d(15, 9, 38, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.",
+        // test expected diagnostics
+        Diagnostic d = d(7, 8, 37, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.",
                 DiagnosticSeverity.Warning, "jakarta-jax_rs", "UnusedConstructor");
         
-        Diagnostic d2 = d(11, 8, 37, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.",
-                DiagnosticSeverity.Warning, "jakarta-jax_rs", "UnusedConstructor");
+        
         
         assertJavaDiagnostics(diagnosticsParams, utils, d);
 
