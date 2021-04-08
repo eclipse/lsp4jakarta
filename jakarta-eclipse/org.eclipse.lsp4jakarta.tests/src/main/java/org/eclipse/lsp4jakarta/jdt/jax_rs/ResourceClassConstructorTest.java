@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2021 IBM Corporation, Matthew Shocrylas and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation, Matthew Shocrylas - initial API and implementation
+ *******************************************************************************/
+
 package org.eclipse.lsp4jakarta.jdt.jax_rs;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
@@ -30,8 +43,8 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         
-        Diagnostic d = d(20, 17, 30, "Only public methods may be exposed as resource methods",
-                DiagnosticSeverity.Error, "jakarta-jax_rs", "NonPublicResourceMethod");
+        Diagnostic d = d(7, 8, 37, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used",
+                DiagnosticSeverity.Warning, "jakarta-jax_rs", "AmbiguousConstructors");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d);
 
@@ -49,8 +62,11 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         
-        Diagnostic d = d(20, 17, 30, "Only public methods may be exposed as resource methods",
-                DiagnosticSeverity.Error, "jakarta-jax_rs", "NonPublicResourceMethod");
+        Diagnostic d1 = d(15, 9, 38, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.",
+                DiagnosticSeverity.Warning, "jakarta-jax_rs", "UnusedConstructor");
+        
+        Diagnostic d2 = d(11, 8, 37, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.",
+                DiagnosticSeverity.Warning, "jakarta-jax_rs", "UnusedConstructor");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d);
 

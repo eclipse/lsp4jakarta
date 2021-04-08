@@ -95,6 +95,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                                 Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
                                 
                                 diagnostic = new Diagnostic(methodRange, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.");
+                                diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_UNUSED_CONSTRUCTOR);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
@@ -105,6 +106,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                                 Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
                                 
                                 diagnostic = new Diagnostic(methodRange, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.");
+                                diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_AMBIGUOUS_CONSTRUCTORS);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
