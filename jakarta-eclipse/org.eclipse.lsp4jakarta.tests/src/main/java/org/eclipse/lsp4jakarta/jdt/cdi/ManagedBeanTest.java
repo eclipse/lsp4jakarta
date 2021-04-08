@@ -59,12 +59,15 @@ public class ManagedBeanTest extends BaseJakartaTest {
         Diagnostic d1 = d(12, 16, 17,
                 "A producer field may specify at most one scope type annotation.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+        d1.setData(Arrays.asList("ApplicationScoped", "Dependent", "Produces"));
 
         Diagnostic d2 = d(15, 25, 41, "A producer method may specify at most one scope type annotation.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+        d2.setData(Arrays.asList("ApplicationScoped", "RequestScoped", "Produces"));
         
         Diagnostic d3 = d(10, 13, 29, "A managed bean class may specify at most one scope type annotation.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+        d3.setData(Arrays.asList("ApplicationScoped", "RequestScoped"));
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);
     }

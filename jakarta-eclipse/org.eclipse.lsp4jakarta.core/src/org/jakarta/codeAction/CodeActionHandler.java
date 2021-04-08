@@ -45,6 +45,7 @@ import org.jakarta.jdt.cdi.ConflictProducesInjectQuickFix;
 import org.jakarta.jdt.cdi.ManagedBeanConstants;
 import org.jakarta.jdt.cdi.ManagedBeanConstructorQuickFix;
 import org.jakarta.jdt.cdi.ManagedBeanQuickFix;
+import org.jakarta.jdt.cdi.ScopeDeclarationQuickFix;
 import org.jakarta.jdt.servlet.CompleteFilterAnnotationQuickFix;
 import org.jakarta.jdt.servlet.CompleteServletAnnotationQuickFix;
 import org.jakarta.jdt.servlet.FilterImplementationQuickFix;
@@ -97,6 +98,8 @@ public class CodeActionHandler {
             BeanValidationQuickFix BeanValidationQuickFix = new BeanValidationQuickFix();
             ManagedBeanConstructorQuickFix ManagedBeanConstructorQuickFix = new ManagedBeanConstructorQuickFix();
             JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
+            ScopeDeclarationQuickFix ScopeDeclarationQuickFix = new ScopeDeclarationQuickFix();
+            
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
@@ -160,6 +163,9 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION)) {
                         codeActions.addAll(JsonbAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if(diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE_SCOPEDECL)) {
+                        codeActions.addAll(ScopeDeclarationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();

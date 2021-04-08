@@ -15,7 +15,9 @@ package org.jakarta.jdt.cdi;
 
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,16 +79,13 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
         try {
             for (IType type : unit.getAllTypes()) {
                 List<String> managedBeanAnnotations = getScopeAnnotations(type);
-                IAnnotation[] allAnnotations = type.getAnnotations();
                 boolean isManagedBean = managedBeanAnnotations.size() > 0;
-
-                ISourceRange nameRange = JDTUtils.getNameRange(type);
-                Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 
                 if (managedBeanAnnotations.size() > 1) {
                     Diagnostic diagnostic = createDiagnostic(type, unit,
                             "A managed bean class may specify at most one scope type annotation.",
                             DIAGNOSTIC_CODE_SCOPEDECL);
+                    diagnostic.setData(Collections.unmodifiableList(managedBeanAnnotations));
                     diagnostics.add(diagnostic);
                 }
 
@@ -129,8 +128,12 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                             .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.INJECT));
 
                     if (isProducerField && fieldScopes.size() > 1) {
-                        diagnostics.add(createDiagnostic(field, unit,
-                                "A producer field may specify at most one scope type annotation.", DIAGNOSTIC_CODE_SCOPEDECL));
+                        Diagnostic diagnostic = createDiagnostic(field, unit,
+                                "A producer field may specify at most one scope type annotation.", DIAGNOSTIC_CODE_SCOPEDECL);
+                        List<String> diagnosticData = new ArrayList<>(fieldScopes);
+                        diagnosticData.add(ManagedBeanConstants.PRODUCES);
+                        diagnostic.setData(Collections.unmodifiableList(diagnosticData));
+                        diagnostics.add(diagnostic);
                     }
 
                     if (isProducerField && isInjectField) {
@@ -173,8 +176,12 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                             .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.INJECT));
 
                     if (isProducerMethod && methodScopes.size() > 1) {
-                        diagnostics.add(createDiagnostic(method, unit,
-                                "A producer method may specify at most one scope type annotation.", DIAGNOSTIC_CODE_SCOPEDECL));
+                        Diagnostic diagnostic = createDiagnostic(method, unit,
+                                "A producer method may specify at most one scope type annotation.", DIAGNOSTIC_CODE_SCOPEDECL);
+                        List<String> diagnosticData = new ArrayList<>(methodScopes);
+                        diagnosticData.add(ManagedBeanConstants.PRODUCES);
+                        diagnostic.setData(Collections.unmodifiableList(diagnosticData));
+                        diagnostics.add(diagnostic);
                     }
 
                     if (isProducerMethod && isInjectMethod) {
