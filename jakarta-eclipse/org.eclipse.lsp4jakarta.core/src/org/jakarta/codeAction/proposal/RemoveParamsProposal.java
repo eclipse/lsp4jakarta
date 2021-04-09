@@ -29,8 +29,8 @@ import org.eclipse.jdt.internal.core.manipulation.dom.ASTResolving;
 import org.eclipse.lsp4j.CodeActionKind;
 
 /**
- * Code action proposal for removing the entity parameters of a method except
- * one. Used by JAX-RS ResourceMethodMultipleEntityParamsQuickFix.
+ * Code action proposal for removing parameters of a method except one. Used by
+ * JAX-RS ResourceMethodMultipleEntityParamsQuickFix.
  *
  * @author Bera Sogut
  * @see CodeActionHandler
@@ -80,12 +80,14 @@ public class RemoveParamsProposal extends ChangeCorrectionProposal {
         AST ast = declNode.getAST();
         ASTRewrite rewrite = ASTRewrite.create(ast);
 
-        ListRewrite parametersList = rewrite.getListRewrite(declNode, MethodDeclaration.PARAMETERS_PROPERTY);
+        if (declNode instanceof MethodDeclaration) {
+            ListRewrite parametersList = rewrite.getListRewrite(declNode, MethodDeclaration.PARAMETERS_PROPERTY);
 
-        // remove the parameters except the parameter to keep
-        for (SingleVariableDeclaration param : params) {
-            if (!param.equals(paramToKeep)) {
-                parametersList.remove(param, null);
+            // remove the parameters except the parameter to keep
+            for (SingleVariableDeclaration param : params) {
+                if (!param.equals(paramToKeep)) {
+                    parametersList.remove(param, null);
+                }
             }
         }
 
