@@ -46,6 +46,7 @@ public class ResourceMethodDiagnosticsCollector implements DiagnosticsCollector 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         Diagnostic diagnostic;
         ArrayList<String> methodDesignators = Jax_RSConstants.METHOD_DESIGNATORS;
+
         String pathAnnotation = Jax_RSConstants.PATH_ANNOTATION;
 
         if (unit != null) {
@@ -113,7 +114,7 @@ public class ResourceMethodDiagnosticsCollector implements DiagnosticsCollector 
                 }
 
             } catch (JavaModelException e) {
-                Activator.logException("Cannot calculate persistence diagnostics", e);
+                Activator.logException("Cannot calculate JAX-RS diagnostics", e);
             }
         }
 
