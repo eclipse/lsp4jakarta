@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 IBM Corporation, Matthew Shocrylas and others.
+ * Copyright (c) 2021 IBM Corporation, Matthew Shocrylas, Bera Sogut and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,6 +74,18 @@ public class ResourceMethodTest extends BaseJakartaTest {
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "ResourceMethodMultipleEntityParams");
 
         assertJavaDiagnostics(diagnosticsParams, utils, d);
+
+
+        // Test for quick-fix code action
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
+
+        TextEdit te1 = te(21, 112, 21, 130, "");
+        CodeAction ca1 = ca(uri, "Remove all entity parameters except entityParam1", d, te1);
+
+        TextEdit te2 = te(21, 47, 21, 68, "");
+        CodeAction ca2 = ca(uri, "Remove all entity parameters except entityParam2", d, te2);
+
+        assertJavaCodeAction(codeActionParams, utils, ca1, ca2);
     }
 
 }
