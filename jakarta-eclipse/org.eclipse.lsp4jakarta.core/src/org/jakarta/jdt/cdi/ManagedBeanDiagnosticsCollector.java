@@ -38,6 +38,9 @@ import org.jakarta.jdt.DiagnosticsCollector;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+
 import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
 import static org.jakarta.jdt.cdi.Utils.getScopeAnnotations;
 
@@ -85,7 +88,8 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     Diagnostic diagnostic = createDiagnostic(type, unit,
                             "A managed bean class may specify at most one scope type annotation.",
                             DIAGNOSTIC_CODE_SCOPEDECL);
-                    diagnostic.setData(Collections.unmodifiableList(managedBeanAnnotations));
+                    
+                    diagnostic.setData((JsonArray)(new Gson().toJsonTree(managedBeanAnnotations)));
                     diagnostics.add(diagnostic);
                 }
 
@@ -132,7 +136,8 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                                 "A producer field may specify at most one scope type annotation.", DIAGNOSTIC_CODE_SCOPEDECL);
                         List<String> diagnosticData = new ArrayList<>(fieldScopes);
                         diagnosticData.add(ManagedBeanConstants.PRODUCES);
-                        diagnostic.setData(Collections.unmodifiableList(diagnosticData));
+                        
+                        diagnostic.setData((JsonArray)(new Gson().toJsonTree(diagnosticData)));
                         diagnostics.add(diagnostic);
                     }
 
@@ -180,7 +185,8 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                                 "A producer method may specify at most one scope type annotation.", DIAGNOSTIC_CODE_SCOPEDECL);
                         List<String> diagnosticData = new ArrayList<>(methodScopes);
                         diagnosticData.add(ManagedBeanConstants.PRODUCES);
-                        diagnostic.setData(Collections.unmodifiableList(diagnosticData));
+                        
+                        diagnostic.setData((JsonArray)(new Gson().toJsonTree(diagnosticData)));
                         diagnostics.add(diagnostic);
                     }
 
