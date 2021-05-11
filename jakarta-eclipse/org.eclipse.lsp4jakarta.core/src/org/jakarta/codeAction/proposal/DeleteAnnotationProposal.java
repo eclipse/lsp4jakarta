@@ -86,6 +86,7 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
         }
         boolean isField = declNode instanceof FieldDeclaration;
         boolean isMethod = declNode instanceof MethodDeclaration;
+        boolean isType = declNode instanceof TypeDeclaration;
 
         String[] annotations = getAnnotations();
 
@@ -96,7 +97,7 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
             annotationShortNames[i] = shortName;
         }
 
-        if (isField || isMethod) {
+        if (isField || isMethod || isType) {
             AST ast = declNode.getAST();
             ASTRewrite rewrite = ASTRewrite.create(ast);
 
@@ -108,6 +109,9 @@ public class DeleteAnnotationProposal extends ChangeCorrectionProposal {
             if (isMethod) {
                 children = (List<? extends ASTNode>) declNode
                         .getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
+            } else if (isType) {
+                children = (List<? extends ASTNode>) declNode
+                        .getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
             } else {
                 children = (List<? extends ASTNode>) declNode
                         .getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);

@@ -17,6 +17,9 @@ import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.jakarta.jdt.JDTUtils;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+
 public class ManagedBeanTest extends BaseJakartaTest {
 
     protected static JDTUtils JDT_UTILS = new JDTUtils();
@@ -59,14 +62,44 @@ public class ManagedBeanTest extends BaseJakartaTest {
         Diagnostic d1 = d(12, 16, 17,
                 "A producer field may specify at most one scope type annotation.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+        d1.setData(new Gson().toJsonTree(Arrays.asList("ApplicationScoped", "Dependent", "Produces")));
 
         Diagnostic d2 = d(15, 25, 41, "A producer method may specify at most one scope type annotation.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+        d2.setData(new Gson().toJsonTree(Arrays.asList("ApplicationScoped", "RequestScoped", "Produces")));
         
         Diagnostic d3 = d(10, 13, 29, "A managed bean class may specify at most one scope type annotation.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
+        d3.setData(new Gson().toJsonTree(Arrays.asList("ApplicationScoped", "RequestScoped")));
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);
+
+        // Assert for the diagnostic d1
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
+        TextEdit te1 = te(11, 33, 12, 4, "");
+        TextEdit te2 = te(11, 14, 11, 33, "");
+        CodeAction ca1 = ca(uri, "Remove @Dependent", d1, te1);
+        CodeAction ca2 = ca(uri, "Remove @ApplicationScoped", d1, te2);
+        
+        assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca1, ca2);
+        
+        // Assert for the diagnostic d2
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
+        TextEdit te3 = te(14, 33, 15, 4, "");
+        TextEdit te4 = te(14, 14, 14, 33, "");
+        CodeAction ca3 = ca(uri, "Remove @RequestScoped", d2, te3);
+        CodeAction ca4 = ca(uri, "Remove @ApplicationScoped", d2, te4);
+        
+        assertJavaCodeAction(codeActionParams2, JDT_UTILS, ca3, ca4);
+        
+        // Assert for the diagnostic d3
+        JakartaJavaCodeActionParams codeActionParams3 = createCodeActionParams(uri, d3);
+        TextEdit te5 = te(9, 19, 10, 0, "");
+        TextEdit te6 = te(9, 0, 9, 19, "");
+        CodeAction ca5 = ca(uri, "Remove @RequestScoped", d3, te5);
+        CodeAction ca6 = ca(uri, "Remove @ApplicationScoped", d3, te6);
+        
+        assertJavaCodeAction(codeActionParams3, JDT_UTILS, ca5, ca6);
     }
 
     @Test
