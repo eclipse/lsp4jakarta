@@ -10,7 +10,7 @@ This project contains:
 
 ## Getting Started
 
-### Pre-requisites
+### Prerequisites
 
 [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) are required to build `lsp4jakarta` and `jakarta-eclipse`.
 
@@ -38,8 +38,7 @@ To run the tests:
 &nbsp;- *Bundle 'org.apache.commons.lang3' cannot be resolved* in Eclipse worskspace  
 &nbsp;Solution: [#46](https://github.com/eclipse/lsp4jakarta/issues/46)
 
-2. If during initial setup `mvn verify` returns errors or compilation failures:  
-Verify that you are using [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
+2. If during initial setup `mvn verify` returns errors or compilation failures, verify that you are using [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
 
 ## Contributing
 
