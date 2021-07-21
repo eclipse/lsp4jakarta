@@ -45,8 +45,7 @@ Follow the instructions below to install the LSP4Jakarta Eclipse plugin:
 
 Refer to our [BUILDING](docs/BUILDING.md) document for information about prerequisites, setting up, and common errors. 
 
-2. If during initial setup `mvn verify` returns errors or compilation failures:  
-Verify that you are using [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
+2. If during initial setup `mvn verify` returns errors or compilation failures, verify that you are using [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
 
 ## Contributing
 
