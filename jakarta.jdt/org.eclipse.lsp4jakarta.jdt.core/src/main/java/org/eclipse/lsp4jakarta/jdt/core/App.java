@@ -1,4 +1,4 @@
-package org.eclipse.lsp4jakarta.org.eclipse.lsp4jakarta.jdt.core;
+package org.eclipse.lsp4jakarta.jdt.core;
 
 /**
  * Hello world!
