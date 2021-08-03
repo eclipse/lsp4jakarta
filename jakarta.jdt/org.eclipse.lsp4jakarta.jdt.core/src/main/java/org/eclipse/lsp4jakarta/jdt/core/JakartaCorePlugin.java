@@ -14,8 +14,6 @@
 
 package org.eclipse.lsp4jakarta.jdt.core;
 
-import org.eclipse.lsp4jakarta.jdt.internal.core.JakartaPropertiesListenerManager;
-import org.eclipse.lsp4jakarta.jdt.internal.core.PropertiesProviderRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;

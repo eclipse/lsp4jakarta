@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
-Bundle-Vendor: %providerName
+Bundle-Name: Jakarta JDT Extension
+Bundle-Vendor: Eclipse
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.lsp4jakarta.jdt.core;singleton:=true
 Bundle-Version: 0.1.0.qualifier
@@ -23,7 +23,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.m2e.maven.runtime,
  org.eclipse.m2e.lifecyclemapping.defaults,
  org.eclipse.jdt.ls.core;resolution:=optional,
- org.eclipse.lsp4j,
  org.eclipse.lsp4j.jsonrpc,
  org.eclipse.buildship.core,
  org.eclipse.jdt.launching,
@@ -40,32 +39,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.lang3
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
-Export-Package: io.quarkus.runtime.util,
- org.eclipse.lsp4jakarta.commons,
- org.eclipse.lsp4jakarta.commons.metadata,
- org.eclipse.lsp4jakarta.jdt.core,
- org.eclipse.lsp4jakarta.jdt.core.java,
- org.eclipse.lsp4jakarta.jdt.core.java.codeaction,
- org.eclipse.lsp4jakarta.jdt.core.java.codelens,
- org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal,
- org.eclipse.lsp4jakarta.jdt.core.java.diagnostics,
- org.eclipse.lsp4jakarta.jdt.core.java.hover,
- org.eclipse.lsp4jakarta.jdt.core.jaxrs,
- org.eclipse.lsp4jakarta.jdt.core.project,
- org.eclipse.lsp4jakarta.jdt.core.utils,
- org.eclipse.lsp4jakarta.jdt.internal.config.java;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.core;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.core.ls;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.core.utils;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.faulttolerance;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.faulttolerance.java;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.health;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.health.java;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.metrics;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.metrics.java;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.eclipse.lsp4jakarta.jdt.internal.restclient;x-friends:="org.eclipse.lsp4jakarta.jdt.test",
- org.yaml.snakeyaml;x-friends:="org.eclipse.lsp4jakarta.jdt.test"
-Bundle-ClassPath: lib/snakeyaml-1.25.jar,
- .
-Import-Package: com.google.gson,
- com.google.gson.stream
+Export-Package: 
+ org.eclipse.lsp4jakarta.jdt.core
