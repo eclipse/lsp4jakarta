@@ -8,13 +8,22 @@ This project contains:
 - [lsp4jakarta](/lsp4jakarta) - Language Server for Jakarta EE
 - [jakarta-eclipse](/jakarta-eclipse) - Eclipse JDT LS extension and Eclipse IDE client that consumes the Language Server for Jakarta EE
 
+# Table of Contents  
+- [Getting Started](##Getting-Started)  
+    - [Prerequisites](###Prerequisites)
+    - [Setup Instructions](###Setup-Instructions)
+- [Eclipse Plugin](##Eclipse-Plugin)
+- [Common Errors](##Common-Errors)
+- [Contributing](##Contributing)
+- [Feedback](##Feedback)
+---
 ## Getting Started
 
 ### Prerequisites
 
 [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) are required to build `lsp4jakarta` and `jakarta-eclipse`.
 
-### Set-up Instructions
+### Setup Instructions
 1. Install Eclipse Plugin Development Environment (Step 1 here: https://medium.com/@ravi_theja/creating-your-first-eclipse-plugin-9b1b5ba33b58)
 
 2. Clone this repository onto your local machine (`git clone git@github.com:eclipse/lsp4jakarta.git`)
@@ -32,7 +41,10 @@ This project contains:
 To run the tests:
 - Run `mvn verify` from the `jakarta-eclipse` folder
 
-## Common errors 
+## Eclipse Plugin
+
+
+## Common Errors 
 
 1. When setting up the Eclipse workspace:  
 &nbsp;- *Bundle 'org.apache.commons.lang3' cannot be resolved* in Eclipse worskspace  
