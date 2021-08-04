@@ -12,7 +12,7 @@ This project contains:
 - [Getting Started](##Getting-Started)  
     - [Prerequisites](###Prerequisites)
     - [Setup Instructions](###Setup-Instructions)
-- [Eclipse Plugin](##Eclipse-Plugin)
+- [Eclipse Plugin Installation Instuctions](##Eclipse-Plugin-Installation-Instuctions)
 - [Common Errors](##Common-Errors)
 - [Contributing](##Contributing)
 - [Feedback](##Feedback)
@@ -41,8 +41,30 @@ This project contains:
 To run the tests:
 - Run `mvn verify` from the `jakarta-eclipse` folder
 
-## Eclipse Plugin
+## Eclipse Plugin Installation Instuctions 
 
+1. Nagivate to the [releases page](https://github.com/eclipse/lsp4jakarta/releases) and download the `*.jar` file for the Eclipse plugin. 
+
+2. Move the `*.jar` file to the **dropins** folder and start **Eclipse** in `clean` mode. 
+    - **For Mac:** 
+        - In **Finder**, navigate to the **Eclipse** application.
+        - Right-click on the application and click "Show Package Contents".
+        - Navigate through the folders as follows: **Contents > Eclipse**
+        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
+        - Next, in the same directory as the  **eclipse.ini** file, click on **dropins** folder.
+        - Move the `*.jar` inside the **dropins** folder. 
+    - **For Windows:**
+        - Locate the directory with the **Eclipse** executable. 
+        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
+        - In the same directory, click on **dropins** folder.
+        - Move the `*.jar` inside the **dropins** folder. 
+    - **For Linux:**
+        - In the terminal, use the following command to locate the directory with the **eclipse.ini** file: `ls -l /usr/bin | grep 'eclipse'`
+        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
+        - In the same directory, click on **dropins** folder.
+        - Move the `*.jar` inside the **dropins** folder. 
+
+3. Restart the **Eclipse** application.
 
 ## Common Errors 
 
