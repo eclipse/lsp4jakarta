@@ -11,7 +11,7 @@
 *     IBM Corporation, Matheus Cruz - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.jsonb;
+package org.eclipse.lsp4jakarta.jdt.core.jsonb;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,10 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.DiagnosticsCollector;
-import org.jakarta.jdt.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
 
@@ -75,7 +76,7 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
             }
 
         } catch (JavaModelException e) {
-            Activator.logException("Cannot calculate jakarta-jsonb diagnostics", e);
+        	JakartaCorePlugin.logException("Cannot calculate jakarta-jsonb diagnostics", e);
         }
     }   
 

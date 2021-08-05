@@ -11,7 +11,7 @@
 *     IBM Corporation, Ankush Sharma - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.persistence;
+package org.eclipse.lsp4jakarta.jdt.core.persistence;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -24,9 +24,10 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.DiagnosticsCollector;
-import org.jakarta.jdt.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
             completeDiagnostic(diagnostic);
             return diagnostic;
         } catch (JavaModelException e) {
-            Activator.logException("Cannot calculate diagnostics", e);
+        	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
         }
         return null;
     }
@@ -136,7 +137,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
                                           PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
                                 }
                             } catch (JavaModelException e) {
-                                Activator.logException(
+                            	JakartaCorePlugin.logException(
                                         "Error while retrieving member values of @MapKeyJoinColumn Annotation", e);
                             }
                         });
@@ -166,7 +167,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
                                           PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES));
                                 }
                             } catch (JavaModelException e) {
-                                Activator.logException(
+                            	JakartaCorePlugin.logException(
                                         "Error while retrieving member values of @MapKeyJoinColumn Annotation", e);
                             }
                         });
@@ -175,7 +176,7 @@ public class PersistenceMapKeyDiagnosticsCollector implements DiagnosticsCollect
 
                 }
             } catch (JavaModelException e) {
-                Activator.logException("Cannot calculate diagnostics", e);
+            	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
 
         }

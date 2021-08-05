@@ -11,7 +11,7 @@
 *     IBM Corporation, Pengyu Xiong - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.servlet;
+package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -21,9 +21,10 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.DiagnosticsCollector;
-import org.jakarta.jdt.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import java.util.List;
 
@@ -117,7 +118,7 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector {
 
                 }
             } catch (JavaModelException e) {
-                Activator.logException("Cannot calculate diagnostics", e);
+            	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
         }
     }

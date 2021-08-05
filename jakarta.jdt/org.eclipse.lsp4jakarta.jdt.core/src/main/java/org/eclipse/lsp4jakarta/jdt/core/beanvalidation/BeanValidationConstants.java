@@ -11,7 +11,7 @@
 *     IBM Corporation, Reza Akhavan - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.beanvalidation;
+package org.eclipse.lsp4jakarta.jdt.core.beanvalidation;
 
 import java.util.Arrays;
 import java.util.Collections;

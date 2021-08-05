@@ -1,4 +1,4 @@
-package org.jakarta.jdt.jsonb;
+package org.eclipse.lsp4jakarta.jdt.core.jsonb;
 
 public class JsonbConstants {
     

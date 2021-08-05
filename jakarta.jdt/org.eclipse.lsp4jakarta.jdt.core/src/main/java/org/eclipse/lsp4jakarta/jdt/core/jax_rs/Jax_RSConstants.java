@@ -11,7 +11,7 @@
  *     IBM Corporation, Matthew Shocrylas - initial API and implementation, Bera Sogut
  *******************************************************************************/
 
-package org.jakarta.jdt.jax_rs;
+package org.eclipse.lsp4jakarta.jdt.core.jax_rs;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -11,7 +11,7 @@
 *     IBM Corporation, Pengyu Xiong - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt;
+package org.eclipse.lsp4jakarta.jdt.core;
 
 import java.util.List;
 

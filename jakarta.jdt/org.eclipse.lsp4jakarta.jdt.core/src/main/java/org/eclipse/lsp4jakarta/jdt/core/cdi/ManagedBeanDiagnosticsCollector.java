@@ -11,7 +11,7 @@
  *     Hani Damlaj, Jianing Xu
  *******************************************************************************/
 
-package org.jakarta.jdt.cdi;
+package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
 import java.util.List;
 import java.util.Set;
@@ -34,15 +34,16 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.DiagnosticsCollector;
-import org.jakarta.jdt.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
-import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
-import static org.jakarta.jdt.cdi.Utils.getScopeAnnotations;
+import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.*;
+import static org.eclipse.lsp4jakarta.jdt.core.cdi.Utils.getScopeAnnotations;
 
 public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
@@ -55,7 +56,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
             completeDiagnostic(diagnostic);
             return diagnostic;
         } catch (JavaModelException e) {
-            Activator.logException("Cannot calculate diagnostics", e);
+        	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
         }
         return null;
     }
@@ -315,7 +316,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
             }
 
         } catch (JavaModelException e) {
-            Activator.logException("Cannot calculate diagnostics", e);
+        	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
         }
     }
 

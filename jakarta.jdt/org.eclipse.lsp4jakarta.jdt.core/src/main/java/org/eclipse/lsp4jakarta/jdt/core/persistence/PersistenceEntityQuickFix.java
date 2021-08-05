@@ -10,7 +10,7 @@
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
-package org.jakarta.jdt.persistence;
+package org.eclipse.lsp4jakarta.jdt.core.persistence;
 
 import java.util.ArrayList;
 import java.util.Arrays;

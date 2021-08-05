@@ -11,7 +11,7 @@
  *     Red Hat Inc. - initial API and implementation
  *******************************************************************************/
 
-package org.jakarta.jdt;
+package org.eclipse.lsp4jakarta.jdt.core;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;

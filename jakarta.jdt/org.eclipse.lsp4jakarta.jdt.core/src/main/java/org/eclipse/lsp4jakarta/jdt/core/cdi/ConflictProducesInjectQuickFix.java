@@ -12,7 +12,7 @@
 *     IBM Corporation, Jianing Xu - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.cdi;
+package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
 import org.jakarta.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 

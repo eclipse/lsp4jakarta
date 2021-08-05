@@ -11,58 +11,58 @@
 *     IBM Corporation, Reza Akhavan - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.beanvalidation;
+package org.eclipse.lsp4jakarta.jdt.core.beanvalidation;
 
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.ASSERT_FALSE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.ASSERT_TRUE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.BIG_DECIMAL;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.BIG_INTEGER;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.BOOLEAN;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.BYTE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.CALENDAR;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.CHAR_SEQUENCE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DATE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DECIMAL_MAX;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DECIMAL_MIN;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_INVALID_TYPE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_STATIC;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIAGNOSTIC_SOURCE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DIGITS;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.DOUBLE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.EMAIL;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.FLOAT;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.FUTURE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.FUTURE_OR_PRESENT;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.HIJRAH_DATE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.INSTANT;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.INTEGER;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.JAPANESE_DATE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.LOCAL_DATE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.LOCAL_DATE_TIME;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.LOCAL_TIME;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.LONG;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.MAX;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.MIN;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.MINGUO_DATE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.MONTH_DAY;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.NEGATIVE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.NEGATIVE_OR_ZERO;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.NOT_BLANK;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.OFFSET_DATE_TIME;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.OFFSET_TIME;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.PAST;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.PAST_OR_PRESENT;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.PATTERN;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.POSITIVE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.POSTIVE_OR_ZERO;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.SET_OF_ANNOTATIONS;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.SEVERITY;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.SHORT;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.STRING;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.THAI_BUDDHIST_DATE;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.YEAR;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.YEAR_MONTH;
-import static org.jakarta.jdt.beanvalidation.BeanValidationConstants.ZONED_DATE_TIME;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.ASSERT_FALSE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.ASSERT_TRUE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.BIG_DECIMAL;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.BIG_INTEGER;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.BOOLEAN;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.BYTE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.CALENDAR;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.CHAR_SEQUENCE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.DATE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.DECIMAL_MAX;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.DECIMAL_MIN;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_INVALID_TYPE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.DIAGNOSTIC_CODE_STATIC;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.DIAGNOSTIC_SOURCE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.DIGITS;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.DOUBLE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.EMAIL;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.FLOAT;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.FUTURE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.FUTURE_OR_PRESENT;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.HIJRAH_DATE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.INSTANT;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.INTEGER;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.JAPANESE_DATE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.LOCAL_DATE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.LOCAL_DATE_TIME;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.LOCAL_TIME;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.LONG;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.MAX;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.MIN;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.MINGUO_DATE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.MONTH_DAY;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.NEGATIVE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.NEGATIVE_OR_ZERO;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.NOT_BLANK;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.OFFSET_DATE_TIME;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.OFFSET_TIME;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.PAST;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.PAST_OR_PRESENT;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.PATTERN;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.POSITIVE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.POSTIVE_OR_ZERO;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.SET_OF_ANNOTATIONS;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.SEVERITY;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.SHORT;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.STRING;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.THAI_BUDDHIST_DATE;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.YEAR;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.YEAR_MONTH;
+import static org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants.ZONED_DATE_TIME;
 
 import java.util.List;
 
@@ -77,9 +77,10 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.DiagnosticsCollector;
-import org.jakarta.jdt.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector {
 
@@ -152,7 +153,7 @@ public class BeanValidationDiagnosticsCollector implements DiagnosticsCollector 
                 }
 
             } catch (JavaModelException e) {
-                Activator.logException("Cannot calculate diagnostics", e);
+                JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
         }
 

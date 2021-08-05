@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt;
+package org.eclipse.lsp4jakarta.jdt.core;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -29,17 +29,18 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-import org.jakarta.jdt.beanvalidation.BeanValidationDiagnosticsCollector;
-import org.jakarta.jdt.jax_rs.ResourceMethodDiagnosticsCollector;
-import org.jakarta.jdt.jax_rs.RootResourceClassDiagnosticsCollector;
-import org.jakarta.jdt.jsonb.JsonbCreatorDiagnosticsCollector;
-import org.jakarta.jdt.cdi.ManagedBeanDiagnosticsCollector;
-import org.jakarta.jdt.persistence.PersistenceEntityDiagnosticsCollector;
-import org.jakarta.jdt.persistence.PersistenceMapKeyDiagnosticsCollector;
-import org.jakarta.jdt.servlet.FilterDiagnosticsCollector;
-import org.jakarta.jdt.servlet.ListenerDiagnosticsCollector;
-import org.jakarta.jdt.servlet.ServletDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jax_rs.RootResourceClassDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbCreatorDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceEntityDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceMapKeyDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletDiagnosticsCollector;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import org.jakarta.codeAction.CodeActionHandler;
 
@@ -130,7 +131,7 @@ public class JDTServicesManager {
                         classpath.add(null);
                     }
                 } catch (JavaModelException e) {
-                    Activator.logException("Failed to retrieve projectContext from JDT...", e);
+                	JakartaCorePlugin.logException("Failed to retrieve projectContext from JDT...", e);
                 }
             });
         } else {

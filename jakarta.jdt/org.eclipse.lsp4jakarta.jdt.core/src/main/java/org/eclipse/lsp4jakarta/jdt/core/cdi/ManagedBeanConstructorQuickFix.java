@@ -11,7 +11,7 @@
 *     Hani Damlaj
 *******************************************************************************/
 
-package org.jakarta.jdt.cdi;
+package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt;
+package org.eclipse.lsp4jakarta.jdt.core;
 
 import java.util.ArrayList;
 import java.util.List;

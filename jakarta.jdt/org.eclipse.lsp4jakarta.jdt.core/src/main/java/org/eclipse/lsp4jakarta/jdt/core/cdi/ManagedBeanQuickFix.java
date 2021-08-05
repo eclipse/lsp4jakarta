@@ -12,7 +12,7 @@
 *     Hani Damlaj
 *******************************************************************************/
 
-package org.jakarta.jdt.cdi;
+package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
 import org.jakarta.codeAction.proposal.ReplaceAnnotationProposal;
 import org.jakarta.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
 
-import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
+import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.*;
 
 public class ManagedBeanQuickFix extends InsertAnnotationMissingQuickFix {
     public ManagedBeanQuickFix() {

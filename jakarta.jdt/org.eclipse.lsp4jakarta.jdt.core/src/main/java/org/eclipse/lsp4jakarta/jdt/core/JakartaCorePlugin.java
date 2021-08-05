@@ -32,15 +32,13 @@ public class JakartaCorePlugin extends BundleActivator {
     private static JakartaCorePlugin plugin;
 
     public void start(BundleContext context) throws Exception {
+    	super.start(context);
 		plugin = this;
-		JakartaPropertiesListenerManager.getInstance().initialize();
-		PropertiesProviderRegistry.getInstance().initialize();
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		JakartaPropertiesListenerManager.getInstance().destroy();
-		PropertiesProviderRegistry.getInstance().destroy();
 		plugin = null;
+		super.stop(context);
 	}
 
 	/**
@@ -57,16 +55,17 @@ public class JakartaCorePlugin extends BundleActivator {
 	 *
 	 * @param listener the listener to add
 	 */
-	public void addJakartaPropertiesChangedListener(IJakartaPropertiesChangedListener listener) {
-		JakartaPropertiesListenerManager.getInstance().addJakartaPropertiesChangedListener(listener);
-	}
+	public static void log(IStatus status) {
+        getDefault().getLog().log(status);
+    }
 
 	/**
 	 * Remove the given Jakarta properties changed listener.
 	 *
 	 * @param listener the listener to remove
 	 */
-	public void removeJakartaPropertiesChangedListener(IJakartaPropertiesChangedListener listener) {
-		JakartaPropertiesListenerManager.getInstance().removeJakartaPropertiesChangedListener(listener);
-	}
+	public static void logException(String errMsg, Throwable ex) {
+        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, errMsg, ex));
+    }
+
 }

@@ -11,7 +11,7 @@
 *     IBM Corporation, Ankush Sharma - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.persistence;
+package org.eclipse.lsp4jakarta.jdt.core.persistence;
 
 import org.eclipse.lsp4j.DiagnosticSeverity;
 

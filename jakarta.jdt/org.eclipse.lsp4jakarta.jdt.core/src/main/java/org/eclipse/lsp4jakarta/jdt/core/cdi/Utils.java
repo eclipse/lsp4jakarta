@@ -1,9 +1,9 @@
-package org.jakarta.jdt.cdi;
+package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
 import org.eclipse.jdt.core.IAnnotatable;
 import org.eclipse.jdt.core.IType;
 
-import static org.jakarta.jdt.cdi.ManagedBeanConstants.*;
+import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.*;
 
 import java.util.Arrays;
 import java.util.List;

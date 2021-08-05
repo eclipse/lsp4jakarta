@@ -11,7 +11,7 @@
  * 		 Red Hat Inc. - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package org.jakarta.jdt;
+package org.eclipse.lsp4jakarta.jdt.core;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +64,7 @@ import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import com.google.common.base.Charsets;
 
@@ -155,7 +156,7 @@ public class JDTUtils {
                 file.createLink(uri, IResource.REPLACE, monitor);
             } catch (CoreException e) {
                 String errMsg = "Failed to create linked resource from " + uri + " to " + project.getName();
-                Activator.logException(errMsg, e);
+                JakartaCorePlugin.logException(errMsg, e);
             }
         }
         if (file.isLinked()) {
@@ -200,7 +201,7 @@ public class JDTUtils {
                 return getPackageName(javaProject, content);
             }
         } catch (IOException e) {
-            Activator.logException("Failed to read package name from " + uri, e);
+        	JakartaCorePlugin.logException("Failed to read package name from " + uri, e);
         }
         return "";
     }
@@ -324,7 +325,7 @@ public class JDTUtils {
             }
             return uri;
         } catch (URISyntaxException e) {
-            Activator.logException("Failed to resolve " + uriString, e);
+        	JakartaCorePlugin.logException("Failed to resolve " + uriString, e);
             return null;
         }
     }
@@ -338,7 +339,7 @@ public class JDTUtils {
                     + PATH_SEPARATOR + classFile.getElementName(), classFile.getHandleIdentifier(), null)
                             .toASCIIString();
         } catch (URISyntaxException e) {
-            Activator.logException("Error generating URI for class ", e);
+        	JakartaCorePlugin.logException("Error generating URI for class ", e);
         }
         return uriString;
     }
