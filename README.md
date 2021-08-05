@@ -10,7 +10,6 @@ This project contains:
 
 # Table of Contents  
 - [Getting Started](#Getting-Started)  
-    - [Eclipse Plugin Installation Instuctions](#Eclipse-Plugin-Installation-Instuctions)
 - [Building](#Building)
     - [Prerequisites](#Prerequisites)
     - [Setup Instructions](#Setup-Instructions)
@@ -20,7 +19,7 @@ This project contains:
 ---
 ## Getting Started
 
-### Eclipse Plugin Installation Instuctions 
+Follow the instructions below to install the LSP4Jakarta Eclipse plugin:
 
 1. Nagivate to the [releases page](https://github.com/eclipse/lsp4jakarta/releases) and download the `*.jar` file for the Eclipse plugin. 
 
