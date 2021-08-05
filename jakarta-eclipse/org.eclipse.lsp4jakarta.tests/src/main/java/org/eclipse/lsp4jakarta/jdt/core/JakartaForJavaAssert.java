@@ -37,8 +37,8 @@ import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-import org.jakarta.jdt.JDTServicesManager;
-import org.jakarta.jdt.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Assert;
 
 /**

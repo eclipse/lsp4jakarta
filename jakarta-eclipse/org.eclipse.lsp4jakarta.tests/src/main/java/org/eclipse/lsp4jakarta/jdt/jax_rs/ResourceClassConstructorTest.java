@@ -25,7 +25,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
-import org.jakarta.jdt.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Test;
 
 public class ResourceClassConstructorTest extends BaseJakartaTest {

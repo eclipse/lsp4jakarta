@@ -24,11 +24,11 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
-import org.jakarta.codeAction.IJavaCodeActionParticipant;
-import org.jakarta.codeAction.JavaCodeActionContext;
-import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
-import org.jakarta.codeAction.proposal.DeleteAnnotationProposal;
-import org.jakarta.codeAction.proposal.ModifyModifiersProposal;
+import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
+import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.DeleteAnnotationProposal;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
 
 /**
  * Quickfix for fixing {@link BeanValidationConstants#DIAGNOSTIC_CODE_Static} error by either action 
