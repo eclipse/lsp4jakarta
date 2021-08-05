@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.lsp4jakarta</groupId>
 	<artifactId>org.eclipse.lsp4jakarta.jdt.core</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 	<name>org.eclipse.lsp4jakarta.jdt.core</name>
 	<description>Jakarta JDT LS Extension</description>
@@ -38,6 +37,17 @@
 			<id>jdt.ls.maven</id>
 			<url>https://repo.eclipse.org/content/repositories/jdtls-releases/</url>
 		</repository>
+
+		<repository>
+			<id>lsp4mp-snapshots</id>
+			<url>https://repo.eclipse.org/content/repositories/lsp4mp-snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	<build>
 		<plugins>
@@ -56,7 +66,8 @@
 				<configuration>
 					<useUIHarness>false</useUIHarness>
 					<argLine>${tycho.test.jvmArgs}</argLine>
-					<!-- kill test JVM if tests take more than 1 minute (60 seconds) to finish -->
+					<!-- kill test JVM if tests take more than 1 minute (60 seconds) to 
+						finish -->
 					<forkedProcessTimeoutInSeconds>${surefire.timeout}</forkedProcessTimeoutInSeconds>
 				</configuration>
 			</plugin>
@@ -205,40 +216,59 @@
 					</configuration>
 				</plugin>
 				<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<executions>
+						<execution>
               <?m2e execute onConfiguration?>
-						<id>get-libs</id>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<phase>validate</phase>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.yaml</groupId>
-									<artifactId>snakeyaml</artifactId>
-									<version>1.25</version>
-								</artifactItem>
-							</artifactItems>
-							<skip>false</skip>
-							<outputDirectory>${basedir}/lib/</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+							<id>get-libs</id>
+							<goals>
+								<goal>copy</goal>
+							</goals>
+							<phase>validate</phase>
+							<configuration>
+								<artifactItems>
+									<artifactItem>
+										<groupId>org.yaml</groupId>
+										<artifactId>snakeyaml</artifactId>
+										<version>1.25</version>
+									</artifactItem>
+								</artifactItems>
+								<skip>false</skip>
+								<outputDirectory>${basedir}/lib/</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
 	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.8.5</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.lsp4mp</groupId>
+			<artifactId>org.eclipse.lsp4mp.ls</artifactId>
+			<version>0.9.0-SNAPSHOT</version>
+			<classifier>uber</classifier>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.lsp4j</groupId>
+					<artifactId>org.eclipse.lsp4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.eclipse.lsp4j</groupId>
+					<artifactId>org.eclipse.lsp4j.jsonrpc</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
+
+
 </project>
 

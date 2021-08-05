@@ -16,7 +16,6 @@ package org.eclipse.lsp4jakarta.jdt.core;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.jakarta.lsp4e.Activator;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 //import org.eclipse.jdt.internal.ui.javaeditor.DocumentAdapter;
 

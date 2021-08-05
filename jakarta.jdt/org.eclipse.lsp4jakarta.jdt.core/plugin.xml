@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+ <plugin id="org.eclipse.lsp4jakarta.jdt" name="Lsp4Jakarta JDT Extension" >
+      <requires>
+         <import plugin="org.eclipse.core.runtime"/>
+      </requires>
+ </plugin>
