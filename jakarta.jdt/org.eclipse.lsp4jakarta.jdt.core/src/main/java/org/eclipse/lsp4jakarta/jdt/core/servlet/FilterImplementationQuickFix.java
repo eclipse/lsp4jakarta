@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.servlet;
+package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

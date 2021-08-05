@@ -11,7 +11,7 @@
  *     IBM Corporation, Bera Sogut - initial API and implementation
  *******************************************************************************/
 
-package org.jakarta.jdt.jax_rs;
+package org.eclipse.lsp4jakarta.jdt.core.jax_rs;
 
 import java.util.ArrayList;
 import java.util.List;

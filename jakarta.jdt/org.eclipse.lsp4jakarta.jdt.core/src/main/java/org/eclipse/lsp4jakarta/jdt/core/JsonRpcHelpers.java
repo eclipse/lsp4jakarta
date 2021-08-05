@@ -11,12 +11,13 @@
  *     Red Hat Inc. - initial API and implementation
  *******************************************************************************/
 
-package org.jakarta.jdt;
+package org.eclipse.lsp4jakarta.jdt.core;
 
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 //import org.eclipse.jdt.internal.ui.javaeditor.DocumentAdapter;
 
 /**
@@ -54,7 +55,7 @@ public class JsonRpcHelpers {
         try {
             return document.getLineOffset(line) + column;
         } catch (BadLocationException e) {
-            Activator.logException(e.getMessage(), e);
+        	JakartaCorePlugin.logException(e.getMessage(), e);
         }
         return -1;
     }
@@ -84,7 +85,7 @@ public class JsonRpcHelpers {
             int column = offset - document.getLineOffset(line);
             return new int[] { line, column };
         } catch (BadLocationException e) {
-            Activator.logException(e.getMessage(), e);
+        	JakartaCorePlugin.logException(e.getMessage(), e);
         }
         return null;
     }

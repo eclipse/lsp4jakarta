@@ -11,7 +11,7 @@
 *     IBM Corporation, Reza Akhavan - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.servlet;
+package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -24,6 +24,7 @@ import org.eclipse.lsp4j.Range;
 import org.jakarta.jdt.DiagnosticsCollector;
 import org.jakarta.jdt.JDTUtils;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import java.util.List;
 
@@ -124,7 +125,7 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
                     }
                 }
             } catch (JavaModelException e) {
-                Activator.logException("Cannot calculate diagnostics", e);
+            	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
         }
     }

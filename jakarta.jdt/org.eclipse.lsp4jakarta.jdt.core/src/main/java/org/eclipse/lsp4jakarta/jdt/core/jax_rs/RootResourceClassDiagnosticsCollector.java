@@ -11,7 +11,7 @@
  *     IBM Corporation, Matthew Shocrylas - initial API and implementation
  *******************************************************************************/
 
-package org.jakarta.jdt.jax_rs;
+package org.eclipse.lsp4jakarta.jdt.core.jax_rs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,9 +28,10 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.jdt.DiagnosticsCollector;
-import org.jakarta.jdt.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
  * Diagnostic collector for root resource classes with multiple constructors
@@ -114,7 +115,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                     }
                 }
             } catch (JavaModelException e) {
-                Activator.logException("Cannot calculate JAX-RS diagnostics", e);
+            	JakartaCorePlugin.logException("Cannot calculate JAX-RS diagnostics", e);
             }
         }
     }

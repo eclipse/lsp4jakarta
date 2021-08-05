@@ -11,7 +11,7 @@
 *     IBM Corporation, Pengyu Xiong - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.servlet;
+package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
 import org.eclipse.lsp4j.DiagnosticSeverity;
 

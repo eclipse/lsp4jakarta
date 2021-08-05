@@ -12,7 +12,7 @@
 *     IBM Corporation, Jianing Xu - initial API and implementation
 *******************************************************************************/
 
-package org.jakarta.jdt.persistence;
+package org.eclipse.lsp4jakarta.jdt.core.persistence;
 
 import org.jakarta.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 

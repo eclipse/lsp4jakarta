@@ -10,7 +10,7 @@
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
-package org.jakarta.jdt.jsonb;
+package org.eclipse.lsp4jakarta.jdt.core.jsonb;
 
 import org.jakarta.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 
