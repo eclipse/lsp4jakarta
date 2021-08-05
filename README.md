@@ -46,6 +46,7 @@ This project contains:
 3. Restart the **Eclipse** application.
 
 ## Building
+
 ### Prerequisites
 
 [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) are required to build `lsp4jakarta` and `jakarta-eclipse`.
