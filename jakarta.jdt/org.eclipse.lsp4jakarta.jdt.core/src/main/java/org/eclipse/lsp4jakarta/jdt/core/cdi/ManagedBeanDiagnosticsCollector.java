@@ -36,7 +36,6 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
-import org.jakarta.lsp4e.Activator;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import com.google.gson.Gson;

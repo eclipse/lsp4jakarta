@@ -14,7 +14,7 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
-import org.jakarta.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 
 /**
  * 

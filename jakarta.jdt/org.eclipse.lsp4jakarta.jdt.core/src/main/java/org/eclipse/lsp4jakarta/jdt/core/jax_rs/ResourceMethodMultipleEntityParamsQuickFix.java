@@ -27,10 +27,10 @@ import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
-import org.jakarta.codeAction.IJavaCodeActionParticipant;
-import org.jakarta.codeAction.JavaCodeActionContext;
-import org.jakarta.codeAction.proposal.ChangeCorrectionProposal;
-import org.jakarta.codeAction.proposal.RemoveParamsProposal;
+import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
+import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveParamsProposal;
 
 /**
  * Quick fix for the ResourceMethodMultipleEntityParams diagnostic in

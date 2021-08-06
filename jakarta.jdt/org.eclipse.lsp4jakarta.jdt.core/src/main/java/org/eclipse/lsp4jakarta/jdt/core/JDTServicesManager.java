@@ -39,10 +39,9 @@ import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceMapKeyDiagnostics
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletDiagnosticsCollector;
-import org.jakarta.lsp4e.Activator;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
-import org.jakarta.codeAction.CodeActionHandler;
+import org.eclipse.lsp4jakarta.jdt.codeAction.CodeActionHandler;
 
 /**
  * JDT manager for Java files Modified from

@@ -23,7 +23,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class JakartaCorePlugin extends BundleActivator {
+public class JakartaCorePlugin implements BundleActivator {
 
     // The plug-in ID
     public static final String PLUGIN_ID = "org.eclipse.lsp4jakarta.jdt.core"; //$NON-NLS-1$
@@ -32,13 +32,13 @@ public class JakartaCorePlugin extends BundleActivator {
     private static JakartaCorePlugin plugin;
 
     public void start(BundleContext context) throws Exception {
-    	super.start(context);
+//    	super.start(context);
 		plugin = this;
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
-		super.stop(context);
+//		super.stop(context);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class JakartaCorePlugin extends BundleActivator {
 	 * @param listener the listener to add
 	 */
 	public static void log(IStatus status) {
-        getDefault().getLog().log(status);
+//        getDefault().getLog().log(status);
     }
 
 	/**
@@ -65,7 +65,7 @@ public class JakartaCorePlugin extends BundleActivator {
 	 * @param listener the listener to remove
 	 */
 	public static void logException(String errMsg, Throwable ex) {
-        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, errMsg, ex));
+//        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, errMsg, ex));
     }
 
 }

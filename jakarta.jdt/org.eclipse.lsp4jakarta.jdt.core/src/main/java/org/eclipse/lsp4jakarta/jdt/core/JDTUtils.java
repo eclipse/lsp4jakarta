@@ -63,8 +63,6 @@ import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import org.jakarta.lsp4e.Activator;
-import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import com.google.common.base.Charsets;
 
