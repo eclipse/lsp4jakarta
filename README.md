@@ -18,9 +18,9 @@ This project contains:
 
 Follow the instructions below to install the LSP4Jakarta Eclipse plugin:
 
-1. Nagivate to the [releases page](https://github.com/eclipse/lsp4jakarta/releases) and download the `*.jar` file for the Eclipse plugin. 
+1. Build the installable Eclipse client (packaged as a Jar) using our [MANUALBUILDING](docs/MANUALBUILDING.md) instructions. Alternatively, if releases are available you can download the `*.jar` from the [releases page](https://github.com/eclipse/lsp4jakarta/releases). To do so, nagivate to the [releases page](https://github.com/eclipse/lsp4jakarta/releases) and download the `*.jar` file for the Eclipse plugin.  
 
-2. Move the `*.jar` file to the **dropins** folder and start **Eclipse** in `clean` mode. 
+2. Move the `*.jar` file to the **dropins** folder and start **Eclipse** in `clean` mode, as directed below:
     - **For Mac:** 
         - In **Finder**, navigate to the **Eclipse** application.
         - Right-click on the application and click "Show Package Contents".
