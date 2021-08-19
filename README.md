@@ -11,6 +11,9 @@ This project contains:
 # Table of Contents  
 - [Getting Started](#Getting-Started)  
 - [Building](#Building)
+    - [Prerequisites](#Prerequisites)
+    - [Setup Instructions](#Setup-Instructions)
+    - [Common Errors](#Common-Errors)
 - [Contributing](#Contributing)
 - [Feedback](#Feedback)
 ---
