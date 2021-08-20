@@ -1,6 +1,6 @@
 # Manually building the installable Eclipse client plugin
 
-1. Ensure that **Eclipse workspace** is setup properly by following the [setup instructions](docs/BUILDING.md).
+1. Ensure that **Eclipse workspace** is setup properly by following the [setup instructions](/BUILDING.md).
 
 2. In the package explorer in **Eclipse**, right-click on the `org.eclipse.lsp4jakarta.core` and then click **Export**.
 
