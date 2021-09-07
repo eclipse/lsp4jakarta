@@ -3,17 +3,31 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse</groupId>
-	<version>0.0.1-SNAPSHOT</version>
 	<artifactId>jakarta.eclipse</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
 	</properties>
 	<modules>
-		<module>org.lsp4jakarta.lsp4e</module>
+		<module>org.eclipse.lsp4jakarta.lsp4e</module>
+		<module>org.eclipse.lsp4jakarta.lsp4e.site</module>
 	</modules>
 	<repositories>
-
+		<repository>
+			<id>2019-06</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/2019-06</url>
+		</repository>
+		<repository>
+			<id>jdt.ls.p2</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/jdtls/snapshots/repository/latest/</url>
+		</repository>
+		<repository>
+			<id>jdt.ls.maven</id>
+			<url>https://repo.eclipse.org/content/repositories/jdtls-releases/</url>
+		</repository>
 	</repositories>
 	<build>
 		<plugins>

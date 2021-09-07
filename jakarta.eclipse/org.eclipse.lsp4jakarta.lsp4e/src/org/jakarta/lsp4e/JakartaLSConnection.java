@@ -60,7 +60,7 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
 
     private String computeClasspath() throws IOException {
         StringBuilder builder = new StringBuilder();
-        URL url = FileLocator.toFileURL(getClass().getResource("/lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar"));
+        URL url = FileLocator.toFileURL(getClass().getResource("/server/org.eclipse.lsp4jakarta.ls-jar-with-dependencies.jar"));
         builder.append(new java.io.File(url.getPath()).getAbsolutePath());
         return builder.toString();
     }
