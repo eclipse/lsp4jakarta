@@ -5,49 +5,25 @@ The Eclipse LSP4Jakarta (Language Server for Jakarta EE) project provides core l
 
 This project contains: 
 
-- [lsp4jakarta](/lsp4jakarta) - Language Server for Jakarta EE
-- [jakarta-eclipse](/jakarta-eclipse) - Eclipse JDT LS extension and Eclipse IDE client that consumes the Language Server for Jakarta EE
+- [jakarta.ls](/jakarta.ls) - Language Server for Jakarta EE
+- [jakarta.jdt](/jakarta.jdt) - Jakarta EE Eclipse JDT LS extension 
+- [jakarta.eclipse](/jakarta-eclipse) - Eclipse IDE client that consumes the Language Server for Jakarta EE
 
-# Table of Contents  
-- [Getting Started](#Getting-Started)  
+<img src="/docs/images/components.png" alt="component diagram" height="80%" width="80%"/>
+
+# Table of Contents
 - [Building](#Building)
 - [Contributing](#Contributing)
 - [Feedback](#Feedback)
----
-## Getting Started
-
-Follow the instructions below to install the LSP4Jakarta Eclipse plugin:
-
-1. Build the installable Eclipse client (packaged as a Jar) using our [manual building](docs/MANUALBUILDING.md) instructions. Alternatively, if releases are available you can download the `*.jar` from the [releases page](https://github.com/eclipse/lsp4jakarta/releases). To do so, nagivate to the [releases page](https://github.com/eclipse/lsp4jakarta/releases) and download the `*.jar` file for the Eclipse plugin.  
-
-2. Move the `*.jar` file to the **dropins** folder and start **Eclipse** in `clean` mode, as directed below:
-    - **For Mac:** 
-        - In **Finder**, navigate to the **Eclipse** application.
-        - Right-click on the application and click "Show Package Contents".
-        - Navigate through the folders as follows: **Contents > Eclipse**
-        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
-        - Next, in the same directory as the  **eclipse.ini** file, click on **dropins** folder.
-        - Move the `*.jar` inside the **dropins** folder. 
-    - **For Windows:**
-        - Locate the directory with the **Eclipse** executable. 
-        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
-        - In the same directory, click on **dropins** folder.
-        - Move the `*.jar` inside the **dropins** folder. 
-    - **For Linux:**
-        - In the terminal, use the following command to locate the directory with the **eclipse.ini** file: `ls -l /usr/bin | grep 'eclipse'`
-        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
-        - In the same directory, click on **dropins** folder.
-        - Move the `*.jar` inside the **dropins** folder. 
-
-3. Restart the **Eclipse** application.
+--- 
 
 ## Building
 
-Refer to our [BUILDING](docs/BUILDING.md) document for information about prerequisites, setting up, and common errors. 
+Refer to our [building](docs/BUILDING.md) document for information about prerequisites, setting up an Eclipse workspace, and common errors. 
 
 ## Contributing
 
-Our [CONTRIBUTING](docs/CONTRIBUTING.md) document contains details for submitting pull requests.
+Our [contributing](docs/CONTRIBUTING.md) document contains details for submitting pull requests.
 
 ## Feedback
 

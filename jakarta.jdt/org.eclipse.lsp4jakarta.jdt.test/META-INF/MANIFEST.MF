@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: LSP4Jakarta JDT Test Plugin
+Bundle-Vendor: Eclipse
+Bundle-SymbolicName: org.eclipse.lsp4jakarta.jdt.test
+Bundle-Version: 0.0.1.qualifier
+Automatic-Module-Name: org.eclipse.lsp4jakarta.jdt.test
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: 
+ org.junit,
+ org.apache.commons.io,
+ org.eclipse.lsp4j,
+ org.eclipse.lsp4j.jsonrpc,
+ org.eclipse.jdt.core,
+ org.eclipse.jdt.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.lsp4jakarta.jdt.core,
+ org.eclipse.m2e.core,
+ org.eclipse.m2e.maven.runtime,
+ org.eclipse.m2e.lifecyclemapping.defaults
+Bundle-ClassPath: . 
+Import-Package: com.google.gson

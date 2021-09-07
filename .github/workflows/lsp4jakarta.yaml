@@ -19,14 +19,13 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Build lsp4jakarta with Maven
-        working-directory: ./lsp4jakarta
+      - name: Build LSP4Jakarta JDT LS Extension with Maven
+        working-directory: ./jakarta.jdt
         run: mvn clean install --file pom.xml
-      - name: Copy lsp4jakarta jar
-        working-directory: ./lsp4jakarta
-        run: mv target/lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar ../jakarta-eclipse/org.eclipse.lsp4jakarta.core
-      - name: Build jakarta-eclipse with Maven (Linux)
-        if: runner.os == 'Linux'
-        working-directory: ./jakarta-eclipse
-        run: xvfb-run -a mvn -B package verify --file pom.xml
+      - name: Build LSP4Jakarta Language Server with Maven
+        working-directory: ./jakarta.ls
+        run: mvn clean install --file pom.xml 
+      - name: Build LSP4Jakarta Eclipse client plug-in with Maven
+        working-directory: ./jakarta.eclipse
+        run: mvn clean install --file pom.xml
           
