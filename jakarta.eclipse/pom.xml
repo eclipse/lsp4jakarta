@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.eclipse</groupId>
+	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>jakarta.eclipse</artifactId>
+	<packaging>pom</packaging>
+
+	<properties>
+	</properties>
+	<modules>
+		<module>org.lsp4jakarta.lsp4e</module>
+	</modules>
+	<repositories>
+
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<extensions>true</extensions>
+			</plugin>
+		</plugins>
+	</build>
+	<scm>
+		<url>https://github.com/eclipse/lsp4jakarta</url>
+	</scm>
+	<issueManagement>
+		<url>https://github.com/eclipse/lsp4jakartaissues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+	<organization>
+		<url>https://github.com/eclipse</url>
+	</organization>
+	<url>https://github.com/eclipse/lsp4jakarta</url>
+</project>

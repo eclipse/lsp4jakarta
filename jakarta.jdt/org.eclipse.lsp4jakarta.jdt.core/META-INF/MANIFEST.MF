@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Jakarta JDT Extension
+Bundle-Name: LSP4Jakarta JDT Extension
 Bundle-Vendor: Eclipse
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.lsp4jakarta.jdt.core;singleton:=true
-Bundle-Version: 0.1.0.qualifier
+Bundle-Version: 0.0.1.qualifier
 Bundle-Activator: org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin
 Require-Bundle: 
  org.eclipse.lsp4e,

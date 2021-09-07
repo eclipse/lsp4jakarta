@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
-Bundle-Vendor: %providerName
-Bundle-SymbolicName: org.jakartaee.lsp4e;singleton:=true
-Bundle-Version: 0.1.0.qualifier
+Bundle-Name: Eclipse LSP4Jakarta Plugin
+Bundle-Vendor: Eclipse
+Bundle-SymbolicName: org.lsp4jakarta.lsp4e;singleton:=true
+Bundle-Version: 0.0.1.qualifier
 Bundle-Activator: org.jakarta.lsp4e.Activator
 Require-Bundle: 
  org.eclipse.lsp4e,

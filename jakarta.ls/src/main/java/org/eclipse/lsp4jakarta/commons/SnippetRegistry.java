@@ -21,7 +21,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
@@ -45,8 +44,6 @@ import com.google.gson.stream.JsonReader;
  * @author Ankush Sharma, credit to Angelo ZERR
  */
 public class SnippetRegistry {
-    private static final Logger LOGGER = Logger.getLogger(SnippetRegistry.class.getName());
-
     List<Snippet> snippets; // Hold all snippets in this list
 
     /**
