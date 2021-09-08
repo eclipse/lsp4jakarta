@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.lsp4jakarta.lsp4e.feature"
+      label="org.eclipse.lsp4jakarta.lsp4e Feature"
+      version="0.0.1.qualifier">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <update label="org.eclipse.lsp4jakarta.lsp4e Update Site" url="http://www.example.com/update"/>
+      <discovery label="org.eclipse.lsp4jakarta.lsp4e Discovery Site" url="http://www.example.com/update"/>
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.lsp4jakarta.jdt.core"/>
+   </requires>
+
+   <plugin
+         id="org.eclipse.lsp4jakarta.lsp4e.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

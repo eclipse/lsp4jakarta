@@ -21,9 +21,9 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>2019-06</id>
+			<id>2020-12</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2019-06</url>
+			<url>http://download.eclipse.org/releases/2020-12</url>
 		</repository>
 		<repository>
 			<id>jdt.ls.p2</id>
@@ -70,17 +70,19 @@
 					<version>${tycho.version}</version>
 					<configuration>
 						<format>yyyyMMdd-HHmm</format>
-						<sourceReferences>
-							<generate>${tycho.generateSourceReferences}</generate>
-						</sourceReferences>
 					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>org.eclipse.tycho.extras</groupId>
-							<artifactId>tycho-sourceref-jgit</artifactId>
-							<version>${tycho.extras.version}</version>
-						</dependency>
-					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-surefire-plugin</artifactId>
+					<version>${tycho.version}</version>
+					<configuration>
+						<useUIHarness>true</useUIHarness>
+						<argLine>${tycho.test.jvmArgs}</argLine>
+						<!-- kill test JVM if tests take more than 1 minute (60 seconds) to 
+							finish -->
+						<forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>

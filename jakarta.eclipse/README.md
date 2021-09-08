@@ -1,13 +1,13 @@
-# jakarta-eclipse extension
+This project is built using Eclipse Tycho (https://www.eclipse.org/tycho/) and requires at least maven 3.0 (http://maven.apache.org/download.html) to be built via CLI. 
+Simply run :
 
-### org.eclipse.lsp4jakarta.core
+    mvn install
 
-This component contains:
-- [Eclipse jdt.ls](https://github.com/eclipse/eclipse.jdt.ls) extension providing Jakarta support.
-- Eclipse IDE client that consumes the [Language Server for Jakarta EE](../lsp4jakarta) by loading the `lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar`.
+The first run will take quite a while since maven will download all the required dependencies in order to build everything.
 
-### org.eclipse.lsp4jakarta.tests
+In order to use the generated eclipse plugins in Eclipse, you will need m2e (https://www.eclipse.org/m2e) 
+and the m2eclipse-tycho plugin (https://github.com/tesla/m2eclipse-tycho/). Update sites to install these plugins : 
 
-A [Tycho eclipse-test-plugin](https://wiki.eclipse.org/Tycho/Packaging_Types#eclipse-test-plugin) that runs tests for [org.eclipse.lsp4jakarta.core](/org.eclipse.lsp4jakarta.core).
+* m2e stable update site : http://download.eclipse.org/technology/m2e/releases/
+* m2eclipse-tycho dev update site : http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/
 
-Note: This eclipse-test-plugin does not load the `lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar` directly, it only loads the `org.jakartaee.lsp4e` eclipse plugin exposed by `org.eclipse.lsp4jakarta.core`. This requires certain `DiagnosticParams` and `CodeActionParams` to be duplicated from lsp4jakarta in org.eclipse.lsp4jakarta.core. See [JakartaDiagnosticsParams](https://github.com/eclipse/lsp4jakarta/blob/master/jakarta-eclipse/org.eclipse.lsp4jakarta.core/src/io/microshed/jakartals/commons/JakartaDiagnosticsParams.java).

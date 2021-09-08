@@ -25,10 +25,12 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin {
 
     // The plug-in ID
-    public static final String PLUGIN_ID = "org.jakartaee.lsp4e"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = "org.eclipse.lsp4jakarta.lsp4e.core"; //$NON-NLS-1$
 
     // The shared instance
     private static Activator plugin;
+ 
+    public boolean started;
 
     /**
      * The constructor
@@ -40,11 +42,14 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, "Starting activator class for lsp4e.core"));
+        started = true;
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         plugin = null;
+        started = false;
         super.stop(context);
     }
 
