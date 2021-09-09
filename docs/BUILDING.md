@@ -50,7 +50,7 @@ The following are instructions to set up your Eclipse workspace
 ## Common Errors 
 
 1. When setting up the Eclipse workspace:  
-&nbsp;- *Bundle 'org.apache.commons.lang3' cannot be resolved* in Eclipse worskspace  
+&nbsp;- *Bundle 'org.apache.commons.lang3' cannot be resolved* in Eclipse workspace  
 &nbsp;Solution: [#46](https://github.com/eclipse/lsp4jakarta/issues/46)
 
 2. If during initial setup `mvn verify` returns errors or compilation failures, verify that you are using [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
