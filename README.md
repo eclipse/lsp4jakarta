@@ -5,76 +5,25 @@ The Eclipse LSP4Jakarta (Language Server for Jakarta EE) project provides core l
 
 This project contains: 
 
-- [lsp4jakarta](/lsp4jakarta) - Language Server for Jakarta EE
-- [jakarta-eclipse](/jakarta-eclipse) - Eclipse JDT LS extension and Eclipse IDE client that consumes the Language Server for Jakarta EE
+- [jakarta.ls](/jakarta.ls) - Language Server for Jakarta EE
+- [jakarta.jdt](/jakarta.jdt) - Jakarta EE Eclipse JDT LS extension 
+- [jakarta.eclipse](/jakarta-eclipse) - Eclipse IDE client that consumes the Language Server for Jakarta EE
 
-<<<<<<< HEAD
-# Table of Contents  
-- [Getting Started](#Getting-Started)  
+<img src="/docs/images/components.png" alt="component diagram" height="80%" width="80%"/>
+
+# Table of Contents
 - [Building](#Building)
 - [Contributing](#Contributing)
 - [Feedback](#Feedback)
----
-## Getting Started
-
-Follow the instructions below to install the LSP4Jakarta Eclipse plugin:
-=======
-## Getting Started
-
-### Prerequisites
-
-[JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) are required to build `lsp4jakarta` and `jakarta-eclipse`.
-
-### Set-up Instructions
-1. Install Eclipse Plugin Development Environment (Step 1 here: https://medium.com/@ravi_theja/creating-your-first-eclipse-plugin-9b1b5ba33b58)
-
-2. Clone this repository onto your local machine (`git clone git@github.com:eclipse/lsp4jakarta.git`)
-
-3. Import `org.eclipse.lsp4jakarta.core`, `org.eclipse.lsp4jakarta.tests` and `lsp4jakarta` projects in Eclipse (File --> Import --> General --> Projects from  Folder or Archive --> Select your LSP4Jakarta clone)
-
-4. Ensure that projects are being built with `JavaSE-11` ("Right-click project" --> "Properties" --> "Java Build Path" --> "Libraries")
-
-5. Run the `./buildAll.sh` script to build the `lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar`. This script also copies the `lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar` to the `/jakarta-eclipse/org.eclipse.lsp4jakarta.core` directory 
->>>>>>> 9fe8331 (Update README.md)
-
-1. Build the installable Eclipse client (packaged as a Jar) using our [manual building](docs/MANUALBUILDING.md) instructions. Alternatively, if releases are available you can download the `*.jar` from the [releases page](https://github.com/eclipse/lsp4jakarta/releases). To do so, nagivate to the [releases page](https://github.com/eclipse/lsp4jakarta/releases) and download the `*.jar` file for the Eclipse plugin.  
-
-2. Move the `*.jar` file to the **dropins** folder and start **Eclipse** in `clean` mode, as directed below:
-    - **For Mac:** 
-        - In **Finder**, navigate to the **Eclipse** application.
-        - Right-click on the application and click "Show Package Contents".
-        - Navigate through the folders as follows: **Contents > Eclipse**
-        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
-        - Next, in the same directory as the  **eclipse.ini** file, click on **dropins** folder.
-        - Move the `*.jar` inside the **dropins** folder. 
-    - **For Windows:**
-        - Locate the directory with the **Eclipse** executable. 
-        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
-        - In the same directory, click on **dropins** folder.
-        - Move the `*.jar` inside the **dropins** folder. 
-    - **For Linux:**
-        - In the terminal, use the following command to locate the directory with the **eclipse.ini** file: `ls -l /usr/bin | grep 'eclipse'`
-        - In this directory, update the **eclipse.ini** file by adding `-clean` to the top of this file, save, and exit the file.
-        - In the same directory, click on **dropins** folder.
-        - Move the `*.jar` inside the **dropins** folder. 
-
-3. Restart the **Eclipse** application.
+--- 
 
 ## Building
 
-<<<<<<< HEAD
-Refer to our [BUILDING](docs/BUILDING.md) document for information about prerequisites, setting up, and common errors. 
-=======
-1. When setting up the Eclipse workspace:  
-&nbsp;- *Bundle 'org.apache.commons.lang3' cannot be resolved* in Eclipse worskspace  
-&nbsp;Solution: [#46](https://github.com/eclipse/lsp4jakarta/issues/46)
->>>>>>> 9fe8331 (Update README.md)
-
-2. If during initial setup `mvn verify` returns errors or compilation failures, verify that you are using [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
+Refer to our [building](docs/BUILDING.md) document for information about prerequisites, setting up an Eclipse workpsace, and common errors. 
 
 ## Contributing
 
-Our [CONTRIBUTING](docs/CONTRIBUTING.md) document contains details for submitting pull requests.
+Our [contributing](docs/CONTRIBUTING.md) document contains details for submitting pull requests.
 
 ## Feedback
 

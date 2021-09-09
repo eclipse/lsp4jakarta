@@ -1,13 +1,23 @@
+## jakarta.eclipse
+Eclipse client plug-in that consumes the Jakarta EE Language Server.
 This project is built using Eclipse Tycho (https://www.eclipse.org/tycho/) and requires at least maven 3.0 (http://maven.apache.org/download.html) to be built via CLI. 
 Simply run :
-
+```
     mvn install
+```
+### Components 
 
-The first run will take quite a while since maven will download all the required dependencies in order to build everything.
+- [org.eclipse.lsp4jakarta.lsp4e.core](./org.eclipse.lsp4jakarta.lsp4e.core) 
+    - Eclipse plug-in
+- [org.eclipse.lsp4jakarta.lsp4e.feature](./org.eclipse.lsp4jakarta.lsp4e.feature)
+    - Eclipse feature
+    - Packages the `org.eclipse.lsp4jakarta.lsp4e.core` plug-in and defines a dependency on `org.eclipse.lsp4jakarta.jdt.core` (JDT extension). See the [feature.xml](./org.eclipse.lsp4jakarta.lsp4e.feature/feature.xml)
+- [org.eclipse.lsp4jakarta.lsp4e.site](./org.eclipse.lsp4jakarta.lsp4e.site) 
+    - Eclipse update site project
+    - Creates a zipped p2 repository in the `/target` directory
+- [org.eclipse.lsp4jakarta.lsp4e.test](./org.eclipse.lsp4jakarta.lsp4e.test) 
+    - Eclipse test plug-in 
 
-In order to use the generated eclipse plugins in Eclipse, you will need m2e (https://www.eclipse.org/m2e) 
-and the m2eclipse-tycho plugin (https://github.com/tesla/m2eclipse-tycho/). Update sites to install these plugins : 
+See more information about the Tycho packaging types: https://wiki.eclipse.org/Tycho/Packaging_Types. 
 
-* m2e stable update site : http://download.eclipse.org/technology/m2e/releases/
-* m2eclipse-tycho dev update site : http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.7.0/N/0.7.0.201309291400/
-
+This project was initially generated using the [tycho-eclipse-plug-in-archetype](https://github.com/open-archetypes/tycho-eclipse-plug-in-archetype).
