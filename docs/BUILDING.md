@@ -13,7 +13,7 @@ The following are instructions to set up your Eclipse workspace
 
     `git clone git@github.com:eclipse/lsp4jakarta.git`
 
-2. Build the project with Maven by running the `./buildAll.sh` script from the `lsp4jakarta` directory with Maven and [Tycho](https://github.com/eclipse/tycho). This script runs `mvn clean install` on the components the following order:
+2. Build the project with Maven by running the `./buildAll.sh` script from the `lsp4jakarta` directory with Maven and [Tycho](https://github.com/eclipse/tycho). This script runs `mvn clean install` on the components in the following order:
 
     1. Builds Jakarta EE JDT LS Extension and runs automated tests
 
@@ -31,11 +31,11 @@ The following are instructions to set up your Eclipse workspace
     
     <img src="/docs/images/building_tycho_configurator_2.png" alt="Discover m2e connectors" height="40%" width="40%"/> <img src="/docs/images/building_tycho_configurator_3.png" alt="Installing Tycho Project Configurators" height="50%" width="50%"/>
 
-4. Ensure that the Java projects are being built with `JavaSE-11` ("Right-click project" --> "Properties" --> "Java Build Path" --> "Libraries")
+4. Ensure that the Java projects are being built with `JavaSE-11` (Right-click project --> "Properties" --> "Java Build Path" --> "Libraries")
 
 5. Configure the Java build path for the `org.eclipse.lsp4jakarta.lsp4e.core` project:
 
-    1. "Right-click org.eclipse.lsp4jakarta.lsp4e.core project" --> "Properties" --> "Java Build Path" --> "Libraries"
+    1. Right-click "org.eclipse.lsp4jakarta.lsp4e.core project" --> "Properties" --> "Java Build Path" --> "Libraries"
 
         <img src="/docs/images/building_lsp4e_1.png" alt="lsp4e project build path" height="60%" width="60%"/>
 
