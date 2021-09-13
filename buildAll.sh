@@ -1,2 +1,8 @@
-cd lsp4jakarta && mvn clean install
-mv target/lsp4jakarta-1.0-SNAPSHOT-jar-with-dependencies.jar ../jakarta-eclipse/org.eclipse.lsp4jakarta.core
+# build LSP4Jakarta JDT Extension
+cd jakarta.jdt && mvn clean install && cd ..
+
+# build LSP4Jakarta LS
+cd jakarta.ls && mvn clean install && cd ..
+
+# build LSP4Jakarta Eclipse plugin
+cd jakarta.eclipse && mvn clean install
