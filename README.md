@@ -9,7 +9,7 @@ This project contains:
 
 - [jakarta.ls](/jakarta.ls) - Language Server for Jakarta EE
 - [jakarta.jdt](/jakarta.jdt) - Jakarta EE Eclipse JDT LS extension 
-- [jakarta.eclipse](/jakarta-eclipse) - Eclipse IDE client that consumes the Language Server for Jakarta EE
+- [jakarta.eclipse](/jakarta.eclipse) - Eclipse IDE client that consumes the Language Server for Jakarta EE
 
 <img src="/docs/images/components.png" alt="component diagram" height="80%" width="80%"/>
 
