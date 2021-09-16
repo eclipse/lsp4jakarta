@@ -11,7 +11,7 @@ The following are instructions to set up your Eclipse workspace
 
 1. Clone this repository onto your local machine
 
-    `git clone git@github.com:eclipse/lsp4jakarta.git`
+    `git clone https://github.com/eclipse/lsp4jakarta.git`
 
 2. Build the project with Maven by running the `./buildAll.sh` script from the `lsp4jakarta` directory with Maven and [Tycho](https://github.com/eclipse/tycho). This script runs `mvn clean install` on the components in the following order:
 
