@@ -30,7 +30,10 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
+<<<<<<< HEAD
 import org.eclipse.lsp4j.DiagnosticSeverity;
+=======
+>>>>>>> 4d9aeab (Added diagnostics for Generated, Resource, PostConstruct, and PreDestroy)
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
@@ -38,6 +41,7 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
+<<<<<<< HEAD
 
 /**
  * 
@@ -58,6 +62,7 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
  */
 public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
 
+
     public AnnotationDiagnosticsCollector() {
     }
 
@@ -65,6 +70,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
         diagnostic.setSource(AnnotationConstants.DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(AnnotationConstants.SEVERITY);
     }
+
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
@@ -235,6 +241,8 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
             } catch (JavaModelException e) {
                 JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
+    
+  
         }
     }
 }
