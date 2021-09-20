@@ -10,7 +10,7 @@
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
-package org.eclipse.lsp4jakarta.jdt.servlet;
+package org.eclipse.lsp4jakarta.jdt.annotations;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.*;
 
@@ -29,7 +29,7 @@ import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Test;
 
-public class JakartaServletTest extends BaseJakartaTest {
+public class GeneratedAnnotationTest extends BaseJakartaTest {
 
     protected static JDTUtils JDT_UTILS = new JDTUtils();
 
@@ -37,16 +37,15 @@ public class JakartaServletTest extends BaseJakartaTest {
     public void ExtendWebServlet() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/DontExtendHttpServlet.java"));
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/GeneratedAnnotation.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
-        
-        // System.out.println(uri);
+
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        
+
         // expected
         Diagnostic d = d(10, 13, 34, "Classes annotated with @WebServlet must extend the HttpServlet class.",
-                DiagnosticSeverity.Warning, "jakarta-servlet", "ExtendHttpServlet");
+                DiagnosticSeverity.Error, "jakarta-servlet", "ExtendHttpServlet");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
