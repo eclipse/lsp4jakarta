@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
@@ -75,6 +76,7 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector {
                                 "Classes annotated with @WebServlet must extend the HttpServlet class.");
                         completeDiagnostic(diagnostic);
                         diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE);
+                        diagnostic.setSeverity(DiagnosticSeverity.Warning);
                         diagnostics.add(diagnostic);
                     }
 
