@@ -29,6 +29,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.jax_rs.RootResourceClassDiagnosticsCollector;
@@ -64,6 +65,7 @@ public class JDTServicesManager {
 
     private JDTServicesManager() {
         diagnosticsCollectors.add(new ServletDiagnosticsCollector());
+        diagnosticsCollectors.add(new AnnotationDiagnosticsCollector());
         diagnosticsCollectors.add(new FilterDiagnosticsCollector());
         diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
         diagnosticsCollectors.add(new BeanValidationDiagnosticsCollector());
