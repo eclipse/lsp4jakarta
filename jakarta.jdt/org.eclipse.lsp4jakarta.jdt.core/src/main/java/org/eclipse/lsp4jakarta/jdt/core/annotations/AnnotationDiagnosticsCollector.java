@@ -81,7 +81,30 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
     				IAnnotation annotation = annotatable.getFirst();
     				IAnnotatable element = annotatable.getSecond();
     				
-    				if (annotation.getElementName().equals(AnnotationConstants.RESOURCE)) {
+    				if (annotation.getElementName().equals(AnnotationConstants.GENERATED)) {
+    					for (IMemberValuePair pair : annotation.getMemberValuePairs()) {
+							// If date element exists and is non-empty, it must follow ISO 8601 format.
+    						if (pair.getMemberName().equals("date")) {
+    							if (pair.getValue() instanceof String) {
+    								String date = (String) pair.getValue();
+    								if (!date.equals("")) {
+    									if (!Pattern.matches(AnnotationConstants.ISO_8601_REGEX, date)) {
+    										ISourceRange annotationNameRange = JDTUtils.getNameRange(annotation);
+    										Range annotationRange = JDTUtils.toRange(
+    												unit,
+    												annotationNameRange.getOffset(),
+    												annotationNameRange.getLength());
+    										Diagnostic diagnostic = new Diagnostic(
+    												annotationRange,
+    												"The 'date' attribute of the Generated annotation MUST follow ISO 8601.");
+    										diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT);
+    										diagnostics.add(diagnostic);
+    									}
+    								}	
+    							}
+    						}
+    					}
+    				} else if (annotation.getElementName().equals(AnnotationConstants.RESOURCE)) {
     					if (element instanceof IType) {
     						IType type = (IType) element;
     						if (type.getElementType() == IJavaElement.TYPE && ((IType)type).isClass()) {
