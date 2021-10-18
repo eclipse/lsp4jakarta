@@ -47,6 +47,7 @@ import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstructorQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ScopeDeclarationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.di.ConflictInjectFieldNonFinalQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.di.ConflictInjectFieldNonFinalQuickFix2;
 import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteFilterAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteServletAnnotationQuickFix;
@@ -102,6 +103,8 @@ public class CodeActionHandler {
             JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
             ScopeDeclarationQuickFix ScopeDeclarationQuickFix = new ScopeDeclarationQuickFix();
             ConflictInjectFieldNonFinalQuickFix ConflictInjectFieldNonFinalQuickFix = new ConflictInjectFieldNonFinalQuickFix();
+            ConflictInjectFieldNonFinalQuickFix2 ConflictInjectFieldNonFinalQuickFix2 = new ConflictInjectFieldNonFinalQuickFix2();
+            
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -172,6 +175,7 @@ public class CodeActionHandler {
                     }
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL)) {
                         codeActions.addAll(ConflictInjectFieldNonFinalQuickFix.getCodeActions(context, diagnostic, monitor));
+                        codeActions.addAll(ConflictInjectFieldNonFinalQuickFix2.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();
