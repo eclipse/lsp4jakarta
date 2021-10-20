@@ -46,9 +46,9 @@ import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstructorQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ScopeDeclarationQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.di.ConflictInjectFieldNonFinalQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.di.ConflictInjectFieldNonFinalQuickFix2;
 import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
+import org.eclipse.lsp4jakarta.jdt.core.di.RemoveFinalModifierQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.di.RemoveInjectAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteFilterAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteServletAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterImplementationQuickFix;
@@ -102,8 +102,8 @@ public class CodeActionHandler {
             ManagedBeanConstructorQuickFix ManagedBeanConstructorQuickFix = new ManagedBeanConstructorQuickFix();
             JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
             ScopeDeclarationQuickFix ScopeDeclarationQuickFix = new ScopeDeclarationQuickFix();
-            ConflictInjectFieldNonFinalQuickFix ConflictInjectFieldNonFinalQuickFix = new ConflictInjectFieldNonFinalQuickFix();
-            ConflictInjectFieldNonFinalQuickFix2 ConflictInjectFieldNonFinalQuickFix2 = new ConflictInjectFieldNonFinalQuickFix2();
+            RemoveInjectAnnotationQuickFix RemoveInjectAnnotationQuickFix = new RemoveInjectAnnotationQuickFix();
+            RemoveFinalModifierQuickFix RemoveFinalModifierQuickFix = new RemoveFinalModifierQuickFix();
             
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
@@ -174,8 +174,8 @@ public class CodeActionHandler {
                         codeActions.addAll(ScopeDeclarationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL)) {
-                        codeActions.addAll(ConflictInjectFieldNonFinalQuickFix.getCodeActions(context, diagnostic, monitor));
-                        codeActions.addAll(ConflictInjectFieldNonFinalQuickFix2.getCodeActions(context, diagnostic, monitor));
+                        codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                        codeActions.addAll(RemoveFinalModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();

@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -28,11 +29,11 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
+import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
 
 
 /**
- * QuickFix for removing modifiers. Modified from
- * https://github.com/eclipse/lsp4mp/blob/6f2d700a88a3262e39cc2ba04beedb429e162246/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/InsertAnnotationMissingQuickFix.java
+ * QuickFix for removing modifiers.
  *
  * @author Himanshu Chotwani
  *
@@ -95,13 +96,30 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
         }
     }
     
+    
+    /**
+     * use setData() API with diagnostic to pass in ElementType in diagnostic collector class.
+     *
+     */
     private void removeModifier(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
             List<CodeAction> codeActions, String... modifier) throws CoreException {
         // Remove the modifier and the proper import by using JDT Core Manipulation
         // API
-        String name = "Remove " + modifier[0] + " modifier from element";
+        ASTNode coveredNode = context.getCoveredNode().getParent();
+        String type = "";
+        if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.FIELD)) ||
+                diagnostic.getData().equals(String.valueOf(IJavaElement.LOCAL_VARIABLE))) {
+            type = "variable";
+        } else if (diagnostic.getData().equals(String.valueOf(IJavaElement.METHOD))) {
+            type = "method";
+        } else if (diagnostic.getData().equals(String.valueOf(IJavaElement.CLASS_FILE))) {
+            type = "class";
+        }
+
+        String name = "Remove " + modifier[0] + " modifier from this ";
+        name = name.concat(type);
         ModifyModifiersProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
-                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), new ArrayList<>(), Arrays.asList(modifier));
+                context.getASTRoot(), parentType, 0, coveredNode, new ArrayList<>(), Arrays.asList(modifier));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
 
         if (codeAction != null) {

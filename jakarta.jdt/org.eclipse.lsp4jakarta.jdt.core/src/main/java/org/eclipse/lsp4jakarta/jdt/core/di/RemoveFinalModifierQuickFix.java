@@ -9,7 +9,7 @@
 * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 *
 * Contributors:
-*     Himanshu Chotwani - initial API and implementation
+*     IBM Corporation, Himanshu Chotwani - initial API and implementation
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.core.di;
 
@@ -23,9 +23,9 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierCo
  * @author Himanshu Chotwani
  *
  */
-public class ConflictInjectFieldNonFinalQuickFix2 extends RemoveModifierConflictQuickFix { 
+public class RemoveFinalModifierQuickFix extends RemoveModifierConflictQuickFix { 
 
-    public ConflictInjectFieldNonFinalQuickFix2() {
+    public RemoveFinalModifierQuickFix() {
         super(false, "final");
     }
 }

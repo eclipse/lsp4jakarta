@@ -3,13 +3,12 @@
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
-* http://www.eclipse.org/legal/epl-2.0, or the Apache License, Version 2.0
-* which is available at https://www.apache.org/licenses/LICENSE-2.0.
+* http://www.eclipse.org/legal/epl-2.0.
 *
-* SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
+* SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     Himanshu Chotwani - initial API and implementation
+*     IBM Corporation, Himanshu Chotwani - initial API and implementation
 *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.di;
@@ -37,9 +36,9 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotation
  *
  */
 
-public class ConflictInjectFieldNonFinalQuickFix extends RemoveAnnotationConflictQuickFix {
+public class RemoveInjectAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
 
-    public ConflictInjectFieldNonFinalQuickFix() {
+    public RemoveInjectAnnotationQuickFix() {
         super(false, "jakarta.inject.Inject");
     }
 }

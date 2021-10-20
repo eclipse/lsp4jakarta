@@ -9,7 +9,7 @@
 * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 *
 * Contributors:
-*     Himanshu Chotwani - initial API and implementation
+*     IBM Corporation, Himanshu Chotwani - initial API and implementation
 *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.di;
@@ -46,9 +46,8 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
 
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
-	    diagnostic.setSource(DIAGNOSTIC_SOURCE);
+        diagnostic.setSource(DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(SEVERITY);
-		
 	}
 
 	@Override
@@ -80,6 +79,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
 						String msg = "Injectable fields cannot be final";
 						diagnostic = new Diagnostic(range, msg);
 						diagnostic.setCode(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
+						diagnostic.setData(field.getElementType());
 						completeDiagnostic(diagnostic);
 						diagnostics.add(diagnostic);
 					}
