@@ -52,42 +52,42 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
 
 	@Override
 	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
-		if (unit == null)
+	    if (unit == null)
             return;
-		Diagnostic diagnostic;
-		IType[] alltypes;
-        IAnnotation[] allAnnotations;
-		try {
-			alltypes = unit.getAllTypes();
-			for (IType type : alltypes) {
-				allAnnotations = type.getAnnotations();
-				
-				IField[] allFields = type.getFields();
-				for (IField field : allFields) {
-					int fieldFlags = field.getFlags();
-					List<IAnnotation> fieldAnnotations = Arrays.asList(field.getAnnotations());
-					
-					boolean isInjectField = fieldAnnotations.stream()
-                            .anyMatch(annotation -> annotation.getElementName()
-                            		.equals(DependencyInjectionConstants.INJECT));
-					
-					boolean isFinal = Flags.isFinal(fieldFlags);
-					
-					if (isFinal && isInjectField) {
-						ISourceRange nameRange = JDTUtils.getNameRange(field);
-						Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-						String msg = "Injectable fields cannot be final";
-						diagnostic = new Diagnostic(range, msg);
-						diagnostic.setCode(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
-						diagnostic.setData(field.getElementType());
-						completeDiagnostic(diagnostic);
-						diagnostics.add(diagnostic);
-					}
-				}
-			}
-		} catch (JavaModelException e) {
-        	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
-        }
+	    Diagnostic diagnostic;
+	    IType[] alltypes;
+	    IAnnotation[] allAnnotations;
+	    try {
+	        alltypes = unit.getAllTypes();
+	        for (IType type : alltypes) {
+	            allAnnotations = type.getAnnotations();
+
+	            IField[] allFields = type.getFields();
+	            for (IField field : allFields) {
+	                int fieldFlags = field.getFlags();
+	                List<IAnnotation> fieldAnnotations = Arrays.asList(field.getAnnotations());
+
+	                boolean isInjectField = fieldAnnotations.stream()
+	                        .anyMatch(annotation -> annotation.getElementName()
+	                                .equals(DependencyInjectionConstants.INJECT));
+
+	                boolean isFinal = Flags.isFinal(fieldFlags);
+
+	                if (isFinal && isInjectField) {
+	                    ISourceRange nameRange = JDTUtils.getNameRange(field);
+	                    Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+	                    String msg = "Injectable fields cannot be final";
+	                    diagnostic = new Diagnostic(range, msg);
+	                    diagnostic.setCode(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
+	                    diagnostic.setData(field.getElementType());
+	                    completeDiagnostic(diagnostic);
+	                    diagnostics.add(diagnostic);    
+	                }    
+	            }    
+	        }
+	    } catch (JavaModelException e) {
+	        JakartaCorePlugin.logException("Cannot calculate diagnostics", e);    
+	    }    
 	}
 
 }

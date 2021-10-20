@@ -107,9 +107,10 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
         // API
         ASTNode coveredNode = context.getCoveredNode().getParent();
         String type = "";
-        if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.FIELD)) ||
-                diagnostic.getData().equals(String.valueOf(IJavaElement.LOCAL_VARIABLE))) {
+        if (diagnostic.getData().equals(String.valueOf(IJavaElement.LOCAL_VARIABLE))){
             type = "variable";
+        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.FIELD))) {
+            type = "field";
         } else if (diagnostic.getData().equals(String.valueOf(IJavaElement.METHOD))) {
             type = "method";
         } else if (diagnostic.getData().equals(String.valueOf(IJavaElement.CLASS_FILE))) {
