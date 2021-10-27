@@ -1,12 +1,14 @@
 package io.openliberty.sample.jakarta.servlet;
 
+import jakarta.annotation.Generated;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-// tests are line number dependent - do not modify incorrectly
+//tests are line number dependent - do not modify incorrectly
+
 
 @Generated(value = "demoServlet", date="")
 public class UsesGeneratedTag  {
