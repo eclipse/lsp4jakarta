@@ -30,10 +30,7 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
-<<<<<<< HEAD
 import org.eclipse.lsp4j.DiagnosticSeverity;
-=======
->>>>>>> 4d9aeab (Added diagnostics for Generated, Resource, PostConstruct, and PreDestroy)
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
@@ -41,7 +38,6 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
-<<<<<<< HEAD
 
 /**
  * 
@@ -123,6 +119,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                                     annotationRange,
                                                     "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.");
                                             diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT);
+                                            completeDiagnostic(diagnostic);
                                             diagnostics.add(diagnostic);
                                         }
                                     }	

@@ -44,8 +44,8 @@ public class GeneratedAnnotationTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected
-        Diagnostic d = d(6, 1, 60, "The 'date' attribute of the Generated annotation MUST follow ISO 8601.",
-                DiagnosticSeverity.Error, null, "InvalidDateFormat");
+        Diagnostic d = d(6, 1, 60, "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.",
+                DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
