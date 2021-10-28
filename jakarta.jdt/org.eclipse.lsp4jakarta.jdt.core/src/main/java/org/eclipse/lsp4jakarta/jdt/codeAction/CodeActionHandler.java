@@ -46,9 +46,6 @@ import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstructorQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ScopeDeclarationQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
-import org.eclipse.lsp4jakarta.jdt.core.di.RemoveFinalModifierQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.di.RemoveInjectAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteFilterAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteServletAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterImplementationQuickFix;
@@ -57,6 +54,9 @@ import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerImplementationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletConstants;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.DeleteConflictMapKeyQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.ResourceAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestoryAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -102,9 +102,8 @@ public class CodeActionHandler {
             ManagedBeanConstructorQuickFix ManagedBeanConstructorQuickFix = new ManagedBeanConstructorQuickFix();
             JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
             ScopeDeclarationQuickFix ScopeDeclarationQuickFix = new ScopeDeclarationQuickFix();
-            RemoveInjectAnnotationQuickFix RemoveInjectAnnotationQuickFix = new RemoveInjectAnnotationQuickFix();
-            RemoveFinalModifierQuickFix RemoveFinalModifierQuickFix = new RemoveFinalModifierQuickFix();
-            
+            ResourceAnnotationQuickFix  ResourceAnnotationQuickFix =new ResourceAnnotationQuickFix();
+            PreDestoryAnnotationQuickFix PreDestoryAnnotationQuickFix =new PreDestoryAnnotationQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -116,6 +115,14 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_LISTENER)) {
                         codeActions.addAll(ListenerImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE)
+                    		||diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE) ) {
+                        codeActions.addAll(ResourceAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC) ||
+                    		diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {
+                    	codeActions.addAll(PreDestoryAnnotationQuickFix.getCodeActions(context,diagnostic,monitor));	
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE)
                             || diagnostic.getCode().getLeft()
@@ -172,10 +179,6 @@ public class CodeActionHandler {
                     }
                     if(diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE_SCOPEDECL)) {
                         codeActions.addAll(ScopeDeclarationQuickFix.getCodeActions(context, diagnostic, monitor));
-                    }
-                    if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL)) {
-                        codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
-                        codeActions.addAll(RemoveFinalModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();
