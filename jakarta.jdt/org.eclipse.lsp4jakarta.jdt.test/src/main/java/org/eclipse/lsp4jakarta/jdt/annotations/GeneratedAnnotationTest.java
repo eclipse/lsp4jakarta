@@ -19,12 +19,9 @@ import java.util.Arrays;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
-import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Test;
@@ -43,17 +40,16 @@ public class GeneratedAnnotationTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        // expected
-        Diagnostic d = d(6, 1, 60, "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.",
+        // expected annotations
+        Diagnostic d1 = d(6, 1, 60, "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
+        
+        Diagnostic d2 = d(12, 1, 67, "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.",
+                DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
+        
 
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
 
-        // test associated quick-fix code action
-        // JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        // TextEdit te = te(10, 34, 10, 34, " extends HttpServlet");
-        // CodeAction ca = ca(uri, "Let 'DontExtendHttpServlet' extend 'HttpServlet'", d, te);
-        // assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
     }
 
 }
