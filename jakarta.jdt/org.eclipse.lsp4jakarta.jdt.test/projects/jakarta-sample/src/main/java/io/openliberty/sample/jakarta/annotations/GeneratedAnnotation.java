@@ -1,28 +1,27 @@
-package io.openliberty.sample.jakarta.servlet;
-
 import jakarta.annotation.Generated;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-//tests are line number dependent - do not modify incorrectly
 
 
 @Generated(value = "demoServlet", date="")
-public class UsesGeneratedTag  {
-		System.out.println("Hello There!");
-	}
+public class GraduatingStudent {
+
+	@Generated(value = "demoServlet", date="not_ISO_compliant")
+    private Integer studentId;
+
+	// @Generated(value = "demoServlet", date="2001-07-04T12:08:56.235-0700")
+    private boolean isHappy;
+
+	// @Generated(value = "demoServletijiojioj", date="")
+    private boolean isSad;
+
+
+    private String emailAddress;
+
+    public GraduatingStudent(Integer studentId, Boolean isHappy, boolean isSad, Calendar graduationDate, Integer gpa,
+            String emailAddress) {
+        this.studentId = studentId;
+        this.isHappy = isHappy;
+        this.isSad = isSad;
+        this.emailAddress = emailAddress;
+    }
+
 }
-
-
-
-
-
-
-//value = array of strings
-//date (optional) ISO compliant date 
-
-@Generated(value = "demoServlet")
-@Generated("demoServlet")

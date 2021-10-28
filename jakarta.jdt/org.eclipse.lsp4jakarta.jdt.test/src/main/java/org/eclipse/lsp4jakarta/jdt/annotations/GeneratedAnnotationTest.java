@@ -34,51 +34,26 @@ public class GeneratedAnnotationTest extends BaseJakartaTest {
     protected static JDTUtils JDT_UTILS = new JDTUtils();
 
     @Test
-    public void ExtendWebServlet() throws Exception {
+    public void GeneratedAnnotation() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/GeneratedAnnotation.java"));
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/annotations/GeneratedAnnotation.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected
-        Diagnostic d = d(10, 13, 34, "Classes annotated with @WebServlet must extend the HttpServlet class.",
-                DiagnosticSeverity.Error, "jakarta-servlet", "ExtendHttpServlet");
+        Diagnostic d = d(6, 1, 60, "The 'date' attribute of the Generated annotation MUST follow ISO 8601.",
+                DiagnosticSeverity.Error, null, "InvalidDateFormat");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
         // test associated quick-fix code action
-        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(10, 34, 10, 34, " extends HttpServlet");
-        CodeAction ca = ca(uri, "Let 'DontExtendHttpServlet' extend 'HttpServlet'", d, te);
-        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
-    }
-
-    @Test
-    public void CompleteWebServletAnnotation() throws Exception {
-        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/InvalidWebServlet.java"));
-        String uri = javaFile.getLocation().toFile().toURI().toString();
-
-        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
-        diagnosticsParams.setUris(Arrays.asList(uri));
-
-        Diagnostic d = d(9, 0, 13,
-                "The 'urlPatterns' attribute or the 'value' attribute of the WebServlet annotation MUST be specified.",
-                DiagnosticSeverity.Error, "jakarta-servlet", "CompleteHttpServletAttributes");
-
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
-
-        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te1 = te(9, 0, 10, 0, "@WebServlet(value = \"\")\n");
-        CodeAction ca1 = ca(uri, "Add the `value` attribute to @WebServlet", d, te1);
-
-        TextEdit te2 = te(9, 0, 10, 0, "@WebServlet(urlPatterns = \"\")\n");
-        CodeAction ca2 = ca(uri, "Add the `urlPatterns` attribute to @WebServlet", d, te2);
-        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca1, ca2);
+        // JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
+        // TextEdit te = te(10, 34, 10, 34, " extends HttpServlet");
+        // CodeAction ca = ca(uri, "Let 'DontExtendHttpServlet' extend 'HttpServlet'", d, te);
+        // assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
     }
 
 }
