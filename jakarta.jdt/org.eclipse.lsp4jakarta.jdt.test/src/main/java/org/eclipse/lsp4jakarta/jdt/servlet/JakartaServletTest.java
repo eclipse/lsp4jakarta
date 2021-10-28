@@ -39,11 +39,14 @@ public class JakartaServletTest extends BaseJakartaTest {
         IFile javaFile = javaProject.getProject()
                 .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/DontExtendHttpServlet.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
+        
+        // System.out.println(uri);
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
+        
         // expected
         Diagnostic d = d(10, 13, 34, "Classes annotated with @WebServlet must extend the HttpServlet class.",
-                DiagnosticSeverity.Warning, "jakarta-servlet", "ExtendHttpServlet");
+                DiagnosticSeverity.Error, "jakarta-servlet", "ExtendHttpServlet");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
