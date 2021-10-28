@@ -57,7 +57,7 @@ public class PreDestoryAnnotationQuickFix implements IJavaCodeActionParticipant 
         IMethodBinding parentMethod2 = parentNode2.resolveBinding();
 
         List<CodeAction> codeActions = new ArrayList<>();
-        List<SingleVariableDeclaration> params = (List<SingleVariableDeclaration>) parentNode.parameters();
+        List<SingleVariableDeclaration> parameters = (List<SingleVariableDeclaration>) parentNode.parameters();
 
 
         if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC)) {
@@ -65,10 +65,9 @@ public class PreDestoryAnnotationQuickFix implements IJavaCodeActionParticipant 
         }
         
         if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {           
-                String name = "Remove all entity parameters";
-                // Remove all entity parameters except the current chosen one
+                String name = "Remove all parameters";
                 ChangeCorrectionProposal proposal = new RemoveParamsProposal(name,
-                        context.getCompilationUnit(), context.getASTRoot(), parentMethod2, 0, params, null);
+                        context.getCompilationUnit(), context.getASTRoot(), parentMethod2, 0, parameters, null);
                 // Convert the proposal to LSP4J CodeAction
                 CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
                 codeActions.add(codeAction);  
