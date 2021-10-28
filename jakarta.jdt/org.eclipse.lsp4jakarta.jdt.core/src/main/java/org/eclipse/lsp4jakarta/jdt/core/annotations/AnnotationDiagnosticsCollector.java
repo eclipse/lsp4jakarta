@@ -58,7 +58,6 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
  */
 public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
 
-
     public AnnotationDiagnosticsCollector() {
     }
 
@@ -66,7 +65,6 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
         diagnostic.setSource(AnnotationConstants.DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(AnnotationConstants.SEVERITY);
     }
-
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
@@ -238,8 +236,6 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
             } catch (JavaModelException e) {
                 JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
-    
-  
         }
     }
 }
