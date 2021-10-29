@@ -117,7 +117,13 @@ public class JDTUtils {
             if (resource.getFileExtension() != null) {
                 String name = resource.getName();
                 if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
-                    return JavaCore.createCompilationUnitFrom(resource);
+                    ICompilationUnit unit = JavaCore.createCompilationUnitFrom(resource);
+                    try {
+                        // Give underlying resource time to catch up (max 3 seconds).
+                        long endTime = System.currentTimeMillis() + 3000;
+                        while (!unit.isConsistent() && System.currentTimeMillis() < endTime) { }
+                    } catch (JavaModelException e) { }
+                    return unit;
                 }
             }
             return null;
