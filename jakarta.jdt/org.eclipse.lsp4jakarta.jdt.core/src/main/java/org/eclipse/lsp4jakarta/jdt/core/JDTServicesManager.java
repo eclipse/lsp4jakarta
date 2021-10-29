@@ -34,6 +34,7 @@ import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodDiagnosticsCollecto
 import org.eclipse.lsp4jakarta.jdt.core.jax_rs.RootResourceClassDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbCreatorDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceEntityDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceMapKeyDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterDiagnosticsCollector;
@@ -73,6 +74,7 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new RootResourceClassDiagnosticsCollector());
         diagnosticsCollectors.add(new JsonbCreatorDiagnosticsCollector());
         diagnosticsCollectors.add(new ManagedBeanDiagnosticsCollector());
+        diagnosticsCollectors.add(new DependencyInjectionDiagnosticsCollector());
         this.codeActionHandler = new CodeActionHandler();
     }
 
