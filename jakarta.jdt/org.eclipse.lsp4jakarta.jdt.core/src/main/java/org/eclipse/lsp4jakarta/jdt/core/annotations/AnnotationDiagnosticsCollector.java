@@ -30,7 +30,6 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
@@ -63,7 +62,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
 
     public void completeDiagnostic(Diagnostic diagnostic) {
         diagnostic.setSource(AnnotationConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(AnnotationConstants.SEVERITY);
+        diagnostic.setSeverity(AnnotationConstants.ERROR);
     }
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
@@ -196,8 +195,8 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         methodRange,
                                         "A method with the annotation @PostConstruct must not throw checked exceptions.");
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION);
-                                diagnostic.setSeverity(DiagnosticSeverity.Warning);
                                 completeDiagnostic(diagnostic);
+                                diagnostic.setSeverity(AnnotationConstants.WARNING);
                                 diagnostics.add(diagnostic);
                             }
                         }
@@ -234,8 +233,8 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         methodRange,
                                         "A method with the annotation @PreDestroy must not throw checked exceptions.");
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION);
-                                diagnostic.setSeverity(DiagnosticSeverity.Warning);
                                 completeDiagnostic(diagnostic);
+                                diagnostic.setSeverity(AnnotationConstants.WARNING);
                                 diagnostics.add(diagnostic);
                             }
                         }
