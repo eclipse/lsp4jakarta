@@ -85,6 +85,8 @@ public class JDTUtils {
     private static Set<String> SILENCED_CODEGENS = Collections.singleton("lombok");
 
     public static final String DEFAULT_PROJECT_NAME = "jdt.java-project";
+    
+    private static final int COMPILATION_UNIT_UPDATE_TIMEOUT = 3000;
 
     /**
      * Given the uri returns a {@link ICompilationUnit}. May return null if it can
@@ -119,8 +121,9 @@ public class JDTUtils {
                 if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
                     ICompilationUnit unit = JavaCore.createCompilationUnitFrom(resource);
                     try {
-                        // Give underlying resource time to catch up (max 3 seconds).
-                        long endTime = System.currentTimeMillis() + 3000;
+                        // Give underlying resource time to catch up
+                        // (timeout at COMPILATION_UNIT_UPDATE_TIMEOUT milliseconds).
+                        long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
                         while (!unit.isConsistent() && System.currentTimeMillis() < endTime) { }
                     } catch (JavaModelException e) { }
                     return unit;
