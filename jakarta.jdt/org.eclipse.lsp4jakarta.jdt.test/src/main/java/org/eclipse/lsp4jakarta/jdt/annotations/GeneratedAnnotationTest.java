@@ -41,10 +41,10 @@ public class GeneratedAnnotationTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected annotations
-        Diagnostic d1 = d(6, 1, 60, "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.",
+        Diagnostic d1 = d(6, 4, 63, "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
         
-        Diagnostic d2 = d(12, 1, 67, "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.",
+        Diagnostic d2 = d(12, 4, 70, "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
         
 

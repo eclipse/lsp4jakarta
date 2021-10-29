@@ -149,6 +149,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                             annotationRange,
                                             "The annotation @Resource must define the attribute 'name'.");
                                     diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE);
+                                    completeDiagnostic(diagnostic);
                                     diagnostics.add(diagnostic);
                                 }
 
@@ -157,6 +158,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                             annotationRange,
                                             "The annotation @Resource must define the attribute 'type'.");
                                     diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE);
+                                    completeDiagnostic(diagnostic);
                                     diagnostics.add(diagnostic);
                                 }
                             }
@@ -176,6 +178,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         methodRange,
                                         "A method with the annotation @PostConstruct should not have any parameters.");
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS);
+                                completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
 
@@ -184,6 +187,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         methodRange,
                                         "A method with the annotation @PostConstruct must be void.");
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE);
+                                completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
 
@@ -193,6 +197,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         "A method with the annotation @PostConstruct must not throw checked exceptions.");
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION);
                                 diagnostic.setSeverity(DiagnosticSeverity.Warning);
+                                completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
                         }
@@ -211,6 +216,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         methodRange,
                                         "A method with the annotation @PreDestroy should not have any parameters.");
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS);
+                                completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
 
@@ -219,6 +225,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         methodRange,
                                         "A method with the annotation @PreDestroy must not be static.");
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
+                                completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
 
@@ -228,6 +235,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         "A method with the annotation @PreDestroy must not throw checked exceptions.");
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION);
                                 diagnostic.setSeverity(DiagnosticSeverity.Warning);
+                                completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
                         }
