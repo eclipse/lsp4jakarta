@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
@@ -78,6 +79,7 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
                                 "Classes annotated with @WebFilter must implement the Filter interface.");
                         completeDiagnostic(diagnostic);
                         diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER);
+                        diagnostic.setSeverity(DiagnosticSeverity.Warning);
                         diagnostics.add(diagnostic);
                     }
 
