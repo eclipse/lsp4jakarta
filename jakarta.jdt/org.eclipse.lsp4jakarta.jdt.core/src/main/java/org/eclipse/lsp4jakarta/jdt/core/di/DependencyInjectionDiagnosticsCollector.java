@@ -19,6 +19,7 @@ import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.D
 import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.SEVERITY;
 import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -121,16 +122,32 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
 				if(constructorMethods.size() == 0)
 					return;
 				boolean hasInjectConstructor = false;
-				int injectedConstructors = 0;
+				boolean multipleInjectConstructor = false;
+				int numInjectedConstructors = 0;
+				List<IMethod> injectedConstructors = new ArrayList<IMethod>();
 				for (IMethod m : constructorMethods) {
 					hasInjectConstructor = Arrays.stream(m.getAnnotations())
                     .map(annotation -> annotation.getElementName())
                     .anyMatch(annotation -> annotation.equals("Inject"));
 					if (hasInjectConstructor) {
-						injectedConstructors++;
+						injectedConstructors.add(m);
+						numInjectedConstructors++;
+						if(numInjectedConstructors > 1) {
+							 multipleInjectConstructor = true; //if more than one constructor, add diagnostic to all constructors
+							 
+						}
 					}
+					/**
 					if(injectedConstructors > 1) {
+						 multipleInjectConstructor = true;
 						 diagnostics.add(createDiagnostic(m,unit,"Inject cannot be used with multiple constructors",DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR));
+					}*/
+				}
+				System.out.println(injectedConstructors.size());
+				if(multipleInjectConstructor) {
+					for (IMethod m : injectedConstructors) {
+						diagnostics.add(createDiagnostic(m,unit,"Inject cannot be used with multiple constructors",DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR));
+						
 					}
 				}
 				
