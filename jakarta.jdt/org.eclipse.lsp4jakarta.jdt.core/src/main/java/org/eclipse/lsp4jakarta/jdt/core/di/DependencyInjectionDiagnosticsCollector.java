@@ -85,6 +85,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit == null)
             return;
+
         Diagnostic diagnostic;
         IType[] alltypes;
         IAnnotation[] allAnnotations;
@@ -196,5 +197,4 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
             JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
         }
     }
-
 }
