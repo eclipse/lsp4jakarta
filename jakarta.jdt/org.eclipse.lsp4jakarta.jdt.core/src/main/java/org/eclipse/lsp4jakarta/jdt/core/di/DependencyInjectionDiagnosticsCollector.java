@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -43,6 +44,8 @@ import org.eclipse.jdt.core.IMethod;
  * jararta.annotation Diagnostics
  * 
  * <li>Diagnostic 1: @Inject fields cannot be final.</li>
+ * <li>Diagnostic 2: @Inject methods cannot be final.</li>
+ * <li>Diagnostic 3: @Inject methods cannot be abstract.</li>
  * 
  * @see https://jakarta.ee/specifications/dependency-injection/2.0/jakarta-injection-spec-2.0.html
  *
@@ -112,7 +115,43 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
 	                    completeDiagnostic(diagnostic);
 	                    diagnostics.add(diagnostic);    
 	                }    
-	            }    
+	            }
+	            
+	            IMethod[] allMethods = type.getMethods();
+	            for (IMethod method: allMethods) {
+	                List<IAnnotation> methodAnnotations = Arrays.asList(method.getAnnotations());
+	                
+	                boolean isInjectMethod = methodAnnotations.stream()
+                            .anyMatch(annotation -> annotation.getElementName()
+                                    .equals(DependencyInjectionConstants.INJECT));
+	                
+	                int methodFlag = method.getFlags();
+	                boolean isFinal = Flags.isFinal(methodFlag);
+	                boolean isAbstract = Flags.isAbstract(methodFlag);
+
+	                if (isFinal && isInjectMethod) {
+	                    ISourceRange nameRange = JDTUtils.getNameRange(method);
+	                    Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+	                    String msg = "Injectable methods cannot be final";
+	                    diagnostic = new Diagnostic(range, msg);
+	                    diagnostic.setCode(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
+	                    diagnostic.setData(method.getElementType());
+	                    completeDiagnostic(diagnostic);
+                        diagnostics.add(diagnostic);
+	                }
+	                
+	                if (isAbstract && isInjectMethod) {
+                        ISourceRange nameRange = JDTUtils.getNameRange(method);
+                        Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+                        String msg = "Injectable methods cannot be abstract";
+                        diagnostic = new Diagnostic(range, msg);
+                        diagnostic.setCode(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT);
+                        diagnostic.setData(method.getElementType());
+                        completeDiagnostic(diagnostic);
+                        diagnostics.add(diagnostic);
+                    }
+
+	            }
 	        }
 	        for (IType type : alltypes) {
                 List<IMethod> constructorMethods = Arrays.stream(type.getMethods())

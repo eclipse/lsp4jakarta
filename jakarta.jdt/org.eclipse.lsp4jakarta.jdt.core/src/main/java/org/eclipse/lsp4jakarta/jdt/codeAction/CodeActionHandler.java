@@ -47,6 +47,7 @@ import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstructorQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ScopeDeclarationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
+import org.eclipse.lsp4jakarta.jdt.core.di.RemoveAbstractModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.di.RemoveFinalModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.di.RemoveInjectAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteFilterAnnotationQuickFix;
@@ -104,7 +105,7 @@ public class CodeActionHandler {
             ScopeDeclarationQuickFix ScopeDeclarationQuickFix = new ScopeDeclarationQuickFix();
             RemoveInjectAnnotationQuickFix RemoveInjectAnnotationQuickFix = new RemoveInjectAnnotationQuickFix();
             RemoveFinalModifierQuickFix RemoveFinalModifierQuickFix = new RemoveFinalModifierQuickFix();
-            
+            RemoveAbstractModifierQuickFix RemoveAbstractModifierQuickFix = new RemoveAbstractModifierQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -179,6 +180,10 @@ public class CodeActionHandler {
                     }
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR)) {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT)) {
+                        codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                        codeActions.addAll(RemoveAbstractModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();

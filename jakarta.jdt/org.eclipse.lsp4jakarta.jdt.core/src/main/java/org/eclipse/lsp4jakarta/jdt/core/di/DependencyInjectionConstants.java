@@ -28,6 +28,7 @@ public class DependencyInjectionConstants {
     public static final String DIAGNOSTIC_SOURCE = "jakarta-di";
     public static final String DIAGNOSTIC_CODE_INJECT_FINAL = "RemoveInjectOrFinal";
     public static final String DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR = "RemoveInject";
-    
+    public static final String DIAGNOSTIC_CODE_INJECT_ABSTRACT = "RemoveInjectOrAbstract";
+
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 }
