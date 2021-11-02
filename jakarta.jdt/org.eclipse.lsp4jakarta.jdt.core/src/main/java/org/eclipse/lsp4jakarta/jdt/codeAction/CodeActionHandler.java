@@ -61,7 +61,7 @@ import org.eclipse.lsp4jakarta.jdt.core.persistence.DeleteConflictMapKeyQuickFix
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.ResourceAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
-import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestoryAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestroyAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -112,7 +112,7 @@ public class CodeActionHandler {
             RemoveAbstractModifierQuickFix RemoveAbstractModifierQuickFix = new RemoveAbstractModifierQuickFix();
             RemoveStaticModifierQuickFix RemoveStaticModifierQuickFix = new RemoveStaticModifierQuickFix();
             ResourceAnnotationQuickFix  ResourceAnnotationQuickFix =new ResourceAnnotationQuickFix();
-            PreDestoryAnnotationQuickFix PreDestoryAnnotationQuickFix =new PreDestoryAnnotationQuickFix();
+            PreDestroyAnnotationQuickFix PreDestoryAnnotationQuickFix =new PreDestroyAnnotationQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {

@@ -45,7 +45,7 @@ import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants;
  * @author Zijian Pei
  *
  */
-public class PreDestoryAnnotationQuickFix implements IJavaCodeActionParticipant {
+public class PreDestroyAnnotationQuickFix implements IJavaCodeActionParticipant {
 	
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
