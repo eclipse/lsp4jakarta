@@ -42,5 +42,6 @@ public class AnnotationConstants {
 	public static final String DIAGNOSTIC_CODE_PREDESTROY_PARAMS = "PreDestroyParams";
 	public static final String DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION = "PreDestroyException";
 	public static final String DIAGNOSTIC_CODE_PREDESTROY_STATIC = "PreDestroyStatic";
-	public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
+	public static final DiagnosticSeverity ERROR = DiagnosticSeverity.Error;
+	public static final DiagnosticSeverity WARNING = DiagnosticSeverity.Warning;
 }
