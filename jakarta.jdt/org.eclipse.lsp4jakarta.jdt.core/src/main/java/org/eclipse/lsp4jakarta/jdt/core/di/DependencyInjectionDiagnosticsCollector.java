@@ -61,7 +61,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
         	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
         }
         return null;
-}
+    }
     
 
     @Override
@@ -115,7 +115,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
 	            }    
 	        }
 	        for (IType type : alltypes) {
-				List<IMethod> constructorMethods = Arrays.stream(type.getMethods())
+                List<IMethod> constructorMethods = Arrays.stream(type.getMethods())
 	                    .filter(this::isConstructorMethod).collect(Collectors.toList());
 				
 				//there are no constructors
@@ -134,26 +134,17 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
 						numInjectedConstructors++;
 						if(numInjectedConstructors > 1) {
 							 multipleInjectConstructor = true; //if more than one constructor, add diagnostic to all constructors
-							 
 						}
 					}
-					/**
-					if(injectedConstructors > 1) {
-						 multipleInjectConstructor = true;
-						 diagnostics.add(createDiagnostic(m,unit,"Inject cannot be used with multiple constructors",DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR));
-					}*/
 				}
-				System.out.println(injectedConstructors.size());
+				
 				if(multipleInjectConstructor) {
 					for (IMethod m : injectedConstructors) {
 						diagnostics.add(createDiagnostic(m,unit,"Inject cannot be used with multiple constructors",DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR));
-						
 					}
 				}
-				
-				
 			}
-	    } catch (JavaModelException e) {
+	    }catch (JavaModelException e) {
 	        JakartaCorePlugin.logException("Cannot calculate diagnostics", e);    
 	    }    
 	}
