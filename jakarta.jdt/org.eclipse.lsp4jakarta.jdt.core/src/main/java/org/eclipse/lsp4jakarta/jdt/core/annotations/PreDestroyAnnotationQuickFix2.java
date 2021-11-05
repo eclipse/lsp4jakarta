@@ -25,7 +25,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierCo
 
 public class PreDestroyAnnotationQuickFix2 extends RemoveModifierConflictQuickFix {
 	public PreDestroyAnnotationQuickFix2() {
-        super(false, "final");
+        super(false, "static");
     }
 
 }

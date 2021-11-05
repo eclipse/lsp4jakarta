@@ -51,9 +51,7 @@ public class PreDestroyAnnotationQuickFix implements IJavaCodeActionParticipant 
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
         ASTNode node = context.getCoveredNode();
-        MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
-        IBinding parentMethod = getBinding(node);
-        
+        MethodDeclaration parentNode = (MethodDeclaration) node.getParent();        
         MethodDeclaration parentNode2 = (MethodDeclaration) node.getParent();
         IMethodBinding parentMethod2 = parentNode2.resolveBinding();
 
