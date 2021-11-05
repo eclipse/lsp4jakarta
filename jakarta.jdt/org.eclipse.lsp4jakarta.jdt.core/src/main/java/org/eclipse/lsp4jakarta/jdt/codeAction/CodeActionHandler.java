@@ -62,6 +62,7 @@ import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.ResourceAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestroyAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestroyAnnotationQuickFix2;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -112,7 +113,8 @@ public class CodeActionHandler {
             RemoveAbstractModifierQuickFix RemoveAbstractModifierQuickFix = new RemoveAbstractModifierQuickFix();
             RemoveStaticModifierQuickFix RemoveStaticModifierQuickFix = new RemoveStaticModifierQuickFix();
             ResourceAnnotationQuickFix  ResourceAnnotationQuickFix =new ResourceAnnotationQuickFix();
-            PreDestroyAnnotationQuickFix PreDestoryAnnotationQuickFix =new PreDestroyAnnotationQuickFix();
+            PreDestroyAnnotationQuickFix PreDestroyAnnotationQuickFix =new PreDestroyAnnotationQuickFix();
+            PreDestroyAnnotationQuickFix2 PreDestroytAnnotationQuickFix2 =new PreDestroyAnnotationQuickFix2();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -129,9 +131,11 @@ public class CodeActionHandler {
                     		||diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE) ) {
                         codeActions.addAll(ResourceAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC) ||
-                    		diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {
-                    	codeActions.addAll(PreDestoryAnnotationQuickFix.getCodeActions(context,diagnostic,monitor));	
+                    if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {
+                    	codeActions.addAll(PreDestroyAnnotationQuickFix.getCodeActions(context,diagnostic,monitor));	
+                    }
+                    if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC)) {
+                    	codeActions.addAll(PreDestroytAnnotationQuickFix2.getCodeActions(context,diagnostic,monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE)
                             || diagnostic.getCode().getLeft()

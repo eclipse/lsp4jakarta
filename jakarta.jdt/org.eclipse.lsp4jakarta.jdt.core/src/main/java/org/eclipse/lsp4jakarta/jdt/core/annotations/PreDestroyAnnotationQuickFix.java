@@ -35,6 +35,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveParamsProposal;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierConflictQuickFix;
 
 
 /**
@@ -58,11 +59,6 @@ public class PreDestroyAnnotationQuickFix implements IJavaCodeActionParticipant 
 
         List<CodeAction> codeActions = new ArrayList<>();
         List<SingleVariableDeclaration> parameters = (List<SingleVariableDeclaration>) parentNode.parameters();
-
-
-        if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC)) {
-            codeActions.add(ChangeToNonStatic(diagnostic, context, parentMethod));
-        }
         
         if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {           
                 String name = "Remove all parameters";
@@ -77,18 +73,6 @@ public class PreDestroyAnnotationQuickFix implements IJavaCodeActionParticipant 
         return codeActions;
     }
 	
-	
-	private CodeAction ChangeToNonStatic(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
-        String name = "Change method to non-static";
-        ModifyModifiersProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
-                context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), new ArrayList<>(), Arrays.asList("static"));
-        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-
-        if (codeAction != null) {
-            return codeAction;
-        }
-        return null;
-    }
 	
 	protected IBinding getBinding(ASTNode node) {
         if (node.getParent() instanceof VariableDeclarationFragment) {
