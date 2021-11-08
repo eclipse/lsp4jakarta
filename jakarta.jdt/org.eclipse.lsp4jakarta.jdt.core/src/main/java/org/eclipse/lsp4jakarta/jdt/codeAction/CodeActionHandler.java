@@ -179,7 +179,6 @@ public class CodeActionHandler {
                     }
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR)) {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
-                        
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();

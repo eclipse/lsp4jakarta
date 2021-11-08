@@ -23,8 +23,8 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotation
  */
 
 public class ConflictInjectMultipleConstructorQuickFix extends RemoveAnnotationConflictQuickFix {
-	public ConflictInjectMultipleConstructorQuickFix(){
-		 super(false, "jakarta.inject.Inject");
+    public ConflictInjectMultipleConstructorQuickFix(){
+	    super(false, "jakarta.inject.Inject");
 	}
 
 }
