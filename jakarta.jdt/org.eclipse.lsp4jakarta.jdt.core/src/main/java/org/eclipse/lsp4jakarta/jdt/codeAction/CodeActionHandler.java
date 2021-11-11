@@ -196,6 +196,7 @@ public class CodeActionHandler {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                         codeActions.addAll(RemoveAbstractModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
+
                 } catch (CoreException e) {
                     e.printStackTrace();
                 }
