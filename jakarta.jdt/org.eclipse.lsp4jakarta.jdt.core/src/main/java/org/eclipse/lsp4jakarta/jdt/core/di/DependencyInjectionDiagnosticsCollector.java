@@ -157,7 +157,6 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                         diagnostic.setData(method.getElementType());
                         diagnostics.add(diagnostic);
                     }
-
                 }
             }
 
