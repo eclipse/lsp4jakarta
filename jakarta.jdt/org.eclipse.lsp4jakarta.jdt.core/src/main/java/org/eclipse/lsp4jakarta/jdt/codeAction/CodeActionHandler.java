@@ -61,6 +61,7 @@ import org.eclipse.lsp4jakarta.jdt.core.persistence.DeleteConflictMapKeyQuickFix
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.ResourceAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.PostConstructQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestroyAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestroyAnnotationQuickFix2;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
@@ -113,8 +114,9 @@ public class CodeActionHandler {
             RemoveAbstractModifierQuickFix RemoveAbstractModifierQuickFix = new RemoveAbstractModifierQuickFix();
             RemoveStaticModifierQuickFix RemoveStaticModifierQuickFix = new RemoveStaticModifierQuickFix();
             ResourceAnnotationQuickFix  ResourceAnnotationQuickFix =new ResourceAnnotationQuickFix();
+            ResourceAnnotationQuickFix  ResourceAnnotationQuickFix = new ResourceAnnotationQuickFix();
             PreDestroyAnnotationQuickFix PreDestroyAnnotationQuickFix =new PreDestroyAnnotationQuickFix();
-            PreDestroyAnnotationQuickFix2 PreDestroytAnnotationQuickFix2 =new PreDestroyAnnotationQuickFix2();
+            PostConstructQuickFix PostConstructQuickFix= new PostConstructQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -131,11 +133,9 @@ public class CodeActionHandler {
                     		||diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE) ) {
                         codeActions.addAll(ResourceAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {
+                    if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)||
+                    		diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC)) {
                     	codeActions.addAll(PreDestroyAnnotationQuickFix.getCodeActions(context,diagnostic,monitor));	
-                    }
-                    if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC)) {
-                    	codeActions.addAll(PreDestroytAnnotationQuickFix2.getCodeActions(context,diagnostic,monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE)
                             || diagnostic.getCode().getLeft()
@@ -201,6 +201,7 @@ public class CodeActionHandler {
                             diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_GENERIC)) {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
+<<<<<<< HEAD
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT)) {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                         codeActions.addAll(RemoveAbstractModifierQuickFix.getCodeActions(context, diagnostic, monitor));
@@ -208,6 +209,11 @@ public class CodeActionHandler {
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_STATIC)) {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                         codeActions.addAll(RemoveStaticModifierQuickFix.getCodeActions(context, diagnostic, monitor));
+=======
+                    if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS)) {
+                    	codeActions.addAll(PostConstructQuickFix.getCodeActions(context, diagnostic, monitor));
+
+>>>>>>> 03e297e (Merge conflict CodeActionHandler class)
                     }
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT)) {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
