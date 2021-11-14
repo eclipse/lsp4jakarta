@@ -46,7 +46,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierCo
  * @author Zijian Pei
  *
  */
-public class PreDestroyAnnotationQuickFix extends RemoveModifierConflictQuickFix implements IJavaCodeActionParticipant {
+public class PreDestroyAnnotationQuickFix implements IJavaCodeActionParticipant {
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
         ASTNode node = context.getCoveredNode();
