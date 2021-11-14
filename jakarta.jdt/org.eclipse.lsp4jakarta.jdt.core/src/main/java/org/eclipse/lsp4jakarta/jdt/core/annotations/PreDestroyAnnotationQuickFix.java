@@ -62,6 +62,6 @@ public class PreDestroyAnnotationQuickFix extends RemoveModifierConflictQuickFix
                 CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
                 codeActions.add(codeAction);  
         }
-        return codeActions;
+        return codeActions; //
     }
 }
