@@ -46,6 +46,7 @@ import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstructorQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ScopeDeclarationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.di.AddDependentAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
 import org.eclipse.lsp4jakarta.jdt.core.di.RemoveAbstractModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.di.RemoveFinalModifierQuickFix;
@@ -108,6 +109,7 @@ public class CodeActionHandler {
             RemoveFinalModifierQuickFix RemoveFinalModifierQuickFix = new RemoveFinalModifierQuickFix();
             RemoveAbstractModifierQuickFix RemoveAbstractModifierQuickFix = new RemoveAbstractModifierQuickFix();
             RemoveStaticModifierQuickFix RemoveStaticModifierQuickFix = new RemoveStaticModifierQuickFix();
+            AddDependentAnnotationQuickFix AddDependentAnnotationQuickFix = new AddDependentAnnotationQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -192,6 +194,10 @@ public class CodeActionHandler {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                         codeActions.addAll(RemoveStaticModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
+                    if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_GENERIC_CLASS)) {
+                        codeActions.addAll(AddDependentAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    
                 } catch (CoreException e) {
                     e.printStackTrace();
                 }

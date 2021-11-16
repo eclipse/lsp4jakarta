@@ -22,6 +22,7 @@ public class DependencyInjectionConstants {
     public static final String INJECT = "Inject";
     public static final String QUALIFIER = "Qualifier";
     public static final String NAMED = "Named";
+    public static final String DEPENDENT = "Dependent";
 
     /* Diagnostics fields constants */
     public static final String DIAGNOSTIC_SOURCE = "jakarta-di";
@@ -30,6 +31,7 @@ public class DependencyInjectionConstants {
     public static final String DIAGNOSTIC_CODE_INJECT_ABSTRACT = "RemoveInjectOrAbstract";
     public static final String DIAGNOSTIC_CODE_INJECT_STATIC = "RemoveInjectOrStatic";
     public static final String DIAGNOSTIC_CODE_INJECT_GENERIC = "RemoveInject";
+    public static final String DIAGNOSTIC_CODE_INJECT_GENERIC_CLASS = "";
 
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 }
