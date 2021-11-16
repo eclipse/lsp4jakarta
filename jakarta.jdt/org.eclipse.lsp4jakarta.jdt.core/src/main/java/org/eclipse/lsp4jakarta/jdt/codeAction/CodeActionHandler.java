@@ -29,9 +29,13 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+<<<<<<< HEAD
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAbstractModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveFinalModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveInjectAnnotationQuickFix;
+=======
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.AddAnnotationMissingQuickFix;
+>>>>>>> 8617dc2 (Create a Class to add missing attributes to annotations)
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveStaticModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JsonRpcHelpers;
@@ -59,6 +63,8 @@ import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerImplementationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletConstants;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.DeleteConflictMapKeyQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.ResourceAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingNameQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.PostConstructQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestroyAnnotationQuickFix;
@@ -115,6 +121,7 @@ public class CodeActionHandler {
             RemoveStaticModifierQuickFix RemoveStaticModifierQuickFix = new RemoveStaticModifierQuickFix();
             PreDestroyAnnotationQuickFix PreDestroyAnnotationQuickFix =new PreDestroyAnnotationQuickFix();
             PostConstructQuickFix PostConstructQuickFix= new PostConstructQuickFix();
+            AddResourceMissingNameQuickFix AddAnnotationMissingNameQuickFix=new AddResourceMissingNameQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -126,6 +133,9 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_LISTENER)) {
                         codeActions.addAll(ListenerImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE)) {
+                        codeActions.addAll(AddAnnotationMissingNameQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE)
                             || diagnostic.getCode().getLeft()
@@ -211,6 +221,7 @@ public class CodeActionHandler {
                     	codeActions.addAll(RemoveStaticModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {
+                    	codeActions.addAll(RemovePreDestroyAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     	codeActions.addAll(PreDestroyAnnotationQuickFix.getCodeActions(context,diagnostic,monitor));	
                     }
                 } catch (CoreException e) {
