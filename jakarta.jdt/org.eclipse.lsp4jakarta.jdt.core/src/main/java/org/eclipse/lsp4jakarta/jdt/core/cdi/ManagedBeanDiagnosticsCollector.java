@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
@@ -248,7 +246,19 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                                     CONSTRUCTOR_DIAGNOSTIC_CODE);
                             diagnostics.add(diagnostic);
                         }
-
+                    }   
+                }
+                
+                /**
+                 * If a managed bean class is of generic type, it must be annotated with @Dependent
+                 */
+                if (isManagedBean) {
+                	boolean isClassGeneric = type.getTypeParameters().length != 0;
+                    
+                    if (isClassGeneric && managedBeanAnnotations.stream()
+                            .anyMatch(annotation -> !annotation.equals("Dependent"))) {
+                    	diagnostics.add(createDiagnostic(type, unit, "Managed bean class of generic type must have scope @dependent.",
+                    			DIAGNOSTIC_CODE));
                     }
                 }
 
