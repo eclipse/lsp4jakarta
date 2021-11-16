@@ -63,8 +63,8 @@ import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerImplementationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletConstants;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.DeleteConflictMapKeyQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
-import org.eclipse.lsp4jakarta.jdt.core.annotations.ResourceAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingNameQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingTypeQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.PostConstructQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestroyAnnotationQuickFix;
@@ -121,7 +121,8 @@ public class CodeActionHandler {
             RemoveStaticModifierQuickFix RemoveStaticModifierQuickFix = new RemoveStaticModifierQuickFix();
             PreDestroyAnnotationQuickFix PreDestroyAnnotationQuickFix =new PreDestroyAnnotationQuickFix();
             PostConstructQuickFix PostConstructQuickFix= new PostConstructQuickFix();
-            AddResourceMissingNameQuickFix AddAnnotationMissingNameQuickFix=new AddResourceMissingNameQuickFix();
+            AddResourceMissingNameQuickFix AddResourceMissingNameQuickFix=new AddResourceMissingNameQuickFix();
+            AddResourceMissingTypeQuickFix AddResourceMissingTypeQuickFix=new AddResourceMissingTypeQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -135,7 +136,10 @@ public class CodeActionHandler {
                         codeActions.addAll(ListenerImplementationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE)) {
-                        codeActions.addAll(AddAnnotationMissingNameQuickFix.getCodeActions(context, diagnostic, monitor));
+                        codeActions.addAll(AddResourceMissingNameQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE)) {
+                        codeActions.addAll(AddResourceMissingTypeQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE)
                             || diagnostic.getCode().getLeft()
