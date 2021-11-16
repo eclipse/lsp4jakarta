@@ -13,6 +13,7 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMemberValuePair;
@@ -25,6 +26,7 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils;
 
 import java.util.List;
 
@@ -76,18 +78,24 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector {
                             break;
                         }
                     }
-
-                    String typeExtension = type.getSuperclassName();
-                    if ((typeExtension != null) && typeExtension.equals(ServletConstants.HTTP_SERVLET)) {
-                        isHttpServletExtended = true;
+                    
+                    if (!isWebServletAnnotated) {
+                        continue;
                     }
 
-                    if (isWebServletAnnotated && !isHttpServletExtended) {
+                    try {
+                        int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, ServletConstants.HTTP_SERVLET);
+                        // If the type hierarchy is complete, consider HttpServlet extended.
+                        isHttpServletExtended = r >= 0;
+                    } catch (CoreException e) {
+                        JakartaCorePlugin.logException("Cannot check type hierarchy", e);
+                    }
+
+                    if (!isHttpServletExtended) {
                         diagnostic = new Diagnostic(range,
                                 "Classes annotated with @WebServlet must extend the HttpServlet class.");
                         completeDiagnostic(diagnostic);
                         diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE);
-                        diagnostic.setSeverity(DiagnosticSeverity.Warning);
                         diagnostics.add(diagnostic);
                     }
 

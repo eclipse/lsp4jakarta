@@ -45,7 +45,7 @@ public class JakartaServletTest extends BaseJakartaTest {
 
         // expected
         Diagnostic d = d(10, 13, 34, "Classes annotated with @WebServlet must extend the HttpServlet class.",
-                DiagnosticSeverity.Warning, "jakarta-servlet", "ExtendHttpServlet");
+                DiagnosticSeverity.Error, "jakarta-servlet", "ExtendHttpServlet");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
