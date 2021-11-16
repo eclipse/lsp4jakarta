@@ -58,7 +58,6 @@ import org.eclipse.lsp4jakarta.jdt.core.servlet.HttpServletQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerImplementationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletConstants;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.DeleteConflictMapKeyQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -192,6 +191,7 @@ public class CodeActionHandler {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                         codeActions.addAll(RemoveStaticModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
+                    
                 } catch (CoreException e) {
                     e.printStackTrace();
                 }
