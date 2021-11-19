@@ -1,5 +1,3 @@
-package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
-
 /*******************************************************************************
 * Copyright (c) 2021 IBM Corporation and others.
 *
@@ -13,10 +11,11 @@ package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
+package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;

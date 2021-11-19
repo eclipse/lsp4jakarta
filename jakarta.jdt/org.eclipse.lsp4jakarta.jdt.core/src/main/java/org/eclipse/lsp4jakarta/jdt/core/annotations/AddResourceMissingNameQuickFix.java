@@ -1,4 +1,3 @@
-package org.eclipse.lsp4jakarta.jdt.core.annotations;
 /*******************************************************************************
 * Copyright (c) 2021 IBM Corporation and others.
 *
@@ -11,6 +10,8 @@ package org.eclipse.lsp4jakarta.jdt.core.annotations;
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
+
+package org.eclipse.lsp4jakarta.jdt.core.annotations;
 
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.AddAnnotationMissingQuickFix;
 

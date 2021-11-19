@@ -37,7 +37,6 @@ import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierConflictQuickFix;
 
-
 /**
  * Quickfix for annotation PreDestory 
  * 1. Removing static from a static method
@@ -46,6 +45,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierCo
  * @author Zijian Pei
  *
  */
+
 public class PreDestroyAnnotationQuickFix implements IJavaCodeActionParticipant {
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
