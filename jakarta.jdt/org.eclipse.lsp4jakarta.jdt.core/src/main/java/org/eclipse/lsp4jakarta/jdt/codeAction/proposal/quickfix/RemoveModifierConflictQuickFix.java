@@ -113,11 +113,12 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
             type = "field";
         } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.METHOD))) {
             type = "method";
-        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.CLASS_FILE))) {
+        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.CLASS_FILE)) ||
+                diagnostic.getData().toString().equals(String.valueOf(IJavaElement.TYPE))) {
             type = "class";
         }
 
-        String name = "Remove " + modifier[0] + " modifier from this ";
+        String name = "Remove the \'" + modifier[0] + "\' modifier from this ";
         name = name.concat(type);
         ModifyModifiersProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
                 context.getASTRoot(), parentType, 0, coveredNode, new ArrayList<>(), Arrays.asList(modifier));
