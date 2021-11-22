@@ -18,6 +18,7 @@ import java.util.Arrays;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
@@ -172,22 +173,27 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
         Diagnostic d1 = d(10, 21, 28,
                 "A class using the @Entity annotation cannot contain any methods that are declared final",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalMethods");
+        d1.setData(IJavaElement.METHOD);
 
         Diagnostic d2 = d(7, 14, 15,
                 "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalVariables");
+        d2.setData(IJavaElement.FIELD);
 
         Diagnostic d3 = d(8, 17, 18,
                 "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalVariables");
+        d3.setData(IJavaElement.FIELD);
 
         Diagnostic d4 = d(8, 30, 31,
                 "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalVariables");
+        d4.setData(IJavaElement.FIELD);
 
         Diagnostic d5 = d(5, 19, 29,
                 "A class using the @Entity annotation must not be final.",
                 DiagnosticSeverity.Error, "jakarta-persistence", "InvalidClass");
+        d5.setData(IJavaElement.TYPE);
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5);
 
@@ -200,19 +206,19 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 
         JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
         TextEdit te2 = te(7, 4, 7, 10, "");
-        CodeAction ca2 = ca(uri,  "Remove the 'final' modifier from this variable", d2, te2);
+        CodeAction ca2 = ca(uri,  "Remove the 'final' modifier from this field", d2, te2);
 
         assertJavaCodeAction(codeActionParams2, utils, ca2);
 
         JakartaJavaCodeActionParams codeActionParams3 = createCodeActionParams(uri, d3);
         TextEdit te3 = te(8, 4, 8, 10, "");
-        CodeAction ca3 = ca(uri,  "Remove the 'final' modifier from this variable", d3, te3);
+        CodeAction ca3 = ca(uri,  "Remove the 'final' modifier from this field", d3, te3);
 
         assertJavaCodeAction(codeActionParams3, utils, ca3);
 
         JakartaJavaCodeActionParams codeActionParams4 = createCodeActionParams(uri, d4);
         TextEdit te4 = te(8, 4, 8, 10, "");
-        CodeAction ca4 = ca(uri,  "Remove the 'final' modifier from this variable", d4, te4);
+        CodeAction ca4 = ca(uri,  "Remove the 'final' modifier from this field", d4, te4);
 
         assertJavaCodeAction(codeActionParams4, utils, ca4);
 

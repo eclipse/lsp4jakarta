@@ -10,22 +10,19 @@
 * Contributors:
 *     IBM Corporation, Himanshu Chotwani - initial API and implementation
 *******************************************************************************/
-
-package org.eclipse.lsp4jakarta.jdt.core.di;
-
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierConflictQuickFix;
+package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
 
 
 /**
  * 
- * Quick fix for removing static modifier when it is used for a method with @Inject
+ * Quick fix for removing final when it is used for @Inject field
  * 
  * @author Himanshu Chotwani
  *
  */
-public class RemoveStaticModifierQuickFix extends RemoveModifierConflictQuickFix {
-    
-    public RemoveStaticModifierQuickFix() {
-        super(false, "static");
+public class RemoveFinalModifierQuickFix extends RemoveModifierConflictQuickFix { 
+
+    public RemoveFinalModifierQuickFix() {
+        super(false, "final");
     }
 }

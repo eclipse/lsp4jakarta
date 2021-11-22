@@ -74,13 +74,6 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
                 codeActions.addAll(addConstructor(diagnostic, context, parentType));
             }
             
-            // remove modifiers
-            if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS) 
-                    || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES) 
-                    || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS)) {
-                codeActions.addAll(removeModifiers(diagnostic, context, parentType));
-            }
-            
             return codeActions;
         }
         return null;
@@ -117,32 +110,6 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
             codeActions.add(codeAction);
         }
 
-        return codeActions;
-    }
-    
-    private List<CodeAction> removeModifiers(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
-        List<CodeAction> codeActions = new ArrayList<>();
-        ASTNode coveredNode = null;
-        
-        String type = "";
-        if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS)) {
-            type = "method";
-            coveredNode = context.getCoveredNode().getParent();
-        } else if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES)) {
-            type = "variable";
-        } else if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS)) {
-            type = "class";
-        }
-        
-        String name = "Remove the 'final' modifier from this ";
-        name = name.concat(type);
-        ChangeCorrectionProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
-                context.getASTRoot(), parentType, 0, coveredNode, new ArrayList<>(), Arrays.asList("final"));
-        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-        
-        if (codeAction != null) {
-            codeActions.add(codeAction);
-        }
         return codeActions;
     }
     
