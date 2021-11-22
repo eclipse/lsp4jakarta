@@ -8,18 +8,25 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     Hani Damlaj
+*     Ananya Rao
 *******************************************************************************/
 
-package io.openliberty.sample.jakarta.cdi;
-                                           
-import jakarta.enterprise.context.Dependent;
+package io.openliberty.sample.jakarta.di;
 
-@Dependent
-public class ManagedBeanConstructor {
-	private int a;
+import jakarta.inject.Inject;
+
+public class productIdentity{
+	private int productNum;
+	private String productDesc;
 	
-	public ManagedBeanConstructor(int a) {
-		this.a = a;
+	@Inject
+    public productIdentity(int productNum) {
+		this.productNum = productNum;
+	}
+	
+	@Inject
+    public productIdentity(String productDesc) {
+		this.productDesc = productDesc;
 	}
 }
+
