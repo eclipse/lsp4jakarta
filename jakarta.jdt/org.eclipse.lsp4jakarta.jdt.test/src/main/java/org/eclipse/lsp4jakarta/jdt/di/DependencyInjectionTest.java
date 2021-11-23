@@ -74,7 +74,7 @@ public class DependencyInjectionTest extends BaseJakartaTest {
         CodeAction ca = ca(uri, "Remove @Inject", d1, te);
         TextEdit te1 = te(28, 11, 28, 17,
                 "");
-        CodeAction ca1 = ca(uri, "Remove final modifier from this field", d1, te1);
+        CodeAction ca1 = ca(uri, "Remove the 'final' modifier from this field", d1, te1);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca, ca1);
         
         // for d2
@@ -84,7 +84,7 @@ public class DependencyInjectionTest extends BaseJakartaTest {
         ca = ca(uri, "Remove @Inject", d2, te);
         te1 = te(44, 10, 44, 19,
                 "");
-        ca1 = ca(uri, "Remove abstract modifier from this method", d2, te1);
+        ca1 = ca(uri, "Remove the 'abstract' modifier from this method", d2, te1);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca, ca1);
         
         // for d3
@@ -94,7 +94,7 @@ public class DependencyInjectionTest extends BaseJakartaTest {
         ca = ca(uri, "Remove @Inject", d3, te);
         te1 = te(37, 10, 37, 16,
                 "");
-        ca1 = ca(uri, "Remove final modifier from this method", d3, te1);
+        ca1 = ca(uri, "Remove the 'final' modifier from this method", d3, te1);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca, ca1);
         
         // for d4
@@ -111,7 +111,7 @@ public class DependencyInjectionTest extends BaseJakartaTest {
         ca = ca(uri, "Remove @Inject", d5, te);
         te1 = te(48, 10, 48, 17,
                 "");
-        ca1 = ca(uri, "Remove static modifier from this method", d5, te1);
+        ca1 = ca(uri, "Remove the 'static' modifier from this method", d5, te1);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca, ca1);
     }
 }
