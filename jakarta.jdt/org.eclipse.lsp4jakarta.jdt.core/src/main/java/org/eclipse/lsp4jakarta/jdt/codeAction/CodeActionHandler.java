@@ -29,13 +29,9 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-<<<<<<< HEAD
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAbstractModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveFinalModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveInjectAnnotationQuickFix;
-=======
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.AddAnnotationMissingQuickFix;
->>>>>>> 8617dc2 (Create a Class to add missing attributes to annotations)
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveStaticModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JsonRpcHelpers;
