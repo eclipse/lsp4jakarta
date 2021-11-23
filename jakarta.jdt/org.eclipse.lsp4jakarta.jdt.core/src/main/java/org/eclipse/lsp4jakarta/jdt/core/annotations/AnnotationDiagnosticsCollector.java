@@ -235,7 +235,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                             }
 
                             if (Flags.isStatic(method.getFlags())) {
-                            	String msg = "PreDestroy methods cannot be static";
+                            	String msg = "A method with the annotation @PreDestroy must not be static.";
                             	Diagnostic diagnostic=createDiagnostic(method, unit, msg,
                             			AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
                             	diagnostic.setData(method.getElementType());
