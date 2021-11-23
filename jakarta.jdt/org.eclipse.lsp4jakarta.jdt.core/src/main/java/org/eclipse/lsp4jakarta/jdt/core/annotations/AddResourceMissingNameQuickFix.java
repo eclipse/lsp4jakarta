@@ -18,11 +18,9 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.AddAnnotationMis
 /**
  * Quickfix for adding missing name to Resource
  * 
- * 
  * @author Zijian Pei
  *
  */
-
 public class AddResourceMissingNameQuickFix extends AddAnnotationMissingQuickFix{
 	
 	/** This is still a simple version of doing adding missing attributes, not perfect, one has

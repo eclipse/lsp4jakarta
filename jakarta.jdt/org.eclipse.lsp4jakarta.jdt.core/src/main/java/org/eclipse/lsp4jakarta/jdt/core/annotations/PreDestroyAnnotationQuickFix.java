@@ -39,13 +39,11 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierCo
 
 /**
  * Quickfix for annotation PreDestory 
- * 1. Removing static from a static method
- * 2. Removing all parameters from method
+ * 1. Removing all parameters from method
  * 
  * @author Zijian Pei
  *
  */
-
 public class PreDestroyAnnotationQuickFix implements IJavaCodeActionParticipant {
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {

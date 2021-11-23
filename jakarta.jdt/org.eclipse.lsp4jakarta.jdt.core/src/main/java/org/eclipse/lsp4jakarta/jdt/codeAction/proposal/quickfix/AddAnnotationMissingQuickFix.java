@@ -34,11 +34,9 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
 /**
  * Quickfix for adding missing attributes to annotations
  * 
- * 
  * @author Zijian Pei
  *
  */
-
 public class AddAnnotationMissingQuickFix implements IJavaCodeActionParticipant{
 	private final String[] attributes;
 	private final String annotation;
@@ -48,8 +46,7 @@ public class AddAnnotationMissingQuickFix implements IJavaCodeActionParticipant{
     public AddAnnotationMissingQuickFix(String annotation, String... attributes) {
         this(annotation, false, attributes);
     }
-    
-    
+       
     /**
      * Constructor for add missing attributes quick fix.
      *
@@ -63,8 +60,7 @@ public class AddAnnotationMissingQuickFix implements IJavaCodeActionParticipant{
 		this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;
         this.attributes = attributes;
     }
-    
-    
+        
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
@@ -87,8 +83,7 @@ public class AddAnnotationMissingQuickFix implements IJavaCodeActionParticipant{
             }
         }
     }
-    
-    
+       
     /**
      * use setData() API with diagnostic to pass in ElementType in diagnostic collector class.
      *
@@ -118,9 +113,6 @@ public class AddAnnotationMissingQuickFix implements IJavaCodeActionParticipant{
         return Bindings.getBindingOfParentType(node);
     }
     
-    
-    
-
 }
 
 

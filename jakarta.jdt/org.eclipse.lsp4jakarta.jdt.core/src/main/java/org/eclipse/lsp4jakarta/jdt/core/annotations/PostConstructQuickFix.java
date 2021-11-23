@@ -13,14 +13,6 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.annotations;
 
-/**
- * Quickfix for adding missing name to Resource
- * 
- * 
- * @author Zijian Pei
- *
- */
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +29,13 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveParamsProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierConflictQuickFix;
 
+/**
+ * Quickfix for removing method parameters with PostConstruct
+ * 
+ * 
+ * @author Zijian Pei
+ *
+ */
 public class PostConstructQuickFix extends RemoveModifierConflictQuickFix {
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {

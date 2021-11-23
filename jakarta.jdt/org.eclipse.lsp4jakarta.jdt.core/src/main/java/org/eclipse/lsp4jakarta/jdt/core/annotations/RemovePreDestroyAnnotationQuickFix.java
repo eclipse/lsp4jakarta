@@ -13,15 +13,6 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.annotations;
 
-/**
- * Quickfix for annotation PreDestory 
- * 1. Removing static from a static method
- * 2. Removing all parameters from method
- * 
- * @author Zijian Pei
- *
- */
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -37,7 +28,13 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 
-
+/**
+ * Quickfix for annotation PreDestory 
+ * 1. Removing static from a static method
+ * 
+ * @author Zijian Pei
+ *
+ */
 public class RemovePreDestroyAnnotationQuickFix extends RemoveAnnotationConflictQuickFix{
 	public RemovePreDestroyAnnotationQuickFix() {
         super(false, "jakarta.annotation.PreDestroy");
