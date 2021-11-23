@@ -23,7 +23,7 @@ public class PostConstructQuickFix extends RemoveModifierConflictQuickFix {
         IMethodBinding parentMethod = parentNode.resolveBinding();
         List<CodeAction> codeActions = new ArrayList<>();
         List<SingleVariableDeclaration> parameters = (List<SingleVariableDeclaration>) parentNode.parameters();        
-        if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {           
+        if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS)) {           
                 String name = "Remove all parameters";
                 ChangeCorrectionProposal proposal = new RemoveParamsProposal(name,
                         context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, parameters, null);
