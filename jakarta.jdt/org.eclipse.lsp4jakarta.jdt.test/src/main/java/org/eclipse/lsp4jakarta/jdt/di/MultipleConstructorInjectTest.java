@@ -54,13 +54,24 @@ public class MultipleConstructorInjectTest extends BaseJakartaTest {
                 "Inject cannot be used with multiple constructors",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
         
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1,d2);
+        Diagnostic d3 = d(32, 14, 29,
+                "Inject cannot be used with multiple constructors",
+                DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
+        
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1,d2,d3);
        
         // test expected quick-fix
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
         TextEdit te = te(21, 1, 22, 4,"");
         CodeAction ca = ca(uri, "Remove @Inject", d1, te);
         assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca);
+        
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d3);
+        TextEdit te2 = te(31, 4, 32, 4,"");
+        CodeAction ca2 = ca(uri, "Remove @Inject", d3, te2);
+        assertJavaCodeAction(codeActionParams2, JDT_UTILS, ca2);
+        
+        
     }
 
 }

@@ -23,10 +23,16 @@ public class productIdentity{
     public productIdentity(int productNum) {
 		this.productNum = productNum;
 	}
-	
+
 	@Inject
     public productIdentity(String productDesc) {
 		this.productDesc = productDesc;
+	}
+
+    @Inject
+    protected productIdentity(int productNum, String productDesc) {
+    	this.productNum = productNum;
+    	this.productDesc = productDesc;
 	}
 }
 
