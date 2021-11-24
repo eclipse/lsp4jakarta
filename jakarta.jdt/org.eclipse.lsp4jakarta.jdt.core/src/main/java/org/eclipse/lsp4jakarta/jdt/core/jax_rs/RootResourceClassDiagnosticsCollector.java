@@ -57,8 +57,6 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                 alltypes = unit.getAllTypes();
                 for (IType type : alltypes) {
                     boolean isRootResource = false;
-                    boolean hasPublicConstructor = false;
-                    boolean hasPrivateConstructor = false;
                     
                     IAnnotation[] annotationList = type.getAnnotations();
 
@@ -74,6 +72,8 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                         String className = type.getElementName();
                         Map<IMethod, Integer> constructorParamsMap = new HashMap<IMethod, Integer>();
                         for (IMethod method : type.getMethods()) {
+                            boolean hasPublicConstructor = false;
+                            boolean hasPrivateConstructor = false;
                             // if a method of a class has the same name as the class, it is a constructor
                             if ((method.getElementName().equals(className)) && (Flags.isPublic(method.getFlags()))) {
                                 int numParams = method.getNumberOfParameters();
@@ -93,7 +93,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                                 Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset() - lengthOfPrivate, methodNameRange.getLength() + lengthOfPrivate);
                                 
                                 diagnostic = new Diagnostic(methodRange, "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor");
-                                diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_UNUSED_CONSTRUCTOR);
+                                diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS);
                                 completeDiagnostic(diagnostic);
                                 diagnostic.setSeverity(DiagnosticSeverity.Error);
                                 diagnostics.add(diagnostic);
