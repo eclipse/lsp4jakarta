@@ -22,9 +22,9 @@ public abstract class GreetingServlet extends HttpServlet {
     /**
      *
      */
-private static final long serialVersionUID = 1L;
-    
-    //d1: test code for @Inject fields cannot be final
+    private static final long serialVersionUID = 1L;
+
+    // d1: test code for @Inject fields cannot be final
     @Inject
     private final Greeting greeting = new Greeting();
 
@@ -32,43 +32,42 @@ private static final long serialVersionUID = 1L;
     public GreetingNoDefaultConstructor getInstance() {
         return new GreetingNoDefaultConstructor("Howdy");
     }
-    
-    //d2
+
+    // d2
     @Inject
     public final void injectFinal() {
         // test code for @Inject methods cannot be final
         return;
     }
 
-    //d3: test code for @Inject methods cannot be abstract
+    // d3: test code for @Inject methods cannot be abstract
     @Inject
     public abstract void injectAbstract();
-    
-    //d4: test code for @Inject methods cannot be static
+
+    // d4: test code for @Inject methods cannot be static
     @Inject
     public static void injectStatic() {
         return;
     }
-    
-    //d5: test code for @Inject methods cannot be generic
+
+    // d5: test code for @Inject methods cannot be generic
     @Inject
     public <T> List<T> injectGeneric(T arg) {
         // do nothing
         return new ArrayList<T>();
     };
-    
-    
+
     @Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		// use @Inject greeting
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        // use @Inject greeting
         String greetingString = greeting.greet("Bob");
         // abc(greetingString);
 
         // use @Produces greeting
         // String greetingString = getInstance().greet("Bob");
-        
+
         res.setContentType("text/html;charset=UTF-8");
-		res.getWriter().println(greetingString);
-	}
-    
+        res.getWriter().println(greetingString);
+    }
+
 }
