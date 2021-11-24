@@ -13,10 +13,6 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.di;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.lsp4j.DiagnosticSeverity;
 
 public class DependencyInjectionConstants {
