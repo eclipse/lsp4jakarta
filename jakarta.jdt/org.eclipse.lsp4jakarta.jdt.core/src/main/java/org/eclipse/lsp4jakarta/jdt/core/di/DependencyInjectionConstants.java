@@ -33,7 +33,7 @@ public class DependencyInjectionConstants {
 
     public static final String DIAGNOSTIC_CODE_INJECT_ABSTRACT = "RemoveInjectOrAbstract";
     public static final String DIAGNOSTIC_CODE_INJECT_STATIC = "RemoveInjectOrStatic";
-    public static final String DIAGNOSTIC_CODE_INJECT_GENERIC = "RemoveInject";
+    public static final String DIAGNOSTIC_CODE_INJECT_GENERIC = "RemoveInjectForGeneric";
 
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 }
