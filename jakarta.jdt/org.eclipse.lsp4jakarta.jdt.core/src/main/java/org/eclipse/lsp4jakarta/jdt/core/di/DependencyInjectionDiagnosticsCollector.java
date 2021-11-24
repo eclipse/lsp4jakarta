@@ -186,7 +186,6 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                         }
                     }
                 }
-
                 if (multipleInjectConstructor) {
                     for (IMethod m : injectedConstructors) {
                         diagnostics.add(createDiagnostic(m, unit, "Inject cannot be used with multiple constructors",
