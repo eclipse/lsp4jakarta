@@ -14,6 +14,7 @@
 package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -28,7 +29,15 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.AddConstructorProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
-import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
+
+/**
+ * 
+ * Quick fix for adding a `protected`/`public` no argument constructor 
+ * for a managed bean that do not have:
+ * - a no argument constructor
+ * - a constructor annotated with `@Inject`
+ *
+ */
 
 public class ManagedBeanNoArgConstructorQuickFix  implements IJavaCodeActionParticipant   {
 

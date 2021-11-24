@@ -46,17 +46,23 @@ public class ManagedBeanConstructorTest extends BaseJakartaTest {
 
         // test expected diagnostic
         Diagnostic d = d(21, 8, 30,
-                "If a managed bean does not have a constructor that takes no parameters, it must have a constructor annotated @Inject",
+                "If a managed bean has a constructor that takes parameters, it must have be annotated @Inject or have a no-arg constructor defined",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanConstructor");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
         // test expected quick-fix
-        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(15, 44, 21, 1,
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d);
+        TextEdit te1 = te(15, 44, 21, 1,
                 "\nimport jakarta.inject.Inject;\n\n@Dependent\npublic class ManagedBeanConstructor {\n	private int a;\n	\n	@Inject\n	");
-        CodeAction ca = ca(uri, "Insert @Inject", d, te);
-        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
+        TextEdit te2 = te(19, 1, 19, 1,
+        		"protected ManagedBeanConstructor() {\n\t}\n\n\t");
+        TextEdit te3 = te(19, 1, 19, 1,
+                "public ManagedBeanConstructor() {\n\t}\n\n\t");
+        CodeAction ca1 = ca(uri, "Insert @Inject", d, te1);
+        CodeAction ca2 = ca(uri, "Add a no-arg protected constructor to this class", d, te2);
+        CodeAction ca3 = ca(uri, "Add a no-arg public constructor to this class", d, te3);
+        assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca1, ca2, ca3);
     }
 
 }
