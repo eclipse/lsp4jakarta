@@ -46,6 +46,8 @@ import org.eclipse.jdt.core.IMethod;
  * <li>Diagnostic 1: @Inject fields cannot be final.</li>
  * <li>Diagnostic 2: @Inject methods cannot be final.</li>
  * <li>Diagnostic 3: @Inject methods cannot be abstract.</li>
+ * <li>Diagnostic 4: @Inject methods cannot be static.</li>
+ * <li>Diagnostic 5: @Inject methods cannot be generic.</li>
  * 
  * @see https://jakarta.ee/specifications/dependency-injection/2.0/jakarta-injection-spec-2.0.html
  *
@@ -163,7 +165,6 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                         diagnostic.setData(method.getElementType());
                         diagnostics.add(diagnostic);
                     }
-
                 }
             }
 

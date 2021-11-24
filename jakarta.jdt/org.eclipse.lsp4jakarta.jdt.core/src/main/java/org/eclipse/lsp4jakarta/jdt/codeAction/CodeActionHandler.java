@@ -29,6 +29,10 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAbstractModifierQuickFix;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveFinalModifierQuickFix;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveInjectAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveStaticModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JsonRpcHelpers;
 import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants;
@@ -47,10 +51,6 @@ import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstructorQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ScopeDeclarationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
-import org.eclipse.lsp4jakarta.jdt.core.di.RemoveAbstractModifierQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.di.RemoveFinalModifierQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.di.RemoveInjectAnnotationQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.di.RemoveStaticModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteFilterAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.CompleteServletAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterImplementationQuickFix;
@@ -148,13 +148,13 @@ public class CodeActionHandler {
                             .equals(PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION)) {
                         codeActions.addAll(DeleteConflictMapKeyQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
-                    if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS)
-                            || diagnostic.getCode().getLeft()
-                                    .equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES)
-                            || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS)
-                            || diagnostic.getCode().getLeft()
-                                    .equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR)) {
+                    if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR)) {
                         codeActions.addAll(PersistenceEntityQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS) 
+                            || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES) 
+                            || diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS)) {
+                        codeActions.addAll(RemoveFinalModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE)) {
                         codeActions.addAll(ManagedBeanQuickFix.getCodeActions(context, diagnostic, monitor));
@@ -181,9 +181,6 @@ public class CodeActionHandler {
                         codeActions.addAll(RemoveFinalModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
-                    /**if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR)) {
-                        codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
-                    }*/
 
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR) ||
                             diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_GENERIC)) {
@@ -196,6 +193,11 @@ public class CodeActionHandler {
                     if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_STATIC)) {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                         codeActions.addAll(RemoveStaticModifierQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+
+                    if(diagnostic.getCode().getLeft().equals(DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT)) {
+                        codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                        codeActions.addAll(RemoveAbstractModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
                 } catch (CoreException e) {

@@ -159,9 +159,11 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 
                             // All Methods of this class should not be final
                             if (this.isFinal(method.getFlags())) {
-                                diagnostics.add(createDiagnostic(method, unit,
+                                Diagnostic d = createDiagnostic(method, unit,
                                         "A class using the @Entity annotation cannot contain any methods that are declared final",
-                                        PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS));
+                                        PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS);
+                                d.setData(method.getElementType());
+                                diagnostics.add(d);
                                 isMethodsOrPersistentVariablesFinal = true;
                             }
                         }
@@ -176,9 +178,11 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
 
                             // If we find a non-static variable that is final, this is a problem
                             if (this.isFinal(field.getFlags())) {
-                                diagnostics.add(createDiagnostic(field, unit,
+                                Diagnostic d = createDiagnostic(field, unit,
                                         "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
-                                        PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES));
+                                        PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES);
+                                d.setData(field.getElementType());
+                                diagnostics.add(d);
                                 isMethodsOrPersistentVariablesFinal = true;
                             }
 
@@ -196,9 +200,11 @@ public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollect
                         }
 
                         if (isEntityClassFinal) {
-                            diagnostics.add(createDiagnostic(type, unit,
+                            Diagnostic d = createDiagnostic(type, unit,
                                     "A class using the @Entity annotation must not be final.",
-                                    PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS));
+                                    PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS);
+                            d.setData(type.getElementType());
+                            diagnostics.add(d);
                         }
                     }
                 }
