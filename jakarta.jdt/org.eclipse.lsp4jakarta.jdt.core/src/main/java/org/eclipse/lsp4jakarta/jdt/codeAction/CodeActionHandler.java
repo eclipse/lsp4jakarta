@@ -32,6 +32,7 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAbstractModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveFinalModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveInjectAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveMethodParametersQuickFix;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveStaticModifierQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JsonRpcHelpers;
@@ -62,9 +63,8 @@ import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingNameQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingTypeQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
-import org.eclipse.lsp4jakarta.jdt.core.annotations.PostConstructQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.annotations.PreDestroyAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.RemovePreDestroyAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.RemovePostConstructAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -111,12 +111,12 @@ public class CodeActionHandler {
             JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
             ScopeDeclarationQuickFix ScopeDeclarationQuickFix = new ScopeDeclarationQuickFix();
             RemovePreDestroyAnnotationQuickFix RemovePreDestroyAnnotationQuickFix=new RemovePreDestroyAnnotationQuickFix();
+            RemovePostConstructAnnotationQuickFix RemovePostConstructAnnotationQuickFix=new RemovePostConstructAnnotationQuickFix();
             RemoveInjectAnnotationQuickFix RemoveInjectAnnotationQuickFix = new RemoveInjectAnnotationQuickFix();
             RemoveFinalModifierQuickFix RemoveFinalModifierQuickFix = new RemoveFinalModifierQuickFix();
             RemoveAbstractModifierQuickFix RemoveAbstractModifierQuickFix = new RemoveAbstractModifierQuickFix();
             RemoveStaticModifierQuickFix RemoveStaticModifierQuickFix = new RemoveStaticModifierQuickFix();
-            PreDestroyAnnotationQuickFix PreDestroyAnnotationQuickFix =new PreDestroyAnnotationQuickFix();
-            PostConstructQuickFix PostConstructQuickFix= new PostConstructQuickFix();
+            RemoveMethodParametersQuickFix RemoveMethodParametersQuickFix =new RemoveMethodParametersQuickFix();
             AddResourceMissingNameQuickFix AddResourceMissingNameQuickFix=new AddResourceMissingNameQuickFix();
             AddResourceMissingTypeQuickFix AddResourceMissingTypeQuickFix=new AddResourceMissingTypeQuickFix();
             
@@ -214,7 +214,8 @@ public class CodeActionHandler {
                         codeActions.addAll(RemoveAbstractModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS)) {
-                    	codeActions.addAll(PostConstructQuickFix.getCodeActions(context, diagnostic, monitor));
+                    	codeActions.addAll(RemovePostConstructAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    	codeActions.addAll(RemoveMethodParametersQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC)) {
                     	codeActions.addAll(RemovePreDestroyAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
@@ -222,7 +223,7 @@ public class CodeActionHandler {
                     }
                     if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {
                     	codeActions.addAll(RemovePreDestroyAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
-                    	codeActions.addAll(PreDestroyAnnotationQuickFix.getCodeActions(context,diagnostic,monitor));	
+                    	codeActions.addAll(RemoveMethodParametersQuickFix.getCodeActions(context,diagnostic,monitor));	
                     }
                 } catch (CoreException e) {
                     e.printStackTrace();

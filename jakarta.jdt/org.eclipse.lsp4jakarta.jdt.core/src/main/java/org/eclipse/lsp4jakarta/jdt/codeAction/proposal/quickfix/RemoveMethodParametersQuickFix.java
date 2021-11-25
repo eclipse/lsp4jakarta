@@ -11,7 +11,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.lsp4jakarta.jdt.core.annotations;
+package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,31 +35,26 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveParamsProposal;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants;
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierConflictQuickFix;
 
 /**
- * Quickfix for annotation PreDestory 
- * 1. Removing all parameters from method
+ * Quickfix for removing all parameters from a method
  * 
  * @author Zijian Pei
  *
  */
-public class PreDestroyAnnotationQuickFix implements IJavaCodeActionParticipant {
+public class RemoveMethodParametersQuickFix implements IJavaCodeActionParticipant {
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
         ASTNode node = context.getCoveredNode();
         MethodDeclaration parentNode = (MethodDeclaration) node.getParent();        
         IMethodBinding parentMethod = parentNode.resolveBinding();
         List<CodeAction> codeActions = new ArrayList<>();
-        List<SingleVariableDeclaration> parameters = (List<SingleVariableDeclaration>) parentNode.parameters();        
-        if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {           
-                String name = "Remove all parameters";
-                ChangeCorrectionProposal proposal = new RemoveParamsProposal(name,
-                        context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, parameters, null);
-                // Convert the proposal to LSP4J CodeAction
-                CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-                codeActions.add(codeAction);  
-        }
-        return codeActions; //
+        List<SingleVariableDeclaration> parameters = (List<SingleVariableDeclaration>) parentNode.parameters();                   
+        String name = "Remove all parameters";
+        ChangeCorrectionProposal proposal = new RemoveParamsProposal(name,
+        		context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, parameters, null);
+        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
+        codeActions.add(codeAction);  
+        return codeActions;
     }
 }
