@@ -142,7 +142,7 @@ public class CodeActionHandler {
                         codeActions.addAll(ResourceMethodMultipleEntityParamsQuickFix.getCodeActions(context,
                                 diagnostic, monitor));
                     }
-                    if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS)) { // shaunak working here
+                    if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS)) {
                         codeActions.addAll(NoResourcePublicConstructorQuickFix.getCodeActions(context,
                                 diagnostic, monitor));
                     }
