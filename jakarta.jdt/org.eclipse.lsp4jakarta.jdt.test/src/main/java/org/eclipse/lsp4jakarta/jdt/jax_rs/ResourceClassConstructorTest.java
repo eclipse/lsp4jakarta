@@ -30,45 +30,70 @@ import org.junit.Test;
 
 public class ResourceClassConstructorTest extends BaseJakartaTest {
     protected static JDTUtils JDT_UTILS = new JDTUtils();
-    
+
     @Test
     public void MultipleConstructorsWithEqualParams() throws Exception {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/RootResourceClassConstructorsEqualLen.java"));
+        IFile javaFile = javaProject.getProject().getFile(new Path(
+                "src/main/java/io/openliberty/sample/jakarta/jax_rs/RootResourceClassConstructorsEqualLen.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
-        
+
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        
+
         // test expected diagnostics
-        Diagnostic d1 = d(7, 8, 45, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
+        Diagnostic d1 = d(7, 8, 45,
+                "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
                 DiagnosticSeverity.Warning, "jakarta-jax_rs", "AmbiguousConstructors");
-        
-        Diagnostic d2 = d(11, 8, 45, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
+
+        Diagnostic d2 = d(11, 8, 45,
+                "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
                 DiagnosticSeverity.Warning, "jakarta-jax_rs", "AmbiguousConstructors");
-        
+
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
 
     }
-    
+
     @Test
     public void MultipleConstructorsWithDifferentLength() throws Exception {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/RootResourceClassConstructorsDiffLen.java"));
+        IFile javaFile = javaProject.getProject().getFile(new Path(
+                "src/main/java/io/openliberty/sample/jakarta/jax_rs/RootResourceClassConstructorsDiffLen.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
-        
+
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        
-        // test expected diagnostics
-        Diagnostic d = d(7, 8, 44, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.",
-                DiagnosticSeverity.Warning, "jakarta-jax_rs", "UnusedConstructor");
-        
-        assertJavaDiagnostics(diagnosticsParams, utils, d);
 
+        // test expected diagnostics
+        Diagnostic d = d(7, 8, 44,
+                "This constructor is unused, as root resource classes will only use the constructor with the most parameters.",
+                DiagnosticSeverity.Warning, "jakarta-jax_rs", "UnusedConstructor");
+
+        assertJavaDiagnostics(diagnosticsParams, utils, d);
+    }
+
+    @Test
+    public void NoPublicConstructor() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/NoPublicConstructorClass.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        // test expected diagnostics
+        Diagnostic d1 = d(7, 9, 33,
+                "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
+                DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
+
+        Diagnostic d2 = d(11, 11, 35,
+                "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
+                DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
+
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
     }
 }
