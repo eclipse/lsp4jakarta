@@ -73,7 +73,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                         Map<IMethod, Integer> constructorParamsMap = new HashMap<IMethod, Integer>();
                         for (IMethod method : type.getMethods()) {
                             boolean hasPublicConstructor = false;
-                            boolean hasPrivateConstructor = false;
+                            boolean hasPrivateOrProtectedConstructor = false;
                             // if a method of a class has the same name as the class, it is a constructor
                             if ((method.getElementName().equals(className)) && (Flags.isPublic(method.getFlags()))) {
                                 int numParams = method.getNumberOfParameters();
@@ -84,13 +84,12 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                                 }
                                 constructorParamsMap.put(method, numParams);
                             }  
-                            if ((method.getElementName().equals(className)) && (Flags.isPrivate(method.getFlags()))) {
-                            	hasPrivateConstructor = true;
+                            if ((method.getElementName().equals(className)) && (Flags.isPrivate(method.getFlags()) || Flags.isProtected(method.getFlags()))) {
+                            	hasPrivateOrProtectedConstructor = true;
                             }
-                            if (hasPrivateConstructor && !hasPublicConstructor) {
-                            	int lengthOfPrivate = "private ".length();
+                            if (hasPrivateOrProtectedConstructor && !hasPublicConstructor) {
                                 ISourceRange methodNameRange = JDTUtils.getNameRange(method); 
-                                Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset() - lengthOfPrivate, methodNameRange.getLength() + lengthOfPrivate);
+                                Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
                                 
                                 diagnostic = new Diagnostic(methodRange, "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor");
                                 diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS);

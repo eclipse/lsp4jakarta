@@ -22,12 +22,16 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.AddConstructorProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
 
@@ -46,7 +50,8 @@ public class NoResourcePublicConstructorQuickFix implements IJavaCodeActionParti
         ASTNode node = context.getCoveredNode();
         MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
         IMethodBinding parentMethod = parentNode.resolveBinding();
-
+        IBinding parentType = getBinding(node);
+        
         if (parentMethod != null) {
             List<CodeAction> codeActions = new ArrayList<>();
 
@@ -59,9 +64,24 @@ public class NoResourcePublicConstructorQuickFix implements IJavaCodeActionParti
             CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
             codeAction.setTitle(TITLE_MESSAGE);
             codeActions.add(codeAction);
+            
+            // option for public constructor
+            String name = "Add a no-arg public constructor to this class";
+            proposal = new AddConstructorProposal(name,
+                    context.getCompilationUnit(), context.getASTRoot(), parentType, 0, "public");
+            codeAction = context.convertToCodeAction(proposal, diagnostic);
+            codeActions.add(codeAction);
+            
             return codeActions;
         }
         return null;
     }
 
+    protected static IBinding getBinding(ASTNode node) {
+        if (node.getParent() instanceof VariableDeclarationFragment) {
+            VariableDeclarationFragment fragment = (VariableDeclarationFragment) node.getParent();
+            return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        }
+        return Bindings.getBindingOfParentType(node);
+    }
 }
