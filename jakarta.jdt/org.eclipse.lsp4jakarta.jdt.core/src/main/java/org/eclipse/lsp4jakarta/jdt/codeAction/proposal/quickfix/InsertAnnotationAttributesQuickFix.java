@@ -37,13 +37,15 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
  * @author Zijian Pei
  *
  */
-public class AddAnnotationMissingQuickFix implements IJavaCodeActionParticipant{
+public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionParticipant{
+	
 	private final String[] attributes;
+	
 	private final String annotation;
 	
-
     protected final boolean generateOnlyOneCodeAction;
-    public AddAnnotationMissingQuickFix(String annotation, String... attributes) {
+    
+    public InsertAnnotationAttributesQuickFix(String annotation, String... attributes) {
         this(annotation, false, attributes);
     }
        
@@ -55,8 +57,8 @@ public class AddAnnotationMissingQuickFix implements IJavaCodeActionParticipant{
      *                                  attributes and false otherwise.
      * @param attributes               list of attributes to add.
      */
-    public AddAnnotationMissingQuickFix(String annotation, boolean generateOnlyOneCodeAction, String... attributes) {
-        this.annotation = annotation;
+    public InsertAnnotationAttributesQuickFix(String annotation, boolean generateOnlyOneCodeAction, String... attributes) {
+    	this.annotation = annotation;
 		this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;
         this.attributes = attributes;
     }

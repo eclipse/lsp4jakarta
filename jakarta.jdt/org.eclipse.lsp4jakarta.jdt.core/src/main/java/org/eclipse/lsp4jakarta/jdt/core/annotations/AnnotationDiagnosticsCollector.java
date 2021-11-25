@@ -57,20 +57,6 @@ import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
  *
  */
 public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
-	
-	private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
-        try {
-            ISourceRange nameRange = JDTUtils.getNameRange(el);
-            Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-            Diagnostic diagnostic = new Diagnostic(range, msg);
-            diagnostic.setCode(code);
-            completeDiagnostic(diagnostic);
-            return diagnostic;
-        } catch (JavaModelException e) {
-            JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
-        }
-        return null;
-    }
 
     public AnnotationDiagnosticsCollector() {
     }
@@ -236,10 +222,11 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
 
                             if (Flags.isStatic(method.getFlags())) {
                             	String msg = "A method with the annotation @PreDestroy must not be static.";
-                            	Diagnostic diagnostic=createDiagnostic(method, unit, msg,
-                            			AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
+                            	Diagnostic diagnostic = new Diagnostic(methodRange, msg);
+                            	diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
+                            	completeDiagnostic(diagnostic);
                             	diagnostic.setData(method.getElementType());
-                                diagnostics.add(diagnostic);
+                            	diagnostics.add(diagnostic);
                             }
 
                             if (method.getExceptionTypes().length != 0) {

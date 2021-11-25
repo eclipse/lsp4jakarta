@@ -30,7 +30,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveParamsProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveModifierConflictQuickFix;
 
 /**
- * Quickfix for removing method parameters with PostConstruct
+ * Quickfix for removing method parameters when method is annotated @PostConstruct
  * 
  * 
  * @author Zijian Pei
