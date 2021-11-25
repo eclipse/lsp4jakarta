@@ -21,9 +21,9 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotation
  * @author Zijian Pei
  *
  */
-public class RemovePostConstructAnnotationQuickFix extends RemoveAnnotationConflictQuickFix{
-	
-	public RemovePostConstructAnnotationQuickFix() {
+public class RemovePostConstructAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
+
+    public RemovePostConstructAnnotationQuickFix() {
         super(false, "jakarta.annotation.PostConstruct");
     }
 

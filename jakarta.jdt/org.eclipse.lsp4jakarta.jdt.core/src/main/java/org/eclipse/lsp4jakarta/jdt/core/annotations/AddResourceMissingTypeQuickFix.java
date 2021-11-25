@@ -22,10 +22,10 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotation
  * @author Zijian Pei
  *
  */
-public class AddResourceMissingTypeQuickFix extends InsertAnnotationAttributesQuickFix{
-	
-	public AddResourceMissingTypeQuickFix() {
-		super("jakarta.annotation.Resource",false,"type");
-	}
+public class AddResourceMissingTypeQuickFix extends InsertAnnotationAttributesQuickFix {
+
+    public AddResourceMissingTypeQuickFix() {
+        super("jakarta.annotation.Resource", false, "type");
+    }
 
 }

@@ -16,9 +16,9 @@ package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -29,7 +29,6 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyAnnotationProposal;
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
 
 /**
  * Quickfix for adding missing attributes to annotations
@@ -37,32 +36,33 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
  * @author Zijian Pei
  *
  */
-public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionParticipant{
-	
-	private final String[] attributes;
-	
-	private final String annotation;
-	
+public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionParticipant {
+
+    private final String[] attributes;
+
+    private final String annotation;
+
     protected final boolean generateOnlyOneCodeAction;
-    
+
     public InsertAnnotationAttributesQuickFix(String annotation, String... attributes) {
         this(annotation, false, attributes);
     }
-       
+
     /**
      * Constructor for add missing attributes quick fix.
      *
      * @param generateOnlyOneCodeAction true if the participant must generate a
-     *                                  CodeAction which add the list of
-     *                                  attributes and false otherwise.
-     * @param attributes               list of attributes to add.
+     *                                  CodeAction which add the list of attributes
+     *                                  and false otherwise.
+     * @param attributes                list of attributes to add.
      */
-    public InsertAnnotationAttributesQuickFix(String annotation, boolean generateOnlyOneCodeAction, String... attributes) {
-    	this.annotation = annotation;
-		this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;
+    public InsertAnnotationAttributesQuickFix(String annotation, boolean generateOnlyOneCodeAction,
+            String... attributes) {
+        this.annotation = annotation;
+        this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;
         this.attributes = attributes;
     }
-        
+
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
@@ -74,7 +74,7 @@ public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionPartic
 
         return codeActions;
     }
-    
+
     protected void addAttributes(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
             List<CodeAction> codeActions, String annotation) throws CoreException {
         if (generateOnlyOneCodeAction) {
@@ -85,9 +85,10 @@ public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionPartic
             }
         }
     }
-       
+
     /**
-     * use setData() API with diagnostic to pass in ElementType in diagnostic collector class.
+     * use setData() API with diagnostic to pass in ElementType in diagnostic
+     * collector class.
      *
      */
     private void addAttribute(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
@@ -97,7 +98,7 @@ public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionPartic
         ASTNode coveredNode = context.getCoveredNode().getParent();
         String type = "";
 
-        String name = "Add " + attributes[0] + " to "+annotation;
+        String name = "Add " + attributes[0] + " to " + annotation;
         name = name.concat(type);
         ChangeCorrectionProposal proposal = new ModifyAnnotationProposal(name, context.getCompilationUnit(),
                 context.getASTRoot(), parentType, 0, annotation, Arrays.asList(attributes));
@@ -107,15 +108,12 @@ public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionPartic
             codeActions.add(codeAction);
         }
     }
-    
+
     protected IBinding getBinding(ASTNode node) {
         if (node.getParent() instanceof VariableDeclarationFragment) {
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
         }
         return Bindings.getBindingOfParentType(node);
     }
-    
+
 }
-
-
-
