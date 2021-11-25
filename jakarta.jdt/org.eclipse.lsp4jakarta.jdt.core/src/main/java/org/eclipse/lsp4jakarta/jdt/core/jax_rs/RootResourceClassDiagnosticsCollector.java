@@ -67,7 +67,6 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                     }
                     
                     if (isRootResource) {
-
                         int maxParams = 0;
                         String className = type.getElementName();
                         Map<IMethod, Integer> constructorParamsMap = new HashMap<IMethod, Integer>();
@@ -114,8 +113,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                                 diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_UNUSED_CONSTRUCTOR);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
-                            }
-                            
+                            }  
                         }
                         if (equalMaxParamMethods.size() > 1) {
                             for (IMethod method : equalMaxParamMethods) {
