@@ -71,9 +71,9 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                         int maxParams = 0;
                         String className = type.getElementName();
                         Map<IMethod, Integer> constructorParamsMap = new HashMap<IMethod, Integer>();
+                        boolean hasPublicConstructor = false;
+                        boolean hasPrivateOrProtectedConstructor = false;
                         for (IMethod method : type.getMethods()) {
-                            boolean hasPublicConstructor = false;
-                            boolean hasPrivateOrProtectedConstructor = false;
                             // if a method of a class has the same name as the class, it is a constructor
                             if ((method.getElementName().equals(className)) && (Flags.isPublic(method.getFlags()))) {
                                 int numParams = method.getNumberOfParameters();
@@ -87,7 +87,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                             if ((method.getElementName().equals(className)) && (Flags.isPrivate(method.getFlags()) || Flags.isProtected(method.getFlags()))) {
                             	hasPrivateOrProtectedConstructor = true;
                             }
-                            if (hasPrivateOrProtectedConstructor && !hasPublicConstructor) {
+                            if (method.getElementName().equals(className) && hasPrivateOrProtectedConstructor && !hasPublicConstructor) {
                                 ISourceRange methodNameRange = JDTUtils.getNameRange(method); 
                                 Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
                                 
