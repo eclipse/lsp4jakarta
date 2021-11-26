@@ -16,23 +16,22 @@ package io.openliberty.sample.jakarta.di;
 import jakarta.inject.Inject;
 
 public class productIdentity{
-	private int productNum;
-	private String productDesc;
+    private int productNum;
+    private String productDesc;
 	
-	@Inject
+    @Inject
     public productIdentity(int productNum) {
-		this.productNum = productNum;
+        this.productNum = productNum;
 	}
-
-	@Inject
+    @Inject
     public productIdentity(String productDesc) {
-		this.productDesc = productDesc;
+        this.productDesc = productDesc;
 	}
 
     @Inject
     protected productIdentity(int productNum, String productDesc) {
-    	this.productNum = productNum;
-    	this.productDesc = productDesc;
+        this.productNum = productNum;
+        this.productDesc = productDesc;
 	}
 }
 
