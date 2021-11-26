@@ -42,6 +42,7 @@ import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceAnnotationQuickFi
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceEntityQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.jax_rs.Jax_RSConstants;
+import org.eclipse.lsp4jakarta.jdt.core.jax_rs.NoResourcePublicConstructorQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.jax_rs.NonPublicResourceMethodQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodMultipleEntityParamsQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbAnnotationQuickFix;
@@ -104,6 +105,7 @@ public class CodeActionHandler {
             DeleteConflictMapKeyQuickFix DeleteConflictMapKeyQuickFix = new DeleteConflictMapKeyQuickFix();
             NonPublicResourceMethodQuickFix NonPublicResourceMethodQuickFix = new NonPublicResourceMethodQuickFix();
             ResourceMethodMultipleEntityParamsQuickFix ResourceMethodMultipleEntityParamsQuickFix = new ResourceMethodMultipleEntityParamsQuickFix();
+            NoResourcePublicConstructorQuickFix NoResourcePublicConstructorQuickFix = new NoResourcePublicConstructorQuickFix();
             ManagedBeanQuickFix ManagedBeanQuickFix = new ManagedBeanQuickFix();
             PersistenceEntityQuickFix PersistenceEntityQuickFix = new PersistenceEntityQuickFix();
             ConflictProducesInjectQuickFix ConflictProducesInjectQuickFix = new ConflictProducesInjectQuickFix();
@@ -157,6 +159,10 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_MULTIPLE_ENTITY_PARAMS)) {
                         codeActions.addAll(ResourceMethodMultipleEntityParamsQuickFix.getCodeActions(context,
+                                diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(Jax_RSConstants.DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS)) {
+                        codeActions.addAll(NoResourcePublicConstructorQuickFix.getCodeActions(context,
                                 diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft()

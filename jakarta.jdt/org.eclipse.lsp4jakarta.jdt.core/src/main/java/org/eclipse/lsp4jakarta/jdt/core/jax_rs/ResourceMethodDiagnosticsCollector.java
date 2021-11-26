@@ -114,7 +114,7 @@ public class ResourceMethodDiagnosticsCollector implements DiagnosticsCollector 
                 }
 
             } catch (JavaModelException e) {
-            	JakartaCorePlugin.logException("Cannot calculate JAX-RS diagnostics", e);
+                JakartaCorePlugin.logException("Cannot calculate JAX-RS diagnostics", e);
             }
         }
 
