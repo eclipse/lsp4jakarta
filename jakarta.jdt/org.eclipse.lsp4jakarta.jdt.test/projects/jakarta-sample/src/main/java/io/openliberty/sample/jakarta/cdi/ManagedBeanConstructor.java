@@ -12,7 +12,7 @@
 *******************************************************************************/
 
 package io.openliberty.sample.jakarta.cdi;
-
+                                           
 import jakarta.enterprise.context.Dependent;
 
 @Dependent

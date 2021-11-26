@@ -8,10 +8,10 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     Hani Damlaj
+*     Ananya Rao
 *******************************************************************************/
 
-package org.eclipse.lsp4jakarta.jdt.cdi;
+package org.eclipse.lsp4jakarta.jdt.di;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.*;
 
@@ -30,39 +30,48 @@ import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Test;
 
-public class ManagedBeanConstructorTest extends BaseJakartaTest {
+public class MultipleConstructorInjectTest extends BaseJakartaTest {
 
     protected static JDTUtils JDT_UTILS = new JDTUtils();
 
     @Test
-    public void managedBeanAnnotations() throws Exception {
+    public void multipleInject() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/cdi/ManagedBeanConstructor.java"));
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/di/MultipleConstructorWithInject.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
+        
 
         // test expected diagnostic
-        Diagnostic d = d(21, 8, 30,
-                "If a managed bean has a constructor that takes parameters, it must have be annotated @Inject or have a no-arg constructor defined",
-                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanConstructor");
-
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
-
+        Diagnostic d1 = d(22, 11, 26,
+                "Inject cannot be used with multiple constructors",
+                DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
+        
+        Diagnostic d2 = d(26, 11, 26,
+                "Inject cannot be used with multiple constructors",
+                DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
+        
+        Diagnostic d3 = d(31, 14, 29,
+                "Inject cannot be used with multiple constructors",
+                DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
+        
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1,d2,d3);
+       
         // test expected quick-fix
-        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d);
-        TextEdit te1 = te(15, 44, 21, 1,
-                "\nimport jakarta.inject.Inject;\n\n@Dependent\npublic class ManagedBeanConstructor {\n	private int a;\n	\n	@Inject\n	");
-        TextEdit te2 = te(19, 1, 19, 1,
-        		"protected ManagedBeanConstructor() {\n\t}\n\n\t");
-        TextEdit te3 = te(19, 1, 19, 1,
-                "public ManagedBeanConstructor() {\n\t}\n\n\t");
-        CodeAction ca1 = ca(uri, "Insert @Inject", d, te1);
-        CodeAction ca2 = ca(uri, "Add a no-arg protected constructor to this class", d, te2);
-        CodeAction ca3 = ca(uri, "Add a no-arg public constructor to this class", d, te3);
-        assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca1, ca2, ca3);
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
+        TextEdit te = te(21, 4, 22, 4,"");
+        CodeAction ca = ca(uri, "Remove @Inject", d1, te);
+        assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca);
+        
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d3);
+        TextEdit te2 = te(30, 4, 31, 4,"");
+        CodeAction ca2 = ca(uri, "Remove @Inject", d3, te2);
+        assertJavaCodeAction(codeActionParams2, JDT_UTILS, ca2);
+        
+        
     }
 
 }

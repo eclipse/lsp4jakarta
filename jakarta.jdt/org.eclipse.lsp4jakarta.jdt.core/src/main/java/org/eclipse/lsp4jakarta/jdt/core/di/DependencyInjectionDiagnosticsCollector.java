@@ -52,9 +52,11 @@ import org.eclipse.jdt.core.IMethod;
  * @see https://jakarta.ee/specifications/dependency-injection/2.0/jakarta-injection-spec-2.0.html
  *
  */
+
 public class DependencyInjectionDiagnosticsCollector implements DiagnosticsCollector {
 
     private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
+
         try {
             ISourceRange nameRange = JDTUtils.getNameRange(el);
             Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
@@ -63,16 +65,19 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
             completeDiagnostic(diagnostic);
             return diagnostic;
         } catch (JavaModelException e) {
+
             JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
         }
         return null;
     }
+
 
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
         diagnostic.setSource(DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(SEVERITY);
     }
+
 
     // checks if a method is a constructor
     private boolean isConstructorMethod(IMethod m) {
@@ -87,6 +92,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit == null)
             return;
+
 
         Diagnostic diagnostic;
         IType[] alltypes;
@@ -186,7 +192,6 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                         }
                     }
                 }
-
                 if (multipleInjectConstructor) {
                     for (IMethod m : injectedConstructors) {
                         diagnostics.add(createDiagnostic(m, unit, "Inject cannot be used with multiple constructors",
@@ -199,3 +204,4 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
         }
     }
 }
+
