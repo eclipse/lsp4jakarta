@@ -43,18 +43,18 @@ import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants;
  *
  */
 public class RemoveMethodParametersQuickFix implements IJavaCodeActionParticipant {
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
         ASTNode node = context.getCoveredNode();
-        MethodDeclaration parentNode = (MethodDeclaration) node.getParent();        
+        MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
         IMethodBinding parentMethod = parentNode.resolveBinding();
         List<CodeAction> codeActions = new ArrayList<>();
-        List<SingleVariableDeclaration> parameters = (List<SingleVariableDeclaration>) parentNode.parameters();                   
+        List<SingleVariableDeclaration> parameters = (List<SingleVariableDeclaration>) parentNode.parameters();
         String name = "Remove all parameters";
-        ChangeCorrectionProposal proposal = new RemoveParamsProposal(name,
-        		context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, parameters, null);
+        ChangeCorrectionProposal proposal = new RemoveParamsProposal(name, context.getCompilationUnit(),
+                context.getASTRoot(), parentMethod, 0, parameters, null);
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-        codeActions.add(codeAction);  
+        codeActions.add(codeAction);
         return codeActions;
     }
 }

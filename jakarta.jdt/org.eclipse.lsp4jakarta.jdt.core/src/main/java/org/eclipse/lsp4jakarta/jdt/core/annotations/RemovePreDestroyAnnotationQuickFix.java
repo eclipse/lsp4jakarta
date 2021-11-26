@@ -16,14 +16,14 @@ package org.eclipse.lsp4jakarta.jdt.core.annotations;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
 
 /**
- * Quickfix for removing @PreDestory 
+ * Quickfix for removing @PreDestory
  * 
  * @author Zijian Pei
  *
  */
-public class RemovePreDestroyAnnotationQuickFix extends RemoveAnnotationConflictQuickFix{
-	
-	public RemovePreDestroyAnnotationQuickFix() {
+public class RemovePreDestroyAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
+
+    public RemovePreDestroyAnnotationQuickFix() {
         super(false, "jakarta.annotation.PreDestroy");
     }
 
