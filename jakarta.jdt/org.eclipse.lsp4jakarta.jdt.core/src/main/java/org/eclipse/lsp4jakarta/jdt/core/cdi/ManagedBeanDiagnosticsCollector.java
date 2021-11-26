@@ -244,7 +244,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                         for (IMethod m : methodsNeedingDiagnostics) {
                             Diagnostic diagnostic = createDiagnostic(m, unit,
-                                    "If a managed bean does not have a constructor that takes no parameters, it must have a constructor annotated @Inject",
+                                    "If a managed bean has a constructor that takes parameters, it must have be annotated @Inject or have a no-arg constructor defined",
                                     CONSTRUCTOR_DIAGNOSTIC_CODE);
                             diagnostics.add(diagnostic);
                         }
