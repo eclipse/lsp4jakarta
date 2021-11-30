@@ -25,8 +25,11 @@ import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
@@ -133,12 +136,25 @@ public class ModifyModifiersProposal extends ChangeCorrectionProposal {
             modifiersList = rewrite.getListRewrite(declNode, TypeDeclaration.MODIFIERS2_PROPERTY);
             modifiers = (List<ASTNode>) declNode.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
             break;
+        case ASTNode.SINGLE_VARIABLE_DECLARATION:
+            modifiersList = rewrite.getListRewrite(declNode, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+            modifiers = (List<ASTNode>) declNode.getStructuralProperty(SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+            break;
         default:
             modifiersList = null;
         }     
 
         for (ASTNode modifier : modifiers) {
-            if (modifier instanceof Modifier) {
+            if (modifier instanceof MarkerAnnotation) {
+                MarkerAnnotation markAnno = (MarkerAnnotation) modifier;
+                Name markAnnoTypeName = markAnno.getTypeName();
+                // Check if modifier is in toRemove list
+                if (modifiersToRemove.stream().anyMatch(m -> m.equals(markAnnoTypeName.toString()))) {
+                    modifiersList.remove(markAnno, null);
+                    continue;
+                }
+            }
+            else if (modifier instanceof Modifier) {
                 Modifier.ModifierKeyword modKeyword = ((Modifier) modifier).getKeyword();
 
                 // Check if modifier is in toRemove list
