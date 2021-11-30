@@ -59,11 +59,11 @@ public class PreDestroyAnnotationTest extends BaseJakartaTest {
         
         
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
-        TextEdit te = te(19, 4, 19, 4,
-                "");
+        TextEdit te = te(19, 1, 20, 1,"");
+        TextEdit te1 = te(20, 29, 20, 40,"");
         CodeAction ca = ca(uri, "Remove @PreDestroy", d1, te);
-        
-        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
+        CodeAction ca1= ca(uri, "Remove all parameters", d1, te1);
+        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca, ca1);
 
     }
 
