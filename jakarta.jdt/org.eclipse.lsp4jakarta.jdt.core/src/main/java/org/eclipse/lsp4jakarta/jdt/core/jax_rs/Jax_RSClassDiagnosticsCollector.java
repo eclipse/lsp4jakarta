@@ -38,7 +38,7 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
  * @author Matthew Shocrylas
  *
  */
-public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollector {
+public class Jax_RSClassDiagnosticsCollector implements DiagnosticsCollector {
 
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
@@ -57,6 +57,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                 alltypes = unit.getAllTypes();
                 for (IType type : alltypes) {
                     boolean isRootResource = false;
+                    boolean isProviderResource = false;
 
                     IAnnotation[] annotationList = type.getAnnotations();
 
@@ -64,24 +65,17 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                         if (annotation.getElementName().startsWith("Path")) {
                             isRootResource = true;
                         }
+                        if (annotation.getElementName().startsWith("Provider")) {
+                            isProviderResource = true;
+                        }
                     }
-
-                    if (isRootResource) {
-                        int maxParams = 0;
-                        String className = type.getElementName();
-                        Map<IMethod, Integer> constructorParamsMap = new HashMap<IMethod, Integer>();
+                    if (isRootResource || isProviderResource) {
                         boolean hasPublicConstructor = false;
                         boolean hasPrivateOrProtectedConstructor = false;
+                        String className = type.getElementName();
                         for (IMethod method : type.getMethods()) {
-                            // if a method of a class has the same name as the class, it is a constructor
                             if ((method.getElementName().equals(className)) && (Flags.isPublic(method.getFlags()))) {
-                                int numParams = method.getNumberOfParameters();
                                 hasPublicConstructor = true;
-
-                                if (numParams > maxParams) {
-                                    maxParams = numParams;
-                                }
-                                constructorParamsMap.put(method, numParams);
                             }
                             if ((method.getElementName().equals(className))
                                     && (Flags.isPrivate(method.getFlags()) || Flags.isProtected(method.getFlags()))) {
@@ -92,13 +86,33 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                                 ISourceRange methodNameRange = JDTUtils.getNameRange(method);
                                 Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
                                         methodNameRange.getLength());
-
-                                diagnostic = new Diagnostic(methodRange,
-                                        "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor");
+                                
+                                String diagnosticMessage = isRootResource ? 
+                                        "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor" 
+                                        : "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor";
+                                diagnostic = new Diagnostic(methodRange, diagnosticMessage);
                                 diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS);
                                 completeDiagnostic(diagnostic);
                                 diagnostic.setSeverity(DiagnosticSeverity.Error);
                                 diagnostics.add(diagnostic);
+                            }
+                        }
+                        
+                    }
+                    
+                    if (isRootResource) {
+                        int maxParams = 0;
+                        String className = type.getElementName();
+                        Map<IMethod, Integer> constructorParamsMap = new HashMap<IMethod, Integer>();
+                        for (IMethod method : type.getMethods()) {
+                            // if a method of a class has the same name as the class, it is a constructor
+                            if ((method.getElementName().equals(className)) && (Flags.isPublic(method.getFlags()))) {
+                                int numParams = method.getNumberOfParameters();
+
+                                if (numParams > maxParams) {
+                                    maxParams = numParams;
+                                }
+                                constructorParamsMap.put(method, numParams);
                             }
                         }
 
@@ -138,6 +152,8 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                             }
                         }
                     }
+                    
+                    
                 }
             } catch (JavaModelException e) {
                 JakartaCorePlugin.logException("Cannot calculate JAX-RS diagnostics", e);
