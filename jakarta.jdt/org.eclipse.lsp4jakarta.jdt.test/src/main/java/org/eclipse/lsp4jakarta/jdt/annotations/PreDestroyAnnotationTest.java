@@ -64,6 +64,13 @@ public class PreDestroyAnnotationTest extends BaseJakartaTest {
         CodeAction ca = ca(uri, "Remove @PreDestroy", d1, te);
         CodeAction ca1= ca(uri, "Remove all parameters", d1, te1);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca, ca1);
+        
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
+        TextEdit te2 = te(25, 1, 26, 1,"");
+        TextEdit te3 = te(26, 7, 26, 14,"");
+        CodeAction ca2 = ca(uri, "Remove @PreDestroy", d2, te2);
+        CodeAction ca3= ca(uri, "Remove the 'static' modifier from this method", d2, te3);
+        assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca2, ca3);
 
     }
 
