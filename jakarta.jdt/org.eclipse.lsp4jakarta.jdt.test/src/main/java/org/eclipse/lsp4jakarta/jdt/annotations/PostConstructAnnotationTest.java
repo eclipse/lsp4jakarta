@@ -49,6 +49,13 @@ public class PostConstructAnnotationTest extends BaseJakartaTest{
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);
         
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d2);
+        TextEdit te = te(19, 1, 20, 1,"");
+        TextEdit te1 = te(20, 26, 20, 37,"");
+        CodeAction ca = ca(uri, "Remove @PostConstruct", d2, te);
+        CodeAction ca1= ca(uri, "Remove all parameters", d2, te1);
+        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca, ca1);
+        
 
     }
 
