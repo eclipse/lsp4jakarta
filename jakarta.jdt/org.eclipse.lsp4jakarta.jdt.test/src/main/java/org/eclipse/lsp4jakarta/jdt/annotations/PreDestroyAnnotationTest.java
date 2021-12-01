@@ -47,6 +47,7 @@ public class PreDestroyAnnotationTest extends BaseJakartaTest {
         
         Diagnostic d2 = d(26, 20, 31, "A method with the annotation @PreDestroy must not be static.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyStatic");
+        d2.setData(9);
         
         Diagnostic d3 = d(31, 13, 25, "A method with the annotation @PreDestroy must not throw checked exceptions.",
                 DiagnosticSeverity.Warning, "jakarta-annotations", "PreDestroyException");

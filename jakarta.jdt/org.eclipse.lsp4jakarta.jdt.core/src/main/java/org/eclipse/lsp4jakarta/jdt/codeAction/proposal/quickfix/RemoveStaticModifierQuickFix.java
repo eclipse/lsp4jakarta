@@ -13,16 +13,16 @@
 
 package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
 
-
 /**
  * 
- * Quick fix for removing static modifier when it is used for a method with @Inject
+ * Quick fix for removing static modifier when it is used for a method
+ * with @Inject
  * 
  * @author Himanshu Chotwani
  *
  */
 public class RemoveStaticModifierQuickFix extends RemoveModifierConflictQuickFix {
-    
+
     public RemoveStaticModifierQuickFix() {
         super(false, "static");
     }

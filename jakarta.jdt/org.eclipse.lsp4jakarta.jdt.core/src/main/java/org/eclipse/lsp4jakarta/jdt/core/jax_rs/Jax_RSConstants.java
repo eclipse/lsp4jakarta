@@ -38,5 +38,6 @@ public class Jax_RSConstants {
     public static final String DIAGNOSTIC_CODE_MULTIPLE_ENTITY_PARAMS = "ResourceMethodMultipleEntityParams";
     public static final String DIAGNOSTIC_CODE_UNUSED_CONSTRUCTOR = "UnusedConstructor";
     public static final String DIAGNOSTIC_CODE_AMBIGUOUS_CONSTRUCTORS = "AmbiguousConstructors";
+    public static final String DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS = "NoPublicConstructors";
 
 }
