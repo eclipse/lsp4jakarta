@@ -84,7 +84,7 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector {
 
                     if (isWebServletAnnotated && !isHttpServletExtended) {
                         diagnostic = new Diagnostic(range,
-                                "The annotated class with @WebServlet must extend the HttpServlet class.");
+                                "Annotated classes with @WebServlet must extend the HttpServlet class.");
                         diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE);
                         diagnostic.setSeverity(DiagnosticSeverity.Warning);
                         diagnostics.add(diagnostic);

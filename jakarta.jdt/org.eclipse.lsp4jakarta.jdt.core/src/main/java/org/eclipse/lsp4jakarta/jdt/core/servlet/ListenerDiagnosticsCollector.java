@@ -78,7 +78,7 @@ public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
                     if (isWebListenerAnnotated && !isWebListenerInterfaceImplemented) {
                         ISourceRange nameRange = JDTUtils.getNameRange(type);
                         Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-                        diagnostic = new Diagnostic(range, "Classes annotated with @WebListener must implement "
+                        diagnostic = new Diagnostic(range, "Annotated classes with @WebListener "
                                 + "must implement one or more of the ServletContextListener, ServletContextAttributeListener,"
                                 + " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener,"
                                 + " HttpSessionAttributeListener, or HttpSessionIdListener interfaces.");

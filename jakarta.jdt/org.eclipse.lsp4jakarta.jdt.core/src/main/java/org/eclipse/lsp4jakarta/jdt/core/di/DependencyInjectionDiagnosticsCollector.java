@@ -113,7 +113,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     boolean isFinal = Flags.isFinal(fieldFlags);
 
                     if (isFinal && isInjectField) {
-                        String msg = "Injectable fields cannot be final";
+                        String msg = "Fields defined by the annotation @Inject must not be final.";
                         diagnostic = createDiagnostic(field, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
                         diagnostic.setData(field.getElementType());
@@ -135,7 +135,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     boolean isGeneric = method.getTypeParameters().length != 0;
 
                     if (isFinal && isInjectMethod) {
-                        String msg = "Injectable methods cannot be final";
+                        String msg = "Methods defined by the annotation @Inject must not be final.";
                         diagnostic = createDiagnostic(method, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
                         diagnostic.setData(method.getElementType());
@@ -143,7 +143,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     }
 
                     if (isAbstract && isInjectMethod) {
-                        String msg = "Injectable methods cannot be abstract";
+                        String msg = "Methods defined by the annotation @Inject must not be abstract.";
                         diagnostic = createDiagnostic(method, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT);
                         diagnostic.setData(method.getElementType());
@@ -151,7 +151,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     }
 
                     if (isStatic && isInjectMethod) {
-                        String msg = "Injectable methods cannot be static";
+                        String msg = "Methods defined by the annotation @Inject must not be static.";
                         diagnostic = createDiagnostic(method, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_STATIC);
                         diagnostic.setData(method.getElementType());
@@ -159,7 +159,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     }
 
                     if (isGeneric && isInjectMethod) {
-                        String msg = "Injectable methods cannot be generic";
+                        String msg = "Methods defined by the annotation @Inject must not be generic.";
                         diagnostic = createDiagnostic(method, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_GENERIC);
                         diagnostic.setData(method.getElementType());
@@ -194,7 +194,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                 }
                 if (multipleInjectConstructor) {
                     for (IMethod m : injectedConstructors) {
-                        diagnostics.add(createDiagnostic(m, unit, "Inject cannot be used with multiple constructors",
+                        diagnostics.add(createDiagnostic(m, unit, "The annotation @Inject must not define more than one constructor.",
                                 DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR));
                     }
                 }

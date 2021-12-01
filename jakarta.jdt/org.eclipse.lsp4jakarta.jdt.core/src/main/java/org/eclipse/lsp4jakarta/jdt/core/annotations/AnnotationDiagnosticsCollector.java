@@ -114,7 +114,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                                     annotationNameRange.getLength());
                                             Diagnostic diagnostic = new Diagnostic(
                                                     annotationRange,
-                                                    "The attribute 'date' of the annotation @Generated must follow the ISO 8601 standard.");
+                                                    "The annotation @Generated must define the attribute 'date' following the ISO 8601 standard.");
                                             diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT);
                                             completeDiagnostic(diagnostic);
                                             diagnostics.add(diagnostic);
