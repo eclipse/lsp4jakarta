@@ -16,8 +16,8 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
-@WebServlet(name = "greetingServlet", urlPatterns = { "/di" })
-public abstract class GreetingServlet extends HttpServlet {
+@Path("/di")
+public abstract class GreetingServlet {
 
     /**
      *
