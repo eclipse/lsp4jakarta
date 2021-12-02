@@ -15,8 +15,6 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.di;
 
-import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.DIAGNOSTIC_SOURCE;
-import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.SEVERITY;
 import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.*;
 
 import java.util.ArrayList;
@@ -37,7 +35,6 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
 
 /**
  * 
@@ -101,7 +98,6 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
             alltypes = unit.getAllTypes();
             for (IType type : alltypes) {
                 allAnnotations = type.getAnnotations();
-
                 IField[] allFields = type.getFields();
                 for (IField field : allFields) {
                     int fieldFlags = field.getFlags();
@@ -171,7 +167,6 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
             for (IType type : alltypes) {
                 List<IMethod> constructorMethods = Arrays.stream(type.getMethods()).filter(this::isConstructorMethod)
                         .collect(Collectors.toList());
-
                 // there are no constructors
                 if (constructorMethods.size() == 0)
                     return;
@@ -180,6 +175,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                 int numInjectedConstructors = 0;
                 List<IMethod> injectedConstructors = new ArrayList<IMethod>();
                 for (IMethod m : constructorMethods) {
+
                     hasInjectConstructor = Arrays.stream(m.getAnnotations())
                             .map(annotation -> annotation.getElementName())
                             .anyMatch(annotation -> annotation.equals("Inject"));

@@ -35,17 +35,27 @@ public class ManagedBeanTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // test expected diagnostic
-        Diagnostic d = d(6, 12, 13,
+        Diagnostic d1 = d(6, 12, 13,
                 "A managed bean with a non-static public field must not declare any scope other than @Dependent",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
+        
+        Diagnostic d2 = d(5, 13, 24,
+                "Managed bean class of generic type must have scope @Dependent",
+                DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
 
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
 
-        // test expected quick-fix
-        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(4, 0, 5, 0, "@Dependent\n");
-        CodeAction ca = ca(uri, "Replace current scope with @Dependent", d, te);
-        assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
+        // Assert for the diagnostic d1
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
+        TextEdit te1 = te(4, 0, 5, 0, "@Dependent\n");
+        CodeAction ca1 = ca(uri, "Replace current scope with @Dependent", d1, te1);
+        assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca1);
+        
+        // Assert for the diagnostic d2
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
+        TextEdit te2 = te(4, 0, 5, 0, "@Dependent\n");
+        CodeAction ca2 = ca(uri, "Replace current scope with @Dependent", d2, te2);
+        assertJavaCodeAction(codeActionParams2, JDT_UTILS, ca2);
     }
     
     @Test
