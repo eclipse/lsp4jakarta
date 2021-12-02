@@ -14,5 +14,14 @@ public class NoPublicConstructorProviderClass implements MessageBodyReader<NameV
     protected NoPublicConstructorProviderClass(int arg1) {
 
     }
+    
+    @Override
+    public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType,
+                                                          Annotation[] annotations) {
+        if (rawType == LocalDateTime.class) {
+            return (ParamConverter<T>) new MyDateConverter();
+        }
+        return null;
+    }
 
 }
