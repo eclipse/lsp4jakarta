@@ -2,14 +2,16 @@ package io.openliberty.sample.jakarta.jax_rs;
 
 import jakarta.ws.rs.ext.Provider;
 
-@Provider()
-public class NoPublicConstructorProviderClass {
 
-    private NoPublicConstructorClass() {
+@Consumes("application/x-www-form-urlencoded")
+@Provider
+public class NoPublicConstructorProviderClass implements MessageBodyReader<NameValuePair> {
+
+    private NoPublicConstructorProviderClass() {
 
     }
 
-    protected NoPublicConstructorClass(int arg1) {
+    protected NoPublicConstructorProviderClass(int arg1) {
 
     }
 
