@@ -27,6 +27,7 @@ import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JakartaServletTest extends BaseJakartaTest {
@@ -34,6 +35,7 @@ public class JakartaServletTest extends BaseJakartaTest {
     protected static JDTUtils JDT_UTILS = new JDTUtils();
 
     @Test
+    @Ignore // getAllSuperTypes() returns nothing for tests. See #232
     public void ExtendWebServlet() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
@@ -45,7 +47,7 @@ public class JakartaServletTest extends BaseJakartaTest {
 
         // expected
         Diagnostic d = d(10, 13, 34, "Classes annotated with @WebServlet must extend the HttpServlet class.",
-                DiagnosticSeverity.Warning, "jakarta-servlet", "ExtendHttpServlet");
+                DiagnosticSeverity.Error, "jakarta-servlet", "ExtendHttpServlet");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
@@ -57,6 +59,7 @@ public class JakartaServletTest extends BaseJakartaTest {
     }
 
     @Test
+    @Ignore // getAllSuperTypes() returns nothing for tests. See #232
     public void CompleteWebServletAnnotation() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
