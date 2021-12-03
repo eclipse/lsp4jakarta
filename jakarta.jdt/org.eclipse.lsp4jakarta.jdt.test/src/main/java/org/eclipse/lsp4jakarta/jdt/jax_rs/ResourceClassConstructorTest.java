@@ -96,4 +96,27 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
     }
+
+    
+    @Test
+    public void NoPublicConstructorProviderClass() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jax_rs/NoPublicConstructorProviderClass.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+        
+        Diagnostic d1 = d(9, 12, 44,
+                "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
+                DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
+
+        Diagnostic d2 = d(13, 14, 46,
+                "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
+                DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
+
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
+    }
 }
