@@ -47,4 +47,9 @@ public class InjectAndDisposesObservesObservesAsync {
     public String greetDisposesObservesObservesAsync(@Disposes String name1, @Observes String name2, @ObservesAsync String name3) {
         return "Hi " + name1 + ", " + name2 + " and " + name3 + "!";
     }
+    
+    @Inject
+    public String greetDisposesObservesObservesAsync2(@Disposes @Observes @ObservesAsync String name) {
+        return "Hi " + name + "!";
+    }
 }
