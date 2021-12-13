@@ -107,8 +107,9 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                     if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
                             && managedBeanAnnotations.stream()
                                     .anyMatch(annotation -> !annotation.equals("Dependent"))) {
+                        String DiagnosticMessage = createAnnotationDiagnostic("Dependent","be the only scope defined by a managed bean with a non-static public field.");
                         Diagnostic diagnostic = createDiagnostic(field, unit,
-                                "The annotation @Dependent must be the only scope defined by a managed bean with a non-static public field.",
+                                DiagnosticMessage,
                                 DIAGNOSTIC_CODE);
                         diagnostics.add(diagnostic);
                     }
@@ -155,7 +156,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                         // A single field cannot have the same
                         diagnostics.add(createDiagnostic(field, unit,
-                                "@Produces and @Inject annotations must not be used on the same field or property.",
+                                "The annotations @Produces and @Inject must not be used on the same field or property.",
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT));
                     }
 
@@ -204,7 +205,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
                         // A single method cannot have the same
                         diagnostics.add(createDiagnostic(method, unit,
-                                "@Produces and @Inject annotations must not be used on the same field or property.",
+                                "The annotations @Produces and @Inject must not be used on the same field or property.",
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT));
                     }
 
@@ -243,8 +244,9 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                                 .filter(m -> m.getNumberOfParameters() > 0).collect(Collectors.toList());
 
                         for (IMethod m : methodsNeedingDiagnostics) {
+                            String DiagnosticMessage = createAnnotationDiagnostic("Inject","define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead.");
                             Diagnostic diagnostic = createDiagnostic(m, unit,
-                                    "The annotation @Inject must define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead.",
+                                    DiagnosticMessage,
                                     CONSTRUCTOR_DIAGNOSTIC_CODE);
                             diagnostics.add(diagnostic);
                         }
@@ -300,8 +302,9 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                         
                         if(numDisposes == 0) continue;
                         if(numDisposes > 1) {
+                            String DiagnosticMessage = createAnnotationDiagnostic("Disposes","not be defined on more than one parameter of a method.");
                             diagnostics.add(createDiagnostic(method, unit,
-                                    "The annotation @Disposes must not be defined on more than one parameter of a method.",
+                                    DiagnosticMessage,
                                     ManagedBeanConstants.DIAGNOSTIC_CODE_REDUNDANT_DISPOSES));
                         }
                         
@@ -365,5 +368,11 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
         String label = "A disposer method cannot have parameter(s) annotated with ";
         label += String.join(", ", invalidAnnotations);
         return label;
+    }
+    
+    private  String createAnnotationDiagnostic(String annotation, String message) {
+        
+        String finalMessage = "The annotation @" + annotation + " must " + message;
+        return finalMessage;
     }
 }

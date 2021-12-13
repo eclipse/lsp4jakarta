@@ -112,9 +112,10 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                                     unit,
                                                     annotationNameRange.getOffset(),
                                                     annotationNameRange.getLength());
+                                            String diagnosticMessage = generateDiagnosticAnnotation("Generated","define the attribute 'date' following the ISO 8601 standard.");
                                             Diagnostic diagnostic = new Diagnostic(
                                                     annotationRange,
-                                                    "The annotation @Generated must define the attribute 'date' following the ISO 8601 standard.");
+                                                    diagnosticMessage);
                                             diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT);
                                             completeDiagnostic(diagnostic);
                                             diagnostics.add(diagnostic);
@@ -142,20 +143,24 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         unit,
                                         annotationNameRange.getOffset(),
                                         annotationNameRange.getLength());
+                                
+                                String diagnosticMessage = generateDiagnosticAnnotation("Resource","define the attribute");
 
                                 if (nameEmpty) {
+                                    diagnosticMessage = diagnosticMessage + " 'name'.";
                                     Diagnostic diagnostic = new Diagnostic(
                                             annotationRange,
-                                            "The annotation @Resource must define the attribute 'name'.");
+                                            diagnosticMessage);
                                     diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE);
                                     completeDiagnostic(diagnostic);
                                     diagnostics.add(diagnostic);
                                 }
 
                                 if (typeEmpty) {
+                                    diagnosticMessage = diagnosticMessage + " 'type'.";
                                     Diagnostic diagnostic = new Diagnostic(
                                             annotationRange,
-                                            "The annotation @Resource must define the attribute 'type'.");
+                                            diagnosticMessage);
                                     diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE);
                                     completeDiagnostic(diagnostic);
                                     diagnostics.add(diagnostic);
@@ -173,27 +178,31 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                     methodNameRange.getLength());
 
                             if (method.getNumberOfParameters() != 0) {
+                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct","not have any parameters.");
+                      
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
-                                        "A method with the annotation @PostConstruct should not have any parameters.");
+                                        diagnosticMessage);
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
 
                             if (!method.getReturnType().equals("V")) {
+                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct","be void.");
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
-                                        "A method with the annotation @PostConstruct must be void.");
+                                        diagnosticMessage);
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
 
                             if (method.getExceptionTypes().length != 0) {
+                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct","not throw checked exceptions.");
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
-                                        "A method with the annotation @PostConstruct must not throw checked exceptions.");
+                                        diagnosticMessage);
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION);
                                 completeDiagnostic(diagnostic);
                                 diagnostic.setSeverity(AnnotationConstants.WARNING);
@@ -211,27 +220,30 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                     methodNameRange.getLength());
 
                             if (method.getNumberOfParameters() != 0) {
+                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy","not have any parameters.");
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
-                                        "A method with the annotation @PreDestroy should not have any parameters.");
+                                       diagnosticMessage);
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
 
                             if (Flags.isStatic(method.getFlags())) {
+                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy","not be static.");
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
-                                        "A method with the annotation @PreDestroy must not be static.");
+                                        diagnosticMessage);
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
                             }
 
                             if (method.getExceptionTypes().length != 0) {
+                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy","not throw checked exceptions.");
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
-                                        "A method with the annotation @PreDestroy must not throw checked exceptions.");
+                                        diagnosticMessage);
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION);
                                 completeDiagnostic(diagnostic);
                                 diagnostic.setSeverity(AnnotationConstants.WARNING);
@@ -245,4 +257,17 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
             }
         }
     }
+    
+    public String generateDiagnosticMethod(String annotation, String message) {
+        
+        String finalMessage = "A method with the annotation @" + annotation + " must " + message;
+        return finalMessage;
+    }
+    
+    public String generateDiagnosticAnnotation(String annotation, String message) {
+        
+        String finalMessage = "The annotation @" + annotation + " must " + message;
+        return finalMessage;
+    }
+
 }

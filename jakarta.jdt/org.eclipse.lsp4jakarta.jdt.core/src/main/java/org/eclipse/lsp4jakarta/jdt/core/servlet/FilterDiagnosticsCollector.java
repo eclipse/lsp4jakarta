@@ -117,7 +117,7 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostic = new Diagnostic(annotationrange,
-                                    "The annotation @WebFilter cannot have both the 'value' and 'urlPatterns' attributes specified at once.");
+                                    "The annotation @WebFilter must have both the 'value' and 'urlPatterns' attributes specified at once.");
                             completeDiagnostic(diagnostic);
                             diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES);
                             diagnostics.add(diagnostic);

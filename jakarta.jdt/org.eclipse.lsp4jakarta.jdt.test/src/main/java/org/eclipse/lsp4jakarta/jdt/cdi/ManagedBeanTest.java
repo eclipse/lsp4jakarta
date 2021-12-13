@@ -36,7 +36,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
 
         // test expected diagnostic
         Diagnostic d = d(6, 12, 13,
-                "A managed bean with a non-static public field must not declare any scope other than @Dependent",
+                "The annotation @Dependent must be the only scope defined by a managed bean with a non-static public field.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
@@ -60,15 +60,15 @@ public class ManagedBeanTest extends BaseJakartaTest {
 
         // test expected diagnostic
         Diagnostic d1 = d(12, 16, 17,
-                "A producer field may specify at most one scope type annotation.",
+                "Scope type annotations must be specified by a producer field at most once.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
         d1.setData(new Gson().toJsonTree(Arrays.asList("ApplicationScoped", "Dependent", "Produces")));
 
-        Diagnostic d2 = d(15, 25, 41, "A producer method may specify at most one scope type annotation.",
+        Diagnostic d2 = d(15, 25, 41, "Scope type annotations must be specified by a producer method at most once.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
         d2.setData(new Gson().toJsonTree(Arrays.asList("ApplicationScoped", "RequestScoped", "Produces")));
         
-        Diagnostic d3 = d(10, 13, 29, "A managed bean class may specify at most one scope type annotation.",
+        Diagnostic d3 = d(10, 13, 29, "Scope type annotations must be specified by a managed bean class at most once.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
         d3.setData(new Gson().toJsonTree(Arrays.asList("ApplicationScoped", "RequestScoped")));
 
@@ -113,10 +113,10 @@ public class ManagedBeanTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d1 = d(16, 18, 23, "@Produces and @Inject annotations cannot be used on the same field or property",
+        Diagnostic d1 = d(16, 18, 23, "The annotations @Produces and @Inject must not be used on the same field or property.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrInject");
 
-        Diagnostic d2 = d(11, 19, 27, "@Produces and @Inject annotations cannot be used on the same field or property",
+        Diagnostic d2 = d(11, 19, 27, "The annotations @Produces and @Inject must not be used on the same field or property.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrInject");
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
@@ -248,7 +248,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         Diagnostic d = d(9, 18, 23,
-                "A method cannot have more than one parameter annotated @Disposes",
+                "The annotation @Disposes must not be defined on more than one parameter of a method.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "RemoveExtraDisposes");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d);
