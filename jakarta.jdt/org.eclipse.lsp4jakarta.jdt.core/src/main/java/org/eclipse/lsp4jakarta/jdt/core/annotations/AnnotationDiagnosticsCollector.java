@@ -36,15 +36,17 @@ import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
-
+import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
 
 /**
  * 
  * jararta.annotation Diagnostics
  * 
  * <li>Diagnostic 1: @Generated 'date' attribute does not follow ISO 8601.</li>
- * <li>Diagnostic 2: @Resource 'name' attribute missing (when annotation is used on a class).</li>
- * <li>Diagnostic 3: @Resource 'type' attribute missing (when annotation is used on a class).</li>
+ * <li>Diagnostic 2: @Resource 'name' attribute missing (when annotation is used
+ * on a class).</li>
+ * <li>Diagnostic 3: @Resource 'type' attribute missing (when annotation is used
+ * on a class).</li>
  * <li>Diagnostic 4: @PostConstruct method has parameters.</li>
  * <li>Diagnostic 5: @PostConstruct method is not void.</li>
  * <li>Diagnostic 6: @PostConstruct method throws checked exception(s).</li>
@@ -73,7 +75,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                 for (IPackageDeclaration p : unit.getPackageDeclarations()) {
                     for (IAnnotation annotation : p.getAnnotations()) {
                         annotatables.add(new Tuple.Two<>(annotation, p));
-                    }    			
+                    }
                 }
 
                 for (IType type : unit.getAllTypes()) {
@@ -108,11 +110,13 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                     if (!date.equals("")) {
                                         if (!Pattern.matches(AnnotationConstants.ISO_8601_REGEX, date)) {
                                             ISourceRange annotationNameRange = JDTUtils.getNameRange(annotation);
+
                                             Range annotationRange = JDTUtils.toRange(
                                                     unit,
                                                     annotationNameRange.getOffset(),
                                                     annotationNameRange.getLength());
                                             String diagnosticMessage = generateDiagnosticAnnotation("Generated","define the attribute 'date' following the ISO 8601 standard.");
+
                                             Diagnostic diagnostic = new Diagnostic(
                                                     annotationRange,
                                                     diagnosticMessage);
@@ -120,14 +124,14 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                             completeDiagnostic(diagnostic);
                                             diagnostics.add(diagnostic);
                                         }
-                                    }	
+                                    }
                                 }
                             }
                         }
                     } else if (annotation.getElementName().equals(AnnotationConstants.RESOURCE)) {
                         if (element instanceof IType) {
                             IType type = (IType) element;
-                            if (type.getElementType() == IJavaElement.TYPE && ((IType)type).isClass()) {
+                            if (type.getElementType() == IJavaElement.TYPE && ((IType) type).isClass()) {
                                 Boolean nameEmpty = true;
                                 Boolean typeEmpty = true;
                                 for (IMemberValuePair pair : annotation.getMemberValuePairs()) {
@@ -139,9 +143,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                     }
                                 }
                                 ISourceRange annotationNameRange = JDTUtils.getNameRange(annotation);
-                                Range annotationRange = JDTUtils.toRange(
-                                        unit,
-                                        annotationNameRange.getOffset(),
+                                Range annotationRange = JDTUtils.toRange(unit, annotationNameRange.getOffset(),
                                         annotationNameRange.getLength());
                                 
                                 String diagnosticMessage = generateDiagnosticAnnotation("Resource","define the attribute");
@@ -167,14 +169,13 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                 }
                             }
                         }
-                    } if (annotation.getElementName().equals(AnnotationConstants.POST_CONSTRUCT)) {
+                    }
+                    if (annotation.getElementName().equals(AnnotationConstants.POST_CONSTRUCT)) {
                         if (element instanceof IMethod) {
                             IMethod method = (IMethod) element;
 
                             ISourceRange methodNameRange = JDTUtils.getNameRange(method);
-                            Range methodRange = JDTUtils.toRange(
-                                    unit,
-                                    methodNameRange.getOffset(),
+                            Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
                                     methodNameRange.getLength());
 
                             if (method.getNumberOfParameters() != 0) {
@@ -214,9 +215,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                             IMethod method = (IMethod) element;
 
                             ISourceRange methodNameRange = JDTUtils.getNameRange(method);
-                            Range methodRange = JDTUtils.toRange(
-                                    unit,
-                                    methodNameRange.getOffset(),
+                            Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
                                     methodNameRange.getLength());
 
                             if (method.getNumberOfParameters() != 0) {
@@ -236,6 +235,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         diagnosticMessage);
                                 diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
                                 completeDiagnostic(diagnostic);
+                                diagnostic.setData(method.getElementType());
                                 diagnostics.add(diagnostic);
                             }
 

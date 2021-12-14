@@ -57,7 +57,7 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                 alltypes = unit.getAllTypes();
                 for (IType type : alltypes) {
                     boolean isRootResource = false;
-                    
+
                     IAnnotation[] annotationList = type.getAnnotations();
 
                     for (IAnnotation annotation : annotationList) {
@@ -65,36 +65,58 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                             isRootResource = true;
                         }
                     }
-                    
+
                     if (isRootResource) {
                         int maxParams = 0;
                         String className = type.getElementName();
                         Map<IMethod, Integer> constructorParamsMap = new HashMap<IMethod, Integer>();
-                        
+                        boolean hasPublicConstructor = false;
+                        boolean hasPrivateOrProtectedConstructor = false;
                         for (IMethod method : type.getMethods()) {
                             // if a method of a class has the same name as the class, it is a constructor
                             if ((method.getElementName().equals(className)) && (Flags.isPublic(method.getFlags()))) {
                                 int numParams = method.getNumberOfParameters();
-                                
+                                hasPublicConstructor = true;
+
                                 if (numParams > maxParams) {
                                     maxParams = numParams;
                                 }
                                 constructorParamsMap.put(method, numParams);
                             }
+                            if ((method.getElementName().equals(className))
+                                    && (Flags.isPrivate(method.getFlags()) || Flags.isProtected(method.getFlags()))) {
+                                hasPrivateOrProtectedConstructor = true;
+                            }
+                            if (method.getElementName().equals(className) && hasPrivateOrProtectedConstructor
+                                    && !hasPublicConstructor) {
+                                ISourceRange methodNameRange = JDTUtils.getNameRange(method);
+                                Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
+                                        methodNameRange.getLength());
+
+                                diagnostic = new Diagnostic(methodRange,
+                                        "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor");
+                                diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS);
+                                completeDiagnostic(diagnostic);
+                                diagnostic.setSeverity(DiagnosticSeverity.Error);
+                                diagnostics.add(diagnostic);
+                            }
                         }
-                        
+
                         ArrayList<IMethod> equalMaxParamMethods = new ArrayList<IMethod>();
-                        
+
                         for (Map.Entry<IMethod, Integer> entry : constructorParamsMap.entrySet()) {
                             if (entry.getValue() == maxParams) {
                                 equalMaxParamMethods.add(entry.getKey());
-                            }
-                            else if (entry.getValue() < maxParams) {
+                            } else if (entry.getValue() < maxParams) {
                                 IMethod method = entry.getKey();
-                                ISourceRange methodNameRange = JDTUtils.getNameRange(method); // TODO: maybe change the area this diagnostic underlines
-                                Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
-                                
-                                diagnostic = new Diagnostic(methodRange, "This constructor is unused, as root resource classes will only use the constructor with the most parameters.");
+                                ISourceRange methodNameRange = JDTUtils.getNameRange(method); // TODO: maybe change the
+                                                                                              // area this diagnostic
+                                                                                              // underlines
+                                Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
+                                        methodNameRange.getLength());
+
+                                diagnostic = new Diagnostic(methodRange,
+                                        "This constructor is unused, as root resource classes will only use the constructor with the most parameters.");
                                 diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_UNUSED_CONSTRUCTOR);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
@@ -102,10 +124,14 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                         }
                         if (equalMaxParamMethods.size() > 1) {
                             for (IMethod method : equalMaxParamMethods) {
-                                ISourceRange methodNameRange = JDTUtils.getNameRange(method); // TODO: maybe change the area this diagnostic underlines
-                                Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(), methodNameRange.getLength());
-                                
-                                diagnostic = new Diagnostic(methodRange, "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.");
+                                ISourceRange methodNameRange = JDTUtils.getNameRange(method); // TODO: maybe change the
+                                                                                              // area this diagnostic
+                                                                                              // underlines
+                                Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
+                                        methodNameRange.getLength());
+
+                                diagnostic = new Diagnostic(methodRange,
+                                        "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.");
                                 diagnostic.setCode(Jax_RSConstants.DIAGNOSTIC_CODE_AMBIGUOUS_CONSTRUCTORS);
                                 completeDiagnostic(diagnostic);
                                 diagnostics.add(diagnostic);
@@ -114,9 +140,9 @@ public class RootResourceClassDiagnosticsCollector implements DiagnosticsCollect
                     }
                 }
             } catch (JavaModelException e) {
-            	JakartaCorePlugin.logException("Cannot calculate JAX-RS diagnostics", e);
+                JakartaCorePlugin.logException("Cannot calculate JAX-RS diagnostics", e);
             }
         }
     }
-    
+
 }
