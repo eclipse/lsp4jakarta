@@ -15,10 +15,10 @@ public class GraduatingStudent {
 
     @Generated("com.sun.xml.rpc.AProcessor")
     private String emailAddress;
-	
+    
     @Generated(value="com.sun.xml.rpc.AProcessor")
     private String homeTown;
-	
+    
     public GraduatingStudent(Integer studentId, Boolean isHappy, boolean isSad, Calendar graduationDate, Integer gpa,
             String emailAddress) {
         this.studentId = studentId;
