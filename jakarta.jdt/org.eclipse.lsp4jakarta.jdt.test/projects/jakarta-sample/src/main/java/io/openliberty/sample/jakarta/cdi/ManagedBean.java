@@ -3,7 +3,7 @@ package io.openliberty.sample.jakarta.cdi;
 import jakarta.enterprise.context.*;
 
 @RequestScoped
-public class ManagedBean {
+public class ManagedBean<T> {
 	public int a;
 	
 	

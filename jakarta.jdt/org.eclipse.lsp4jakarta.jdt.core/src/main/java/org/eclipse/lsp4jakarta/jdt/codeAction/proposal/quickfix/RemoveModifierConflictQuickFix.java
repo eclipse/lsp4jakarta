@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeAction;
@@ -29,7 +30,6 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
-import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
 
 
 /**
@@ -57,8 +57,7 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
     public RemoveModifierConflictQuickFix(String... modifiers) {
         this(false, modifiers);
     }
-    
-    
+  
     /**
      * Constructor for remove modifiers quick fix.
      *
@@ -96,7 +95,6 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
         }
     }
     
-    
     /**
      * use setData() API with diagnostic to pass in ElementType in diagnostic collector class.
      *
@@ -128,11 +126,28 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
             codeActions.add(codeAction);
         }
     }
-    
-    
+
+    /**
+     * Removes a set of modifiers from a given ASTNode with a given code action label
+     */
+    protected void removeModifier(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType, 
+		List<CodeAction> codeActions, ASTNode coveredNode, String label, String... modifier) throws CoreException {
+	
+        ModifyModifiersProposal proposal = new ModifyModifiersProposal(label, context.getCompilationUnit(),
+                context.getASTRoot(), parentType, 0, coveredNode, new ArrayList<>(), Arrays.asList(modifiers));
+        CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
+
+        if (codeAction != null) {
+            codeActions.add(codeAction);
+        }
+    }
+
     protected IBinding getBinding(ASTNode node) {
+        ASTNode parentNode = node.getParent();
         if (node.getParent() instanceof VariableDeclarationFragment) {
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        } else if (node.getParent() instanceof MethodDeclaration) {
+            return ((MethodDeclaration) node.getParent()).resolveBinding();
         }
         return Bindings.getBindingOfParentType(node);
     }

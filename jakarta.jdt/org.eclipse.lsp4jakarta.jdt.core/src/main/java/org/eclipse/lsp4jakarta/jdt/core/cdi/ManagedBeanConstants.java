@@ -26,6 +26,7 @@ public class ManagedBeanConstants {
     public static final String DISPOSES = "Disposes";
     public static final String OBSERVES = "Observes";
     public static final String OBSERVES_ASYNC = "ObservesAsync";
+    public static final String DEPENDENT = "Dependent";
     
     
     public static final String DIAGNOSTIC_SOURCE = "jakarta-cdi";
