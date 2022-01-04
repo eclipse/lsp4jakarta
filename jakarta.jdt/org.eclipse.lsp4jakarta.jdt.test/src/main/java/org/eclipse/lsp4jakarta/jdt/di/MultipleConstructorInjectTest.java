@@ -47,15 +47,15 @@ public class MultipleConstructorInjectTest extends BaseJakartaTest {
 
         // test expected diagnostic
         Diagnostic d1 = d(22, 11, 26,
-                "Inject cannot be used with multiple constructors",
+                "The annotation @Inject must not define more than one constructor.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
         
         Diagnostic d2 = d(26, 11, 26,
-                "Inject cannot be used with multiple constructors",
+                "The annotation @Inject must not define more than one constructor.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
         
         Diagnostic d3 = d(31, 14, 29,
-                "Inject cannot be used with multiple constructors",
+                "The annotation @Inject must not define more than one constructor.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
         
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1,d2,d3);

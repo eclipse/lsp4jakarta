@@ -39,23 +39,23 @@ public class DependencyInjectionTest extends BaseJakartaTest {
         /* create expected diagnostics
          * 
          */
-        Diagnostic d1 = d(28, 27, 35, "Injectable fields cannot be final",
+        Diagnostic d1 = d(28, 27, 35, "The annotation @Inject must not define a final field.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectOrFinal");
         d1.setData(IType.FIELD);
 
-        Diagnostic d2 = d(44, 25, 39, "Injectable methods cannot be abstract",
+        Diagnostic d2 = d(44, 25, 39, "The annotation @Inject must not define an abstract method.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectOrAbstract");
         d2.setData(IType.METHOD);
         
-        Diagnostic d3 = d(37, 22, 33, "Injectable methods cannot be final",
+        Diagnostic d3 = d(37, 22, 33, "The annotation @Inject must not define a final method.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectOrFinal");
         d3.setData(IType.METHOD);
  
-        Diagnostic d4 = d(54, 23, 36, "Injectable methods cannot be generic",
+        Diagnostic d4 = d(54, 23, 36, "The annotation @Inject must not define a generic method.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectForGeneric");
         d4.setData(IType.METHOD);
         
-        Diagnostic d5 = d(48, 23, 35, "Injectable methods cannot be static",
+        Diagnostic d5 = d(48, 23, 35, "The annotation @Inject must not define a static method.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectOrStatic");
         d5.setData(IType.METHOD);
         

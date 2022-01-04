@@ -76,7 +76,7 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 
                     if (isWebFilterAnnotated && !isFilterImplemented) {
                         diagnostic = new Diagnostic(range,
-                                "Classes annotated with @WebFilter must implement the Filter interface.");
+                                "Annotated classes with @WebFilter must implement the Filter interface.");
                         completeDiagnostic(diagnostic);
                         diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER);
                         diagnostic.setSeverity(DiagnosticSeverity.Warning);
@@ -110,14 +110,14 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
 
                         if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
                             diagnostic = new Diagnostic(annotationrange,
-                                    "The 'urlPatterns' attribute, 'servletNames' attribute or the 'value' attribute of the WebFilter annotation MUST be specified.");
+                                    "The annotation @WebServlet must define the attribute urlPatterns or the attribute value.");
                             completeDiagnostic(diagnostic);
                             diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE);
                             diagnostics.add(diagnostic);
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostic = new Diagnostic(annotationrange,
-                                    "The WebFilter annotation cannot have both the 'value' and 'urlPatterns' attributes specified at once.");
+                                    "The annotation @WebFilter must have both the 'value' and 'urlPatterns' attributes specified at once.");
                             completeDiagnostic(diagnostic);
                             diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES);
                             diagnostics.add(diagnostic);

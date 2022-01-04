@@ -93,8 +93,7 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector {
 
                     if (!isHttpServletExtended) {
                         diagnostic = new Diagnostic(range,
-                                "Classes annotated with @WebServlet must extend the HttpServlet class.");
-                        completeDiagnostic(diagnostic);
+                                "Annotated classes with @WebServlet must extend the HttpServlet class.");
                         diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE);
                         diagnostics.add(diagnostic);
                     }
@@ -121,14 +120,14 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector {
 
                         if (!isUrlpatternSpecified && !isValueSpecified) {
                             diagnostic = new Diagnostic(annotationrange,
-                                    "The 'urlPatterns' attribute or the 'value' attribute of the WebServlet annotation MUST be specified.");
+                                    "The annotation @WebServlet must define the attribute urlPatterns or the attribute value.");
                             completeDiagnostic(diagnostic);
                             diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE);
                             diagnostics.add(diagnostic);
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostic = new Diagnostic(annotationrange,
-                                    "The WebServlet annotation cannot have both the 'value' and 'urlPatterns' attributes specified at once.");
+                                    "The annotation @WebServlet cannot have both the 'value' and 'urlPatterns' attributes specified at once.");
                             completeDiagnostic(diagnostic);
                             diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES);
                             diagnostics.add(diagnostic);

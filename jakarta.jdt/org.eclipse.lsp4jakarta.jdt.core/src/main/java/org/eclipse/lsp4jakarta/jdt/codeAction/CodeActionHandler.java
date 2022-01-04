@@ -230,6 +230,7 @@ public class CodeActionHandler {
                         codeActions.addAll(RemoveInjectAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                         codeActions.addAll(RemoveStaticModifierQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
+
                     if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS)) {
                     	codeActions.addAll(RemovePostConstructAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     	codeActions.addAll(RemoveMethodParametersQuickFix.getCodeActions(context, diagnostic, monitor));

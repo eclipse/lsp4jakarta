@@ -109,7 +109,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     boolean isFinal = Flags.isFinal(fieldFlags);
 
                     if (isFinal && isInjectField) {
-                        String msg = "Injectable fields cannot be final";
+                        String msg = createAnnotationDiagnostic("Inject","a final field.");
                         diagnostic = createDiagnostic(field, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
                         diagnostic.setData(field.getElementType());
@@ -131,7 +131,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     boolean isGeneric = method.getTypeParameters().length != 0;
 
                     if (isFinal && isInjectMethod) {
-                        String msg = "Injectable methods cannot be final";
+                        String msg = createAnnotationDiagnostic("Inject","a final method.");
                         diagnostic = createDiagnostic(method, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
                         diagnostic.setData(method.getElementType());
@@ -139,7 +139,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     }
 
                     if (isAbstract && isInjectMethod) {
-                        String msg = "Injectable methods cannot be abstract";
+                        String msg = createAnnotationDiagnostic("Inject","an abstract method.");
                         diagnostic = createDiagnostic(method, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT);
                         diagnostic.setData(method.getElementType());
@@ -147,7 +147,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     }
 
                     if (isStatic && isInjectMethod) {
-                        String msg = "Injectable methods cannot be static";
+                        String msg = createAnnotationDiagnostic("Inject","a static method.");
                         diagnostic = createDiagnostic(method, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_STATIC);
                         diagnostic.setData(method.getElementType());
@@ -155,7 +155,7 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     }
 
                     if (isGeneric && isInjectMethod) {
-                        String msg = "Injectable methods cannot be generic";
+                        String msg = createAnnotationDiagnostic("Inject","a generic method.");
                         diagnostic = createDiagnostic(method, unit, msg,
                                 DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_GENERIC);
                         diagnostic.setData(method.getElementType());
@@ -189,8 +189,9 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
                     }
                 }
                 if (multipleInjectConstructor) {
+                    String msg = createAnnotationDiagnostic("Inject","more than one constructor.");
                     for (IMethod m : injectedConstructors) {
-                        diagnostics.add(createDiagnostic(m, unit, "Inject cannot be used with multiple constructors",
+                        diagnostics.add(createDiagnostic(m, unit,msg,
                                 DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR));
                     }
                 }
@@ -198,6 +199,12 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
         } catch (JavaModelException e) {
             JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
         }
+    }
+    
+    private  String createAnnotationDiagnostic(String annotation, String attributeType) {
+        
+        String finalMessage = "The annotation @" + annotation + " must not define " + attributeType;
+        return finalMessage;
     }
 }
 

@@ -46,8 +46,8 @@ public class JakartaServletTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected
-        Diagnostic d = d(10, 13, 34, "Classes annotated with @WebServlet must extend the HttpServlet class.",
-                DiagnosticSeverity.Error, "jakarta-servlet", "ExtendHttpServlet");
+        Diagnostic d = d(10, 13, 34, "Annotated classes with @WebServlet must extend the HttpServlet class.",
+                DiagnosticSeverity.Warning, "jakarta-servlet", "ExtendHttpServlet");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
@@ -70,7 +70,7 @@ public class JakartaServletTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         Diagnostic d = d(9, 0, 13,
-                "The 'urlPatterns' attribute or the 'value' attribute of the WebServlet annotation MUST be specified.",
+                "The annotation @WebServlet must define the attribute urlPatterns or the attribute value.",
                 DiagnosticSeverity.Error, "jakarta-servlet", "CompleteHttpServletAttributes");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);

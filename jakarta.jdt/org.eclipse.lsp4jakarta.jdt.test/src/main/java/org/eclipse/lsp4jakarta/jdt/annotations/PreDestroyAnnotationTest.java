@@ -45,7 +45,7 @@ public class PreDestroyAnnotationTest extends BaseJakartaTest {
 
         // expected annotations
         
-        Diagnostic d1 = d(20, 16, 28, "A method with the annotation @PreDestroy should not have any parameters.",
+        Diagnostic d1 = d(20, 16, 28, "A method with the annotation @PreDestroy must not have any parameters.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyParams");
         
         Diagnostic d2 = d(26, 20, 31, "A method with the annotation @PreDestroy must not be static.",
