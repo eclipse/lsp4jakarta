@@ -53,7 +53,7 @@ public class PostConstructAnnotationTest extends BaseJakartaTest {
 		Diagnostic d1 = d(15, 16, 28, "A method with the annotation @PostConstruct must be void.",
 				DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructReturnType");
 
-		Diagnostic d2 = d(20, 13, 25, "A method with the annotation @PostConstruct should not have any parameters.",
+		Diagnostic d2 = d(20, 13, 25, "A method with the annotation @PostConstruct must not have any parameters.",
 				DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructParams");
 
 		Diagnostic d3 = d(25, 13, 25, "A method with the annotation @PostConstruct must not throw checked exceptions.",

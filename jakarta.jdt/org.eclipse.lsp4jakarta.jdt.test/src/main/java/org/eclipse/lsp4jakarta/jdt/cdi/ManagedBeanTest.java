@@ -35,7 +35,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // test expected diagnostic
-        Diagnostic d = d(6, 12, 13,
+        Diagnostic d1 = d(6, 12, 13,
                 "The annotation @Dependent must be the only scope defined by a managed bean with a non-static public field.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
         
