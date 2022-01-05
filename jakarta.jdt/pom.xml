@@ -14,7 +14,7 @@
 		<tycho.extras.version>${tycho.version}</tycho.extras.version>
 		<tycho.scmUrl>scm:git:https://github.com/eclipse/lsp4mp</tycho.scmUrl>
 		<tycho.generateSourceReferences>true</tycho.generateSourceReferences>
-		<jdt.ls.version>1.7.0.20211216164144/</jdt.ls.version>
+		<jdt.ls.version>1.7.0.20211216164144</jdt.ls.version>
 		<tycho.test.platformArgs />
 		<tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
 	</properties>
@@ -52,7 +52,7 @@
 						<artifact>
 							<groupId>org.eclipse.jdt.ls</groupId>
 							<artifactId>org.eclipse.jdt.ls.tp</artifactId>
-							<version>1.7.0.20211216164144</version>
+							<version>${jdt.ls.version}</version>
 						</artifact>
 					</target>
 					<resolver>p2</resolver>
