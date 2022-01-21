@@ -63,6 +63,6 @@ Run `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a n
 
 **To Debug**:
 
-Debug `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a new instance of Eclipse with LSP4Jakarta (Right-click on the `org.eclipse.lsp4jakarta.lsp4e.core` project, "Run As" --> "Eclipse Application"). A new Eclipse application will launch with the LSP4Jakarta Eclipse client plug-in installed.
+Debug `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a new instance of Eclipse with LSP4Jakarta (Right-click on the `org.eclipse.lsp4jakarta.lsp4e.core` project, "Debug As" --> "Eclipse Application"). A new Eclipse application will launch with the LSP4Jakarta Eclipse client plug-in installed.
 
 <img src="/docs/images/building_debug_lsp4e.png" alt="Debug lsp4e Eclipse plug-in" height="60%" width="60%"/>
