@@ -12,20 +12,23 @@
  *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
-import org.eclipse.lsp4jakarta.jdt.core.Diagnostic;
+
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.ICompilationUnit;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants;
+import org.eclipse.jdt.core.ICompilationUnit;
 
 import java.util.List;
 
-
 public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
-    @Override
-    public void completeDiagnostic(Diagnostic diagnostic) {
-
+    public WebSocketDiagnosticsCollector() {
     }
 
-    @Override
+    public void completeDiagnostic(Diagnostic diagnostic) {
+        diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
+        diagnostic.setSeverity(WebSocketConstants.SEVERITY);
+    }
+
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 
     }

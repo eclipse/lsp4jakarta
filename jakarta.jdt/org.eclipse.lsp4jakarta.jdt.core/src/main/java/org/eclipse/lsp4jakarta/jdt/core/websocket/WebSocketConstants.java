@@ -16,5 +16,6 @@ package org.eclipse.lsp4jakarta.jdt.core.websocket;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 
 public class WebSocketConstants {
+    public static final String DIAGNOSTIC_SOURCE = "jakarta-websocket";
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 }
