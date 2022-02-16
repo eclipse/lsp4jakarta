@@ -82,7 +82,7 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
     private Diagnostic createDiagnosticBy(ICompilationUnit unit, IMethod method) throws JavaModelException {
         ISourceRange sourceRange = JDTUtils.getNameRange(method);
         Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
-        String message = JsonbConstants.ERROR_MESSAGE;
+        String message = JsonbConstants.ERROR_MESSAGE_JSONB_CREATOR;
         DiagnosticSeverity severity = DiagnosticSeverity.Error; 
         String source = JsonbConstants.DIAGNOSTIC_SOURCE;
         String code = JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION;
