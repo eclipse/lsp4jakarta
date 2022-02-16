@@ -24,11 +24,13 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     public WebSocketDiagnosticsCollector() {
     }
 
+    @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
         diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(WebSocketConstants.SEVERITY);
     }
 
+    @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 
     }
