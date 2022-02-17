@@ -14,9 +14,13 @@ public class WebSocketConstants {
     public static final DiagnosticSeverity ERROR = DiagnosticSeverity.Error;
 	public static final DiagnosticSeverity WARNING = DiagnosticSeverity.Warning;
 
-    /* Class Level Annotations */
-    public static final String SERVER_ENDPOINT = "ServerEndpoint";
-    public static final String CLIENT_ENDPOINT = "ClientEndpoint";
+    /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
+    // Class Level Annotations
+    public static final String SERVER_ENDPOINT_ANNOTATION = "ServerEndpoint";
+    public static final String CLIENT_ENDPOINT_ANNOTATION = "ClientEndpoint";
+    // Superclass
+    public static final String ENDPOINT_SUPERCLASS = "Endpoint";
+    public static final Set<String> WS_ANNOTATION_CLASS = new HashSet<>(Arrays.asList(SERVER_ENDPOINT_ANNOTATION, CLIENT_ENDPOINT_ANNOTATION));
 
     /* Annotations */
     public static final String ON_OPEN = "OnOpen";
