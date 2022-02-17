@@ -47,11 +47,13 @@ public class ServletDiagnosticsCollector implements DiagnosticsCollector {
     public ServletDiagnosticsCollector() {
     }
 
+    @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
         diagnostic.setSource(ServletConstants.DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(ServletConstants.SEVERITY);
     }
 
+    @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         Diagnostic diagnostic;
         if (unit != null) {

@@ -42,6 +42,8 @@ import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceMapKeyDiagnostics
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.transactions.TransactionsDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 import org.eclipse.lsp4jakarta.jdt.codeAction.CodeActionHandler;
@@ -79,6 +81,8 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new ManagedBeanDiagnosticsCollector());
         diagnosticsCollectors.add(new DependencyInjectionDiagnosticsCollector());
         diagnosticsCollectors.add(new JsonpDiagnosticCollector());
+        diagnosticsCollectors.add(new WebSocketDiagnosticsCollector());
+        diagnosticsCollectors.add(new TransactionsDiagnosticsCollector());
         this.codeActionHandler = new CodeActionHandler();
     }
 
