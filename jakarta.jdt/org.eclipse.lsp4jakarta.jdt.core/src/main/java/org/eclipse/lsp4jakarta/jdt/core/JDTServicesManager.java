@@ -138,7 +138,7 @@ public class JDTServicesManager {
                         classpath.add(null);
                     }
                 } catch (JavaModelException e) {
-                    JakartaCorePlugin.logException("Failed to retrieve projectContext from JDT...", e);
+                	JakartaCorePlugin.logException("Failed to retrieve projectContext from JDT...", e);
                 }
             });
         } else {
