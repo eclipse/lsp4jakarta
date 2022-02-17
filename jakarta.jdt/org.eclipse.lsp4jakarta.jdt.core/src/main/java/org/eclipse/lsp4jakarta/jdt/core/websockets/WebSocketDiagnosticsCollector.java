@@ -1,8 +1,10 @@
 package org.eclipse.lsp4jakarta.jdt.core.websockets;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -16,6 +18,8 @@ import org.eclipse.jdt.core.Signature;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+
+import org.eclipse.lsp4jakarta.jdt.coreUtils.Utils;
 
 
 
@@ -45,67 +49,43 @@ public class  WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 					continue;
 				}
 
-				invalidParamsCheck(type, "OnOpen");
+				invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_SET_PARAM_TYPES);
 			}
 		} catch (JavaModelException e) {
 			JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
 		}
 	}
 
-	private void invalidParamsCheck(IType type, String function) throws JavaModelException {
+	private void invalidParamsCheck(IType type, String function, Set<String> validParamTypes, ICompilationUnit unit, List<Diagnostic> diagnostics) throws JavaModelException {
 		// check methods annotations, then check their params, check that their type is any of the valid options, if it's a string, check that it has the @Params annotation
 		// If so, set up the severity to Error, and add a code?
 
-		// if annotation
-		IMethod[] allMethods = null;
-		try {
-			allMethods = type.getMethods();
-		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		IMethod[] allMethods = type.getMethods();
 
 		for (IMethod method : allMethods) {
-			IAnnotation[] allAnnotations = null;
-			try {
-				allAnnotations = method.getAnnotations();
-			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			IAnnotation[] allAnnotations = method.getAnnotations();
 
 			for (IAnnotation annotation : allAnnotations) {
 				if (annotation.getElementName().equals(function)) {
 					// check params
-					ILocalVariable[] allParams = null;
-					String[] paramsNames = method.getParameterNames();
-					try {
-						allParams = method.getParameters();
-						
-					} catch (JavaModelException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					for (String par : paramsNames) {
-						ITypeParameter typePar = method.getTypeParameter(par);
-						String test1 = typePar.getDeclaringMember().getDeclaringType().getFullyQualifiedName();
-						String name = typePar.getElementName();
-						System.out.println("");
-					}
+					ILocalVariable[] allParams = method.getParameters();
 
 					// TODO check if allParams is null
 					for (ILocalVariable param : allParams) {
 						String signature = param.getTypeSignature();
-						String test = param.getClass().getName();
-						String elementType = Signature.getElementType(signature);
-						String simpleName = Signature.getSignatureSimpleName(signature);
-						try {
-							IAnnotation[] annotations = param.getAnnotations();
-						} catch (JavaModelException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						String paramType = Signature.getSignatureSimpleName(signature);
+						
+						if (validParamTypes.contains(paramType)) {
+							if (paramType.equals(WebSocketConstants.STRING)) {
+								List<String> paramAnnotation = Utils.getScopeAnnotation(param, WebSocketConstants.PATH_PARAM_ANNOTATION);
+								
+								if (paramAnnotation.size() == 0) {
+									// throw error
+									// TODO create diagnostics
+								}
+							}
 						}
+						
 					}
 				}
 			}
@@ -118,27 +98,23 @@ public class  WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 			return false;
 		}
 		
-		IAnnotation[] allAnnotations = type.getAnnotations();
-		// TODO change this one -> need to create a class for all the valid annotations
-		List<String> scopes = Arrays.asList(type.getAnnotations()).stream().map(res -> res.getElementName()).filter(ann -> WebSocketConstants.WS_ANNOTATION_CLASS.contains(ann)).collect(Collectors.toList());
+		/* Check that class follows /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
+		List<String> scopes = Utils.getScopeAnnotations(type, WebSocketConstants.WS_ANNOTATION_CLASS);
 
 		boolean useAnnotation = scopes.size() > 0;
-		boolean useSuperclass = false;
+//		boolean useSuperclass = false;
+//		
+//		String superclass = type.getSuperclassName();
+//		
+//		if (superclass == null) {
+//			useSuperclass = false;
+//		} else {
+//			useSuperclass = superclass.equals(WebSocketConstants.ENDPOINT_SUPERCLASS);
+//		}
 		
-		String superclass = type.getSuperclassName();
-		
-		if (superclass == null) {
-			useSuperclass = false;
-		} else {
-			useSuperclass = type.getSuperclassName().equals(WebSocketConstants.ENDPOINT_SUPERCLASS);
-		}
-		
-		if (useAnnotation || useSuperclass) {
+		if (useAnnotation) {
 			return true;
 		}
-		// check if type.getAnnotations() is equal to the valid annotations
-		// or 
-		// type.getSuperclassName().getElementName() == "Endpoint"
 		return false;
 	}
 }

@@ -36,5 +36,5 @@ public class WebSocketConstants {
     public static final String STRING = "String";
 
     
-    public final static Set<String> ON_OPEN_SET_OF_ANNOTATIONS = new HashSet<>(Arrays.asList(ENDPOINT_CONFIG, SESSION, STRING)); 
+    public final static Set<String> ON_OPEN_SET_PARAM_TYPES= new HashSet<>(Arrays.asList(ENDPOINT_CONFIG, SESSION, STRING)); 
 }
