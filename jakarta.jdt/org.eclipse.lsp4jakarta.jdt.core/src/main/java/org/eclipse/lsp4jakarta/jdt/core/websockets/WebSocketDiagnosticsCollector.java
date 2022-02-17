@@ -16,8 +16,11 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.jdt.core.ISourceRange;
 
 import org.eclipse.lsp4jakarta.jdt.coreUtils.Utils;
 
@@ -49,7 +52,7 @@ public class  WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 					continue;
 				}
 
-				invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_SET_PARAM_TYPES);
+				invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_SET_PARAM_TYPES, unit, diagnostics);
 			}
 		} catch (JavaModelException e) {
 			JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
@@ -82,6 +85,15 @@ public class  WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 								if (paramAnnotation.size() == 0) {
 									// throw error
 									// TODO create diagnostics
+									 ISourceRange paramNameRange = JDTUtils.getNameRange(param);
+									 Range paramRange = JDTUtils.toRange(
+                                             unit,
+                                             paramNameRange.getOffset(),
+                                             paramNameRange.getLength());
+		                             Diagnostic diagnostic = new Diagnostic(
+		                            		 paramRange,
+		                                     "It is missing @PathParams");
+		                             diagnostics.add(diagnostic);
 								}
 							}
 						}
