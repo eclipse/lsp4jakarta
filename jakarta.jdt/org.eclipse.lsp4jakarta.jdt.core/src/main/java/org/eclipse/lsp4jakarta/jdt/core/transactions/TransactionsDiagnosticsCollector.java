@@ -23,16 +23,16 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 
 public class TransactionsDiagnosticsCollector implements DiagnosticsCollector {
-	
-	@Override
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(SEVERITY);
-    }
 
 	@Override
-    public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
+	public void completeDiagnostic(Diagnostic diagnostic) {
+		diagnostic.setSource(DIAGNOSTIC_SOURCE);
+		diagnostic.setSeverity(SEVERITY);
+	}
 
-    }
+	@Override
+	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
+
+	}
 
 }
