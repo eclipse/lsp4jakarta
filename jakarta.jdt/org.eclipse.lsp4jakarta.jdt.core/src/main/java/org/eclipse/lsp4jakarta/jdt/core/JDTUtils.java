@@ -625,4 +625,21 @@ public class JDTUtils {
     public static boolean hasLeadingSlash(String uriString) {
         return uriString.startsWith("/");
     }
+
+    /**
+     * Check if a URI follows a valid URI-template (level-1) specified by
+     * <a href="https://datatracker.ietf.org/doc/html/rfc6570">RFC 6570</a>.
+     *
+     * @param uriString
+     * @return boolean
+     */
+    public static boolean isValidLevel1URI(String uriString, boolean isPartial) {
+        // Regex is obtained from RFC 3986:
+        // https://www.rfc-editor.org/rfc/rfc3986#appendix-B
+        if (isPartial) {
+            return uriString.matches("[^?#]*");
+        } else {
+            return uriString.matches("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+        }
+    }
 }
