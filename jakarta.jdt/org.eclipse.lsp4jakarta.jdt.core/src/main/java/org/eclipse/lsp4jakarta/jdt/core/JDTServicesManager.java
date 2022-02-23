@@ -81,11 +81,8 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new ManagedBeanDiagnosticsCollector());
         diagnosticsCollectors.add(new DependencyInjectionDiagnosticsCollector());
         diagnosticsCollectors.add(new JsonpDiagnosticCollector());
-<<<<<<< HEAD
-=======
         diagnosticsCollectors.add(new WebSocketDiagnosticsCollector());
         diagnosticsCollectors.add(new TransactionsDiagnosticsCollector());
->>>>>>> 6c579ac0c3a9062a278a926da1aedf94dedf1f38
         this.codeActionHandler = new CodeActionHandler();
     }
 
