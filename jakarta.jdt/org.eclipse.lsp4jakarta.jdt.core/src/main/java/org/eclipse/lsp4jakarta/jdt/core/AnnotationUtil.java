@@ -20,7 +20,7 @@ public class AnnotationUtil {
     public static List<String> getScopeAnnotations(IAnnotatable type, Set<String> scopes) {
         try {
             // Construct a stream of only the annotations applied to the type that are also
-            // recognised managed bean annotations.
+            // recognised annotations found in scopes.
             return Arrays.stream(type.getAnnotations()).map(annotation -> annotation.getElementName())
                     .filter(scopes::contains).distinct().collect(Collectors.toList());
 

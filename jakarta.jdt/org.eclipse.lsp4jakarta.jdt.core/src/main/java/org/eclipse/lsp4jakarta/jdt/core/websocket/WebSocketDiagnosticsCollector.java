@@ -16,9 +16,9 @@ package org.eclipse.lsp4jakarta.jdt.core.websocket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -37,44 +37,46 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
 
+import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
+
 
 public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
-    public WebSocketDiagnosticsCollector() {
-    }
+	public WebSocketDiagnosticsCollector() {
+	}
 
-    private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
-        try {
-            ISourceRange nameRange = JDTUtils.getNameRange(el);
-            Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-            Diagnostic diagnostic = new Diagnostic(range, msg);
-            diagnostic.setCode(code);
-            completeDiagnostic(diagnostic);
-            return diagnostic;
-        } catch (JavaModelException e) {
-            JakartaCorePlugin.logException(WebSocketConstants.DIAGNOSTIC_ERR_MSG, e);
-        }
-        return null;
-    }
+	private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
+		try {
+			ISourceRange nameRange = JDTUtils.getNameRange(el);
+			Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+			Diagnostic diagnostic = new Diagnostic(range, msg);
+			diagnostic.setCode(code);
+			completeDiagnostic(diagnostic);
+			return diagnostic;
+		} catch (JavaModelException e) {
+			JakartaCorePlugin.logException(WebSocketConstants.DIAGNOSTIC_ERR_MSG, e);
+		}
+		return null;
+	}
 
-    @Override
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(WebSocketConstants.ERROR);
-    }
+	@Override
+	public void completeDiagnostic(Diagnostic diagnostic) {
+		diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
+		diagnostic.setSeverity(WebSocketConstants.ERROR);
+	}
 
-    @Override
-    public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
-        if (unit == null) {
+	@Override
+	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
+		if (unit == null) {
 			return;
 		}
-		
+
 		IType[] alltypes;
 		IField[] allFields;
-        IAnnotation[] allFieldAnnotations;
+		IAnnotation[] allFieldAnnotations;
 		IMethod[] allMethods;
-        IAnnotation[] allMethodAnnotations;
+		IAnnotation[] allMethodAnnotations;
 
-        HashMap<String, Boolean> checkWSEnd = null;
+		HashMap<String, Boolean> checkWSEnd = null;
 
 		try {
 			alltypes = unit.getAllTypes();
@@ -83,7 +85,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
 				// checks if the class uses annotation to create a ws endpoint
 				if (checkWSEnd.get("isAnnotation")) {
-					invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, unit, diagnostics);
+					invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES,
+							unit, diagnostics);
 				}
 
 			}
@@ -92,8 +95,11 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		}
 	}
 
-	private void invalidParamsCheck(IType type, String function, Set<String> validParamTypes, ICompilationUnit unit, List<Diagnostic> diagnostics) throws JavaModelException {
-		// check methods annotations, then check their params, check that their type is any of the valid options, if it's a string, check that it has the @Params annotation
+	private void invalidParamsCheck(IType type, String function, Set<String> validParamTypes, ICompilationUnit unit,
+			List<Diagnostic> diagnostics) throws JavaModelException {
+		// check methods annotations, then check their params, check that their type is
+		// any of the valid options, if it's a string, check that it has the @Params
+		// annotation
 		// If so, set up the severity to Error, and add a code?
 
 		IMethod[] allMethods = type.getMethods();
@@ -108,39 +114,38 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
 					for (ILocalVariable param : allParams) {
 						IAnnotation[] param_annotations = param.getAnnotations();
-						boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
+						boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
+								annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
 
 						// parameter does not have a @PathParam annotation
 						if (!hasPathParamAnnot) {
 
 							String signature = param.getTypeSignature();
 							String paramType = Signature.getSignatureSimpleName(signature);
-							
+
 							// if it's not Session or EndpointConfig, throw error
 							if (!validParamTypes.contains(paramType)) {
-								Diagnostic diagnostic = createDiagnostic(param, unit, WebSocketConstants.DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING, WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT);
+								Diagnostic diagnostic = createDiagnostic(param, unit,
+										WebSocketConstants.DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING,
+										WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT);
 								diagnostics.add(diagnostic);
-							} 
+							}
 						} else {
-							// if it's @PathParam, the valid types are https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#onopen
+							// if it's @PathParam, the valid types are listed on https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#onopen
 							// for (IAnnotation param_annot : param_annotations) {
-							// 	param_annot.getTypeName()
+							// param_annot.getTypeName()
 							// }
 							
 							String signature = param.getTypeSignature();
 							String paramType = Signature.getSignatureSimpleName(signature);
-//							IType a = (IType) param;
-//							String superclass = a.getSuperclassName();
-//							param.getTypeRoot()
 						}
 
-						
 					}
 				}
 			}
 		}
 	}
-	
+
 	/* Check if the type is a websocket endpoint */
 	private HashMap<String, Boolean> isWSEndpoint(IType type) throws JavaModelException {
 		HashMap<String, Boolean> wsEndpoint = new HashMap<>();
@@ -151,20 +156,20 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 			wsEndpoint.put("isSuperClass", false);
 			return wsEndpoint;
 		}
-		
-		/* Check that class follows /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
-		 List<String> scopes = AnnotationUtil.getScopeAnnotations(type, WebSocketConstants.WS_ANNOTATION_CLASS);
-		 boolean useAnnotation = scopes.size() > 0;
 
+		// Check that class follows https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications
 		
+		List<String> scopes = AnnotationUtil.getScopeAnnotations(type, WebSocketConstants.WS_ANNOTATION_CLASS);
+		boolean useAnnotation = scopes.size() > 0;
+
 		boolean useSuperclass = false;
-		
-		String superclass = type.getSuperclassName();
 
-		if (superclass == null) {
-			useSuperclass = false;
-		} else {
-			useSuperclass = superclass.equals(WebSocketConstants.ENDPOINT_SUPERCLASS);
+		String superclass = type.getSuperclassName();
+		try {
+			int r = doesITypeHaveSuperType(type, WebSocketConstants.ENDPOINT_SUPERCLASS);
+			useSuperclass = (r >= 0);
+		} catch (CoreException e) {
+			JakartaCorePlugin.logException(WebSocketConstants.DIAGNOSTIC_ERR_MSG, e);
 		}
 
 		wsEndpoint.put("isAnnotation", useAnnotation);
