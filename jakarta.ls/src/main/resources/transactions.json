@@ -1,3 +1,42 @@
 {
-
+	"UserTransaction begin-commit-rollback": {
+		"prefix": "utxbegin",
+		"body": [
+			"try {",
+			"utx.begin();",
+			"\t/* operation */",
+			"\tutx.commit();",
+			"} catch (Exception e1) {",
+			"\ttry {",
+			"\t\tutx.rollback();",
+			"\t} catch (Exception e2){",
+			"\t\te2.printStackTrace();",
+			"\t}",
+			"}"
+		],
+		"description": "UserTransaction begin-commit-rollback",
+		"context": {
+			"type": "jakarta.transaction.UserTransaction"
+		}
+	},
+	"TransactionManager begin-commit-rollback": {
+		"prefix": "tmbegin",
+		"body": [
+			"try {",
+			"tm.begin();",
+			"\t/* operation */",
+			"\ttm.commit();",
+			"} catch (Exception e1) {",
+			"\ttry {",
+			"\t\ttm.rollback();",
+			"\t} catch (Exception e2){",
+			"\t\te2.printStackTrace();",
+			"\t}",
+			"}"
+		],
+		"description": "TransactionManager begin-commit-rollback",
+		"context": {
+			"type": "jakarta.transaction.TransactionManager"
+		}
+	}
 }
