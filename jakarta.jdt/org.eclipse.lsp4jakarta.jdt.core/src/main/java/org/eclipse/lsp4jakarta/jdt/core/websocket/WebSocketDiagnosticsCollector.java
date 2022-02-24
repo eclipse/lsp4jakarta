@@ -36,7 +36,6 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
-import org.apache.commons.lang3.ClassUtils;
 
 
 public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
@@ -111,10 +110,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 						IAnnotation[] param_annotations = param.getAnnotations();
 						boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
 
-						// List<String> paramAnnotation = AnnotationUtil.getScopeAnnotation(param, WebSocketConstants.PATH_PARAM_ANNOTATION);
-						
 						// parameter does not have a @PathParam annotation
-						// if (paramAnnotation.size() == 0) {
 						if (!hasPathParamAnnot) {
 
 							String signature = param.getTypeSignature();
@@ -138,37 +134,6 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 //							param.getTypeRoot()
 						}
 
-
-
-						// String signature = param.getTypeSignature();
-						// String paramType = Signature.getSignatureSimpleName(signature);
-						
-
-
-						// if (validParamTypes.contains(paramType)) {
-						// 	//TODO check
-						// 	if (paramType.equals(WebSocketConstants.STRING)) {
-						// 		// ClassUtils.isPrimitiveOrWrapper(getClass())
-						// 		// List<String> paramAnnotation = AnnotationUtil.getScopeAnnotation(param, WebSocketConstants.PATH_PARAM_ANNOTATION);
-
-								
-						// 		if (paramAnnotation.size() == 0) {
-						// 			// throw error
-						// 			// TODO create diagnostics
-						// 			ISourceRange paramNameRange = JDTUtils.getNameRange(param);
-						// 			Range paramRange = JDTUtils.toRange(
-                        //                     unit,
-                        //                     paramNameRange.getOffset(),
-                        //                     paramNameRange.getLength()
-						// 			);
-		                //             Diagnostic diagnostic = new Diagnostic(
-		                //             	paramRange,
-		                //                 "It is missing @PathParams"
-						// 			);
-		                //             diagnostics.add(diagnostic);
-						// 		}
-						// 	}
-						// }
 						
 					}
 				}
@@ -188,9 +153,6 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		}
 		
 		/* Check that class follows /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
-//		boolean useAnnotation = Arrays.asList(type.getAnnotations())
-//				.stream().anyMatch(annotation -> annotation.getElementName().equals(WebSocketConstants.WS_ANNOTATION_CLASS));
-		
 		 List<String> scopes = AnnotationUtil.getScopeAnnotations(type, WebSocketConstants.WS_ANNOTATION_CLASS);
 		 boolean useAnnotation = scopes.size() > 0;
 
@@ -209,9 +171,5 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		wsEndpoint.put("isSuperClass", useSuperclass);
 
 		return wsEndpoint;
-	}
-
-	private String generateDiagnosticMsg(String type, boolean isAnnotation) {
-		return "";
 	}
 }

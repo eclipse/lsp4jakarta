@@ -12,6 +12,15 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.websocket;
 
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.d;
+import static org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants.DIAGNOSTIC_SOURCE;
+import static org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT;
+
+import java.util.Arrays;
+
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
@@ -28,10 +37,19 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path());
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/AnnotationMissing.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic d1 = d(10, 78, 90,
+        "Variable is missing @PathParams.",
+            DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation");
+
+        assertJavaDiagnostics(diagnosticsParams, utils, d1);
+
+
+        
     }
 }
