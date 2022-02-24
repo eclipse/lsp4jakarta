@@ -1,5 +1,4 @@
-package org.eclipse.lsp4jakarta.jdt.coreUtils;
-
+package org.eclipse.lsp4jakarta.jdt.core;
 
 import org.eclipse.jdt.core.IAnnotatable;
 
@@ -8,9 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Collections;
-import java.util.HashSet;
 
-public class Utils {
+public class AnnotationUtil {
     /**
      * Returns the list of recognised defining annotations applied to a
      * class.
@@ -25,18 +23,6 @@ public class Utils {
             // recognised managed bean annotations.
             return Arrays.stream(type.getAnnotations()).map(annotation -> annotation.getElementName())
                     .filter(scopes::contains).distinct().collect(Collectors.toList());
-
-        } catch (Exception e) {
-            return Collections.<String>emptyList();
-        }
-    }
-    
-    public static List<String> getScopeAnnotation(IAnnotatable type, String scope) {
-        try {
-            // Construct a stream of only the annotations applied to the type that are also
-            // recognised managed bean annotations.
-            return Arrays.stream(type.getAnnotations()).map(annotation -> annotation.getElementName())
-                    .filter(scope::equals).distinct().collect(Collectors.toList());
 
         } catch (Exception e) {
             return Collections.<String>emptyList();

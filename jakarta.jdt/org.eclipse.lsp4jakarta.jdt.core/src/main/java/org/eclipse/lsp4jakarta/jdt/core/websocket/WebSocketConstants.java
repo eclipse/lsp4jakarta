@@ -26,6 +26,11 @@ public class WebSocketConstants {
     public static final DiagnosticSeverity ERROR = DiagnosticSeverity.Error;
     public static final DiagnosticSeverity WARNING = DiagnosticSeverity.Warning;
 
+    public static final String DIAGNOSTIC_ERR_MSG = "Cannot calculate WebSocket diagnostics";
+
+    public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Variable is missing @PathParams";
+    public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
+
     /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
     // Class Level Annotations
     public static final String SERVER_ENDPOINT_ANNOTATION = "ServerEndpoint";
@@ -44,9 +49,9 @@ public class WebSocketConstants {
     // OnOpen annotation
     public static final String ENDPOINT_CONFIG = "EndpointConfig";
     public static final String SESSION = "Session";
-    public static final String PATH_PARAM_ANNOTATION = "PathParam";
+    public static final String PATH_PARAM_ANNOTATION = "@PathParam";
     public static final String STRING = "String";
 
     
-    public final static Set<String> ON_OPEN_SET_PARAM_TYPES= new HashSet<>(Arrays.asList(ENDPOINT_CONFIG, SESSION, STRING)); 
+    public final static Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList(ENDPOINT_CONFIG, SESSION)); 
 }
