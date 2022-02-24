@@ -1,3 +1,14 @@
 {
-
-}
+    "@Transactional": {
+      "prefix": "@Transactional()",
+      "body": [
+        "@Transactional(",
+        "\trollbackOn={SQLException.class, IOException.class},",
+        "\tdontRollbackOn={IllegalStateException.class})"
+      ],
+      "description": "Specify exception types that will not and will cause a rollback for transaction",
+      "context": {
+        "type": "jakarta.transaction.Transactional"
+      }
+    }
+  }
