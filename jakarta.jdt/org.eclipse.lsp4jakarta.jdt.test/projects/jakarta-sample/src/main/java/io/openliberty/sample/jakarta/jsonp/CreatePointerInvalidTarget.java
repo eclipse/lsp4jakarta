@@ -16,7 +16,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonPointer;
 
 public class CreatePointerInvalidTarget {
-    
+
     public static void makePointer() {
         JsonPointer doubleSlashPointer = Json.createPointer("//");
         JsonPointer noSlashPrefixPointer = Json.createPointer("name/1");
