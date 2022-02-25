@@ -46,7 +46,7 @@ public class WebSocketConstants {
     // For OnOpen annotation
     public static final String ENDPOINT_CONFIG = "EndpointConfig";
     public static final String SESSION = "Session";
-    public static final String PATH_PARAM_ANNOTATION = "@PathParam";
+    public static final String PATH_PARAM_ANNOTATION = "PathParam";
     
     public final static Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList(ENDPOINT_CONFIG, SESSION)); 
 }

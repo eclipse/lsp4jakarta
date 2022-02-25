@@ -27,8 +27,11 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeParameter;
 import org.eclipse.jdt.core.ILocalVariable;
+import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
@@ -36,6 +39,7 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
+import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
 
 import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
 
@@ -132,9 +136,18 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 							}
 						} else {
 							// if it's @PathParam, the valid types are listed on https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#onopen
-							// for (IAnnotation param_annot : param_annotations) {
-							// param_annot.getTypeName()
-							// }
+							// IMemberValuePair represents the member-value pair of an annotation. The value is represented by an Object.
+							// getValue() obtains only the name of the value in @PathParam i.e. onOpen(@PathParam(value="test") Integer parameter),
+							// getValue() would return the string "test" instead of the object Integer
+							for (IAnnotation test : param_annotations) {
+								for (IMemberValuePair pair: test.getMemberValuePairs()) {
+									if (pair.getValue() instanceof Integer) {
+										String name = "Lidia";
+										System.out.println("Name" + name);
+									}
+								}
+							}
+							
 							
 							String signature = param.getTypeSignature();
 							String paramType = Signature.getSignatureSimpleName(signature);
