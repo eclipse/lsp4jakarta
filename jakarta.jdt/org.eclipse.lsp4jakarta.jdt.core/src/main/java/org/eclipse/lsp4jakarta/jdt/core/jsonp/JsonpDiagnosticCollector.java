@@ -72,7 +72,7 @@ public class JsonpDiagnosticCollector implements DiagnosticsCollector {
     public boolean isInvalidArgument(Expression arg) {
         if (arg instanceof StringLiteral) {
             String argValue = ((StringLiteral)arg).getLiteralValue();
-            if (!(argValue.isEmpty() || argValue.startsWith("/"))) {
+            if (!(argValue.isEmpty() || argValue.matches("^(\\/[^\\/]+)+$"))) {
                 return true;
             }
         }
