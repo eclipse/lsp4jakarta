@@ -1,0 +1,57 @@
+/*******************************************************************************
+ * Copyright (c) 2022 IBM Corporation and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Yijia Jing
+ *******************************************************************************/
+
+package org.eclipse.lsp4jakarta.jdt.core;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+
+public class ASTUtils {
+
+    public static ASTNode getASTNode(ICompilationUnit unit) {
+        ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
+        parser.setKind(ASTParser.K_COMPILATION_UNIT);
+        parser.setSource(unit);
+        parser.setResolveBindings(true);
+        return parser.createAST(null);
+    }
+
+    public static List<MethodInvocation> getMethodInvocations(ICompilationUnit unit) {
+        ASTNode node = getASTNode(unit);
+        MethodInvocationVisitor visitor = new ASTUtils().new MethodInvocationVisitor();
+        node.accept(visitor);
+        return visitor.getMethodInvocations();
+    }
+
+    public class MethodInvocationVisitor extends ASTVisitor {
+        private final List<MethodInvocation> invocations = new ArrayList<>();
+
+        @Override
+        public boolean visit(final MethodInvocation m) {
+            invocations.add(m);
+            return super.visit(m);
+        }
+
+        public List<MethodInvocation> getMethodInvocations() {
+            return Collections.unmodifiableList(invocations);
+        }
+    }
+}

@@ -22,4 +22,7 @@ public class JsonpConstants {
 
     /* Severity */
     public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
+    
+    public static final String CREATE_POINTER = "createPointer";
+    public static final String DIAGNOSTIC_CODE_CREATE_POINTER = "InvalidCreatePointerParam";
 }
