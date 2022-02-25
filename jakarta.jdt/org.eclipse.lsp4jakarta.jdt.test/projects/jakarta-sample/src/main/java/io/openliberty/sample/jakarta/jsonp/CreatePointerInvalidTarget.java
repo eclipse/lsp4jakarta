@@ -10,19 +10,15 @@
  * Contributors:
  *     Yijia Jing
  *******************************************************************************/
+package io.openliberty.sample.jakarta.jsonp;
 
-package org.eclipse.lsp4jakarta.jdt.core.jsonp;
+import jakarta.json.Json;
+import jakarta.json.JsonPointer;
 
-import org.eclipse.lsp4j.DiagnosticSeverity;
-
-public class JsonpConstants {
-
-    /* Source */
-    public static final String DIAGNOSTIC_SOURCE = "jakarta-jsonp";
-
-    /* Severity */
-    public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
+public class CreatePointerInvalidTarget {
     
-    public static final String CREATE_POINTER = "createPointer";
-    public static final String DIAGNOSTIC_CODE_CREATE_POINTER = "InvalidCreatePointerArg";
+    public static void makePointer() {
+        JsonPointer emptyPointer = Json.createPointer("//");
+        JsonPointer namePointer = Json.createPointer("name/1");
+    }
 }
