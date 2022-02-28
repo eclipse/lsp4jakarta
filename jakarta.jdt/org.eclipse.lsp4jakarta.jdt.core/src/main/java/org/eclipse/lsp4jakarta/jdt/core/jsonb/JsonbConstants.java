@@ -7,6 +7,8 @@ public class JsonbConstants {
 
     /* Code */
     public static final String DIAGNOSTIC_CODE_ANNOTATION = "MultipleJsonbCreatorAnnotations";
+    public static final String DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD = "NonmutualJsonbTransientAnnotation";
+    
 
     /* Annotation Constants */
     public static final String JSONB_PREFIX = "Jsonb";

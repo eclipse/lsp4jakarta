@@ -78,7 +78,7 @@ public class JsonbTransientDiagnosticsCollector implements DiagnosticsCollector 
             String message = JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT;
             DiagnosticSeverity severity = DiagnosticSeverity.Error;
             String source = JsonbConstants.DIAGNOSTIC_SOURCE;
-            String code = JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION;
+            String code = JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD;
 
             return new Diagnostic(range, message, severity, source, code);
         } catch (JavaModelException e) {
