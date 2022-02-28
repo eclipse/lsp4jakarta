@@ -42,7 +42,7 @@ public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
     @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
 
-        if (Objects.isNull(unit)) {
+        if (unit == null) {
             return;
         }
 
