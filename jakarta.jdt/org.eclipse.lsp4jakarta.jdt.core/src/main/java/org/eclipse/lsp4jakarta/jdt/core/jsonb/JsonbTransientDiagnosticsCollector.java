@@ -30,60 +30,60 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 public class JsonbTransientDiagnosticsCollector implements DiagnosticsCollector {
 
-	@Override
-	public void completeDiagnostic(Diagnostic diagnostic) {
-		diagnostic.setSource(JsonbConstants.DIAGNOSTIC_SOURCE);
-		diagnostic.setSeverity(DiagnosticSeverity.Error);
-	}
+    @Override
+    public void completeDiagnostic(Diagnostic diagnostic) {
+        diagnostic.setSource(JsonbConstants.DIAGNOSTIC_SOURCE);
+        diagnostic.setSeverity(DiagnosticSeverity.Error);
+    }
 
-	@Override
-	public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
-		if (unit == null) {
-			return;
-		}
+    @Override
+    public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
+        if (unit == null) {
+            return;
+        }
 
-		try {
+        try {
 
-			for (IType type : unit.getAllTypes()) {
+            for (IType type : unit.getAllTypes()) {
 
-				for (IField field : type.getFields()) {
+                for (IField field : type.getFields()) {
 
-					boolean hasJsonbTransient = false;
-					boolean hasOtherJsonbAnnotation = false;
+                    boolean hasJsonbTransient = false;
+                    boolean hasOtherJsonbAnnotation = false;
 
-					for (IAnnotation annotation : field.getAnnotations()) {
-						String annotation_name = annotation.getElementName();
-						if (annotation_name.equals(JsonbConstants.JSONB_TRANSIENT)) {
-							hasJsonbTransient = true;
-						} else if (annotation_name.startsWith(JsonbConstants.JSONB_PREFIX)) {
-							hasOtherJsonbAnnotation = true;
-						}
-					}
-					if (hasJsonbTransient && hasOtherJsonbAnnotation) {
-						Diagnostic diagnostic = createDiagnosticBy(unit, field);
-						diagnostics.add(diagnostic);
-					}
-				}
-			}
+                    for (IAnnotation annotation : field.getAnnotations()) {
+                        String annotation_name = annotation.getElementName();
+                        if (annotation_name.equals(JsonbConstants.JSONB_TRANSIENT)) {
+                            hasJsonbTransient = true;
+                        } else if (annotation_name.startsWith(JsonbConstants.JSONB_PREFIX)) {
+                            hasOtherJsonbAnnotation = true;
+                        }
+                    }
+                    if (hasJsonbTransient && hasOtherJsonbAnnotation) {
+                        Diagnostic diagnostic = createDiagnosticBy(unit, field);
+                        diagnostics.add(diagnostic);
+                    }
+                }
+            }
 
-		} catch (JavaModelException e) {
-			JakartaCorePlugin.logException("Cannot calculate jakarta-jsonb diagnostics", e);
-		}
-	}
+        } catch (JavaModelException e) {
+            JakartaCorePlugin.logException("Cannot calculate jakarta-jsonb diagnostics", e);
+        }
+    }
 
-	private Diagnostic createDiagnosticBy(ICompilationUnit unit, IField field) {
-		try {
-			ISourceRange sourceRange = JDTUtils.getNameRange(field);
-			Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
-			String message = JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT;
-			DiagnosticSeverity severity = DiagnosticSeverity.Error;
-			String source = JsonbConstants.DIAGNOSTIC_SOURCE;
-			String code = JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION;
+    private Diagnostic createDiagnosticBy(ICompilationUnit unit, IField field) {
+        try {
+            ISourceRange sourceRange = JDTUtils.getNameRange(field);
+            Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
+            String message = JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT;
+            DiagnosticSeverity severity = DiagnosticSeverity.Error;
+            String source = JsonbConstants.DIAGNOSTIC_SOURCE;
+            String code = JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION;
 
-			return new Diagnostic(range, message, severity, source, code);
-		} catch (JavaModelException e) {
-			JakartaCorePlugin.logException("Cannot create jakarta-jsonb diagnostics", e);
-		}
-		return null;
-	}
+            return new Diagnostic(range, message, severity, source, code);
+        } catch (JavaModelException e) {
+            JakartaCorePlugin.logException("Cannot create jakarta-jsonb diagnostics", e);
+        }
+        return null;
+    }
 }
