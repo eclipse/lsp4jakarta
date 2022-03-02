@@ -27,10 +27,10 @@ public class WebSocketConstants {
 
     public static final String DIAGNOSTIC_ERR_MSG = "Cannot calculate WebSocket diagnostics";
 
-    public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Variable is missing @PathParams.";
+    public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameter is missing annotation @PathParams.";
     public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
     
-    public static final String DIAGNOSTIC_ON_OPEN_INVALID_PARAMS = "Invalid type, parameter must be of type Session, EndpointConfig parameter, or zero to n parameters (of type String, any Java primitive type or boxed version thereof)";
+    public static final String DIAGNOSTIC_ON_OPEN_INVALID_PARAMS = "Invalid parameter type. Parameter must be of type Session, EndpointConfig parameter, or if annotated with @PathParam of type String, any Java primitive type or boxed version thereof.";
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "ChangeInvalidParam";
     
     /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
@@ -47,11 +47,9 @@ public class WebSocketConstants {
 
     /* Types */
     // For OnOpen annotation
-    public static final String ENDPOINT_CONFIG = "EndpointConfig";
-    public static final String SESSION = "Session";
     public static final String PATH_PARAM_ANNOTATION = "PathParam";
     
-    public final static Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList(ENDPOINT_CONFIG, SESSION));
+    public final static Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("jakarta.websocket.EndpointConfig", "jakarta.websocket.Session"));
     
     public final static Set<String> WRAPPER_OBJS = new HashSet<>(Arrays.asList("java.lang.String", "java.lang.Boolean", "java.lang.Integer", "java.lang.Long", "java.lang.Double", "java.lang.Float"));
 }

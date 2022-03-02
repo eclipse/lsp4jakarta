@@ -25,13 +25,9 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.ITypeParameter;
 import org.eclipse.jdt.core.ILocalVariable;
-import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
@@ -39,7 +35,6 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
-import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 
 import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
@@ -100,12 +95,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		}
 	}
 
-	private void invalidParamsCheck(IType type, String function, Set<String> validParamTypes, ICompilationUnit unit,
+	private void invalidParamsCheck(IType type, String function, Set<String> specialParamTypes, ICompilationUnit unit,
 			List<Diagnostic> diagnostics) throws JavaModelException {
-		// check methods annotations, then check their params, check that their type is
-		// any of the valid options, if it's a string, check that it has the @Params
-		// annotation
-		// If so, set up the severity to Error, and add a code?
 
 		IMethod[] allMethods = type.getMethods();
 
@@ -118,47 +109,42 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 					ILocalVariable[] allParams = method.getParameters();
 
 					for (ILocalVariable param : allParams) {
-						IAnnotation[] param_annotations = param.getAnnotations();
-						boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
-								annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
-
-                        String signature = param.getTypeSignature();
-                        
-                        
-						// parameter does not have a @PathParam annotation
-						if (!hasPathParamAnnot) {
-							String paramType = Signature.getSignatureSimpleName(signature);
-
-							// if it's not Session or EndpointConfig, throw error
-							if (!validParamTypes.contains(paramType)) {
-								Diagnostic diagnostic = createDiagnostic(param, unit,
-										WebSocketConstants.DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING,
-										WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT);
-								diagnostics.add(diagnostic);
-							}
-						} else {
-							// if it's @PathParam, the valid types are listed on https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#onopen
-							// IMemberValuePair represents the member-value pair of an annotation. The value is represented by an Object.
-							// getValue() obtains only the name of the value in @PathParam i.e. onOpen(@PathParam(value="test") Integer parameter),
-							// getValue() would return the string "test" instead of the object Integer
-														
-							try {
-					            String formatSignature = signature.replace("/", ".");
-					            IType primaryType = param.getTypeRoot().findPrimaryType();
-					            String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, primaryType);
-					            boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
-					            if (!(isPrimitive || isWrapper(resolvedTypeName))) {
-					                // create diagnostics
-					                Diagnostic diagnostic = createDiagnostic(param, unit,
-	                                        WebSocketConstants.DIAGNOSTIC_ON_OPEN_INVALID_PARAMS,
-	                                        WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS);
-	                                diagnostics.add(diagnostic);
-					            }
-					        } catch (JavaModelException e) {
-					        }
-							
-						}
-
+					    
+					    String signature = param.getTypeSignature();
+					    String formatSignature = signature.replace("/", ".");
+					    IType primaryType = param.getTypeRoot().findPrimaryType();
+					    String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, primaryType);
+					    					    
+					    boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
+					    boolean isSpecialType = specialParamTypes.contains(resolvedTypeName);
+//					    if (resolvedTypeName != null) {
+//					        isSpecialType = specialParamTypes.contains(resolvedTypeName);
+//					    } else {
+//					        isSpecialType = specialParamTypes.contains(Signature.getSignatureSimpleName(signature));
+//					    }
+					    
+					    // check type of parameters
+					    if (!(isSpecialType || isWrapper(resolvedTypeName) || isPrimitive)) {
+					        Diagnostic diagnostic = createDiagnostic(param, unit,
+                                    WebSocketConstants.DIAGNOSTIC_ON_OPEN_INVALID_PARAMS,
+                                    WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS);
+                            diagnostics.add(diagnostic);
+                            return;
+					    }
+					    
+					    if (!isSpecialType) {
+					        // check if it has @PathParam
+					        IAnnotation[] param_annotations = param.getAnnotations();
+	                        boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
+	                                annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
+	                        
+	                        if (!hasPathParamAnnot) {
+	                            Diagnostic diagnostic = createDiagnostic(param, unit,
+                                        WebSocketConstants.DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING,
+                                        WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT);
+                                diagnostics.add(diagnostic);
+	                        }
+					    }
 					}
 				}
 			}

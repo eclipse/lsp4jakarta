@@ -14,8 +14,6 @@ package org.eclipse.lsp4jakarta.jdt.websocket;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.d;
-import static org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants.DIAGNOSTIC_SOURCE;
-import static org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT;
 
 import java.util.Arrays;
 
@@ -34,22 +32,38 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
     @Test
     public void addPathParamsAnnotation() throws Exception {
-        JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/AnnotationMissing.java"));
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/Test.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d1 = d(10, 78, 90,
-        "Variable is missing @PathParams.",
-            DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation");
+        Diagnostic d = d(11, 78, 95,
+                "Parameter is missing annotation @PathParams.",
+                DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation");
 
-        assertJavaDiagnostics(diagnosticsParams, utils, d1);
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
 
         
+    }
+    
+    @Test
+    public void changeInvalidParamType() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/InvalidParamType.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+        
+        Diagnostic d = d(11, 47, 49,
+                "Invalid parameter type. Parameter must be of type Session, EndpointConfig parameter, or if annotated with @PathParam of type String, any Java primitive type or boxed version thereof.",
+                DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidParam");
+        
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
 }
