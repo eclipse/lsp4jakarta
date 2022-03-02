@@ -18,6 +18,6 @@ public class JsonbConstants {
     public static final int MAX_METHOD_WITH_JSONBCREATOR = 1;
 
     public static final String JSONB_TRANSIENT = JSONB_PREFIX + "Transient";
-    public static final String ERROR_MESSAGE_JSONB_TRANSIENT = "@JsonbTransient should be mutually exclusive with all other JSON Binding defined annotations.";
+    public static final String ERROR_MESSAGE_JSONB_TRANSIENT = "@JsonbTransient must be mutually exclusive with all other JSON Binding defined annotations.";
 
 }

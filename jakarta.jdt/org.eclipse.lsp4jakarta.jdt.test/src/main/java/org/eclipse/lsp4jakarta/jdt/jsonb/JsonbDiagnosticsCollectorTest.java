@@ -84,7 +84,7 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         Diagnostic d1 = d(22, 19, 23,
-                "@JsonbTransient should be mutually exclusive with all other JSON Binding defined annotations.",
+                "@JsonbTransient must be mutually exclusive with all other JSON Binding defined annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1);
