@@ -1,42 +1,53 @@
 {
-	"UserTransaction begin-commit-rollback": {
-		"prefix": "utxbegin",
+	"Initialize a UserTransaction Object via Injection": {
+		"prefix": "userTransactionInjection",
 		"body": [
-			"try {",
-			"utx.begin();",
-			"\t/* operation */",
-			"\tutx.commit();",
-			"} catch (Exception e1) {",
+			"@Resource",
+			"UserTransaction ${1:TransactionName};",
+			"",
+			"public void ${2:FunctionName}(){",
 			"\ttry {",
-			"\t\tutx.rollback();",
-			"\t} catch (Exception e2){",
-			"\t\te2.printStackTrace();",
+			"\t\t${1:TransactionName}.begin();",
+			"",
+			"\t\t/* operation */",
+			"\t",
+			"\t\t${1:TransactionName}.commit();",
+			"\t} catch (Exception e1) {",
+			"\t\ttry {",
+			"\t\t\t${1:TransactionName}.rollback();",
+			"\t\t} catch (Exception e2){",
+			"\t\t\te2.printStackTrace();",
+			"\t\t}",
 			"\t}",
 			"}"
 		],
-		"description": "UserTransaction begin-commit-rollback",
+		"description": "Initializes a UserTransaction Object via Injection. Provides a template for begin(), commit(), and rollback() of the said UserTransaction.",
 		"context": {
 			"type": "jakarta.transaction.UserTransaction"
 		}
 	},
-	"TransactionManager begin-commit-rollback": {
-		"prefix": "tmbegin",
+	"Initialize a UserTransaction Object via JNDI Lookup": {
+		"prefix": "userTransactionJNDI",
 		"body": [
+			"UserTransaction ${1:TransactionName} = (UserTransaction) context.lookup(\"${2:Address}\");",
+			"",
 			"try {",
-			"tm.begin();",
+			"\t${1:TransactionName}.begin();",
+			"",
 			"\t/* operation */",
-			"\ttm.commit();",
+			"",
+			"\t${1:TransactionName}.commit();",
 			"} catch (Exception e1) {",
 			"\ttry {",
-			"\t\ttm.rollback();",
+			"\t\t${1:TransactionName}.rollback();",
 			"\t} catch (Exception e2){",
 			"\t\te2.printStackTrace();",
 			"\t}",
 			"}"
 		],
-		"description": "TransactionManager begin-commit-rollback",
+		"description": "Initializes a UserTransaction Object via JNDI lookup. Provides a template for begin(), commit(), and rollback() of the said UserTransaction.",
 		"context": {
-			"type": "jakarta.transaction.TransactionManager"
+			"type": "jakarta.transaction.UserTransaction"
 		}
 	}
 }
