@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2022 IBM Corporation, Adit Rada and others.
+* Copyright (c) 2020, 2022 IBM Corporation, Matheus Cruz and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -8,7 +8,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     IBM Corporation, Adit Rada - initial API and implementation
+*     IBM Corporation, Matheus Cruz - initial API and implementation
 *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.jsonb;
@@ -33,6 +33,11 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
+/**
+ * This class contains logic for Jsonb diagnostics:
+ * 1) Multiple JsonbCreator annotations on constructors will cause a diagnostic.
+ * 2) JsonbTransient not being a mutually exclusive Jsonb annotation will cause a diagnostic. 
+ */
 public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     
     private final String JSONB_CREATOR_DIAGNOSTIC_TYPE = "JsonbCreator";

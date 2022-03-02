@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2021, 2022 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,7 +73,7 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
     }
     
     @Test
-    public void diagnosticWhenJsonbTransientIsNotMutuallyExclusive() throws Exception {
+    public void JsonbTransientNotMutuallyExclusive() throws Exception {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
