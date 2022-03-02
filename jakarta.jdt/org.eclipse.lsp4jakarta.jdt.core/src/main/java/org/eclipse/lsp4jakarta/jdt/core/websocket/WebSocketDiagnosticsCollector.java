@@ -40,6 +40,7 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
 import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
+import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 
 import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
 
@@ -121,10 +122,11 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 						boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
 								annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
 
+                        String signature = param.getTypeSignature();
+                        
+                        
 						// parameter does not have a @PathParam annotation
 						if (!hasPathParamAnnot) {
-
-							String signature = param.getTypeSignature();
 							String paramType = Signature.getSignatureSimpleName(signature);
 
 							// if it's not Session or EndpointConfig, throw error
@@ -139,18 +141,22 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 							// IMemberValuePair represents the member-value pair of an annotation. The value is represented by an Object.
 							// getValue() obtains only the name of the value in @PathParam i.e. onOpen(@PathParam(value="test") Integer parameter),
 							// getValue() would return the string "test" instead of the object Integer
-							for (IAnnotation test : param_annotations) {
-								for (IMemberValuePair pair: test.getMemberValuePairs()) {
-									if (pair.getValue() instanceof Integer) {
-										String name = "Lidia";
-										System.out.println("Name" + name);
-									}
-								}
-							}
+														
+							try {
+					            String formatSignature = signature.replace("/", ".");
+					            IType primaryType = param.getTypeRoot().findPrimaryType();
+					            String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, primaryType);
+					            boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
+					            if (!(isPrimitive || isWrapper(resolvedTypeName))) {
+					                // create diagnostics
+					                Diagnostic diagnostic = createDiagnostic(param, unit,
+	                                        WebSocketConstants.DIAGNOSTIC_ON_OPEN_INVALID_PARAMS,
+	                                        WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS);
+	                                diagnostics.add(diagnostic);
+					            }
+					        } catch (JavaModelException e) {
+					        }
 							
-							
-							String signature = param.getTypeSignature();
-							String paramType = Signature.getSignatureSimpleName(signature);
 						}
 
 					}
@@ -159,6 +165,13 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		}
 	}
 
+	/* Based on https://github.com/eclipse/lsp4mp/blob/9789a1a996811fade43029605c014c7825e8f1da/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTTypeUtils.java#L294-L298 */
+	private boolean isWrapper(String valueClass) {
+	    return WebSocketConstants.WRAPPER_OBJS
+	            .stream()
+	            .anyMatch(wrapper -> wrapper.equals(valueClass));
+	}
+	
 	/* Check if the type is a websocket endpoint */
 	private HashMap<String, Boolean> isWSEndpoint(IType type) throws JavaModelException {
 		HashMap<String, Boolean> wsEndpoint = new HashMap<>();
