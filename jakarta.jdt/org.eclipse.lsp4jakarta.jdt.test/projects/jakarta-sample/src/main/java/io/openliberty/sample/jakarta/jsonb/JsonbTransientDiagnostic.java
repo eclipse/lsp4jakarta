@@ -20,11 +20,11 @@ import jakarta.json.bind.annotation.JsonbProperty;
 public class JsonbTransientDiagnostic {
     @JsonbProperty("name")
     @JsonbTransient
-	private String name;
-    
+    private String name;
+
     @JsonbTransient
     private int id;
-    
+
     @JsonbPropery("fav_lang")
     private String favoriteLanguage;
 }

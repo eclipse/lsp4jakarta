@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2022 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,23 +35,23 @@ import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Test;
 
 public class JsonbTransientFieldDiagnosticTest extends BaseJakartaTest {
-	protected static JDTUtils JDT_UTILS = new JDTUtils();
+    protected static JDTUtils JDT_UTILS = new JDTUtils();
 
-	@Test
-	public void diagnosticWhenJsonbTransientIsNotMutuallyExclusive() throws Exception {
-		JDTUtils utils = JDT_UTILS;
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jsonb/JsonbTransientDiagnostic.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    public void diagnosticWhenJsonbTransientIsNotMutuallyExclusive() throws Exception {
+        JDTUtils utils = JDT_UTILS;
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jsonb/JsonbTransientDiagnostic.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		Diagnostic d1 = d(22, 16, 20,
-				"@JsonbTransient should be mutually exclusive with all other JSON Binding defined annotations.",
-				DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        Diagnostic d1 = d(22, 16, 20,
+                "@JsonbTransient should be mutually exclusive with all other JSON Binding defined annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
 
-		assertJavaDiagnostics(diagnosticsParams, utils, d1);
-	}
+        assertJavaDiagnostics(diagnosticsParams, utils, d1);
+    }
 }
