@@ -40,7 +40,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(11, 78, 95,
+        Diagnostic d = d(11, 47, 64,
                 "Parameter is missing annotation @PathParams.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation");
 
@@ -60,7 +60,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
         
-        Diagnostic d = d(11, 47, 49,
+        Diagnostic d = d(10, 47, 59,
                 "Invalid parameter type. Parameter must be of type Session, EndpointConfig parameter, or if annotated with @PathParam of type String, any Java primitive type or boxed version thereof.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidParam");
         

@@ -83,10 +83,10 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 			for (IType type : alltypes) {
 				checkWSEnd = isWSEndpoint(type);
 
-				// checks if the class uses annotation to create a ws endpoint
+				// checks if the class uses annotation to create a WebSocket endpoint
 				if (checkWSEnd.get("isAnnotation")) {
-					invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES,
-							unit, diagnostics);
+					invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, 
+					        WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, unit, diagnostics);
 				}
 
 			}
@@ -95,7 +95,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		}
 	}
 
-	private void invalidParamsCheck(IType type, String function, Set<String> specialParamTypes, ICompilationUnit unit,
+	private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, ICompilationUnit unit,
 			List<Diagnostic> diagnostics) throws JavaModelException {
 
 		IMethod[] allMethods = type.getMethods();
@@ -104,8 +104,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 			IAnnotation[] allAnnotations = method.getAnnotations();
 
 			for (IAnnotation annotation : allAnnotations) {
-				if (annotation.getElementName().equals(function)) {
-					// check params
+				if (annotation.getElementName().equals(methodAnnotTarget)) {
 					ILocalVariable[] allParams = method.getParameters();
 
 					for (ILocalVariable param : allParams) {
@@ -117,14 +116,19 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 					    					    
 					    boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
 					    boolean isSpecialType = specialParamTypes.contains(resolvedTypeName);
-//					    if (resolvedTypeName != null) {
-//					        isSpecialType = specialParamTypes.contains(resolvedTypeName);
-//					    } else {
-//					        isSpecialType = specialParamTypes.contains(Signature.getSignatureSimpleName(signature));
-//					    }
+					    boolean isPrimWrapped;
 					    
-					    // check type of parameters
-					    if (!(isSpecialType || isWrapper(resolvedTypeName) || isPrimitive)) {
+					    if (resolvedTypeName != null) {
+					        isSpecialType = specialParamTypes.contains(resolvedTypeName);
+					        isPrimWrapped = isWrapper(resolvedTypeName);
+					    } else {
+					        String simpleParamType = Signature.getSignatureSimpleName(signature);
+					        isSpecialType = rawSpecialParamTypes.contains(simpleParamType);
+					        isPrimWrapped = isWrapper(simpleParamType);
+					    }
+					    
+					    // check parameters valid types
+					    if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
 					        Diagnostic diagnostic = createDiagnostic(param, unit,
                                     WebSocketConstants.DIAGNOSTIC_ON_OPEN_INVALID_PARAMS,
                                     WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS);
@@ -133,7 +137,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 					    }
 					    
 					    if (!isSpecialType) {
-					        // check if it has @PathParam
+					        // check that if parameter is not a specialType, it has a @PathParam annotation
 					        IAnnotation[] param_annotations = param.getAnnotations();
 	                        boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
 	                                annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
@@ -150,15 +154,28 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 			}
 		}
 	}
-
-	/* Based on https://github.com/eclipse/lsp4mp/blob/9789a1a996811fade43029605c014c7825e8f1da/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTTypeUtils.java#L294-L298 */
+	
+	/**
+	 * Check if valueClass is a wrapper object for a primitive value
+	 * Based on https://github.com/eclipse/lsp4mp/blob/9789a1a996811fade43029605c014c7825e8f1da/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTTypeUtils.java#L294-L298
+	 * 
+	 * @param valueClass the resolved type of valueClass in string or the simple type of valueClass 
+	 * @return if valueClass is a wrapper object
+	 */
 	private boolean isWrapper(String valueClass) {
-	    return WebSocketConstants.WRAPPER_OBJS
-	            .stream()
-	            .anyMatch(wrapper -> wrapper.equals(valueClass));
+	    return WebSocketConstants.WRAPPER_OBJS.contains(valueClass) || WebSocketConstants.RAW_WRAPPER_OBJS.contains(valueClass);
 	}
 	
-	/* Check if the type is a websocket endpoint */
+	
+	/**
+	 * Checks if type is a WebSocket endpoint by meeting one of the 2 conditions listed on 
+	 * https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications 
+	 * are met: class is annotated or class implements Endpoint class
+	 * 
+	 * @param type the type representing the class
+	 * @return the conditions for a class to be a WebSocket endpoint 
+	 * @throws JavaModelException
+	 */
 	private HashMap<String, Boolean> isWSEndpoint(IType type) throws JavaModelException {
 		HashMap<String, Boolean> wsEndpoint = new HashMap<>();
 
@@ -170,7 +187,6 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		}
 
 		// Check that class follows https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications
-		
 		List<String> scopes = AnnotationUtil.getScopeAnnotations(type, WebSocketConstants.WS_ANNOTATION_CLASS);
 		boolean useAnnotation = scopes.size() > 0;
 

@@ -16,6 +16,7 @@ package org.eclipse.lsp4jakarta.jdt.core.websocket;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.DiagnosticSeverity;
 
@@ -40,6 +41,8 @@ public class WebSocketConstants {
     
     // Superclass
     public static final String ENDPOINT_SUPERCLASS = "Endpoint";
+    
+    
     public static final Set<String> WS_ANNOTATION_CLASS = new HashSet<>(Arrays.asList(SERVER_ENDPOINT_ANNOTATION, CLIENT_ENDPOINT_ANNOTATION));
 
     /* Annotations */
@@ -50,6 +53,8 @@ public class WebSocketConstants {
     public static final String PATH_PARAM_ANNOTATION = "PathParam";
     
     public final static Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("jakarta.websocket.EndpointConfig", "jakarta.websocket.Session"));
+    public final static Set<String> RAW_ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("EndpointConfig", "Session"));
     
-    public final static Set<String> WRAPPER_OBJS = new HashSet<>(Arrays.asList("java.lang.String", "java.lang.Boolean", "java.lang.Integer", "java.lang.Long", "java.lang.Double", "java.lang.Float"));
+    public final static Set<String> RAW_WRAPPER_OBJS = new HashSet<>(Arrays.asList("String", "Boolean", "Integer", "Long", "Double", "Float"));
+    public static final Set<String> WRAPPER_OBJS = RAW_WRAPPER_OBJS.stream().map(raw -> "java.lang.".concat(raw)).collect(Collectors.toSet());
 }
