@@ -1,5 +1,5 @@
 {
-	"Initialize a UserTransaction Object via Injection": {
+	"Initialize a UserTransaction object via Injection": {
 		"prefix": "userTransactionInjection",
 		"body": [
 			"@Resource",
@@ -21,12 +21,12 @@
 			"\t}",
 			"}"
 		],
-		"description": "Initializes a UserTransaction Object via Injection. Provides a template for begin(), commit(), and rollback() of the said UserTransaction.",
+		"description": "Initializes a UserTransaction object via Injection. Provides a template for begin(), commit(), and rollback() of the said UserTransaction object.",
 		"context": {
 			"type": "jakarta.transaction.UserTransaction"
 		}
 	},
-	"Initialize a UserTransaction Object via JNDI Lookup": {
+	"Initialize a UserTransaction object via JNDI Lookup": {
 		"prefix": "userTransactionJNDI",
 		"body": [
 			"UserTransaction ${1:TransactionName} = (UserTransaction) context.lookup(\"${2:Address}\");",
@@ -45,7 +45,7 @@
 			"\t}",
 			"}"
 		],
-		"description": "Initializes a UserTransaction Object via JNDI lookup. Provides a template for begin(), commit(), and rollback() of the said UserTransaction.",
+		"description": "Initializes a UserTransaction object via JNDI lookup. Provides a template for begin(), commit(), and rollback() of the said UserTransaction object.",
 		"context": {
 			"type": "jakarta.transaction.UserTransaction"
 		}
