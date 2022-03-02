@@ -17,7 +17,7 @@ import jakarta.json.JsonPointer;
 
 public class CreatePointerInvalidTarget {
 
-    public static void makePointer() {
+    public static void makePointers() {
         JsonPointer doubleSlashPointer = Json.createPointer("//");
         JsonPointer noSlashPrefixPointer = Json.createPointer("name/1");
         JsonPointer slashSuffixPointer = Json.createPointer("/skills/languages/");
