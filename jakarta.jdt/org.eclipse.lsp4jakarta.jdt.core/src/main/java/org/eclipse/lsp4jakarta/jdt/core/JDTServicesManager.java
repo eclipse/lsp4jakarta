@@ -79,7 +79,7 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new ResourceMethodDiagnosticsCollector());
         diagnosticsCollectors.add(new Jax_RSClassDiagnosticsCollector());
         diagnosticsCollectors.add(new JsonbCreatorDiagnosticsCollector());
-        diagnosticsCollectors.add(new JsonbTransientDiagnosticsCollector());
+        //diagnosticsCollectors.add(new JsonbTransientDiagnosticsCollector());
         diagnosticsCollectors.add(new ManagedBeanDiagnosticsCollector());
         diagnosticsCollectors.add(new DependencyInjectionDiagnosticsCollector());
         diagnosticsCollectors.add(new JsonpDiagnosticCollector());
