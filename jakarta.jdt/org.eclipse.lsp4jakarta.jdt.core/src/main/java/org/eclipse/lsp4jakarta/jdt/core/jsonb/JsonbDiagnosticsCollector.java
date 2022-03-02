@@ -33,7 +33,7 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
-public class JsonbCreatorDiagnosticsCollector implements DiagnosticsCollector {
+public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     
     private final String JSONB_CREATOR_DIAGNOSTIC_TYPE = "JsonbCreator";
     private final String JSONB_TRANSIENT_DIAGNOSTIC_TYPE = "JsonbTransient";
