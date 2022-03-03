@@ -615,4 +615,14 @@ public class JDTUtils {
         }
         return null;
     }
+
+    /**
+     * Check if a URI starts with a leading slash.
+     *
+     * @param uriString
+     * @return boolean
+     */
+    public static boolean hasLeadingSlash(String uriString) {
+        return uriString.startsWith("/");
+    }
 }
