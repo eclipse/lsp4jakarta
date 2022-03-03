@@ -80,6 +80,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		Diagnostic diagnostic = new Diagnostic(range, WebSocketConstants.PATHPARAM_VALUE_WARN_MSG);
 		diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(WebSocketConstants.WARNING);
+        diagnostic.setCode("ChangePathParamValue");
 		return diagnostic;
     }
     
