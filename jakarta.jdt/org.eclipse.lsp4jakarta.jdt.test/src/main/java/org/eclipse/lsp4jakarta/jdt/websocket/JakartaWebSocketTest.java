@@ -14,6 +14,8 @@ package org.eclipse.lsp4jakarta.jdt.websocket;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.d;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 
@@ -31,38 +33,18 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
     protected static JDTUtils JDT_UTILS = new JDTUtils();
 
     @Test
-    public void addPathParamsAnnotation() throws Exception {
+    public void testPathParamInvalidURI() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
                 .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websockets/PathParamURIWarningTest.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
-
+        
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         Diagnostic d = d(23, 78, 96,
                 "PathParam value does not match specified Endpoint URI",
                 DiagnosticSeverity.Warning, "jakarta-websocket", "ChangePathParamValue");
-
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
-
-
-
-    }
-
-    @Test
-    public void changeInvalidParamType() throws Exception {
-        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/InvalidParamType.java"));
-        String uri = javaFile.getLocation().toFile().toURI().toString();
-
-        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
-        diagnosticsParams.setUris(Arrays.asList(uri));
-
-        Diagnostic d = d(10, 47, 59,
-                "Invalid parameter type. Parameter must be of type Session, EndpointConfig parameter, or if annotated with @PathParam of type String, any Java primitive type or boxed version thereof.",
-                DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidParam");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
