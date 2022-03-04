@@ -39,9 +39,6 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
  * 2) JsonbTransient not being a mutually exclusive Jsonb annotation will cause a diagnostic. 
  */
 public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
-    
-    private final String JSONB_CREATOR_DIAGNOSTIC_TYPE = "JsonbCreator";
-    private final String JSONB_TRANSIENT_DIAGNOSTIC_TYPE = "JsonbTransient";
 
     @Override
     public void completeDiagnostic(Diagnostic diagnostic) {
@@ -74,7 +71,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
 
             if (methods.size() > JsonbConstants.MAX_METHOD_WITH_JSONBCREATOR) {
                 for (IMethod method : methods) {
-                    Diagnostic diagnostic = createDiagnosticBy(unit, method, JSONB_CREATOR_DIAGNOSTIC_TYPE);
+                    Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.JSONB_CREATOR);
                     diagnostics.add(diagnostic);
                 }
             }
@@ -94,7 +91,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
                         hasOtherJsonbAnnotation = true;
                 }
                 if (hasJsonbTransient && hasOtherJsonbAnnotation) {
-                    Diagnostic diagnostic = createDiagnosticBy(unit, field, JSONB_TRANSIENT_DIAGNOSTIC_TYPE);
+                    Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
                     diagnostics.add(diagnostic);
                 }
             }
@@ -110,9 +107,9 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         d.setSeverity(DiagnosticSeverity.Error);
         d.setSource(JsonbConstants.DIAGNOSTIC_SOURCE);
 
-        if (diagnosticType.equals(JSONB_CREATOR_DIAGNOSTIC_TYPE))
+        if (diagnosticType.equals(JsonbConstants.JSONB_CREATOR))
             addJsonbCreatorSpecificDiagnostics(d);
-        else if (diagnosticType.equals(JSONB_TRANSIENT_DIAGNOSTIC_TYPE))
+        else if (diagnosticType.equals(JsonbConstants.JSONB_TRANSIENT))
             addJsonbTransientSpecificDiagnostics(d);
 
         return d;

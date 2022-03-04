@@ -46,6 +46,7 @@ import org.eclipse.lsp4jakarta.jdt.core.jax_rs.NoResourcePublicConstructorQuickF
 import org.eclipse.lsp4jakarta.jdt.core.jax_rs.NonPublicResourceMethodQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodMultipleEntityParamsQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbTransientAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbConstants;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ConflictProducesInjectQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants;
@@ -115,6 +116,7 @@ public class CodeActionHandler {
             ManagedBeanConstructorQuickFix ManagedBeanConstructorQuickFix = new ManagedBeanConstructorQuickFix();
             ManagedBeanNoArgConstructorQuickFix ManagedBeanNoArgConstructorQuickFix = new ManagedBeanNoArgConstructorQuickFix();
             JsonbAnnotationQuickFix JsonbAnnotationQuickFix = new JsonbAnnotationQuickFix();
+            JsonbTransientAnnotationQuickFix JsonbTransientAnnotationQuickFix = new JsonbTransientAnnotationQuickFix();
             ScopeDeclarationQuickFix ScopeDeclarationQuickFix = new ScopeDeclarationQuickFix();
             RemovePreDestroyAnnotationQuickFix RemovePreDestroyAnnotationQuickFix=new RemovePreDestroyAnnotationQuickFix();
             RemovePostConstructAnnotationQuickFix RemovePostConstructAnnotationQuickFix=new RemovePostConstructAnnotationQuickFix();
@@ -210,6 +212,9 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION)) {
                         codeActions.addAll(JsonbAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD)) {
+                        codeActions.addAll(JsonbTransientAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if(diagnostic.getCode().getLeft().equals(ManagedBeanConstants.DIAGNOSTIC_CODE_SCOPEDECL)) {
                         codeActions.addAll(ScopeDeclarationQuickFix.getCodeActions(context, diagnostic, monitor));
