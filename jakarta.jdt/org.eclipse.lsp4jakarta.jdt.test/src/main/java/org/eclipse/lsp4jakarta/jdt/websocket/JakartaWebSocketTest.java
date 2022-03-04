@@ -42,7 +42,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(23, 78, 96,
+        Diagnostic d = d(22, 59, 77,
                 "PathParam value does not match specified Endpoint URI",
                 DiagnosticSeverity.Warning, "jakarta-websocket", "ChangePathParamValue");
 
