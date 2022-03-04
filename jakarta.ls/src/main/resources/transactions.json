@@ -6,7 +6,7 @@
         "\trollbackOn={SQLException.class, IOException.class},",
         "\tdontRollbackOn={IllegalStateException.class})"
       ],
-      "description": "Specify exception types that will and will not cause a rollback for transaction",
+      "description": "Transactional annotation - specify exception types that will and will not cause a rollback for transaction",
       "context": {
         "type": "jakarta.transaction.Transactional"
       }
