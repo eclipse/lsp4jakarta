@@ -50,5 +50,17 @@
         "context": {
             "type": "jakarta.transaction.UserTransaction"
         }
+    },
+    "@Transactional": {
+        "prefix": "transactionbehav",
+        "body": [
+            "@Transactional(",
+            "\trollbackOn={SQLException.class, IOException.class},",
+            "\tdontRollbackOn={IllegalStateException.class})"
+        ],
+        "description": "Transactional annotation - specify exception types that will and will not cause a rollback for transaction",
+        "context": {
+            "type": "jakarta.transaction.Transactional"
+        }
     }
 }
