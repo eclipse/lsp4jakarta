@@ -8,7 +8,8 @@
  * SPDX-License-Identifier: EPL-2.0 
  * 
  * Contributors: 
- *     Giancarlo Pernudi Segura - initial API and implementation 
+ *     Giancarlo Pernudi Segura - initial API and implementation
+ *     Lidia Ataupillco Ramos
  *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.websocket;

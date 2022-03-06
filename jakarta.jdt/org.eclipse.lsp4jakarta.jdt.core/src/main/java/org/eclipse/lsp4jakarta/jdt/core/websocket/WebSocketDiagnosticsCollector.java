@@ -8,7 +8,8 @@
  * SPDX-License-Identifier: EPL-2.0 
  * 
  * Contributors: 
- *     Giancarlo Pernudi Segura - initial API and implementation 
+ *     Giancarlo Pernudi Segura - initial API and implementation
+ *     Lidia Ataupillco Ramos
  *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
@@ -111,11 +113,10 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 					    
 					    String signature = param.getTypeSignature();
 					    String formatSignature = signature.replace("/", ".");
-					    IType primaryType = param.getTypeRoot().findPrimaryType();
-					    String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, primaryType);
+					    String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
 					    					    
 					    boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
-					    boolean isSpecialType = specialParamTypes.contains(resolvedTypeName);
+					    boolean isSpecialType;
 					    boolean isPrimWrapped;
 					    
 					    if (resolvedTypeName != null) {
@@ -139,7 +140,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 					    if (!isSpecialType) {
 					        // check that if parameter is not a specialType, it has a @PathParam annotation
 					        IAnnotation[] param_annotations = param.getAnnotations();
-	                        boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
+					        boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
 	                                annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
 	                        
 	                        if (!hasPathParamAnnot) {

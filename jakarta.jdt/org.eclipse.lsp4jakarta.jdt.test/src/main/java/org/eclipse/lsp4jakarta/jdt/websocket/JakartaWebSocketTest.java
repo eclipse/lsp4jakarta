@@ -34,7 +34,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
     public void addPathParamsAnnotation() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/Test.java"));
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/AnnotationTest.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
