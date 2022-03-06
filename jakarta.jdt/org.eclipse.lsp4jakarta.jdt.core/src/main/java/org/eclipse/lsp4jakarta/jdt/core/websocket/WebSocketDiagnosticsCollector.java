@@ -88,7 +88,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 				// checks if the class uses annotation to create a WebSocket endpoint
 				if (checkWSEnd.get("isAnnotation")) {
 					invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, 
-					        WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, unit, diagnostics);
+                    WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, unit, diagnostics);
 				}
 
 			}
@@ -110,46 +110,45 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 					ILocalVariable[] allParams = method.getParameters();
 
 					for (ILocalVariable param : allParams) {
-					    
-					    String signature = param.getTypeSignature();
-					    String formatSignature = signature.replace("/", ".");
-					    String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
-					    					    
-					    boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
-					    boolean isSpecialType;
-					    boolean isPrimWrapped;
-					    
-					    if (resolvedTypeName != null) {
-					        isSpecialType = specialParamTypes.contains(resolvedTypeName);
-					        isPrimWrapped = isWrapper(resolvedTypeName);
-					    } else {
-					        String simpleParamType = Signature.getSignatureSimpleName(signature);
-					        isSpecialType = rawSpecialParamTypes.contains(simpleParamType);
-					        isPrimWrapped = isWrapper(simpleParamType);
-					    }
-					    
+                        String signature = param.getTypeSignature();
+                        String formatSignature = signature.replace("/", ".");
+                        String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
+
+                        boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
+                        boolean isSpecialType;
+                        boolean isPrimWrapped;
+
+                        if (resolvedTypeName != null) {
+                            isSpecialType = specialParamTypes.contains(resolvedTypeName);
+                            isPrimWrapped = isWrapper(resolvedTypeName);
+                        } else {
+                            String simpleParamType = Signature.getSignatureSimpleName(signature);
+                            isSpecialType = rawSpecialParamTypes.contains(simpleParamType);
+                            isPrimWrapped = isWrapper(simpleParamType);
+                        }
+
 					    // check parameters valid types
-					    if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
-					        Diagnostic diagnostic = createDiagnostic(param, unit,
+                        if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
+                            Diagnostic diagnostic = createDiagnostic(param, unit,
                                     WebSocketConstants.DIAGNOSTIC_ON_OPEN_INVALID_PARAMS,
                                     WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS);
                             diagnostics.add(diagnostic);
                             return;
-					    }
-					    
-					    if (!isSpecialType) {
+                        }
+
+                        if (!isSpecialType) {
 					        // check that if parameter is not a specialType, it has a @PathParam annotation
-					        IAnnotation[] param_annotations = param.getAnnotations();
-					        boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
-	                                annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
-	                        
-	                        if (!hasPathParamAnnot) {
-	                            Diagnostic diagnostic = createDiagnostic(param, unit,
+                            IAnnotation[] param_annotations = param.getAnnotations();
+                            boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
+                                    annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
+
+                            if (!hasPathParamAnnot) {
+                                Diagnostic diagnostic = createDiagnostic(param, unit,
                                         WebSocketConstants.DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING,
                                         WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT);
                                 diagnostics.add(diagnostic);
-	                        }
-					    }
+                            }
+                        }
 					}
 				}
 			}
@@ -164,7 +163,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 	 * @return if valueClass is a wrapper object
 	 */
 	private boolean isWrapper(String valueClass) {
-	    return WebSocketConstants.WRAPPER_OBJS.contains(valueClass) || WebSocketConstants.RAW_WRAPPER_OBJS.contains(valueClass);
+        return WebSocketConstants.WRAPPER_OBJS.contains(valueClass) || WebSocketConstants.RAW_WRAPPER_OBJS.contains(valueClass);
 	}
 	
 	

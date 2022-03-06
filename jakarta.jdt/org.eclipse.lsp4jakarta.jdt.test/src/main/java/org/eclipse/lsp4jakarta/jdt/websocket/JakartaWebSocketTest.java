@@ -44,10 +44,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
                 "Parameter is missing annotation @PathParams.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation");
 
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
-
-
-        
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);        
     }
     
     @Test
