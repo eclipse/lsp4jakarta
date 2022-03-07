@@ -1,14 +1,66 @@
 {
+    "Initialize a UserTransaction object via Injection": {
+        "prefix": "userTransactionInjection",
+        "body": [
+            "@Resource",
+            "UserTransaction ${1:transactionName};",
+            "",
+            "public void ${2:functionName}(){",
+            "\ttry {",
+            "\t\t${1:transactionName}.begin();",
+            "",
+            "\t\t/* operation */",
+            "\t",
+            "\t\t${1:transactionName}.commit();",
+            "\t} catch (Exception e1) {",
+            "\t\ttry {",
+            "\t\t\t${1:transactionName}.rollback();",
+            "\t\t} catch (Exception e2){",
+            "\t\t\te2.printStackTrace();",
+            "\t\t}",
+            "\t}",
+            "}"
+        ],
+        "description": "Initializes a UserTransaction object via Injection. Provides a template for begin(), commit(), and rollback() of the said UserTransaction object.",
+        "context": {
+            "type": "jakarta.transaction.UserTransaction"
+        }
+    },
+    "Initialize a UserTransaction object via JNDI Lookup": {
+        "prefix": "userTransactionJNDI",
+        "body": [
+            "Context context = new InitialContext();",
+            "UserTransaction ${1:transactionName} = (UserTransaction) context.lookup(\"${2:address}\");",
+            "",
+            "try {",
+            "\t${1:transactionName}.begin();",
+            "",
+            "\t/* operation */",
+            "",
+            "\t${1:transactionName}.commit();",
+            "} catch (Exception e1) {",
+            "\ttry {",
+            "\t\t${1:transactionName}.rollback();",
+            "\t} catch (Exception e2){",
+            "\t\te2.printStackTrace();",
+            "\t}",
+            "}"
+        ],
+        "description": "Initializes a UserTransaction object via JNDI lookup. Provides a template for begin(), commit(), and rollback() of the said UserTransaction object.",
+        "context": {
+            "type": "jakarta.transaction.UserTransaction"
+        }
+    },
     "@Transactional": {
-      "prefix": "transactionbehav",
-      "body": [
-        "@Transactional(",
-        "\trollbackOn={SQLException.class, IOException.class},",
-        "\tdontRollbackOn={IllegalStateException.class})"
-      ],
-      "description": "Transactional annotation - specify exception types that will and will not cause a rollback for transaction",
-      "context": {
-        "type": "jakarta.transaction.Transactional"
-      }
+        "prefix": "transactionbehav",
+        "body": [
+            "@Transactional(",
+            "\trollbackOn={SQLException.class, IOException.class},",
+            "\tdontRollbackOn={IllegalStateException.class})"
+        ],
+        "description": "Transactional annotation - specify exception types that will and will not cause a rollback for transaction",
+        "context": {
+            "type": "jakarta.transaction.Transactional"
+        }
     }
-  }
+}
