@@ -88,10 +88,12 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 // checks if the class uses annotation to create a WebSocket endpoint
                 if (checkWSEnd.get(WebSocketConstants.IS_ANNOTATION)) {
                     // WebSocket Invalid Parameters Diagnostic
-                    invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, 
-                            WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
-                    invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES, 
-                            WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
+                    invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES,
+                            WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES,
+                            WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
+                    invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES,
+                            WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES,
+                            WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
 
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
@@ -102,7 +104,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, String diagnosticCode, ICompilationUnit unit,
+    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes,
+            Set<String> rawSpecialParamTypes, String diagnosticCode, ICompilationUnit unit,
             List<Diagnostic> diagnostics) throws JavaModelException {
 
         IMethod[] allMethods = type.getMethods();
@@ -313,9 +316,18 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         return wsEndpoint;
     }
 
-
     private String createParamTypeDiagMsg(Set<String> methodParamOptTypes, String methodAnnotTarget) {
         String paramMessage = String.join("\n- ", methodParamOptTypes);
         return String.format(WebSocketConstants.PARAM_TYPE_DIAG_MSG, "@" + methodAnnotTarget, paramMessage);
+    }
+
+    /**
+     * Verify that a URI string does not contain any sequence with //, /./, or /../
+     *
+     * @param uriString
+     * @return
+     */
+    private boolean hasNoRelativePathURIs(String uriString) {
+        return uriString.matches("\\/\\.{0,2}\\/");
     }
 }
