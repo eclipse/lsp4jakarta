@@ -51,10 +51,9 @@ public class JsonpDiagnosticCollector implements DiagnosticsCollector {
         for (MethodInvocation m: createPointerInvocations) {
             Expression arg = (Expression) m.arguments().get(0);
             if (isInvalidArgument(arg)) {
-                String msg = "createPointer target must be a sequence of '/' prefixed tokens or an emtpy String";
                 try {
                     Range range = JDTUtils.toRange(unit, arg.getStartPosition(), arg.getLength());
-                    Diagnostic diagnostic = new Diagnostic(range, msg);
+                    Diagnostic diagnostic = new Diagnostic(range, JsonpConstants.CREATE_POINTER_ERROR_MESSAGE);
                     diagnostic.setCode(JsonpConstants.DIAGNOSTIC_CODE_CREATE_POINTER);
                     completeDiagnostic(diagnostic);
                     diagnostics.add(diagnostic);
