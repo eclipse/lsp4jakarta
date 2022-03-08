@@ -82,7 +82,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 checkWSEnd = isWSEndpoint(type);
 
                 // checks if the class uses annotation to create a WebSocket endpoint
-                if (checkWSEnd.get("isAnnotation")) {
+                if (checkWSEnd.get(WebSocketConstants.IS_ANNOTATION)) {
                     invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, 
                     WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, unit, diagnostics);
                 }
@@ -176,8 +176,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
         // check trivial case
         if (!type.isClass()) {
-            wsEndpoint.put("isAnnotation", false);
-            wsEndpoint.put("isSuperClass", false);
+            wsEndpoint.put(WebSocketConstants.IS_ANNOTATION, false);
+            wsEndpoint.put(WebSocketConstants.IS_SUPERCLASS, false);
             return wsEndpoint;
         }
 
@@ -195,8 +195,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
             JakartaCorePlugin.logException(WebSocketConstants.DIAGNOSTIC_ERR_MSG, e);
         }
 
-        wsEndpoint.put("isAnnotation", useAnnotation);
-        wsEndpoint.put("isSuperClass", useSuperclass);
+        wsEndpoint.put(WebSocketConstants.IS_ANNOTATION, useAnnotation);
+        wsEndpoint.put(WebSocketConstants.IS_SUPERCLASS, useSuperclass);
 
         return wsEndpoint;
     }

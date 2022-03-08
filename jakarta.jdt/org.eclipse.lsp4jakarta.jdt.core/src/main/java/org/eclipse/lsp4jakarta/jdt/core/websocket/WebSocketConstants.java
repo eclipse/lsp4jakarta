@@ -42,12 +42,13 @@ public class WebSocketConstants {
     
     // Superclass
     public static final String ENDPOINT_SUPERCLASS = "Endpoint";
-    
+    public static final String IS_SUPERCLASS = "isSuperclass";
     
     public static final Set<String> WS_ANNOTATION_CLASS = new HashSet<>(Arrays.asList(SERVER_ENDPOINT_ANNOTATION, CLIENT_ENDPOINT_ANNOTATION));
 
     /* Annotations */
     public static final String ON_OPEN = "OnOpen";
+    public static final String IS_ANNOTATION = "isAnnotation";
 
     /* Types */
     // For OnOpen annotation
