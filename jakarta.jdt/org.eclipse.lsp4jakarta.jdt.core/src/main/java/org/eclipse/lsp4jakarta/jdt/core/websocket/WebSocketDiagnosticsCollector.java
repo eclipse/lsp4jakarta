@@ -73,10 +73,6 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
 
         IType[] alltypes;
-        IField[] allFields;
-        IAnnotation[] allFieldAnnotations;
-        IMethod[] allMethods;
-        IAnnotation[] allMethodAnnotations;
 
         HashMap<String, Boolean> checkWSEnd = null;
 

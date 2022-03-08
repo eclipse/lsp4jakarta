@@ -29,10 +29,10 @@ public class WebSocketConstants {
 
     public static final String DIAGNOSTIC_ERR_MSG = "Cannot calculate WebSocket diagnostics";
 
-    public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameter is missing annotation @PathParams.";
+    public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive types or boxed version thereof must be annotated with @PathParams.";
     public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
     
-    public static final String DIAGNOSTIC_ON_OPEN_INVALID_PARAMS = "Invalid parameter type. Parameter must be of type Session, EndpointConfig parameter, or if annotated with @PathParam of type String, any Java primitive type or boxed version thereof.";
+    public static final String DIAGNOSTIC_ON_OPEN_INVALID_PARAMS = "Invalid parameter type. Parameter must be of type jakarta.websocket.Session, jakarta.websocket.EndpointConfig, String, any Java primitive type or boxed version thereof.";
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "ChangeInvalidParam";
     
     /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
