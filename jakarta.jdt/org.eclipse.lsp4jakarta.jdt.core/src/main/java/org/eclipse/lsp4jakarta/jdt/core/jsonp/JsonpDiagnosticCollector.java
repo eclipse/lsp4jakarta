@@ -51,6 +51,8 @@ public class JsonpDiagnosticCollector implements DiagnosticsCollector {
         for (MethodInvocation m: createPointerInvocations) {
             Expression arg = (Expression) m.arguments().get(0);
             if (isInvalidArgument(arg)) {
+                // If the argument supplied to a createPointer invocation is a String literal and is neither an empty String 
+                // or a sequence of '/' prefixed tokens, a diagnostic highlighting the invalid argument is created.
                 try {
                     Range range = JDTUtils.toRange(unit, arg.getStartPosition(), arg.getLength());
                     Diagnostic diagnostic = new Diagnostic(range, JsonpConstants.CREATE_POINTER_ERROR_MESSAGE);
@@ -64,11 +66,11 @@ public class JsonpDiagnosticCollector implements DiagnosticsCollector {
         }
     }
 
-    public boolean isCreatePointerInvocation(MethodInvocation m) {
+    private boolean isCreatePointerInvocation(MethodInvocation m) {
         return m.toString().startsWith(JsonpConstants.CREATE_POINTER) && m.arguments().size() == 1;
     }
 
-    public boolean isInvalidArgument(Expression arg) {
+    private boolean isInvalidArgument(Expression arg) {
         if (arg instanceof StringLiteral) {
             String argValue = ((StringLiteral)arg).getLiteralValue();
             if (!(argValue.isEmpty() || argValue.matches("^(\\/[^\\/]+)+$"))) {

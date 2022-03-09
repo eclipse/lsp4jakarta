@@ -40,15 +40,15 @@ public class JakartaJsonpTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         Diagnostic d1 = d(20, 60, 64, 
-                "createPointer target must be a sequence of '/' prefixed tokens or an emtpy String", 
+                "Json.createPointer target must be a sequence of '/' prefixed tokens or an emtpy String", 
                 DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
         
         Diagnostic d2 = d(21, 62, 70, 
-                "createPointer target must be a sequence of '/' prefixed tokens or an emtpy String", 
+                "Json.createPointer target must be a sequence of '/' prefixed tokens or an emtpy String", 
                 DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
         
         Diagnostic d3 = d(22, 60, 80, 
-                "createPointer target must be a sequence of '/' prefixed tokens or an emtpy String", 
+                "Json.createPointer target must be a sequence of '/' prefixed tokens or an emtpy String", 
                 DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
         
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);

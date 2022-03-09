@@ -26,6 +26,12 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 public class ASTUtils {
 
+    /**
+     * Converts a given compilation unit to an ASTNode.
+     * 
+     * @param unit
+     * @return ASTNode parsed from the compilation unit
+     */
     public static ASTNode getASTNode(ICompilationUnit unit) {
         ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -34,6 +40,12 @@ public class ASTUtils {
         return parser.createAST(null);
     }
 
+    /**
+     * Given a compilation unit returns a list of all method invocations.
+     * 
+     * @param unit
+     * @return list of method invocations
+     */
     public static List<MethodInvocation> getMethodInvocations(ICompilationUnit unit) {
         ASTNode node = getASTNode(unit);
         MethodInvocationVisitor visitor = new ASTUtils().new MethodInvocationVisitor();
@@ -41,6 +53,9 @@ public class ASTUtils {
         return visitor.getMethodInvocations();
     }
 
+    /**
+     * This visitor visits an ASTNode and records all the method invocations during its visit.
+     */
     public class MethodInvocationVisitor extends ASTVisitor {
         private final List<MethodInvocation> invocations = new ArrayList<>();
 
