@@ -65,7 +65,7 @@ public class JsonpDiagnosticCollector implements DiagnosticsCollector {
     }
 
     public boolean isCreatePointerInvocation(MethodInvocation m) {
-        return m.getName().getIdentifier().equals(JsonpConstants.CREATE_POINTER) && m.arguments().size() == 1;
+        return m.toString().startsWith(JsonpConstants.CREATE_POINTER) && m.arguments().size() == 1;
     }
 
     public boolean isInvalidArgument(Expression arg) {
