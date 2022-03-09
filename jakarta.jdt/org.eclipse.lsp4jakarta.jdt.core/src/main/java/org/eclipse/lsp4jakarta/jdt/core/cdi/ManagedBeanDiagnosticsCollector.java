@@ -40,7 +40,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.*;
-import static org.eclipse.lsp4jakarta.jdt.core.cdi.Utils.getScopeAnnotations;
+import static org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil.getScopeAnnotations;
+
 
 public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
@@ -79,7 +80,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
 
         try {
             for (IType type : unit.getAllTypes()) {
-                List<String> managedBeanAnnotations = getScopeAnnotations(type);
+                List<String> managedBeanAnnotations = getScopeAnnotations(type, SCOPES);
                 boolean isManagedBean = managedBeanAnnotations.size() > 0;
 
                 if (managedBeanAnnotations.size() > 1) {
@@ -122,7 +123,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * Here we only look at the fields.
                      */
                     List<IAnnotation> fieldAnnotations = Arrays.asList(field.getAnnotations());
-                    List<String> fieldScopes = getScopeAnnotations(field);
+                    List<String> fieldScopes = getScopeAnnotations(field, SCOPES);
 
                     boolean isProducerField = fieldAnnotations.stream()
                             .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.PRODUCES));
@@ -171,7 +172,7 @@ public class ManagedBeanDiagnosticsCollector implements DiagnosticsCollector {
                      * Here we only look at the methods.
                      */
                     List<IAnnotation> methodAnnotations = Arrays.asList(method.getAnnotations());
-                    List<String> methodScopes = getScopeAnnotations(method);
+                    List<String> methodScopes = getScopeAnnotations(method, SCOPES);
 
                     boolean isProducerMethod = methodAnnotations.stream()
                             .anyMatch(annotation -> annotation.getElementName().equals(ManagedBeanConstants.PRODUCES));
