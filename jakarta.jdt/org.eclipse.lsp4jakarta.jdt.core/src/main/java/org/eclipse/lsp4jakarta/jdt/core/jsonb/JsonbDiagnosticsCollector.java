@@ -9,6 +9,7 @@
 *
 * Contributors:
 *     IBM Corporation, Matheus Cruz - initial API and implementation
+*     Yijia Jing
 *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.jsonb;
@@ -84,15 +85,42 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             for (IField field : type.getFields()) {
                 boolean hasJsonbTransient = false, hasOtherJsonbAnnotation = false;
                 for (IAnnotation annotation : field.getAnnotations()) {
-                    String annotation_name = annotation.getElementName();
-                    if (annotation_name.equals(JsonbConstants.JSONB_TRANSIENT))
+                    String annotationName = annotation.getElementName();
+                    if (annotationName.equals(JsonbConstants.JSONB_TRANSIENT))
                         hasJsonbTransient = true;
-                    else if (annotation_name.startsWith(JsonbConstants.JSONB_PREFIX))
+                    else if (annotationName.startsWith(JsonbConstants.JSONB_PREFIX))
                         hasOtherJsonbAnnotation = true;
                 }
-                if (hasJsonbTransient && hasOtherJsonbAnnotation) {
-                    Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
-                    diagnostics.add(diagnostic);
+             // If a field is annotated with JsonbTransient
+                if (hasJsonbTransient) {
+                    // check if itself is annotated with other Jsonb annotations.
+                    if (hasOtherJsonbAnnotation) {
+                        Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
+                        diagnostics.add(diagnostic);
+                    }
+                    // check if its getter and setter are annotated with other Jsonb 
+                    // annotations. Note that they can still be annotated with JsonbTransient.
+                    collectJsonbTransientGetterSetterDiagnostics(unit, field, diagnostics);
+                }
+            }
+        }
+    }
+
+    private void collectJsonbTransientGetterSetterDiagnostics(ICompilationUnit unit, 
+            IField field, List<Diagnostic> diagnostics) throws JavaModelException {
+        for (IType type: unit.getAllTypes()) {
+            for (IMethod method: type.getMethods()) {
+                if (isSetterOf(method, field) || isGetterOf(method, field)) {
+                    for (IAnnotation annotation : method.getAnnotations()) {
+                        String annotationName = annotation.getElementName();
+                        // A diagnostic is created when the getter/setter is annotated with Jsonb 
+                        // annotations other than JsonbTransient
+                        if (annotationName.startsWith(JsonbConstants.JSONB_PREFIX)
+                                && !annotationName.equals(JsonbConstants.JSONB_TRANSIENT)) {
+                            Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.JSONB_TRANSIENT);
+                            diagnostics.add(diagnostic);
+                        }
+                    }
                 }
             }
         }
@@ -123,5 +151,17 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     private void addJsonbTransientSpecificDiagnostics(Diagnostic d) {
         d.setMessage(JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT);
         d.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD);
+    }
+    
+    private boolean isSetterOf(IMethod method, IField field) {
+        String fieldName = field.getElementName();
+        String setterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        return method.getElementName().equals(setterName);
+    }
+    
+    private boolean isGetterOf(IMethod method, IField field) {
+        String fieldName = field.getElementName();
+        String getterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        return method.getElementName().equals(getterName);
     }
 }
