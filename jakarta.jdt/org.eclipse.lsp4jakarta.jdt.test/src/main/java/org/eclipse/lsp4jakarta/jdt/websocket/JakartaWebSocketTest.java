@@ -35,15 +35,14 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
     @Test
     public void testPathParamInvalidURI() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websockets/PathParamURIWarningTest.java"));
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/websockets/PathParamURIWarningTest.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
-        
+
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(22, 59, 77,
-                "PathParam value does not match specified Endpoint URI",
+        Diagnostic d = d(22, 59, 77, "PathParam value does not match specified Endpoint URI",
                 DiagnosticSeverity.Warning, "jakarta-websocket", "ChangePathParamValue");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
