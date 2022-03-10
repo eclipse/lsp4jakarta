@@ -158,6 +158,14 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
+    /**
+     * Creates a warning diagnostic if a PathParam annotation does not match any
+     * variable parameters of the WebSocket EndPoint URI associated with the class
+     * in which the method is contained
+     * 
+     * @param type representing the class list of diagnostics for this class
+     *             compilation unit with which the type is associated
+     */
     private void uriMismatchWarningCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit)
             throws JavaModelException {
 
@@ -194,6 +202,13 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
+    /**
+     * Creates a PathParam URI Mismatch Warning Diagnostic given its components
+     * 
+     * @param the annotation onto which the diagnostic needs to be displayed the
+     *            compilation unit with which said annotation is associated
+     * @return the final Diagnostic with its attributes set as needed
+     */
     private Diagnostic createPathParamWarningDiagnostic(IJavaElement annotation, IOpenable unit)
             throws JavaModelException {
         ISourceRange nameRange = JDTUtils.getNameRange(annotation);
@@ -205,6 +220,14 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         return diagnostic;
     }
 
+    /**
+     * Finds a WebSocket EndPoint annotation and extracts all variable parameters in
+     * the EndPoint URI
+     * 
+     * @param type representing the class
+     * @return List of variable parameters in the EndPoint URI if one exists, null
+     *         otherwise
+     */
     private List<String> findAndProcessEndpointURI(IType type) throws JavaModelException {
         String endpointURI = null;
         IAnnotation[] typeAnnotations = type.getAnnotations();
