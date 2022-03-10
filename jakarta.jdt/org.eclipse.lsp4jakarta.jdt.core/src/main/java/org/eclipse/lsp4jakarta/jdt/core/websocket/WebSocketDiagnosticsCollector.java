@@ -43,6 +43,9 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     			for (IType type : alltypes) {
     				/* @PathParam Value Mismatch Warning */
     				List<String> endpointPathVars = findAndProcessEndpointURI(type);
+    				/* WebSocket endpoint annotations must be attached to a class, 
+    				   and thus is guaranteed to be processed before any of the
+    				   member method annotations */
     				if (endpointPathVars == null) {
     					continue;
     				}
