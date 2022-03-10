@@ -52,7 +52,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     					for (ILocalVariable param : methodParams) {
     						IAnnotation[] paramAnnotations = param.getAnnotations();
     	    				for (IAnnotation annotation : paramAnnotations) {
-    	    					if (annotation.getElementName() == "PathParam") {
+    	    					if (annotation.getElementName() == WebSocketConstants.PATHPARAM_ANNOTATION) {
     	    						IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
     	    						for (IMemberValuePair pair : valuePairs) {
     	    							if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE) && pair.getValueKind() == IMemberValuePair.K_STRING) {
@@ -80,7 +80,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 		Diagnostic diagnostic = new Diagnostic(range, WebSocketConstants.PATHPARAM_VALUE_WARN_MSG);
 		diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
         diagnostic.setSeverity(WebSocketConstants.WARNING);
-        diagnostic.setCode("ChangePathParamValue");
+        diagnostic.setCode(WebSocketConstants.PATHPARAM_DIAGNOSTIC_CODE);
 		return diagnostic;
     }
     
