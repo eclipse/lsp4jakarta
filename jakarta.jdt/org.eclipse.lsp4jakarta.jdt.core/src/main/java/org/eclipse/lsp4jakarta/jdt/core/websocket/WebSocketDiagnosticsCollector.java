@@ -55,7 +55,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     	    					if (annotation.getElementName() == "PathParam") {
     	    						IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
     	    						for (IMemberValuePair pair : valuePairs) {
-    	    							if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)) {
+    	    							if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE) && pair.getValueKind() == IMemberValuePair.K_STRING) {
     	    								String pathValue = (String) pair.getValue();
     	    								if (!endpointPathVars.contains(pathValue)) {
     	    									Diagnostic d = createPathParamWarningDiagnostic(annotation, unit);
@@ -92,7 +92,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 				annotation.getElementName().equals(WebSocketConstants.WEBSOCKET_CLIENT_ANNOTATION)) {
 				IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
 				for (IMemberValuePair pair : valuePairs) {
-					if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)) {
+					if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE) && pair.getValueKind() == IMemberValuePair.K_STRING) {
 						endpointURI = (String) pair.getValue();
 					}
 				}
