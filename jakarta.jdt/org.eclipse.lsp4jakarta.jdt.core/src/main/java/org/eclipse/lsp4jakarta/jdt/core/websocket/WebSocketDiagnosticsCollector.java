@@ -84,7 +84,9 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 // checks if the class uses annotation to create a WebSocket endpoint
                 if (checkWSEnd.get(WebSocketConstants.IS_ANNOTATION)) {
                     invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, 
-                    WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, unit, diagnostics);
+                    WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
+                    invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES, 
+                    WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
                 }
             }
         } catch (JavaModelException e) {
@@ -92,7 +94,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, ICompilationUnit unit,
+    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, String diagnosticCode, ICompilationUnit unit,
             List<Diagnostic> diagnostics) throws JavaModelException {
 
         IMethod[] allMethods = type.getMethods();
@@ -125,8 +127,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         // check parameters valid types
                         if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
                             Diagnostic diagnostic = createDiagnostic(param, unit,
-                                    WebSocketConstants.DIAGNOSTIC_ON_OPEN_INVALID_PARAMS,
-                                    WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS);
+                                    createParamTypeDiagMsg(specialParamTypes),
+                                    diagnosticCode);
                             diagnostics.add(diagnostic);
                             return;
                         }
@@ -199,5 +201,11 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         wsEndpoint.put(WebSocketConstants.IS_SUPERCLASS, useSuperclass);
 
         return wsEndpoint;
+    }
+
+
+    private String createParamTypeDiagMsg(Set<String> methodParamOptTypes) {
+        String test = String.join("\n- ", methodParamOptTypes);
+        return "Invalid parameter type. Parameter must be of type: \n- " + test + "\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof";
     }
 }
