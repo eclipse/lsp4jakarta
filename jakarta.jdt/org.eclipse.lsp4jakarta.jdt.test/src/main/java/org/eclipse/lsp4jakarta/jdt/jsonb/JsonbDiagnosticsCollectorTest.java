@@ -34,6 +34,8 @@ import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
 public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
     protected static JDTUtils JDT_UTILS = new JDTUtils();
 
@@ -86,7 +88,22 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
         Diagnostic d1 = d(22, 19, 23,
                 "@JsonbTransient must be mutually exclusive with all other JSON Binding defined annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d1.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty", "JsonbTransient")));
+        
+        Diagnostic d2 = d(27, 19, 23,
+                "@JsonbTransient must be mutually exclusive with all other JSON Binding defined annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d2.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty", "JsonbDateFormat", "JsonbTransient")));
+   
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
 
-        assertJavaDiagnostics(diagnosticsParams, utils, d1);
+
+        // Test code actions
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
+        TextEdit te1 = te(21, 4, 22, 4, "");
+        TextEdit te2 = te(20, 4, 21, 4, "");
+        CodeAction ca1 = ca(uri, "Remove @JsonbTransient", d1, te1);
+        CodeAction ca2 = ca(uri, "Remove @JsonbProperty", d1, te2);
+        assertJavaCodeAction(codeActionParams1, utils, ca1, ca2);
     }
 }

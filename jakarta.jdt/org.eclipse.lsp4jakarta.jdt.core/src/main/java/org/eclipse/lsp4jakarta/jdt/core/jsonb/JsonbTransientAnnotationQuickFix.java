@@ -12,7 +12,21 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.core.jsonb;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
+
+import com.google.gson.JsonArray;
 
 /**
  * Quick fix for removing @JsonbTransient annotations when more than
@@ -22,7 +36,36 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotation
  *
  */
 public class JsonbTransientAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
+
     public JsonbTransientAnnotationQuickFix() {
-        super("jakarta.json.bind.annotation.JsonbTransient");
+        // annotation list to be derived from the diagnostic passed to
+        // `getCodeActions()`
+        super();
+    }
+
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+            IProgressMonitor monitor) throws CoreException {
+        ASTNode node = context.getCoveredNode();
+        IBinding parentType = getBinding(node);
+
+        JsonArray diagnosticData = (JsonArray) diagnostic.getData();
+
+        List<String> annotations = IntStream.range(0, diagnosticData.size())
+                .mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
+
+        if (parentType != null) {
+            List<CodeAction> codeActions = new ArrayList<>();
+            // We either keep, JsobTransient, or remove all other Jsonb annotations.
+            removeAnnotation(diagnostic, context, parentType, codeActions,
+                    "jakarta.json.bind.annotation.JsonbTransient");
+
+            annotations.remove(JsonbConstants.JSONB_TRANSIENT);
+            removeAnnotation(diagnostic, context, parentType, codeActions,
+                    annotations.toArray(new String[] {}));       
+
+            return codeActions;
+        }
+        return null;
     }
 }

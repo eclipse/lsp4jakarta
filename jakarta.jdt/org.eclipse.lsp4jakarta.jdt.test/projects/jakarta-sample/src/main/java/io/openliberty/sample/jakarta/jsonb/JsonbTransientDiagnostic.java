@@ -21,6 +21,11 @@ public class JsonbTransientDiagnostic {
     @JsonbProperty("name")
     @JsonbTransient
     private String name;
+    
+    @JsonbProperty("name")
+    @JsonbDateFormat("dd-MM-yyyy")
+    @JsonbTransient
+    private String name;
 
     @JsonbTransient
     private int id;

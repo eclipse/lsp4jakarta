@@ -33,6 +33,9 @@ import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+
 /**
  * This class contains logic for Jsonb diagnostics:
  * 1) Multiple JsonbCreator annotations on constructors will cause a diagnostic.
@@ -83,15 +86,22 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         for (IType type : unit.getAllTypes()) {
             for (IField field : type.getFields()) {
                 boolean hasJsonbTransient = false, hasOtherJsonbAnnotation = false;
+                ArrayList<String> jsonbAnnotationForTheField = new ArrayList<String>();
+
                 for (IAnnotation annotation : field.getAnnotations()) {
                     String annotation_name = annotation.getElementName();
-                    if (annotation_name.equals(JsonbConstants.JSONB_TRANSIENT))
+                    
+                    if (annotation_name.equals(JsonbConstants.JSONB_TRANSIENT)) {
                         hasJsonbTransient = true;
-                    else if (annotation_name.startsWith(JsonbConstants.JSONB_PREFIX))
+                        jsonbAnnotationForTheField.add(annotation_name);
+                    } else if (annotation_name.startsWith(JsonbConstants.JSONB_PREFIX)) {
                         hasOtherJsonbAnnotation = true;
+                        jsonbAnnotationForTheField.add(annotation_name);
+                    }
                 }
                 if (hasJsonbTransient && hasOtherJsonbAnnotation) {
                     Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
+                    diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotationForTheField)));
                     diagnostics.add(diagnostic);
                 }
             }
