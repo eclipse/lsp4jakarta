@@ -10,6 +10,7 @@
  * Contributors: 
  *     Giancarlo Pernudi Segura - initial API and implementation
  *     Lidia Ataupillco Ramos
+ *     Aviral Saxena
  *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IAnnotation;
@@ -30,17 +32,20 @@ import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants;
+import org.eclipse.jdt.core.*;
+
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 
 import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
-
 
 public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     public WebSocketDiagnosticsCollector() {
@@ -80,13 +85,16 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
             alltypes = unit.getAllTypes();
             for (IType type : alltypes) {
                 checkWSEnd = isWSEndpoint(type);
-
                 // checks if the class uses annotation to create a WebSocket endpoint
                 if (checkWSEnd.get(WebSocketConstants.IS_ANNOTATION)) {
+                    // WebSocket Invalid Parameters Diagnostic
                     invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, 
-                    WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
+                            WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
                     invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES, 
-                    WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
+                            WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
+
+                    // PathParam URI Mismatch Warning Diagnostic
+                    uriMismatchWarningCheck(type, diagnostics, unit);
                 }
             }
         } catch (JavaModelException e) {
@@ -153,26 +161,127 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     }
 
     /**
-    * Check if valueClass is a wrapper object for a primitive value
-    * Based on https://github.com/eclipse/lsp4mp/blob/9789a1a996811fade43029605c014c7825e8f1da/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTTypeUtils.java#L294-L298
-    * 
-    * @param valueClass the resolved type of valueClass in string or the simple type of valueClass 
-    * @return if valueClass is a wrapper object
-    */
-    private boolean isWrapper(String valueClass) {
-        return WebSocketConstants.WRAPPER_OBJS.contains(valueClass) || WebSocketConstants.RAW_WRAPPER_OBJS.contains(valueClass);
+     * Creates a warning diagnostic if a PathParam annotation does not match any
+     * variable parameters of the WebSocket EndPoint URI associated with the class
+     * in which the method is contained
+     * 
+     * @param type representing the class list of diagnostics for this class
+     *             compilation unit with which the type is associated
+     */
+    private void uriMismatchWarningCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit)
+            throws JavaModelException {
+
+        /* @PathParam Value Mismatch Warning */
+        List<String> endpointPathVars = findAndProcessEndpointURI(type);
+        /*
+         * WebSocket endpoint annotations must be attached to a class, and thus is
+         * guaranteed to be processed before any of the member method annotations
+         */
+        if (endpointPathVars == null) {
+            return;
+        }
+        IMethod[] typeMethods = type.getMethods();
+        for (IMethod method : typeMethods) {
+            ILocalVariable[] methodParams = method.getParameters();
+            for (ILocalVariable param : methodParams) {
+                IAnnotation[] paramAnnotations = param.getAnnotations();
+                for (IAnnotation annotation : paramAnnotations) {
+                    if (annotation.getElementName() == WebSocketConstants.PATHPARAM_ANNOTATION) {
+                        IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
+                        for (IMemberValuePair pair : valuePairs) {
+                            if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)
+                                    && pair.getValueKind() == IMemberValuePair.K_STRING) {
+                                String pathValue = (String) pair.getValue();
+                                if (!endpointPathVars.contains(pathValue)) {
+                                    Diagnostic d = createPathParamWarningDiagnostic(annotation, unit);
+                                    diagnostics.add(d);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     * Creates a PathParam URI Mismatch Warning Diagnostic given its components
+     * 
+     * @param the annotation onto which the diagnostic needs to be displayed the
+     *            compilation unit with which said annotation is associated
+     * @return the final Diagnostic with its attributes set as needed
+     */
+    private Diagnostic createPathParamWarningDiagnostic(IJavaElement annotation, IOpenable unit)
+            throws JavaModelException {
+        ISourceRange nameRange = JDTUtils.getNameRange(annotation);
+        Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+        Diagnostic diagnostic = new Diagnostic(range, WebSocketConstants.PATHPARAM_VALUE_WARN_MSG);
+        diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
+        diagnostic.setSeverity(WebSocketConstants.WARNING);
+        diagnostic.setCode(WebSocketConstants.PATHPARAM_DIAGNOSTIC_CODE);
+        return diagnostic;
+    }
 
     /**
-    * Checks if type is a WebSocket endpoint by meeting one of the 2 conditions listed on 
-    * https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications 
-    * are met: class is annotated or class implements Endpoint class
-    * 
-    * @param type the type representing the class
-    * @return the conditions for a class to be a WebSocket endpoint 
-    * @throws JavaModelException
-    */
+     * Finds a WebSocket EndPoint annotation and extracts all variable parameters in
+     * the EndPoint URI
+     * 
+     * @param type representing the class
+     * @return List of variable parameters in the EndPoint URI if one exists, null
+     *         otherwise
+     */
+    private List<String> findAndProcessEndpointURI(IType type) throws JavaModelException {
+        String endpointURI = null;
+        IAnnotation[] typeAnnotations = type.getAnnotations();
+        for (IAnnotation annotation : typeAnnotations) {
+            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)
+                    || annotation.getElementName().equals(WebSocketConstants.CLIENT_ENDPOINT_ANNOTATION)) {
+                IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
+                for (IMemberValuePair pair : valuePairs) {
+                    if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)
+                            && pair.getValueKind() == IMemberValuePair.K_STRING) {
+                        endpointURI = (String) pair.getValue();
+                    }
+                }
+            }
+        }
+        if (endpointURI == null) {
+            return null;
+        }
+        List<String> endpointPathVars = new ArrayList<String>();
+        String[] endpointParts = endpointURI.split(WebSocketConstants.URI_SEPARATOR);
+        for (String part : endpointParts) {
+            if (part.startsWith(WebSocketConstants.CURLY_BRACE_START)
+                    && part.endsWith(WebSocketConstants.CURLY_BRACE_END)) {
+                endpointPathVars.add(part.substring(1, part.length() - 1));
+            }
+        }
+        return endpointPathVars;
+    }
+
+    /**
+     * Check if valueClass is a wrapper object for a primitive value Based on
+     * https://github.com/eclipse/lsp4mp/blob/9789a1a996811fade43029605c014c7825e8f1da/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTTypeUtils.java#L294-L298
+     * 
+     * @param valueClass the resolved type of valueClass in string or the simple
+     *                   type of valueClass
+     * @return if valueClass is a wrapper object
+     */
+    private boolean isWrapper(String valueClass) {
+        return WebSocketConstants.WRAPPER_OBJS.contains(valueClass)
+                || WebSocketConstants.RAW_WRAPPER_OBJS.contains(valueClass);
+    }
+
+    /**
+     * Checks if type is a WebSocket endpoint by meeting one of the 2 conditions
+     * listed on
+     * https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications
+     * are met: class is annotated or class implements Endpoint class
+     * 
+     * @param type the type representing the class
+     * @return the conditions for a class to be a WebSocket endpoint
+     * @throws JavaModelException
+     */
     private HashMap<String, Boolean> isWSEndpoint(IType type) throws JavaModelException {
         HashMap<String, Boolean> wsEndpoint = new HashMap<>();
 
@@ -183,7 +292,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
             return wsEndpoint;
         }
 
-        // Check that class follows https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications
+        // Check that class follows
+        // https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications
         List<String> scopes = AnnotationUtil.getScopeAnnotations(type, WebSocketConstants.WS_ANNOTATION_CLASS);
         boolean useAnnotation = scopes.size() > 0;
 

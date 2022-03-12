@@ -59,7 +59,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);        
     }
-    
+
     @Test
     public void changeInvalidParamType() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
@@ -69,7 +69,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        
+
         // OnOpen Invalid Param Types
         Diagnostic d1 = d(12, 47, 59,
         "Invalid parameter type. Parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
@@ -81,5 +81,21 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnCloseChangeInvalidParam");
         
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
+    }
+    
+    @Test
+    public void testPathParamInvalidURI() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/websockets/PathParamURIWarningTest.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic d = d(22, 59, 77, "PathParam value does not match specified Endpoint URI",
+                DiagnosticSeverity.Warning, "jakarta-websocket", "ChangePathParamValue");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
 }

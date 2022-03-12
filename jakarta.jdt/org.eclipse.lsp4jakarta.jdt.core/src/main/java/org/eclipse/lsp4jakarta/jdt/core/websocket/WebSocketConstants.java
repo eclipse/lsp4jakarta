@@ -10,6 +10,7 @@
  * Contributors: 
  *     Giancarlo Pernudi Segura - initial API and implementation
  *     Lidia Ataupillco Ramos
+ *     Aviral Saxena
  *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
@@ -28,6 +29,17 @@ public class WebSocketConstants {
     public static final DiagnosticSeverity WARNING = DiagnosticSeverity.Warning;
 
     public static final String DIAGNOSTIC_ERR_MSG = "Cannot calculate WebSocket diagnostics";
+
+    public static final String PATHPARAM_ANNOTATION = "PathParam";
+    public static final String PATHPARAM_VALUE_WARN_MSG = "PathParam value does not match specified Endpoint URI";
+
+    public static final String PATHPARAM_DIAGNOSTIC_CODE = "ChangePathParamValue";
+
+    public static final String ANNOTATION_VALUE = "value";
+
+    public static final String URI_SEPARATOR = "/";
+    public static final String CURLY_BRACE_START = "{";
+    public static final String CURLY_BRACE_END = "}";
 
     public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.";
     public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
