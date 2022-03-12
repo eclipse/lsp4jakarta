@@ -130,7 +130,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                                     createParamTypeDiagMsg(specialParamTypes),
                                     diagnosticCode);
                             diagnostics.add(diagnostic);
-                            return;
+                            continue;
                         }
 
                         if (!isSpecialType) {
