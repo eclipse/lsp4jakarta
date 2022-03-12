@@ -16,6 +16,6 @@ public class InvalidParamType {
     
     @OnClose
     public void OnClose(Session session, CloseReason closeReason, Object invalidParam) throws IOException {
-        
+        System.out.println("WebSocket closed for " + session.getId());
     }
 }
