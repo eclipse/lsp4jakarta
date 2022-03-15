@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.core.Flags;
+import org.eclipse.jdt.core.IAnnotatable;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -83,22 +84,13 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             List<Diagnostic> diagnostics) throws JavaModelException {
         for (IType type : unit.getAllTypes()) {
             for (IField field : type.getFields()) {
-                boolean hasJsonbTransient = false, hasOtherJsonbAnnotation = false;
-                for (IAnnotation annotation : field.getAnnotations()) {
-                    String annotationName = annotation.getElementName();
-                    if (annotationName.equals(JsonbConstants.JSONB_TRANSIENT))
-                        hasJsonbTransient = true;
-                    else if (annotationName.startsWith(JsonbConstants.JSONB_PREFIX))
-                        hasOtherJsonbAnnotation = true;
-                }
-             // If a field is annotated with JsonbTransient
-                if (hasJsonbTransient) {
-                    // check if itself is annotated with other Jsonb annotations.
-                    if (hasOtherJsonbAnnotation) {
+                if (hasJsonbTransient(field)) {
+                    // Check if the field itself is annotated with other Jsonb annotations.
+                    if (hasOtherJsonbAnnotation(field)) {
                         Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
                         diagnostics.add(diagnostic);
                     }
-                    // check if its getter and setter are annotated with other Jsonb 
+                    // Check if its getter and setter are annotated with other Jsonb 
                     // annotations. Note that they can still be annotated with JsonbTransient.
                     collectJsonbTransientGetterSetterDiagnostics(unit, field, diagnostics);
                 }
@@ -111,15 +103,9 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         for (IType type: unit.getAllTypes()) {
             for (IMethod method: type.getMethods()) {
                 if (isSetterOf(method, field) || isGetterOf(method, field)) {
-                    for (IAnnotation annotation : method.getAnnotations()) {
-                        String annotationName = annotation.getElementName();
-                        // A diagnostic is created when the getter/setter is annotated with Jsonb 
-                        // annotations other than JsonbTransient
-                        if (annotationName.startsWith(JsonbConstants.JSONB_PREFIX)
-                                && !annotationName.equals(JsonbConstants.JSONB_TRANSIENT)) {
-                            Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.JSONB_TRANSIENT);
-                            diagnostics.add(diagnostic);
-                        }
+                    if (hasOtherJsonbAnnotation(method)) {
+                        Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.JSONB_TRANSIENT);
+                        diagnostics.add(diagnostic);
                     }
                 }
             }
@@ -151,6 +137,26 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     private void addJsonbTransientSpecificDiagnostics(Diagnostic d) {
         d.setMessage(JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT);
         d.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD);
+    }
+    
+    private boolean hasJsonbTransient(IAnnotatable annotable) throws JavaModelException {
+        for (IAnnotation annotation : annotable.getAnnotations()) {
+            String annotationName = annotation.getElementName();
+            if (annotationName.equals(JsonbConstants.JSONB_TRANSIENT))
+                return true;
+        }
+        return false;
+    }
+    
+    private boolean hasOtherJsonbAnnotation(IAnnotatable annotable) throws JavaModelException {
+        for (IAnnotation annotation : annotable.getAnnotations()) {
+            String annotationName = annotation.getElementName();
+            if (annotationName.startsWith(JsonbConstants.JSONB_PREFIX) 
+                    && !annotationName.equals(JsonbConstants.JSONB_TRANSIENT)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private boolean isSetterOf(IMethod method, IField field) {

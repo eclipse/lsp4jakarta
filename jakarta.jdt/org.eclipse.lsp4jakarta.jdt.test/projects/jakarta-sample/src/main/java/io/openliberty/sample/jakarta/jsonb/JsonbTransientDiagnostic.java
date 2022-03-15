@@ -25,6 +25,16 @@ public class JsonbTransientDiagnostic {
     @JsonbTransient
     private int id;
 
-    @JsonbPropery("fav_lang")
+    @JsonbProperty("fav_lang")
     private String favoriteLanguage;
+    
+    @JsonbProperty("person-id")
+    private int getId() {
+        return id;
+    }
+    
+    @JsonbCreator
+    private int setId(int id) {
+        this.id = id;
+    }
 }
