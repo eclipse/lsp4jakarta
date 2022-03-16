@@ -316,6 +316,6 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
     private String createParamTypeDiagMsg(Set<String> methodParamOptTypes) {
         String paramMessage = String.join("\n- ", methodParamOptTypes);
-        return "Invalid parameter type. Parameter must be of type: \n- " + paramMessage + "\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof";
+        return WebSocketConstants.INITIAL_DIAG_MSG + paramMessage + WebSocketConstants.END_DIAG_MSG;
     }
 }
