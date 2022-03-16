@@ -8,8 +8,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     IBM Corporation, Matheus Cruz - initial API and implementation
-*     Yijia Jing
+*     IBM Corporation, Matheus Cruz, Yijia Jing - initial API and implementation
 *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.jsonb;
@@ -86,7 +85,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             for (IField field : type.getFields()) {
                 if (hasJsonbTransient(field)) {
                     // Check if the field itself is annotated with other Jsonb annotations.
-                    if (hasOtherJsonbAnnotation(field)) {
+                    if (hasNonJsonbTransientAnnotation(field)) {
                         Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
                         diagnostics.add(diagnostic);
                     }
@@ -102,8 +101,8 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             IField field, List<Diagnostic> diagnostics) throws JavaModelException {
         for (IType type: unit.getAllTypes()) {
             for (IMethod method: type.getMethods()) {
-                if (isSetterOf(method, field) || isGetterOf(method, field)) {
-                    if (hasOtherJsonbAnnotation(method)) {
+                if (isAccessorOf(AccessorType.GET, method, field) || isAccessorOf(AccessorType.SET, method, field)) {
+                    if (hasNonJsonbTransientAnnotation(method)) {
                         Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.JSONB_TRANSIENT);
                         diagnostics.add(diagnostic);
                     }
@@ -148,7 +147,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         return false;
     }
     
-    private boolean hasOtherJsonbAnnotation(IAnnotatable annotable) throws JavaModelException {
+    private boolean hasNonJsonbTransientAnnotation(IAnnotatable annotable) throws JavaModelException {
         for (IAnnotation annotation : annotable.getAnnotations()) {
             String annotationName = annotation.getElementName();
             if (annotationName.startsWith(JsonbConstants.JSONB_PREFIX) 
@@ -159,15 +158,13 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         return false;
     }
     
-    private boolean isSetterOf(IMethod method, IField field) {
+    private boolean isAccessorOf(AccessorType type, IMethod method, IField field) {
         String fieldName = field.getElementName();
-        String setterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        return method.getElementName().equals(setterName);
+        String accessorName = type.name().toLowerCase() + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        return method.getElementName().equals(accessorName);
     }
     
-    private boolean isGetterOf(IMethod method, IField field) {
-        String fieldName = field.getElementName();
-        String getterName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        return method.getElementName().equals(getterName);
+    private enum AccessorType {
+        GET, SET
     }
 }

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     Adit Rada - initial API and implementation
+ *     Adit Rada, Yijia Jing - initial API and implementation
  *******************************************************************************/
 
 package io.openliberty.sample.jakarta.jsonb;

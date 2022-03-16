@@ -8,7 +8,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     IBM Corporation - initial API and implementation
+*     IBM Corporation, Yijia Jing - initial API and implementation
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.jsonb;
 
