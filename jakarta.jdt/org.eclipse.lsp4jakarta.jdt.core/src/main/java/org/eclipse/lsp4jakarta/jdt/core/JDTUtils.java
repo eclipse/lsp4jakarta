@@ -43,11 +43,13 @@ import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMemberValuePair;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.ISourceReference;
@@ -624,5 +626,31 @@ public class JDTUtils {
      */
     public static boolean hasLeadingSlash(String uriString) {
         return uriString.startsWith("/");
+    }
+    
+    /**
+     * Enumeration for the types of accessor a method can be.
+     *
+     */
+    public enum AccessorType {
+        GET, SET
+    }
+
+    /**
+     * Checks if a method is the specified type of accessor (getter or setter) of
+     * the given field. i.e. the method has the exact same name as what an accessor
+     * should have.
+     * 
+     * @param type of the accessor
+     * @param method
+     * @param field
+     * @return boolean
+     */
+    public static boolean isAccessor(AccessorType type, IMethod method, IField field) {
+        String fieldName = field.getElementName();
+        // The expected accessor name is given by the type (get/set) + the Pascal case
+        // of field name e.g. if a field is called id, the getter name is getId
+        String accessorName = type.name().toLowerCase() + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        return method.getElementName().equals(accessorName);
     }
 }

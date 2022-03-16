@@ -32,6 +32,7 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils.AccessorType;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -99,9 +100,10 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
 
     private void collectJsonbTransientGetterSetterDiagnostics(ICompilationUnit unit, 
             IField field, List<Diagnostic> diagnostics) throws JavaModelException {
-        for (IType type: unit.getAllTypes()) {
-            for (IMethod method: type.getMethods()) {
-                if (isAccessorOf(AccessorType.GET, method, field) || isAccessorOf(AccessorType.SET, method, field)) {
+        for (IType type : unit.getAllTypes()) {
+            for (IMethod method : type.getMethods()) {
+                if (JDTUtils.isAccessor(AccessorType.GET, method, field)
+                        || JDTUtils.isAccessor(AccessorType.SET, method, field)) {
                     if (hasNonJsonbTransientAnnotation(method)) {
                         Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.JSONB_TRANSIENT);
                         diagnostics.add(diagnostic);
@@ -156,15 +158,5 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             }
         }
         return false;
-    }
-    
-    private boolean isAccessorOf(AccessorType type, IMethod method, IField field) {
-        String fieldName = field.getElementName();
-        String accessorName = type.name().toLowerCase() + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        return method.getElementName().equals(accessorName);
-    }
-    
-    private enum AccessorType {
-        GET, SET
     }
 }
