@@ -29,12 +29,16 @@ public class JsonbTransientDiagnostic {
     private String favoriteLanguage;
     
     @JsonbProperty("person-id")
-    private int getId() {
+    private int getId() { 
+        // A diagnostic is expected on getId because as a getter, it is annotated with other 
+        // Jsonb annotations while its corresponding field id is annotated with JsonbTransient
         return id;
     }
     
     @JsonbCreator
     private int setId(int id) {
+        // A diagnostic is expected on setId because as a setter, it is annotated with other 
+        // Jsonb annotations while its corresponding field id is annotated with JsonbTransient
         this.id = id;
     }
 }

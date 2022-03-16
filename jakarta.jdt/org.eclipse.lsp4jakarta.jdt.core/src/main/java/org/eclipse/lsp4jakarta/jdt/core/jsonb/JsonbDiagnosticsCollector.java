@@ -90,8 +90,8 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
                         Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
                         diagnostics.add(diagnostic);
                     }
-                    // Check if its getter and setter are annotated with other Jsonb 
-                    // annotations. Note that they can still be annotated with JsonbTransient.
+                    // Diagnostics on the getter and setter of the field are created when they are
+                    // annotated with Jsonb annotations other than JsonbTransient.
                     collectJsonbTransientGetterSetterDiagnostics(unit, field, diagnostics);
                 }
             }
