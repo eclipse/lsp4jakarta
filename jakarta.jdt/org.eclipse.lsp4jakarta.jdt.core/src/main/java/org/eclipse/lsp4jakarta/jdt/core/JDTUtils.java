@@ -85,8 +85,9 @@ public class JDTUtils {
     private static Set<String> SILENCED_CODEGENS = Collections.singleton("lombok");
 
     public static final String DEFAULT_PROJECT_NAME = "jdt.java-project";
-    
+
     private static final int COMPILATION_UNIT_UPDATE_TIMEOUT = 3000;
+    private static final String LEVEL1_URI_REGEX = "(?:\\/(?:(?:\\{\\w+\\})|(?:\\w+)))*\\/?";
 
     /**
      * Given the uri returns a {@link ICompilationUnit}. May return null if it can
@@ -633,13 +634,7 @@ public class JDTUtils {
      * @param uriString
      * @return boolean
      */
-    public static boolean isValidLevel1URI(String uriString, boolean isPartial) {
-        // Regex is obtained from RFC 3986:
-        // https://www.rfc-editor.org/rfc/rfc3986#appendix-B
-        if (isPartial) {
-            return uriString.matches("[^?#]*");
-        } else {
-            return uriString.matches("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
-        }
+    public static boolean isValidLevel1URI(String uriString) {
+        return uriString.matches(LEVEL1_URI_REGEX);
     }
 }

@@ -17,6 +17,7 @@ package org.eclipse.lsp4jakarta.jdt.core.websocket;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
@@ -97,6 +98,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
+                    serverEndpointWarningCheck(type, diagnostics, unit);
                 }
             }
         } catch (JavaModelException e) {
@@ -202,6 +204,42 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    /*
+     * Create a warning diagnostic if a ServerEndpoint annotation does not follow the rules.
+     */
+    private void serverEndpointWarningCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit) throws JavaModelException {
+        for (IAnnotation annotation : type.getAnnotations()) {
+            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)) {
+                String path = annotation
+                        .getMemberValuePairs()[0]
+                        .getValue()
+                        .toString();
+                Diagnostic diagnostic;
+                if (!JDTUtils.hasLeadingSlash(path)) {
+                    diagnostic = createDiagnostic(annotation, unit,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                    diagnostics.add(diagnostic);
+                } else if (!JDTUtils.isValidLevel1URI(path)) {
+                    diagnostic = createDiagnostic(annotation, unit,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                    diagnostics.add(diagnostic);
+                } else if (hasRelativePathURIs(path)) {
+                    diagnostic = createDiagnostic(annotation, unit,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                    diagnostics.add(diagnostic);
+                } else if (hasDuplicateURIVariables(path)) {
+                    diagnostic = createDiagnostic(annotation, unit,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_DUPLICATE_VAR,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                    diagnostics.add(diagnostic);
                 }
             }
         }
@@ -322,12 +360,33 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     }
 
     /**
-     * Verify that a URI string does not contain any sequence with //, /./, or /../
+     * Check if a URI string contains any sequence with //, /./, or /../
      *
      * @param uriString
      * @return
      */
-    private boolean hasNoRelativePathURIs(String uriString) {
-        return uriString.matches("\\/\\.{0,2}\\/");
+    private boolean hasRelativePathURIs(String uriString) {
+        return uriString.matches(WebSocketConstants.REGEX_RELATIVE_PATHS);
+    }
+
+    /*
+     * Check if a URI string has a duplicate variable
+     * 
+     * @param uriString
+     * @return
+     */
+    private boolean hasDuplicateURIVariables(String uriString) {
+        HashSet<String> variables = new HashSet<String>();
+        for (String segment : uriString.split(WebSocketConstants.URI_SEPARATOR)) {
+            if (segment.matches(WebSocketConstants.REGEX_URI_VARIABLE)) {
+                String variable = segment.substring(1, segment.length() - 1);
+                if (variables.contains(variable)) {
+                    return true;
+                } else {
+                    variables.add(variable);
+                }
+            }
+        }
+        return false;
     }
 }
