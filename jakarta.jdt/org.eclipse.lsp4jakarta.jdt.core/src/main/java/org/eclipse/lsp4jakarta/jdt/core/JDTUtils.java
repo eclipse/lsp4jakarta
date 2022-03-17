@@ -87,7 +87,7 @@ public class JDTUtils {
     public static final String DEFAULT_PROJECT_NAME = "jdt.java-project";
 
     private static final int COMPILATION_UNIT_UPDATE_TIMEOUT = 3000;
-    private static final String LEVEL1_URI_REGEX = "(?:\\/(?:(?:\\{\\w+\\})|(?:\\w+)))*\\/?";
+    private static final String LEVEL1_URI_REGEX = "(?:\\/(?:(?:\\{(\\w|%20|%21|%23|%24|%25|%26|%27|%28|%29|%2A|%2B|%2C|%2F|%3A|%3B|%3D|%3F|%40|%5B|%5D)+\\})|(?:(\\w|%20|%21|%23|%24|%25|%26|%27|%28|%29|%2A|%2B|%2C|%2F|%3A|%3B|%3D|%3F|%40|%5B|%5D)+)))*\\/?";
 
     /**
      * Given the uri returns a {@link ICompilationUnit}. May return null if it can
