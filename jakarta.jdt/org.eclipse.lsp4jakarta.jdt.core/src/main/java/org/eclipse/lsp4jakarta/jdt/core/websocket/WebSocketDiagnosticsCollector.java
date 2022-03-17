@@ -225,14 +225,14 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH,
                             WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
                     diagnostics.add(diagnostic);
-                } else if (!JDTUtils.isValidLevel1URI(path)) {
-                    diagnostic = createDiagnostic(annotation, unit,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                    diagnostics.add(diagnostic);
                 } else if (hasRelativePathURIs(path)) {
                     diagnostic = createDiagnostic(annotation, unit,
                             WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                    diagnostics.add(diagnostic);
+                } else if (!JDTUtils.isValidLevel1URI(path)) {
+                    diagnostic = createDiagnostic(annotation, unit,
+                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1,
                             WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
                     diagnostics.add(diagnostic);
                 } else if (hasDuplicateURIVariables(path)) {

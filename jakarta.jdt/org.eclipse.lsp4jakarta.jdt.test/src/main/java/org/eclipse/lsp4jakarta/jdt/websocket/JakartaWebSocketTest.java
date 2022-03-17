@@ -108,7 +108,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(4, 17, 26,
+        Diagnostic d = d(4, 0, 27,
                 "Server endpoint paths must not contain the sequences /../, /./ or //.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
@@ -124,7 +124,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(4, 17, 22,
+        Diagnostic d = d(4, 0, 23,
                 "Server endpoint paths must start with a leading '/'.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
@@ -140,7 +140,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(4, 17, 45,
+        Diagnostic d = d(4, 0, 46,
                 "Server endpoint paths must be a URI-template (level-1) or a partial URI.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
@@ -156,7 +156,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(4, 17, 39,
+        Diagnostic d = d(4, 0, 40,
                 "Server endpoint paths must not use the same variable more than once in a path.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
