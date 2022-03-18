@@ -19,7 +19,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -61,6 +63,7 @@ import org.eclipse.jdt.core.SourceRange;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
 import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
@@ -627,30 +630,23 @@ public class JDTUtils {
     public static boolean hasLeadingSlash(String uriString) {
         return uriString.startsWith("/");
     }
-    
-    /**
-     * Enumeration for the types of accessor a method can be.
-     *
-     */
-    public enum AccessorType {
-        GET, SET
-    }
 
     /**
-     * Checks if a method is the specified type of accessor (getter or setter) of
-     * the given field. i.e. the method has the exact same name as what an accessor
-     * should have.
+     * Returns a list of all accessors (getter and setter) of a given field.
      * 
-     * @param type of the accessor
-     * @param method
      * @param field
-     * @return boolean
+     * @return
+     * @throws JavaModelException
      */
-    public static boolean isAccessor(AccessorType type, IMethod method, IField field) {
-        String fieldName = field.getElementName();
-        // The expected accessor name is given by the type (get/set) + the Pascal case
-        // of field name e.g. if a field is called id, the getter name is getId
-        String accessorName = type.name().toLowerCase() + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        return method.getElementName().equals(accessorName);
+    public static List<IMethod> getAccessors(IField field) throws JavaModelException {
+        List<IMethod> accessors = new ArrayList<>();
+        IMethod getter = GetterSetterUtil.getGetter(field);
+        IMethod setter = GetterSetterUtil.getSetter(field);
+        for (IMethod accessor : new IMethod[] { getter, setter }) {
+            if (accessor != null) {
+                accessors.add(accessor);
+            }
+        }
+        return accessors;
     }
 }

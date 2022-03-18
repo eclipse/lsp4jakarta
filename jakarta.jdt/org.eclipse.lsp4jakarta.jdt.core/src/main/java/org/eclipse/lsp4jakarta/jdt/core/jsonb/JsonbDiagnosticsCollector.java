@@ -15,7 +15,6 @@ package org.eclipse.lsp4jakarta.jdt.core.jsonb;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotatable;
@@ -32,7 +31,6 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils.AccessorType;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -92,21 +90,11 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
                     }
                     // Diagnostics on the getter and setter of the field are created when they are
                     // annotated with Jsonb annotations other than JsonbTransient.
-                    collectJsonbTransientGetterSetterDiagnostics(unit, field, diagnostics);
-                }
-            }
-        }
-    }
-
-    private void collectJsonbTransientGetterSetterDiagnostics(ICompilationUnit unit, 
-            IField field, List<Diagnostic> diagnostics) throws JavaModelException {
-        for (IType type : unit.getAllTypes()) {
-            for (IMethod method : type.getMethods()) {
-                if (JDTUtils.isAccessor(AccessorType.GET, method, field)
-                        || JDTUtils.isAccessor(AccessorType.SET, method, field)) {
-                    if (hasNonJsonbTransientAnnotation(method)) {
-                        Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.JSONB_TRANSIENT);
-                        diagnostics.add(diagnostic);
+                    for (IMethod accessor : JDTUtils.getAccessors(field)) {
+                        if (hasNonJsonbTransientAnnotation(accessor)) {
+                            Diagnostic diagnostic = createDiagnosticBy(unit, accessor, JsonbConstants.JSONB_TRANSIENT);
+                            diagnostics.add(diagnostic);
+                        }
                     }
                 }
             }
