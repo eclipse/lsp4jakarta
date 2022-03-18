@@ -89,5 +89,5 @@ public class WebSocketConstants {
 
     /* Regex */
     public static final String REGEX_RELATIVE_PATHS = ".*\\/\\.{0,2}\\/.*";
-    public static final String REGEX_URI_VARIABLE = "\\{(\\w|%20|%21|%23|%24|%25|%26|%27|%28|%29|%2A|%2B|%2C|%2F|%3A|%3B|%3D|%3F|%40|%5B|%5D)+\\}";
+    public static final String REGEX_URI_VARIABLE = "\\{(\\w|-|%20|%21|%23|%24|%25|%26|%27|%28|%29|%2A|%2B|%2C|%2F|%3A|%3B|%3D|%3F|%40|%5B|%5D)+\\}";
 }
