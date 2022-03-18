@@ -80,6 +80,5 @@ public class WebSocketConstants {
     public static final Set<String> WRAPPER_OBJS = RAW_WRAPPER_OBJS.stream().map(raw -> "java.lang.".concat(raw)).collect(Collectors.toSet());
 
     // Messages
-    public static final String INITIAL_DIAG_MSG = "Invalid parameter type. Parameter must be of type: \n- "; 
-    public static final String END_DIAG_MSG = "\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof"; 
+    public static final String PARAM_TYPE_DIAG_MSG = "Invalid parameter type. When using %s, parameter must be of type: \n- %s\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof";
 }

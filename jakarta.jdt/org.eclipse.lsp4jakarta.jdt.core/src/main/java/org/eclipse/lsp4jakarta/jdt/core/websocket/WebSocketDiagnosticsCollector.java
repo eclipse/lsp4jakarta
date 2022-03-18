@@ -135,7 +135,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         // check parameters valid types
                         if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
                             Diagnostic diagnostic = createDiagnostic(param, unit,
-                                    createParamTypeDiagMsg(specialParamTypes),
+                                    createParamTypeDiagMsg(specialParamTypes, methodAnnotTarget),
                                     diagnosticCode);
                             diagnostics.add(diagnostic);
                             continue;
@@ -314,8 +314,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     }
 
 
-    private String createParamTypeDiagMsg(Set<String> methodParamOptTypes) {
+    private String createParamTypeDiagMsg(Set<String> methodParamOptTypes, String methodAnnotTarget) {
         String paramMessage = String.join("\n- ", methodParamOptTypes);
-        return WebSocketConstants.INITIAL_DIAG_MSG + paramMessage + WebSocketConstants.END_DIAG_MSG;
+        return String.format(WebSocketConstants.PARAM_TYPE_DIAG_MSG, "@" + methodAnnotTarget, paramMessage);
     }
 }
