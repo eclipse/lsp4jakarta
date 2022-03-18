@@ -98,6 +98,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
+                    // ServerEndpoint annotation diagnostics
                     serverEndpointWarningCheck(type, diagnostics, unit);
                 }
             }
@@ -209,7 +210,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    /*
+    /**
      * Create a warning diagnostic if a ServerEndpoint annotation does not follow the rules.
      */
     private void serverEndpointWarningCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit) throws JavaModelException {
@@ -362,18 +363,18 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     /**
      * Check if a URI string contains any sequence with //, /./, or /../
      *
-     * @param uriString
-     * @return
+     * @param uriString ServerEndpoint URI
+     * @return if a URI has a relative path
      */
     private boolean hasRelativePathURIs(String uriString) {
         return uriString.matches(WebSocketConstants.REGEX_RELATIVE_PATHS);
     }
 
-    /*
+    /**
      * Check if a URI string has a duplicate variable
      * 
-     * @param uriString
-     * @return
+     * @param uriString ServerEndpoint URI
+     * @return if a URI has duplicate variables
      */
     private boolean hasDuplicateURIVariables(String uriString) {
         HashSet<String> variables = new HashSet<String>();
