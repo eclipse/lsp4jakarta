@@ -72,12 +72,12 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         // OnOpen Invalid Param Types
         Diagnostic d1 = d(12, 47, 59,
-        "Invalid parameter type. Parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
+        "Invalid parameter type. When using @OnOpen, parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnOpenChangeInvalidParam");
         
         // OnClose Invalid Param Type
         Diagnostic d2 = d(17, 73, 85,
-                "Invalid parameter type. Parameter must be of type: \n- jakarta.websocket.CloseReason\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
+                "Invalid parameter type. When using @OnClose, parameter must be of type: \n- jakarta.websocket.CloseReason\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnCloseChangeInvalidParam");
         
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
