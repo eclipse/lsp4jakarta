@@ -109,7 +109,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
         Diagnostic d = d(4, 0, 27,
-                "Server endpoint paths must not contain the sequences /../, /./ or //.",
+                "Server endpoint paths must not contain the sequences '/../', '/./' or '//'.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
