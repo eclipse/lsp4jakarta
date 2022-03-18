@@ -87,7 +87,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
                     // ServerEndpoint annotation diagnostics
-                    serverEndpointWarningCheck(type, diagnostics, unit);
+                    serverEndpointErrorCheck(type, diagnostics, unit);
                 }
             }
         } catch (JavaModelException e) {
@@ -199,9 +199,9 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     }
 
     /**
-     * Create a warning diagnostic if a ServerEndpoint annotation does not follow the rules.
+     * Create an error diagnostic if a ServerEndpoint annotation does not follow the rules.
      */
-    private void serverEndpointWarningCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit) throws JavaModelException {
+    private void serverEndpointErrorCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit) throws JavaModelException {
         for (IAnnotation annotation : type.getAnnotations()) {
             if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)) {
                 for (IMemberValuePair annotationMemberValuePair : annotation.getMemberValuePairs()) {
