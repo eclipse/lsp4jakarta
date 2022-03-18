@@ -23,16 +23,6 @@ import java.util.Set;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.IAnnotation;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.core.ILocalVariable;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
@@ -42,8 +32,6 @@ import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants;
 import org.eclipse.jdt.core.*;
-
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
 
 import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
@@ -216,31 +204,34 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     private void serverEndpointWarningCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit) throws JavaModelException {
         for (IAnnotation annotation : type.getAnnotations()) {
             if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)) {
-                String path = annotation
-                        .getMemberValuePairs()[0]
-                        .getValue()
-                        .toString();
-                Diagnostic diagnostic;
-                if (!JDTUtils.hasLeadingSlash(path)) {
-                    diagnostic = createDiagnostic(annotation, unit,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                    diagnostics.add(diagnostic);
-                } else if (hasRelativePathURIs(path)) {
-                    diagnostic = createDiagnostic(annotation, unit,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                    diagnostics.add(diagnostic);
-                } else if (!JDTUtils.isValidLevel1URI(path)) {
-                    diagnostic = createDiagnostic(annotation, unit,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                    diagnostics.add(diagnostic);
-                } else if (hasDuplicateURIVariables(path)) {
-                    diagnostic = createDiagnostic(annotation, unit,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_DUPLICATE_VAR,
-                            WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                    diagnostics.add(diagnostic);
+                for (IMemberValuePair annotationMemberValuePair : annotation.getMemberValuePairs()) {
+                    if (annotationMemberValuePair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)) {
+                        String path = annotationMemberValuePair
+                                .getValue()
+                                .toString();
+                        Diagnostic diagnostic;
+                        if (!JDTUtils.hasLeadingSlash(path)) {
+                            diagnostic = createDiagnostic(annotation, unit,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                            diagnostics.add(diagnostic);
+                        } else if (hasRelativePathURIs(path)) {
+                            diagnostic = createDiagnostic(annotation, unit,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                            diagnostics.add(diagnostic);
+                        } else if (!JDTUtils.isValidLevel1URI(path)) {
+                            diagnostic = createDiagnostic(annotation, unit,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                            diagnostics.add(diagnostic);
+                        } else if (hasDuplicateURIVariables(path)) {
+                            diagnostic = createDiagnostic(annotation, unit,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_DUPLICATE_VAR,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                            diagnostics.add(diagnostic);
+                        }
+                    }
                 }
             }
         }
