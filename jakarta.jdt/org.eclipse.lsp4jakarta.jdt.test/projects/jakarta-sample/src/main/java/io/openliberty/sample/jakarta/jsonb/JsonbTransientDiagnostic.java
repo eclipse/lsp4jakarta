@@ -36,7 +36,7 @@ public class JsonbTransientDiagnostic {
     }
     
     @JsonbCreator
-    private int setId(int id) {
+    private void setId(int id) {
         // A diagnostic is expected on setId because as a setter, it is annotated with other 
         // Jsonb annotations while its corresponding field id is annotated with JsonbTransient
         this.id = id;

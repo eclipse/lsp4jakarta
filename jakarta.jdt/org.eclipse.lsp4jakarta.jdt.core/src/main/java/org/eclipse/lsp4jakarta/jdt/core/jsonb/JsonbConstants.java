@@ -1,5 +1,7 @@
 package org.eclipse.lsp4jakarta.jdt.core.jsonb;
 
+import java.util.List;
+
 public class JsonbConstants {
 
     /* Source */
@@ -19,5 +21,20 @@ public class JsonbConstants {
 
     public static final String JSONB_TRANSIENT = JSONB_PREFIX + "Transient";
     public static final String ERROR_MESSAGE_JSONB_TRANSIENT = "@JsonbTransient must be mutually exclusive with all other JSON Binding defined annotations.";
+    
+    public static final String JSONB_ANNOTATION = JSONB_PREFIX + "Annotation";
+    public static final String JSONB_DATE_FORMAT = JSONB_PREFIX + "DateFormat";
+    public static final String JSONB_NILLABLE = JSONB_PREFIX + "Nillable";
+    public static final String JSONB_NUMBER_FORMAT = JSONB_PREFIX + "NumberFormat";
+    public static final String JSONB_PROPERTY = JSONB_PREFIX + "Property";
+    public static final String JSONB_PROPERTY_ORDER = JSONB_PREFIX + "PropertyOrder";
+    public static final String JSONB_TYPE_ADAPTER = JSONB_PREFIX + "TypeAdapter";
+    public static final String JSONB_TYPE_DESERIALIZER = JSONB_PREFIX + "TypeDeserializer";
+    public static final String JSONB_TYPE_SERIALIZER = JSONB_PREFIX + "TypeSerializer";
+    public static final String JSONB_VISIBILITY = JSONB_PREFIX + "Visibility";
+
+    public static final List<String> JSONB_ANNOTATIONS = List.of(JSONB_CREATOR, JSONB_TRANSIENT, JSONB_ANNOTATION,
+            JSONB_DATE_FORMAT, JSONB_NILLABLE, JSONB_NUMBER_FORMAT, JSONB_PROPERTY, JSONB_PROPERTY_ORDER,
+            JSONB_TYPE_ADAPTER, JSONB_TYPE_DESERIALIZER, JSONB_TYPE_SERIALIZER, JSONB_VISIBILITY);
 
 }

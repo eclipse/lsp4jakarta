@@ -91,7 +91,7 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
                 "@JsonbTransient must be mutually exclusive with all other JSON Binding defined annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
         
-        Diagnostic d3 = d(38, 16, 21,
+        Diagnostic d3 = d(38, 17, 22,
                 "@JsonbTransient must be mutually exclusive with all other JSON Binding defined annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
 
