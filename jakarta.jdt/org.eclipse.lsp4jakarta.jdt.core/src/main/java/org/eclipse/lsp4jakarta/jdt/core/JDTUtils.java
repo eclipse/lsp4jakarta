@@ -632,10 +632,10 @@ public class JDTUtils {
     }
 
     /**
-     * Returns a list of all accessors (getter and setter) of a given field.
+     * Returns a list of all accessors (getter and setter) of the given field.
      * 
      * @param field
-     * @return
+     * @return a list of accessor methods
      * @throws JavaModelException
      */
     public static List<IMethod> getAccessors(IField field) throws JavaModelException {
