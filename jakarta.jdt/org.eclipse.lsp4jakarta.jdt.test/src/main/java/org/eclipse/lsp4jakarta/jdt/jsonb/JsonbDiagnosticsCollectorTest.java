@@ -105,12 +105,5 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
         CodeAction ca1 = ca(uri, "Remove @JsonbTransient", d1, te1);
         CodeAction ca2 = ca(uri, "Remove @JsonbProperty", d1, te2);
         assertJavaCodeAction(codeActionParams1, utils, ca1, ca2);
-        
-//        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
-//        TextEdit te3 = te(26, 4, 27, 4, "");
-//        TextEdit te4 = te(24, 4, 26, 4, "");
-//        CodeAction ca3 = ca(uri, "Remove @JsonbTransient", d2, te3);
-//        CodeAction ca4 = ca(uri, "Remove @JsonbProperty, @JsonbDateFormat", d2, te4);
-//        assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
     }
 }
