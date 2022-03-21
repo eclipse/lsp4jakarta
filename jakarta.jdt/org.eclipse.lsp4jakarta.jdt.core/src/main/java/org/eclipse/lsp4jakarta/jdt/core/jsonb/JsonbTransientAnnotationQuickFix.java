@@ -30,7 +30,11 @@ import com.google.gson.JsonArray;
 
 /**
  * Quick fix for removing @JsonbTransient annotations when more than
- * one occur in a class
+ * one occur in a class.
+ * The getCodeActions method is overridden in order to make sure that
+ * we return our custom quick fixes. There will be two quick fixes given
+ * to the user: (1) either remove @JsonbTranient or (2) remove all other
+ * Jsonb annotations.
  * 
  * @author Adit Rada
  *
