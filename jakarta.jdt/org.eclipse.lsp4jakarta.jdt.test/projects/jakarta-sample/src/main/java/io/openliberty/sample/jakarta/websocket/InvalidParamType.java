@@ -7,6 +7,12 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.server.ServerEndpoint;
 
+/**
+ * Expected Diagnostics are related to validating that the parameters for the 
+ * WebSocket methods are of valid types for onOpen (diagnostic code: OnOpenChangeInvalidParam) 
+ * and onClose (diagnostic code: OnCloseChangeInvalidParam).
+ * See issues #247 (onOpen) and #248 (onClose)
+ */
 @ServerEndpoint(value = "/infos")
 public class InvalidParamType {
     @OnOpen
