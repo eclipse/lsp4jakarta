@@ -643,6 +643,7 @@ public class JDTUtils {
         return uriString.matches(LEVEL1_URI_REGEX);
     }
 
+    /**
      * Returns a list of all accessors (getter and setter) of the given field.
      * 
      * @param field
