@@ -19,7 +19,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -43,11 +45,13 @@ import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMemberValuePair;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.ISourceReference;
@@ -59,6 +63,7 @@ import org.eclipse.jdt.core.SourceRange;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
 import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
@@ -624,5 +629,24 @@ public class JDTUtils {
      */
     public static boolean hasLeadingSlash(String uriString) {
         return uriString.startsWith("/");
+    }
+
+    /**
+     * Returns a list of all accessors (getter and setter) of the given field.
+     * 
+     * @param field
+     * @return a list of accessor methods
+     * @throws JavaModelException
+     */
+    public static List<IMethod> getAccessors(IField field) throws JavaModelException {
+        List<IMethod> accessors = new ArrayList<>();
+        IMethod getter = GetterSetterUtil.getGetter(field);
+        IMethod setter = GetterSetterUtil.getSetter(field);
+        for (IMethod accessor : new IMethod[] { getter, setter }) {
+            if (accessor != null) {
+                accessors.add(accessor);
+            }
+        }
+        return accessors;
     }
 }

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     Adit Rada - initial API and implementation
+ *     Adit Rada, Yijia Jing - initial API and implementation
  *******************************************************************************/
 
 package io.openliberty.sample.jakarta.jsonb;
@@ -25,6 +25,20 @@ public class JsonbTransientDiagnostic {
     @JsonbTransient
     private int id;
 
-    @JsonbPropery("fav_lang")
+    @JsonbProperty("fav_lang")
     private String favoriteLanguage;
+    
+    @JsonbProperty("person-id")
+    private int getId() { 
+        // A diagnostic is expected on getId because as a getter, it is annotated with other 
+        // Jsonb annotations while its corresponding field id is annotated with JsonbTransient
+        return id;
+    }
+    
+    @JsonbCreator
+    private void setId(int id) {
+        // A diagnostic is expected on setId because as a setter, it is annotated with other 
+        // Jsonb annotations while its corresponding field id is annotated with JsonbTransient
+        this.id = id;
+    }
 }
