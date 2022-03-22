@@ -95,6 +95,9 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
+
+                    // OnMessage validation for WebSocket message formats
+                    onMessageWSMessageFormats(type, diagnostics, unit);
                 }
             }
         } catch (JavaModelException e) {
@@ -195,6 +198,68 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                                 if (!endpointPathVars.contains(pathValue)) {
                                     Diagnostic d = createPathParamWarningDiagnostic(annotation, unit);
                                     diagnostics.add(d);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates an error diagnostic if there exists more than one method annotated
+     * with @OnMessage for a given message format.
+     * 
+     * @param type
+     * @param diagnostics
+     * @param unit
+     * @throws JavaModel
+     */
+    private void onMessageWSMessageFormats(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit)
+            throws JavaModelException {
+        IMethod[] typeMethods = type.getMethods();
+        boolean onMessageTextUsed = false;
+        boolean onMessageBinaryUsed = false;
+        boolean onMessagePongUsed = false;
+        for (IMethod method : typeMethods) {
+            IAnnotation[] allAnnotations = method.getAnnotations();
+            for (IAnnotation annotation : allAnnotations) {
+                if (annotation.getElementName().equals(WebSocketConstants.ON_MESSAGE)) {
+                    ILocalVariable[] allParams = method.getParameters();
+                    for (ILocalVariable param : allParams) {
+                        if (!isParamPath(param)) {
+                            String signature = param.getTypeSignature();
+                            String formatSignature = signature.replace("/", ".");
+                            String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
+                            if (!resolvedTypeName.equals(WebSocketConstants.SESSION_CLASS)) {
+                                WebSocketConstants.MESSAGE_FORMAT messageFormat = getMessageFormat(resolvedTypeName);
+                                boolean duplicateFound = false;
+                                switch (messageFormat) {
+                                case TEXT:
+                                    if (onMessageTextUsed) {
+                                        duplicateFound = true;
+                                    }
+                                    onMessageTextUsed = true;
+                                    break;
+                                case BINARY:
+                                    if (onMessageBinaryUsed) {
+                                        duplicateFound = true;
+                                    }
+                                    onMessageBinaryUsed = true;
+                                    break;
+                                case PONG:
+                                    if (onMessagePongUsed) {
+                                        duplicateFound = true;
+                                    }
+                                    onMessagePongUsed = true;
+                                    break;
+                                }
+                                if (duplicateFound) {
+                                    Diagnostic diagnostic = createDiagnostic(param, unit,
+                                            WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
+                                            WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
+                                    diagnostics.add(diagnostic);
                                 }
                             }
                         }
@@ -313,6 +378,32 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         return wsEndpoint;
     }
 
+    private boolean isParamPath(ILocalVariable param) throws JavaModelException {
+        IAnnotation[] allVariableAnnotations = param.getAnnotations();
+        for (IAnnotation variableAnnotation : allVariableAnnotations) {
+            if (variableAnnotation.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private WebSocketConstants.MESSAGE_FORMAT getMessageFormat(String typeName) {
+        switch (typeName) {
+        case WebSocketConstants.STRING_CLASS:
+            return WebSocketConstants.MESSAGE_FORMAT.TEXT;
+        case WebSocketConstants.READER_CLASS:
+            return WebSocketConstants.MESSAGE_FORMAT.TEXT;
+        case WebSocketConstants.BYTEBUFFER_CLASS:
+            return WebSocketConstants.MESSAGE_FORMAT.BINARY;
+        case WebSocketConstants.INPUTSTREAM_CLASS:
+            return WebSocketConstants.MESSAGE_FORMAT.BINARY;
+        case WebSocketConstants.PONGMESSAGE_CLASS:
+            return WebSocketConstants.MESSAGE_FORMAT.PONG;
+        default:
+            throw new IllegalArgumentException("Invalid message format type");
+        }
+    }
 
     private String createParamTypeDiagMsg(Set<String> methodParamOptTypes, String methodAnnotTarget) {
         String paramMessage = String.join("\n- ", methodParamOptTypes);

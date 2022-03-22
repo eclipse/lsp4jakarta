@@ -48,6 +48,9 @@ public class WebSocketConstants {
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
 
+    public static final String DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD = "Each WebSocket endpoint may only have one message handling method for each of the native WebSocket message formats: text, binary and pong.";
+    public static final String DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD = "OnMessageDuplicateMethod";
+
     
     /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
     // Class Level Annotations
@@ -57,12 +60,20 @@ public class WebSocketConstants {
     // Superclass
     public static final String ENDPOINT_SUPERCLASS = "Endpoint";
     public static final String IS_SUPERCLASS = "isSuperclass";
-    
+
     public static final Set<String> WS_ANNOTATION_CLASS = new HashSet<>(Arrays.asList(SERVER_ENDPOINT_ANNOTATION, CLIENT_ENDPOINT_ANNOTATION));
+
+    public static final String STRING_CLASS = "java.lang.String";
+    public static final String READER_CLASS = "java.io.Reader";
+    public static final String BYTEBUFFER_CLASS = "java.nio.ByteBuffer";
+    public static final String INPUTSTREAM_CLASS = "java.io.InputStream";
+    public static final String PONGMESSAGE_CLASS = "jakarta.websocket.PongMessage";
+    public static final String SESSION_CLASS = "jakarta.websocket.Session";
 
     /* Annotations */
     public static final String ON_OPEN = "OnOpen";
     public static final String ON_CLOSE = "OnClose";
+    public static final String ON_MESSAGE = "OnMessage";
 
     public static final String IS_ANNOTATION = "isAnnotation";
 
@@ -70,10 +81,10 @@ public class WebSocketConstants {
     public static final String PATH_PARAM_ANNOTATION = "PathParam";
 
     // For OnOpen annotation    
-    public static final Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("jakarta.websocket.EndpointConfig", "jakarta.websocket.Session"));
+    public static final Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("jakarta.websocket.EndpointConfig", SESSION_CLASS));
     public static final Set<String> RAW_ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("EndpointConfig", "Session"));
 
-    public static final Set<String> ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.CloseReason", "jakarta.websocket.Session"));
+    public static final Set<String> ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.CloseReason", SESSION_CLASS));
     public static final Set<String> RAW_ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("CloseReason", "Session"));
     
     public static final Set<String> RAW_WRAPPER_OBJS = new HashSet<>(Arrays.asList("String", "Boolean", "Integer", "Long", "Double", "Float"));
@@ -81,4 +92,7 @@ public class WebSocketConstants {
 
     // Messages
     public static final String PARAM_TYPE_DIAG_MSG = "Invalid parameter type. When using %s, parameter must be of type: \n- %s\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof";
+
+    // Enums
+    public enum MESSAGE_FORMAT {TEXT, BINARY, PONG};
 }
