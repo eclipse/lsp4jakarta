@@ -58,18 +58,16 @@ public class JsonbTransientAnnotationQuickFix extends RemoveAnnotationConflictQu
         List<String> annotations = IntStream.range(0, diagnosticData.size())
                 .mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
 
-        if (parentType != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
-            // We either keep, JsobTransient, or remove all other Jsonb annotations.
-            removeAnnotation(diagnostic, context, parentType, codeActions,
-                    "jakarta.json.bind.annotation.JsonbTransient");
+        List<CodeAction> codeActions = new ArrayList<>();
+        // We either keep, JsobTransient, or remove all other Jsonb annotations.
+        removeAnnotation(diagnostic, context, parentType, codeActions,
+                "jakarta.json.bind.annotation.JsonbTransient");
 
-            annotations.remove(JsonbConstants.JSONB_TRANSIENT);
-            removeAnnotation(diagnostic, context, parentType, codeActions,
-                    annotations.toArray(new String[] {}));       
+        annotations.remove(JsonbConstants.JSONB_TRANSIENT);
+        removeAnnotation(diagnostic, context, parentType, codeActions,
+                annotations.toArray(new String[] {}));       
 
-            return codeActions;
-        }
-        return null;
+        return codeActions;
+
     }
 }
