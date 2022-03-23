@@ -25,7 +25,6 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbConstants;
 
 import com.google.gson.JsonArray;
 
@@ -59,5 +58,12 @@ public abstract class RemoveMultipleAnnotations extends RemoveAnnotationConflict
         return codeActions;
     }
     
+    /**
+     * Each List in the returned List of Lists should be a set of annotations that
+     * will be removed at one go.
+     * 
+     * @author Adit Rada
+     *
+     */
     protected abstract List<List<String>> getMultipleRemoveAnnotations(List<String> annotations);
 }
