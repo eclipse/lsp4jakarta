@@ -48,14 +48,17 @@ public abstract class RemoveMultipleAnnotations extends RemoveAnnotationConflict
         List<String> annotations = IntStream.range(0, diagnosticData.size())
                 .mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
 
-        List<CodeAction> codeActions = new ArrayList<>();
-        
-        List<List<String>> annotationsListsToRemove = getMultipleRemoveAnnotations(annotations);
-        for (List<String> annotationList : annotationsListsToRemove) {
-            String[] annotaions = annotationList.toArray(new String[annotationList.size()]);
-            removeAnnotation(diagnostic, context, parentType, codeActions, annotaions);
+        if (parentType != null) {
+            List<CodeAction> codeActions = new ArrayList<>();
+            
+            List<List<String>> annotationsListsToRemove = getMultipleRemoveAnnotations(annotations);
+            for (List<String> annotationList : annotationsListsToRemove) {
+                String[] annotaions = annotationList.toArray(new String[annotationList.size()]);
+                removeAnnotation(diagnostic, context, parentType, codeActions, annotaions);
+            }
+            return codeActions;
         }
-        return codeActions;
+        return null;
     }
     
     /**
