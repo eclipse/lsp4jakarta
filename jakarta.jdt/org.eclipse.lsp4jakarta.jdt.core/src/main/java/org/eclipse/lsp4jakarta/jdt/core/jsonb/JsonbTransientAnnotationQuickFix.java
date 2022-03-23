@@ -8,25 +8,15 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     IBM Corporation - initial API and implementation
+*     IBM Corporation, Adit Rada - initial API and implementation
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.core.jsonb;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
-
-import com.google.gson.JsonArray;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveMultipleAnnotations;
 
 /**
  * Quick fix for removing @JsonbTransient annotations when more than
@@ -39,35 +29,19 @@ import com.google.gson.JsonArray;
  * @author Adit Rada
  *
  */
-public class JsonbTransientAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
 
-    public JsonbTransientAnnotationQuickFix() {
-        // annotation list to be derived from the diagnostic passed to
-        // `getCodeActions()`
-        super();
-    }
-
+public class JsonbTransientAnnotationQuickFix extends RemoveMultipleAnnotations {
     @Override
-    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-            IProgressMonitor monitor) throws CoreException {
-        ASTNode node = context.getCoveredNode();
-        IBinding parentType = getBinding(node);
+    protected List<List<String>> getMultipleRemoveAnnotations(List<String> annotations) {
+        List<List<String>> annotationsListsToRemove = new ArrayList<List<String>>();
 
-        JsonArray diagnosticData = (JsonArray) diagnostic.getData();
-
-        List<String> annotations = IntStream.range(0, diagnosticData.size())
-                .mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
-
-        List<CodeAction> codeActions = new ArrayList<>();
-        // We either keep, JsobTransient, or remove all other Jsonb annotations.
-        removeAnnotation(diagnostic, context, parentType, codeActions,
-                "jakarta.json.bind.annotation.JsonbTransient");
-
+        // Provide as one option: Remove JsonbTransient
+        annotationsListsToRemove.add(Arrays.asList("jakarta.json.bind.annotation.JsonbTransient"));
+        
+        // Provide as another option: Remove all other JsonbAnnotations
         annotations.remove(JsonbConstants.JSONB_TRANSIENT);
-        removeAnnotation(diagnostic, context, parentType, codeActions,
-                annotations.toArray(new String[] {}));       
+        annotationsListsToRemove.add(annotations);
 
-        return codeActions;
-
+        return annotationsListsToRemove;
     }
 }
