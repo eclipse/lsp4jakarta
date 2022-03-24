@@ -130,7 +130,7 @@ public class CodeActionHandler {
             RemoveInjectAnnotationQuickFix RemoveInjectAnnotationQuickFix = new RemoveInjectAnnotationQuickFix();
             RemoveProduceAnnotationQuickFix RemoveProduceAnnotationQuickFix = new RemoveProduceAnnotationQuickFix();
             RemoveInvalidInjectParamAnnotationQuickFix RemoveInvalidInjectParamAnnotationQuickFix = new RemoveInvalidInjectParamAnnotationQuickFix();
-            AddPathParamQuickFix PathParamQuickFix = new AddPathParamQuickFix();
+            AddPathParamQuickFix AddPathParamQuickFix = new AddPathParamQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -253,7 +253,7 @@ public class CodeActionHandler {
                     	codeActions.addAll(RemoveMethodParametersQuickFix.getCodeActions(context,diagnostic,monitor));	
                     }
                     if(diagnostic.getCode().getLeft().equals(WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT)) {
-                        codeActions.addAll(PathParamQuickFix.getCodeActions(context, diagnostic, monitor));
+                        codeActions.addAll(AddPathParamQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
                 } catch (CoreException e) {

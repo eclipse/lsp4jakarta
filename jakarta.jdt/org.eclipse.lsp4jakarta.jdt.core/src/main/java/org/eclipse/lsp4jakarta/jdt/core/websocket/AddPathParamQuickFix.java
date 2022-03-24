@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2022 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,13 @@
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationAttributesQuickFix;
 
-
+/**
+ * Quick fix for adding the @PathParam annotation when one of more 
+ * parameters on a method annotated endpoint class decorated with 
+ * any of the annotations @OnMessage, @OnOpen, @OnClose, @OnError
+ * 
+ * @author Lidia Ataupillco Ramos
+ */
 public class AddPathParamQuickFix extends InsertAnnotationAttributesQuickFix {
     public AddPathParamQuickFix() {
         super("jakarta.annotation.PathParam", false, "value");
