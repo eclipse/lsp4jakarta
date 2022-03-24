@@ -92,7 +92,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
                     invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES, 
                             WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
-
+                    onMessageParamsCheck(type, WebSocketConstants.ON_MESSAGE, WebSocketConstants.ON_MESSAGE_PARAM_OPT_TYPES,
+                            WebSocketConstants.RAW_ON_MESSAGE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS, unit, diagnostics);
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
                 }
@@ -158,6 +159,89 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 }
             }
         }
+    }
+    
+    private void onMessageParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, String diagnosticCode, ICompilationUnit unit,
+            List<Diagnostic> diagnostics) throws JavaModelException {
+        
+        boolean decoderIncluded = checkEndpointHasDecoder(type);
+
+        IMethod[] allMethods = type.getMethods();
+
+        for (IMethod method : allMethods) {
+            IAnnotation[] allAnnotations = method.getAnnotations();
+
+            for (IAnnotation annotation : allAnnotations) {
+                if (annotation.getElementName().equals(methodAnnotTarget)) {
+                    ILocalVariable[] allParams = method.getParameters();
+
+                    for (ILocalVariable param : allParams) {
+                        String signature = param.getTypeSignature();
+                        String formatSignature = signature.replace("/", ".");
+                        String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
+
+                        boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
+                        boolean isSpecialType;
+                        boolean isPrimWrapped;
+
+                        if (resolvedTypeName != null) {
+                            isSpecialType = specialParamTypes.contains(resolvedTypeName);
+                            isPrimWrapped = isWrapper(resolvedTypeName);
+                        } else {
+                            String simpleParamType = Signature.getSignatureSimpleName(signature);
+                            isSpecialType = rawSpecialParamTypes.contains(simpleParamType);
+                            isPrimWrapped = isWrapper(simpleParamType);
+                        }
+
+                        // check parameters valid types
+                        if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
+                            Diagnostic diagnostic = createDiagnostic(param, unit,
+                                    createParamTypeDiagMsg(specialParamTypes, methodAnnotTarget),
+                                    diagnosticCode);
+                            diagnostics.add(diagnostic);
+                            continue;
+                        }
+
+                        if (!isSpecialType) {
+                            // check that if parameter is not a specialType, it has a @PathParam annotation
+                            IAnnotation[] param_annotations = param.getAnnotations();
+                            boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
+                                    annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
+
+                            if (!hasPathParamAnnot) {
+                                Diagnostic diagnostic = createDiagnostic(param, unit,
+                                        WebSocketConstants.DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING,
+                                        WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT);
+                                diagnostics.add(diagnostic);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Checks if a WebSocket EndPoint annotation contains custom decoders
+     * 
+     * @param type representing the class
+     * @return boolean to represent if decoders are present
+     * @throws JavaModelException 
+     */
+    private boolean checkEndpointHasDecoder(IType type) throws JavaModelException {
+        IAnnotation[] endpointAnnotations = type.getAnnotations();
+        for (IAnnotation annotation : endpointAnnotations) {
+            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)
+                    || annotation.getElementName().equals(WebSocketConstants.CLIENT_ENDPOINT_ANNOTATION)) {
+                IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
+                for (IMemberValuePair pair : valuePairs) {
+                    if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_DECODER)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**

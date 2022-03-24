@@ -36,6 +36,7 @@ public class WebSocketConstants {
     public static final String PATHPARAM_DIAGNOSTIC_CODE = "ChangePathParamValue";
 
     public static final String ANNOTATION_VALUE = "value";
+    public static final String ANNOTATION_DECODER = "decoders";
 
     public static final String URI_SEPARATOR = "/";
     public static final String CURLY_BRACE_START = "{";
