@@ -47,7 +47,7 @@ public class WebSocketConstants {
     /* Diagnostic codes */
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
-
+    public static final String DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS = "OnMessageChangeInvalidParam";
     
     /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
     // Class Level Annotations
@@ -63,19 +63,33 @@ public class WebSocketConstants {
     /* Annotations */
     public static final String ON_OPEN = "OnOpen";
     public static final String ON_CLOSE = "OnClose";
+    public static final String ON_MESSAGE = "OnMessage";
 
     public static final String IS_ANNOTATION = "isAnnotation";
 
     /* Types */
     public static final String PATH_PARAM_ANNOTATION = "PathParam";
 
-    // For OnOpen annotation    
+    /* For OnOpen annotation */
     public static final Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("jakarta.websocket.EndpointConfig", "jakarta.websocket.Session"));
     public static final Set<String> RAW_ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("EndpointConfig", "Session"));
-
+    /* For OnClose annotation */
     public static final Set<String> ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.CloseReason", "jakarta.websocket.Session"));
     public static final Set<String> RAW_ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("CloseReason", "Session"));
+    /* For OnMessage annotation */
+    public static final Set<String> ON_MESSAGE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.Session"));
+    public static final Set<String> RAW_ON_MESSAGE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("Session"));
+    /* For OnMessage (Text) annotation */
+    public static final Set<String> ON_MESSAGE_TEXT_TYPES = new HashSet<>(Arrays.asList("java.lang.String", "java.io.Reader"));
+    public static final Set<String> RAW_ON_MESSAGE_TEXT_TYPES = new HashSet<>(Arrays.asList("String", "Reader"));
+    /* For OnMessage (Text) annotation */
+    public static final Set<String> ON_MESSAGE_BINARY_TYPES = new HashSet<>(Arrays.asList("java.nio.ByteBuffer", "java.io.InputStream"));
+    public static final Set<String> RAW_ON_MESSAGE_BINARY_TYPES = new HashSet<>(Arrays.asList("ByteBuffer", "InputStream"));
+    /* For OnMessage (Text) annotation */
+    public static final Set<String> ON_MESSAGE_PONG_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.PongMessage"));
+    public static final Set<String> RAW_ON_MESSAGE_PONG_TYPES = new HashSet<>(Arrays.asList("PongMessage"));
     
+    /* Wrapper Objects */
     public static final Set<String> RAW_WRAPPER_OBJS = new HashSet<>(Arrays.asList("String", "Boolean", "Integer", "Long", "Double", "Float"));
     public static final Set<String> WRAPPER_OBJS = RAW_WRAPPER_OBJS.stream().map(raw -> "java.lang.".concat(raw)).collect(Collectors.toSet());
 
