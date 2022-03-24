@@ -153,7 +153,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
 
         List<String> jsonbAnnotationNames = new ArrayList<String>();
         for (String annotation : annotationNames)
-            if (annotation.startsWith(JsonbConstants.JSONB_PREFIX))
+            if (JsonbConstants.JSONB_ANNOTATIONS.contains(annotation))
                 jsonbAnnotationNames.add(annotation);
         return jsonbAnnotationNames;
     }
