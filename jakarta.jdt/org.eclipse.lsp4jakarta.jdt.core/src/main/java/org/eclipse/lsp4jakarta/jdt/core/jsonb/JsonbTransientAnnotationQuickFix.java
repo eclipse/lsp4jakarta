@@ -23,13 +23,12 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveMultipleAnnotations
  * one occur in a class.
  * The getCodeActions method is overridden in order to make sure that
  * we return our custom quick fixes. There will be two quick fixes given
- * to the user: (1) either remove @JsonbTranient or (2) remove all other
+ * to the user: (1) either remove @JsonbTransient or (2) remove all other
  * Jsonb annotations.
  * 
  * @author Adit Rada
  *
  */
-
 public class JsonbTransientAnnotationQuickFix extends RemoveMultipleAnnotations {
     @Override
     protected List<List<String>> getMultipleRemoveAnnotations(List<String> annotations) {

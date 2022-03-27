@@ -28,7 +28,13 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotation
 
 import com.google.gson.JsonArray;
 
-
+/**
+ * This class is used to provide options to remove multiple annotations
+ * at the same time. For example, "Remove @A, @B", "Remove @C, @D, @E".
+ * 
+ * @author Adit Rada
+ *
+ */
 public abstract class RemoveMultipleAnnotations extends RemoveAnnotationConflictQuickFix {
     
     public RemoveMultipleAnnotations() {
@@ -63,8 +69,12 @@ public abstract class RemoveMultipleAnnotations extends RemoveAnnotationConflict
     
     /**
      * Each List in the returned List of Lists should be a set of annotations that
-     * will be removed at one go.
+     * will be removed at one go. For example, to proved the user the option to remove
+     * "@A, @B" and "@C". The return should be [[A, B], [C]]
      * 
+     * @param All the annotations present on the member.
+     * @return A List of Lists, with each list containing the annotations that must be
+     * removed at the same time.
      * @author Adit Rada
      *
      */
