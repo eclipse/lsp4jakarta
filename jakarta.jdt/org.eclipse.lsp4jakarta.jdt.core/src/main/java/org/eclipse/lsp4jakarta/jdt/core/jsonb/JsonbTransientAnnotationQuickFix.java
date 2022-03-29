@@ -8,21 +8,39 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     IBM Corporation - initial API and implementation
+*     IBM Corporation, Adit Rada - initial API and implementation
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.core.jsonb;
 
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.RemoveAnnotationConflictQuickFix;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveMultipleAnnotations;
 
 /**
  * Quick fix for removing @JsonbTransient annotations when more than
- * one occur in a class
+ * one occur in a class.
+ * The getCodeActions method is overridden in order to make sure that
+ * we return our custom quick fixes. There will be two quick fixes given
+ * to the user: (1) either remove @JsonbTransient or (2) remove all other
+ * Jsonb annotations.
  * 
  * @author Adit Rada
  *
  */
-public class JsonbTransientAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
-    public JsonbTransientAnnotationQuickFix() {
-        super("jakarta.json.bind.annotation.JsonbTransient");
+public class JsonbTransientAnnotationQuickFix extends RemoveMultipleAnnotations {
+    @Override
+    protected List<List<String>> getMultipleRemoveAnnotations(List<String> annotations) {
+        List<List<String>> annotationsListsToRemove = new ArrayList<List<String>>();
+
+        // Provide as one option: Remove JsonbTransient
+        annotationsListsToRemove.add(Arrays.asList("jakarta.json.bind.annotation.JsonbTransient"));
+        
+        // Provide as another option: Remove all other JsonbAnnotations
+        annotations.remove(JsonbConstants.JSONB_TRANSIENT);
+        annotationsListsToRemove.add(annotations);
+
+        return annotationsListsToRemove;
     }
 }

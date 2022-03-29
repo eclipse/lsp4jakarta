@@ -8,7 +8,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     IBM Corporation, Yijia Jing - initial API and implementation
+*     IBM Corporation, Adit Rada, Yijia Jing - initial API and implementation
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.jsonb;
 
@@ -33,6 +33,8 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Test;
+
+import com.google.gson.Gson;
 
 public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
     protected static JDTUtils JDT_UTILS = new JDTUtils();
@@ -83,18 +85,47 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d1 = d(22, 19, 23,
+        // Diagnostic for the field "name"
+        Diagnostic d1 = d(25, 19, 23,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-        
-        Diagnostic d2 = d(31, 16, 21,
-                "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
-                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-        
-        Diagnostic d3 = d(38, 17, 22,
-                "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
-                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d1.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty",  "JsonbTransient")));
 
-        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3);
+        // Diagnostic for the field "favoriteLanguage"
+        Diagnostic d2 = d(30, 19, 35,
+                "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d2.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty", "JsonbAnnotation",  "JsonbTransient")));
+        
+        // Diagnostic for the getter "getId"
+        Diagnostic d3 = d(33, 16, 21,
+                "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+       
+        // Diagnostic for the setter "setId"
+        Diagnostic d4 = d(40, 17, 22,
+                "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");  
+  
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4);
+
+
+        // Test code actions
+        // Quick fix for the field "name"
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
+        TextEdit te1 = te(24, 4, 25, 4, "");
+        TextEdit te2 = te(23, 4, 24, 4, "");
+        CodeAction ca1 = ca(uri, "Remove @JsonbTransient", d1, te1);
+        CodeAction ca2 = ca(uri, "Remove @JsonbProperty", d1, te2);
+        assertJavaCodeAction(codeActionParams1, utils, ca1, ca2);
+       
+        // Quick fix for the field "favoriteLanguage"
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
+        TextEdit te3 = te(29, 4, 30, 4, "");
+        TextEdit te4 = te(27, 4, 29, 4, "");
+        CodeAction ca3 = ca(uri, "Remove @JsonbTransient", d2, te3);
+        CodeAction ca4 = ca(uri, "Remove @JsonbProperty, @JsonbAnnotation", d2, te4);
+        assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
+
     }
 }
