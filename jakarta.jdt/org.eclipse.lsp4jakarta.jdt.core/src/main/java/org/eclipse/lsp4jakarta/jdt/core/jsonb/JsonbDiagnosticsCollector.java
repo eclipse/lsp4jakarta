@@ -119,17 +119,26 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         for (IMethod accessor : accessors) {
             List<String> jsonbAnnotations = getJsonbAnnotationNames(accessor);
             if (jsonbAnnotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
-                if (hasJsonbAnnotationOtherThanTransient(accessor)) {
-                    Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
-                    diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotations)));
-                    diagnostics.add(diagnostic);
-                }
-                
-                if (hasJsonbAnnotationOtherThanTransient(field)) {
-                    Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
-                    diagnostics.add(diagnostic);
-                }
+                createDiagnosticIfJsonbTransientIsNotMutuallyExclusive(unit, diagnostics, accessor, jsonbAnnotations);
+                createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field);
             }
+        }
+    }
+    
+    private void createDiagnosticIfJsonbTransientIsNotMutuallyExclusive(ICompilationUnit unit,
+            List<Diagnostic> diagnostics, IMember member, List<String> jsonbAnnotations) throws JavaModelException {
+        if (hasJsonbAnnotationOtherThanTransient((IAnnotatable) member)) {
+            Diagnostic diagnostic = createDiagnosticBy(unit, member, JsonbConstants.JSONB_TRANSIENT);
+            diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotations)));
+            diagnostics.add(diagnostic);       
+        }
+    }
+    
+    private void createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(ICompilationUnit unit,
+            List<Diagnostic> diagnostics, IMember member) throws JavaModelException {
+        if (hasJsonbAnnotationOtherThanTransient((IAnnotatable) member)) {
+            Diagnostic diagnostic = createDiagnosticBy(unit, member, JsonbConstants.JSONB_TRANSIENT);
+            diagnostics.add(diagnostic);
         }
     }
     
