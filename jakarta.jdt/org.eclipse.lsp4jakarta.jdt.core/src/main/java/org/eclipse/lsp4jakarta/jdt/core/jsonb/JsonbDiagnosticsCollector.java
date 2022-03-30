@@ -97,19 +97,12 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             List<Diagnostic> diagnostics, IField field) throws JavaModelException {
         List<String> jsonbAnnotationsForField = getJsonbAnnotationNames(field);
         if (jsonbAnnotationsForField.contains(JsonbConstants.JSONB_TRANSIENT)) {
-            if (hasJsonbAnnotationOtherThanTransient(field)) {
-                Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
-                diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotationsForField)));
-                diagnostics.add(diagnostic);
-            }
+            createDiagnosticIfJsonbTransientIsNotMutuallyExclusive(unit, diagnostics, field, jsonbAnnotationsForField);
+
             // Diagnostics on the getter and setter of the field are created when they are
             // annotated with Jsonb annotations other than JsonbTransient.
-            for (IMethod accessor : JDTUtils.getAccessors(field)) {
-                if (hasJsonbAnnotationOtherThanTransient(accessor)) {
-                    Diagnostic diagnostic = createDiagnosticBy(unit, accessor, JsonbConstants.JSONB_TRANSIENT);
-                    diagnostics.add(diagnostic);
-                }
-            }
+            for (IMethod accessor : JDTUtils.getAccessors(field))
+                createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, accessor);
         }
     }
     
@@ -120,6 +113,8 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             List<String> jsonbAnnotations = getJsonbAnnotationNames(accessor);
             if (jsonbAnnotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
                 createDiagnosticIfJsonbTransientIsNotMutuallyExclusive(unit, diagnostics, accessor, jsonbAnnotations);
+                
+                // Diagnostic is created when the field of this accessor has a annotation other then JsonbTransient
                 createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field);
             }
         }
