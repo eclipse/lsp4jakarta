@@ -14,7 +14,7 @@
 package io.openliberty.sample.jakarta.jsonb;
 
 import jakarta.json.bind.annotation.JsonbCreator;
-import jakarta.json.bind.annotation.JsobTransient;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.json.bind.annotation.JsonbProperty;
 
 public class JsonbTransientDiagnostic {
@@ -31,13 +31,14 @@ public class JsonbTransientDiagnostic {
     private String favoriteLanguage;    // Diagnostic: JsonbTransient is mutually exclusive with other JsonB annotations
     
     @JsonbProperty("person-id")
+    @JsonbNillable
     private int getId() { 
         // A diagnostic is expected on getId because as a getter, it is annotated with other 
         // Jsonb annotations while its corresponding field id is annotated with JsonbTransient
         return id;
     }
     
-    @JsonbNillable 
+    @JsonbNillable
     private void setId(int id) {
         // A diagnostic is expected on setId because as a setter, it is annotated with other 
         // Jsonb annotations while its corresponding field id is annotated with JsonbTransient

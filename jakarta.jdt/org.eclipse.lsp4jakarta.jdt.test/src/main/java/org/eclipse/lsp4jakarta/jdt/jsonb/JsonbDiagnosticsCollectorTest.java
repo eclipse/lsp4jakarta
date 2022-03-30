@@ -97,17 +97,25 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
         d2.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty", "JsonbAnnotation",  "JsonbTransient")));
         
-        // Diagnostic for the getter "getId"
-        Diagnostic d3 = d(33, 16, 21,
+        // Diagnostic for the field "id"
+        Diagnostic d3 = d(21, 16, 18,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-       
-        // Diagnostic for the setter "setId"
-        Diagnostic d4 = d(40, 17, 22,
+        d3.setData(new Gson().toJsonTree(Arrays.asList("JsonbTransient")));
+        
+        // Diagnostic for the getter "getId"
+        Diagnostic d4 = d(34, 16, 21,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
-                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");  
-  
-        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4);
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d4.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty", "JsonbNillable")));
+        
+        // Diagnostic for the setter "setId"
+        Diagnostic d5 = d(41, 17, 22,
+                "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d5.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable")));
+
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5);
 
 
         // Test code actions
@@ -126,6 +134,23 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
         CodeAction ca3 = ca(uri, "Remove @JsonbTransient", d2, te3);
         CodeAction ca4 = ca(uri, "Remove @JsonbProperty, @JsonbAnnotation", d2, te4);
         assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
-
+        
+        // Quick fix for the field "id"
+        JakartaJavaCodeActionParams codeActionParams3 = createCodeActionParams(uri, d3);
+        TextEdit te5 = te(20, 4, 21, 4, "");
+        CodeAction ca5 = ca(uri, "Remove @JsonbTransient", d3, te5);
+        assertJavaCodeAction(codeActionParams3, utils, ca5);
+        
+        // Quick fix for the getter "getId"
+        JakartaJavaCodeActionParams codeActionParams4 = createCodeActionParams(uri, d4);
+        TextEdit te6 = te(32, 4, 34, 4, "");
+        CodeAction ca6 = ca(uri, "Remove @JsonbProperty, @JsonbNillable", d4, te6);
+        assertJavaCodeAction(codeActionParams4, utils, ca6);
+        
+        // Quick fix for the setter "setId"
+        JakartaJavaCodeActionParams codeActionParams5 = createCodeActionParams(uri, d5);
+        TextEdit te7 = te(40, 4, 41, 4, "");
+        CodeAction ca7 = ca(uri, "Remove @JsonbNillable", d5, te7);
+        assertJavaCodeAction(codeActionParams5, utils, ca7);
     }
 }

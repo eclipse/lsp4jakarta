@@ -69,7 +69,7 @@ public abstract class RemoveMultipleAnnotations extends RemoveAnnotationConflict
     
     /**
      * Each List in the returned List of Lists should be a set of annotations that
-     * will be removed at one go. For example, to proved the user the option to remove
+     * will be removed at one go. For example, to provide the user with the option to remove
      * "@A, @B" and "@C". The return should be [[A, B], [C]]
      * 
      * @param All the annotations present on the member.
