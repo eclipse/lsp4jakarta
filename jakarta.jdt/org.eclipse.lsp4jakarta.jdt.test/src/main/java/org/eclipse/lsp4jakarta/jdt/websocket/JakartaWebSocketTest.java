@@ -124,11 +124,14 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(4, 0, 23,
+        Diagnostic d1 = d(4, 0, 23,
                 "Server endpoint paths must start with a leading '/'.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
+        Diagnostic d2 = d(4, 0, 23,
+                "Server endpoint paths must be a URI-template (level-1) or a partial URI.",
+                DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
     }
 
     @Test
