@@ -51,6 +51,8 @@ import com.google.gson.stream.JsonReader;
 public class SnippetRegistry {
     List<Snippet> snippets; // Hold all snippets in this list
 
+    private static final String PACKAGENAME_KEY = "packagename";
+
     /**
      * Initialize the Snippet registry and create the array of Snippets
      */
@@ -148,6 +150,36 @@ public class SnippetRegistry {
         return builder.create().fromJson(reader, Snippet.class);
     }
 
+    private void processSnippetBody(Snippet snippet, String packageName) {
+        String packageStatement = "";
+        String lineDelimiter = System.lineSeparator(); 
+		List<String> body = snippet.getBody();
+		if (body.isEmpty()) {
+			return;
+		}
+		String firstLine = body.get(0);
+		if (firstLine.contains("${") && firstLine.contains(PACKAGENAME_KEY)) {
+			if (packageName == null) {
+                packageStatement = new StringBuilder("package ${1:packagename};")//
+                        .append(lineDelimiter) //
+                        .append(lineDelimiter) //
+                        .toString();
+            } else {
+                // fill package name to replace in the snippets
+                if (packageName.length() > 0) {
+                    packageStatement = new StringBuilder("")//
+                            .append(packageName) //
+                            .append(";") //
+                            .append(lineDelimiter) //
+                            .append(lineDelimiter) //
+                            .toString();
+                }
+            }
+            body.set(0, packageStatement);
+            snippet.setBody(body);
+		}
+	} 
+
     /**
      * Returns all snippets.
      *
@@ -175,6 +207,9 @@ public class SnippetRegistry {
             if (context.get(getSnippets().indexOf(snippet)) == null) {
                 return null;
             }
+            String packageName = "";
+            packageName = getPackageName(uri);
+            processSnippetBody(snippet, packageName);
             String label = snippet.getPrefixes().get(0);
             CompletionItem item = new CompletionItem();
             item.setLabel(label);
