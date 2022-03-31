@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+
 public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
     protected static JDTUtils JDT_UTILS = new JDTUtils();
 
@@ -101,11 +102,13 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
         Diagnostic d3 = d(33, 16, 21,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d3.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty")));
        
         // Diagnostic for the setter "setId"
         Diagnostic d4 = d(40, 17, 22,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
-                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");  
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d4.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable")));
   
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4);
 

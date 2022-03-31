@@ -95,14 +95,16 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     
     private void collectJsonbTransientFieldDiagnostics(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IField field) throws JavaModelException {
-        List<String> jsonbAnnotationsForField = getJsonbAnnotationNames(field);
-        if (jsonbAnnotationsForField.contains(JsonbConstants.JSONB_TRANSIENT)) {
-            createDiagnosticIfJsonbTransientIsNotMutuallyExclusive(unit, diagnostics, field, jsonbAnnotationsForField);
+        List<String> jsonbAnnotations = getJsonbAnnotationNames(field);
+        if (jsonbAnnotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
+            createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field, jsonbAnnotations);
 
             // Diagnostics on the getter and setter of the field are created when they are
             // annotated with Jsonb annotations other than JsonbTransient.
-            for (IMethod accessor : JDTUtils.getAccessors(field))
-                createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, accessor);
+            for (IMethod accessor : JDTUtils.getAccessors(field)) {
+                jsonbAnnotations = getJsonbAnnotationNames(accessor);
+                createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, accessor, jsonbAnnotations);
+            }
         }
     }
     
@@ -112,28 +114,21 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         for (IMethod accessor : accessors) {
             List<String> jsonbAnnotations = getJsonbAnnotationNames(accessor);
             if (jsonbAnnotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
-                createDiagnosticIfJsonbTransientIsNotMutuallyExclusive(unit, diagnostics, accessor, jsonbAnnotations);
+                createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, accessor, jsonbAnnotations);
                 
                 // Diagnostic is created when the field of this accessor has a annotation other then JsonbTransient
-                createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field);
+                jsonbAnnotations = getJsonbAnnotationNames(field);
+                createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field, jsonbAnnotations);
             }
         }
     }
     
-    private void createDiagnosticIfJsonbTransientIsNotMutuallyExclusive(ICompilationUnit unit,
+    private void createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IMember member, List<String> jsonbAnnotations) throws JavaModelException {
         if (hasJsonbAnnotationOtherThanTransient((IAnnotatable) member)) {
             Diagnostic diagnostic = createDiagnosticBy(unit, member, JsonbConstants.JSONB_TRANSIENT);
             diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotations)));
             diagnostics.add(diagnostic);       
-        }
-    }
-    
-    private void createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(ICompilationUnit unit,
-            List<Diagnostic> diagnostics, IMember member) throws JavaModelException {
-        if (hasJsonbAnnotationOtherThanTransient((IAnnotatable) member)) {
-            Diagnostic diagnostic = createDiagnosticBy(unit, member, JsonbConstants.JSONB_TRANSIENT);
-            diagnostics.add(diagnostic);
         }
     }
     
