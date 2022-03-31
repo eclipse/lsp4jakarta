@@ -98,4 +98,20 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
+
+    @Test
+    public void testDuplicateOnMessage() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/DuplicateOnMessage.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic d = d(17, 66, 70, "Each WebSocket endpoint may only have one message handling method for each of the native WebSocket message formats: text, binary and pong.",
+                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageDuplicateMethod");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+    }
 }
