@@ -98,19 +98,31 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
         d2.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty", "JsonbAnnotation",  "JsonbTransient")));
         
+        // Diagnostic for the field "favoriteEditor"
+        Diagnostic d3 = d(39, 19, 33,
+                "When an accessor is annotated with @JsonbTransient, then its field or the accessor must not be annotated with other JSON Binding annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotationOnAccessor");
+        d3.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty")));
+        
         // Diagnostic for the getter "getId"
-        Diagnostic d3 = d(33, 16, 21,
+        Diagnostic d4 = d(42, 16, 21,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-        d3.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty")));
+        d4.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty")));
        
         // Diagnostic for the setter "setId"
-        Diagnostic d4 = d(40, 17, 22,
+        Diagnostic d5 = d(49, 17, 22,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-        d4.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable")));
+        d5.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable")));
+        
+        // Diagnostic for the setter "favoriteEditor"
+        Diagnostic d6 = d(73, 19, 36,
+                "When an accessor is annotated with @JsonbTransient, then its field or the accessor must not be annotated with other JSON Binding annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotationOnAccessor");
+        d6.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable", "JsonbTransient")));
   
-        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4);
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5, d6);
 
 
         // Test code actions

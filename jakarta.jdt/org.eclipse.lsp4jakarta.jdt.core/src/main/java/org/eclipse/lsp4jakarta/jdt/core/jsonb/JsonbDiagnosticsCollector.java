@@ -113,6 +113,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     private void collectJsonbTransientAccessorDiagnostics(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IField field) throws JavaModelException {
         List<IMethod> accessors = JDTUtils.getAccessors(field);
+        boolean createdDiagnostifForField = false;
         for (IMethod accessor : accessors) {
             List<String> jsonbAnnotations = getJsonbAnnotationNames(accessor);
             if (jsonbAnnotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
@@ -121,20 +122,23 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
                 
                 // Diagnostic is created when the field of this accessor has a annotation other then JsonbTransient
                 jsonbAnnotations = getJsonbAnnotationNames(field);
-                createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field,
+                if (!createdDiagnostifForField)
+                    createdDiagnostifForField = createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field,
                         jsonbAnnotations, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR);
             }
         }
     }
     
-    private void createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(ICompilationUnit unit,
+    private boolean createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IMember member, List<String> jsonbAnnotations,
             String diagnosticErrorMessage) throws JavaModelException {
         if (hasJsonbAnnotationOtherThanTransient((IAnnotatable) member)) {
             Diagnostic diagnostic = createDiagnosticBy(unit, member, diagnosticErrorMessage);
             diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotations)));
-            diagnostics.add(diagnostic);       
+            diagnostics.add(diagnostic);
+            return true;
         }
+        return false;
     }
     
     private List<String> getJsonbAnnotationNames(IAnnotatable annotable) throws JavaModelException {
