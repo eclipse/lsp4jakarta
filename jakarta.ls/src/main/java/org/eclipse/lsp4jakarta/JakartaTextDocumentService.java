@@ -105,7 +105,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
         // which snippets to show
         return getSnippetContexts.thenApply(ctx -> {
             return Either.forLeft(snippetRegistry
-                    .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
+                    .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx, uri));
         });
     }
 

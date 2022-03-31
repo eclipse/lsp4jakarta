@@ -23,6 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IPackageDeclaration;
+
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
@@ -163,7 +168,8 @@ public class SnippetRegistry {
      * @return the snippet completion items according to the context filter.
      */
     public List<CompletionItem> getCompletionItem(final Range replaceRange, final String lineDelimiter,
-            boolean canSupportMarkdown, List<String> context) {
+            boolean canSupportMarkdown, List<String> context, String uri) {
+            
         // TODO Add context based filtering
         return getSnippets().stream().map(snippet -> {
             if (context.get(getSnippets().indexOf(snippet)) == null) {
@@ -185,6 +191,13 @@ public class SnippetRegistry {
             item.setInsertTextFormat(InsertTextFormat.Snippet);
             return item;
         }).filter(completionItems -> completionItems != null).collect(Collectors.toList());
+    }
+
+    private String getPackageName(String uri){
+        ICompilationUnit unit = JDTUtils.resolveCompilationUnit(uri);
+        IPackageDeclaration[] packageDeclarations = unit.getPackageDeclarations();
+		String packageName = unit.getParent().getElementName();
+		return ((packageName != null && !packageName.isEmpty()) && (packageDeclarations == null || packageDeclarations.length == 0)) ? "package " + packageName + ";\n\n" : "";
     }
 
     /**
