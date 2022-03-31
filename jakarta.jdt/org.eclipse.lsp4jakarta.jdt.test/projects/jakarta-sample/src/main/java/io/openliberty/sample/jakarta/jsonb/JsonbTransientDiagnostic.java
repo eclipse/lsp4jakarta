@@ -18,15 +18,17 @@ import jakarta.json.bind.annotation.JsobTransient;
 import jakarta.json.bind.annotation.JsonbProperty;
 
 public class JsonbTransientDiagnostic {
-    @JsonbProperty("name")
-    @JsonbTransient
-    private String name;
-
     @JsonbTransient
     private int id;
 
+    @JsonbProperty("name")
+    @JsonbTransient
+    private String name;    // Diagnostic: JsonbTransient is mutually exclusive with other JsonB annotations
+
     @JsonbProperty("fav_lang")
-    private String favoriteLanguage;
+    @JsonbAnnotation
+    @JsonbTransient
+    private String favoriteLanguage;    // Diagnostic: JsonbTransient is mutually exclusive with other JsonB annotations
     
     @JsonbProperty("person-id")
     private int getId() { 
@@ -35,7 +37,7 @@ public class JsonbTransientDiagnostic {
         return id;
     }
     
-    @JsonbCreator
+    @JsonbNillable 
     private void setId(int id) {
         // A diagnostic is expected on setId because as a setter, it is annotated with other 
         // Jsonb annotations while its corresponding field id is annotated with JsonbTransient
