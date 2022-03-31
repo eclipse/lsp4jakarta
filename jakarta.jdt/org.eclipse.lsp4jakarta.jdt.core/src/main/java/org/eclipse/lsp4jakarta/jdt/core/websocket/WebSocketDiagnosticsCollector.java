@@ -215,7 +215,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
                             diagnostics.add(diagnostic);
-                        } else if (hasRelativePathURIs(path)) {
+                        }
+                        if (hasRelativePathURIs(path)) {
                             diagnostic = createDiagnostic(annotation, unit,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
@@ -225,7 +226,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
                             diagnostics.add(diagnostic);
-                        } else if (hasDuplicateURIVariables(path)) {
+                        }
+                        if (hasDuplicateURIVariables(path)) {
                             diagnostic = createDiagnostic(annotation, unit,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_DUPLICATE_VAR,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
