@@ -88,7 +88,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         for (IType type : unit.getAllTypes()) {
             for (IField field : type.getFields()) {
                 collectJsonbTransientFieldDiagnostics(unit, diagnostics, field);
-                //collectJsonbTransientAccessorDiagnostics(unit, diagnostics, field);
+                collectJsonbTransientAccessorDiagnostics(unit, diagnostics, field);
             }
         }
     }
