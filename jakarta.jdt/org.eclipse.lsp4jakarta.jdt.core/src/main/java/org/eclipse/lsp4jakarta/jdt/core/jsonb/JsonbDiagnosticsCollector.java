@@ -114,7 +114,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     
     private void collectJsonbTransientAccessorDiagnostics(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IField field) throws JavaModelException {
-        List<IMethod> accessors = JDTUtils.getAccessors(field);
+        List<IMethod> accessors = getFieldAccessors(unit, field);
         boolean createdDiagnostifForField = false;
         for (IMethod accessor : accessors) {
             List<String> jsonbAnnotations = getJsonbAnnotationNames(accessor);
@@ -129,6 +129,23 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
                         jsonbAnnotations, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR);
             }
         }
+    }
+    
+    private List<IMethod> getFieldAccessors(ICompilationUnit unit, IField field) throws JavaModelException {
+        List<IMethod> accessors = new ArrayList<IMethod>();
+        String fieldName = field.getElementName();
+        fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        String getterName = "get" + fieldName;
+        String setterName = "set" + fieldName;
+        
+        for (IType type : unit.getAllTypes()) {
+            for (IMethod method : type.getMethods()) {
+                String methodName = method.getElementName();
+                if (methodName.equals(getterName) || methodName.equals(setterName))
+                    accessors.add(method);
+            }
+        }
+        return accessors;
     }
     
     private boolean createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(ICompilationUnit unit,
