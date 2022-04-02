@@ -87,8 +87,9 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             List<Diagnostic> diagnostics) throws JavaModelException {
         for (IType type : unit.getAllTypes()) {
             for (IField field : type.getFields()) {
+                //List<IMethod> fieldAccessors = JDTUtils.getAccessors(field);
                 collectJsonbTransientFieldDiagnostics(unit, diagnostics, field);
-                //collectJsonbTransientAccessorDiagnostics(unit, diagnostics, field);
+                collectJsonbTransientAccessorDiagnostics(unit, diagnostics, field);
             }
         }
     }
@@ -96,6 +97,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     private void collectJsonbTransientFieldDiagnostics(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IField field) throws JavaModelException {
         List<String> jsonbAnnotations = getJsonbAnnotationNames(field);
+        
         if (jsonbAnnotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
             createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field,
                     jsonbAnnotations, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_FIELD);
@@ -132,7 +134,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     private boolean createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IMember member, List<String> jsonbAnnotations,
             String diagnosticErrorMessage) throws JavaModelException {
-        if (hasJsonbAnnotationOtherThanTransient((IAnnotatable) member)) {
+        if (hasJsonbAnnotationOtherThanTransient(jsonbAnnotations)) {
             Diagnostic diagnostic = createDiagnosticBy(unit, member, diagnosticErrorMessage);
             diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotations)));
             diagnostics.add(diagnostic);
@@ -154,14 +156,11 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
         return jsonbAnnotationNames;
     }
     
-    private boolean hasJsonbAnnotationOtherThanTransient(IAnnotatable annotable) throws JavaModelException {
-        for (IAnnotation annotation : annotable.getAnnotations()) {
-            String annotationName = annotation.getElementName();
+    private boolean hasJsonbAnnotationOtherThanTransient(List<String> jsonbAnnotations) throws JavaModelException {
+        for (String annotationName : jsonbAnnotations)
             if (JsonbConstants.JSONB_ANNOTATIONS.contains(annotationName) 
-                    && !annotationName.equals(JsonbConstants.JSONB_TRANSIENT)) {
+                    && !annotationName.equals(JsonbConstants.JSONB_TRANSIENT))
                 return true;
-            }
-        }
         return false;
     }
     

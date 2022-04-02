@@ -75,7 +75,7 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
         assertJavaCodeAction(codeActionParams2, utils, ca2);
     }
     
-    
+    @Test
     public void JsonbTransientNotMutuallyExclusive() throws Exception {
         JDTUtils utils = JDT_UTILS;
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");

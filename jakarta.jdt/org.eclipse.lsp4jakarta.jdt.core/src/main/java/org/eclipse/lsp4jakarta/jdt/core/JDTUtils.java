@@ -642,7 +642,7 @@ public class JDTUtils {
         List<IMethod> accessors = new ArrayList<>();
         IMethod getter = GetterSetterUtil.getGetter(field);
         IMethod setter = GetterSetterUtil.getSetter(field);
-        if (getter != null && getter.exists() || setter != null && setter.exists()) {
+        if ((getter != null && getter.exists()) && (setter != null && setter.exists())) {
             for (IMethod accessor : new IMethod[] { getter, setter }) {
                 if (accessor != null) {
                     accessors.add(accessor);
