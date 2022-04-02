@@ -89,7 +89,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             for (IField field : type.getFields()) {
                 List<IMethod> fieldAccessors = JDTUtils.getAccessors(field);
                 collectJsonbTransientFieldDiagnostics(unit, diagnostics, field, fieldAccessors);
-                collectJsonbTransientAccessorDiagnostics(unit, diagnostics, field, fieldAccessors);
+                //collectJsonbTransientAccessorDiagnostics(unit, diagnostics, field, fieldAccessors);
             }
         }
     }
