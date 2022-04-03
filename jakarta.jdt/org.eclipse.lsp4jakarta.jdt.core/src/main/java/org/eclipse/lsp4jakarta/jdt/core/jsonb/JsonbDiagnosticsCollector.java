@@ -87,7 +87,6 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             List<Diagnostic> diagnostics) throws JavaModelException {
         for (IType type : unit.getAllTypes()) {
             for (IField field : type.getFields()) {
-                //List<IMethod> fieldAccessors = JDTUtils.getAccessors(field);
                 collectJsonbTransientFieldDiagnostics(unit, diagnostics, field);
                 collectJsonbTransientAccessorDiagnostics(unit, diagnostics, field);
             }
@@ -97,14 +96,14 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     private void collectJsonbTransientFieldDiagnostics(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IField field) throws JavaModelException {
         List<String> jsonbAnnotations = getJsonbAnnotationNames(field);
-        
         if (jsonbAnnotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
+            // Diagnostic is created on the field if @JsonbTransient is not mutually exclusive
             createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field,
                     jsonbAnnotations, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_FIELD);
 
-            // Diagnostics on the getter and setter of the field are created when they are
+            // Diagnostics on the accessors of the field are created when they are
             // annotated with Jsonb annotations other than JsonbTransient.
-            for (IMethod accessor : JDTUtils.getAccessors(field)) {
+            for (IMethod accessor : JDTUtils.getFieldAccessors(unit, field)) {
                 jsonbAnnotations = getJsonbAnnotationNames(accessor);
                 createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, accessor,
                         jsonbAnnotations, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_FIELD);
@@ -114,38 +113,21 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     
     private void collectJsonbTransientAccessorDiagnostics(ICompilationUnit unit,
             List<Diagnostic> diagnostics, IField field) throws JavaModelException {
-        List<IMethod> accessors = getFieldAccessors(unit, field);
-        boolean createdDiagnostifForField = false;
-        for (IMethod accessor : accessors) {
+        boolean createdDiagnosticForField = false;
+        for (IMethod accessor : JDTUtils.getFieldAccessors(unit, field)) {
             List<String> jsonbAnnotations = getJsonbAnnotationNames(accessor);
             if (jsonbAnnotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
+                // Diagnostic is created on the accessor if @JsonbTransient is not mutually exclusive
                 createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, accessor,
                         jsonbAnnotations, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR);
                 
-                // Diagnostic is created when the field of this accessor has a annotation other then JsonbTransient
+                // Diagnostic is created if the field of this accessor has a annotation other then JsonbTransient
                 jsonbAnnotations = getJsonbAnnotationNames(field);
-                if (!createdDiagnostifForField)
-                    createdDiagnostifForField = createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit, diagnostics, field,
-                        jsonbAnnotations, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR);
+                if (!createdDiagnosticForField)
+                    createdDiagnosticForField = createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(unit,
+                            diagnostics, field, jsonbAnnotations, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR);
             }
         }
-    }
-    
-    private List<IMethod> getFieldAccessors(ICompilationUnit unit, IField field) throws JavaModelException {
-        List<IMethod> accessors = new ArrayList<IMethod>();
-        String fieldName = field.getElementName();
-        fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        String getterName = "get" + fieldName;
-        String setterName = "set" + fieldName;
-        
-        for (IType type : unit.getAllTypes()) {
-            for (IMethod method : type.getMethods()) {
-                String methodName = method.getElementName();
-                if (methodName.equals(getterName) || methodName.equals(setterName))
-                    accessors.add(method);
-            }
-        }
-        return accessors;
     }
     
     private boolean createDiagnosticIfMemberHasJsonbAnnotationOtherThanTransient(ICompilationUnit unit,

@@ -55,6 +55,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.ISourceReference;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeParameter;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
@@ -634,19 +635,22 @@ public class JDTUtils {
     /**
      * Returns a list of all accessors (getter and setter) of the given field.
      * 
-     * @param field
+     * @param unit, field
      * @return a list of accessor methods
      * @throws JavaModelException
      */
-    public static List<IMethod> getAccessors(IField field) throws JavaModelException {
-        List<IMethod> accessors = new ArrayList<>();
-        IMethod getter = GetterSetterUtil.getGetter(field);
-        IMethod setter = GetterSetterUtil.getSetter(field);
-        if ((getter != null && getter.exists()) && (setter != null && setter.exists())) {
-            for (IMethod accessor : new IMethod[] { getter, setter }) {
-                if (accessor != null) {
-                    accessors.add(accessor);
-                }
+    public static List<IMethod> getFieldAccessors(ICompilationUnit unit, IField field) throws JavaModelException {
+        List<IMethod> accessors = new ArrayList<IMethod>();
+        String fieldName = field.getElementName();
+        fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        String getterName = "get" + fieldName;
+        String setterName = "set" + fieldName;
+        
+        for (IType type : unit.getAllTypes()) {
+            for (IMethod method : type.getMethods()) {
+                String methodName = method.getElementName();
+                if (methodName.equals(getterName) || methodName.equals(setterName))
+                    accessors.add(method);
             }
         }
         return accessors;
