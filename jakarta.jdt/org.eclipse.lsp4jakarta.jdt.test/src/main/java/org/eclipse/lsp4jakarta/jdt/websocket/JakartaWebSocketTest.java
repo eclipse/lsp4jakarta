@@ -108,7 +108,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(4, 0, 27,
+        Diagnostic d = d(6, 0, 27,
                 "Server endpoint paths must not contain the sequences '/../', '/./' or '//'.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
@@ -124,10 +124,10 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d1 = d(4, 0, 23,
+        Diagnostic d1 = d(7, 0, 23,
                 "Server endpoint paths must start with a leading '/'.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
-        Diagnostic d2 = d(4, 0, 23,
+        Diagnostic d2 = d(7, 0, 23,
                 "Server endpoint paths must be a URI-template (level-1) or a partial URI.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
@@ -143,7 +143,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(4, 0, 46,
+        Diagnostic d = d(6, 0, 46,
                 "Server endpoint paths must be a URI-template (level-1) or a partial URI.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
@@ -159,7 +159,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(4, 0, 40,
+        Diagnostic d = d(6, 0, 40,
                 "Server endpoint paths must not use the same variable more than once in a path.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
