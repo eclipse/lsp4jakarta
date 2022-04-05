@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
@@ -110,6 +111,11 @@ public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionPartic
     }
 
     protected IBinding getBinding(ASTNode node) {
+        // handle annotation insertions for a single variable declaration
+        if (node.getParent() instanceof SingleVariableDeclaration) {
+            return ((SingleVariableDeclaration) node.getParent()).resolveBinding();
+        }
+        
         if (node.getParent() instanceof VariableDeclarationFragment) {
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
         }

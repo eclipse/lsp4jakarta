@@ -23,6 +23,6 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotation
  */
 public class AddPathParamQuickFix extends InsertAnnotationAttributesQuickFix {
     public AddPathParamQuickFix() {
-        super("jakarta.annotation.PathParam", false, "value");
+        super("jakarta.websocket.server.PathParam", false, "value");
     }
 }

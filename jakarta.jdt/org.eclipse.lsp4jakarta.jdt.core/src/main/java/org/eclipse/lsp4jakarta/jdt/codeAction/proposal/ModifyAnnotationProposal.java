@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite.ImportRewriteContext;
@@ -91,6 +92,9 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
         if (isField) {
             declNode = declNode.getParent();
         }
+
+        boolean isSingleVarDecl = declNode instanceof SingleVariableDeclaration;
+
         if (declNode.getNodeType() == ASTNode.FIELD_DECLARATION) {
             AST ast = declNode.getAST();
             ASTRewrite rewrite = ASTRewrite.create(ast);
@@ -198,7 +202,7 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                     }
                 }
             }
-           
+            
             // add new annotation with fields from existing annotation
             for (String annotation : annotations) {
                 NormalAnnotation marker = ast.newNormalAnnotation();
@@ -247,6 +251,55 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                         isField ? FieldDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY)
                         .insertFirst(marker, null);
             }
+            return rewrite;
+        } else if (declNode.getNodeType() == ASTNode.SINGLE_VARIABLE_DECLARATION) {
+            AST ast = declNode.getAST();
+            ASTRewrite rewrite = ASTRewrite.create(ast);
+
+            ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
+            List<Annotation> existingAnnotations = new ArrayList<Annotation>();
+            List<? extends ASTNode> children = (List<? extends ASTNode>) declNode
+                    .getStructuralProperty(SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+            
+            // find and save existing annotation, then remove it from ast
+            for (ASTNode child: children) {
+                if (child instanceof Annotation) {
+                    Annotation annotation = (Annotation) child;
+                    boolean containsAnnotation = Arrays.stream(annotationShortNames)
+                            .anyMatch(annotation.getTypeName().toString()::contains);
+                    if (containsAnnotation) {
+                        existingAnnotations.add(annotation);
+                        rewrite.remove(child, null);
+                    }
+                }
+            }
+            
+            if (declNode instanceof Annotation) {
+                System.out.println("TEST");
+            }
+            
+            // add new annotation with fields from existing annotation
+            for (String annotation: annotations) {
+                NormalAnnotation marker = ast.newNormalAnnotation();
+                marker.setTypeName(ast.newName(imports.addImport(annotation, importRewriteContext)));
+                List<MemberValuePair> values = marker.values();
+                
+                // add new String attributes
+                for (String newAttr : this.attributesToAdd) {
+                    MemberValuePair memberValuePair = ast.newMemberValuePair();
+                    memberValuePair.setName(ast.newSimpleName(newAttr));
+                    StringLiteral stringValue = ast.newStringLiteral();
+                    stringValue.setLiteralValue("");
+                    memberValuePair.setValue(stringValue);
+                    values.add(memberValuePair);
+                }
+                
+                rewrite.getListRewrite(declNode,
+                        SingleVariableDeclaration.MODIFIERS2_PROPERTY)
+                        .insertFirst(marker, null);
+            }
+            
+            
             return rewrite;
         }
         return null;

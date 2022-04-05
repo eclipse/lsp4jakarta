@@ -134,8 +134,6 @@ public class CodeActionHandler {
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
-                    String next = diagnostic.getCode().getLeft();
-
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE)) {
                         codeActions.addAll(HttpServletQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
