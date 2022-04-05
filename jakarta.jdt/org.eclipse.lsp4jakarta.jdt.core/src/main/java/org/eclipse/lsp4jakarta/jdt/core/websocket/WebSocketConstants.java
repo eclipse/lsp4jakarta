@@ -88,6 +88,8 @@ public class WebSocketConstants {
     public static final String PARAM_TYPE_DIAG_MSG = "Invalid parameter type. When using %s, parameter must be of type: \n- %s\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof";
 
     /* Regex */
+    // Check for any URI strings that contain //, /./, or /../
     public static final String REGEX_RELATIVE_PATHS = ".*\\/\\.{0,2}\\/.*";
+    // Check that a URI string is a valid level 1 variable (wrapped in curly brackets): alpha-numeric characters, dash, or a percent encoded character
     public static final String REGEX_URI_VARIABLE = "\\{(\\w|-|%20|%21|%23|%24|%25|%26|%27|%28|%29|%2A|%2B|%2C|%2F|%3A|%3B|%3D|%3F|%40|%5B|%5D)+\\}";
 }

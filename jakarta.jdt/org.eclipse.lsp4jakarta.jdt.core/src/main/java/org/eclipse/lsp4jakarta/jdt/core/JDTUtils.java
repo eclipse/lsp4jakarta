@@ -92,6 +92,7 @@ public class JDTUtils {
     public static final String DEFAULT_PROJECT_NAME = "jdt.java-project";
 
     private static final int COMPILATION_UNIT_UPDATE_TIMEOUT = 3000;
+    // Percent encoding obtained from: https://en.wikipedia.org/wiki/Percent-encoding#Reserved_characters
     private static final String LEVEL1_URI_REGEX = "(?:\\/(?:(?:\\{(\\w|-|%20|%21|%23|%24|%25|%26|%27|%28|%29|%2A|%2B|%2C|%2F|%3A|%3B|%3D|%3F|%40|%5B|%5D)+\\})|(?:(\\w|%20|%21|%23|%24|%25|%26|%27|%28|%29|%2A|%2B|%2C|%2F|%3A|%3B|%3D|%3F|%40|%5B|%5D)+)))*\\/?";
 
     /**
