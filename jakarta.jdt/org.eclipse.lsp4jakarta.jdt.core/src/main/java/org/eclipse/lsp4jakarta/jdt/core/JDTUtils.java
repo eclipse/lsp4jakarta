@@ -643,13 +643,15 @@ public class JDTUtils {
         List<IMethod> accessors = new ArrayList<IMethod>();
         String fieldName = field.getElementName();
         fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        String getterName = "get" + fieldName;
-        String setterName = "set" + fieldName;
+        List<String> accessorNames = new ArrayList<String>();
+        accessorNames.add("get" + fieldName);
+        accessorNames.add("set" + fieldName);
+        accessorNames.add("is" + fieldName);
         
         for (IType type : unit.getAllTypes()) {
             for (IMethod method : type.getMethods()) {
                 String methodName = method.getElementName();
-                if (methodName.equals(getterName) || methodName.equals(setterName))
+                if (accessorNames.contains(methodName))
                     accessors.add(method);
             }
         }
