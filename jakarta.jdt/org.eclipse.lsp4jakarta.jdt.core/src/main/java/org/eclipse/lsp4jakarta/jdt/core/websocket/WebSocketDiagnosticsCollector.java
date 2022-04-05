@@ -144,7 +144,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         if (!isSpecialType) {
                             // check that if parameter is not a specialType, it has a @PathParam annotation
                             IAnnotation[] param_annotations = param.getAnnotations();
-                             boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
+                            boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
                                     annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
 
                             if (!hasPathParamAnnot) {

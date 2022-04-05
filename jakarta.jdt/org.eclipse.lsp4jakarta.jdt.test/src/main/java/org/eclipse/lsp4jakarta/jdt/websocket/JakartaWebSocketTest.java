@@ -69,7 +69,10 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         
         // Expected code actions
         JakartaJavaCodeActionParams codeActionsParams = createCodeActionParams(uri, d1);
-        TextEdit te = te(4, 32, 17, 40, "\nimport jakarta.websocket.server.PathParam;\nimport jakarta.websocket.server.ServerEndpoint;\nimport jakarta.websocket.Session;\n\n/**\n * Expected Diagnostics are related to validating that the parameters have the \n * valid annotation @PathParam (code: AddPathParamsAnnotation)\n * See issue #247 (onOpen) and #248 (onClose)\n */\n@ServerEndpoint(value = \"/infos\")\npublic class AnnotationTest {\n    // @PathParam missing annotation for \"String missingAnnotation\"\n    @OnOpen\n    public void OnOpen(Session session, @PathParam(value = \"\") ");
+        String newText = "\nimport jakarta.websocket.server.PathParam;\nimport jakarta.websocket.server.ServerEndpoint;\nimport jakarta.websocket.Session;\n\n" 
+                        + "/**\n * Expected Diagnostics are related to validating that the parameters have the \n * valid annotation @PathParam (code: AddPathParamsAnnotation)\n * See issue #247 (onOpen) and #248 (onClose)\n */\n" 
+                        + "@ServerEndpoint(value = \"/infos\")\npublic class AnnotationTest {\n    // @PathParam missing annotation for \"String missingAnnotation\"\n    @OnOpen\n    public void OnOpen(Session session, @PathParam(value = \"\") ";
+        TextEdit te = te(4, 32, 17, 40, newText);
         CodeAction ca = ca(uri, "Add value to jakarta.websocket.server.PathParam", d1, te);
         assertJavaCodeAction(codeActionsParams, JDT_UTILS, ca);
     }
