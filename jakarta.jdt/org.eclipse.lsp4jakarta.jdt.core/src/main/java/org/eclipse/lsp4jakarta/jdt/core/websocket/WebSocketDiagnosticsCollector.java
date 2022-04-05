@@ -16,6 +16,7 @@
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -89,10 +90,15 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 if (checkWSEnd.get(WebSocketConstants.IS_ANNOTATION)) {
                     // WebSocket Invalid Parameters Diagnostic
                     invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, 
-                            WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
+                            WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, 
+                            Collections.emptySet(), Collections.emptySet(), unit, diagnostics);
                     invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES, 
-                            WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
-
+                            WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, 
+                            Collections.emptySet(), Collections.emptySet(), unit, diagnostics);
+                    invalidParamsCheck(type, WebSocketConstants.ON_ERROR, WebSocketConstants.ON_ERROR_PARAM_OPT_TYPES, 
+                            WebSocketConstants.RAW_ON_ERROR_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_ERROR_INVALID_PARAMS,
+                            WebSocketConstants.ON_ERROR_PARAM_MAND_TYPES, WebSocketConstants.RAW_ON_ERROR_PARAM_MAND_TYPES, unit, diagnostics);
+                    
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
                 }
@@ -102,12 +108,21 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, String diagnosticCode, ICompilationUnit unit,
-            List<Diagnostic> diagnostics) throws JavaModelException {
+    private HashMap<String, Boolean> intializeHashMap(Set<String> types) {
+        HashMap<String, Boolean> numTypes = new HashMap<>();
+        for (String type : types) {
+            numTypes.put(type, false);
+        }
+        return numTypes;
+    }
+
+    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, String diagnosticCode,
+            Set<String> mandParamTypes, Set<String> rawMandParamTypes,  ICompilationUnit unit, List<Diagnostic> diagnostics) throws JavaModelException {
 
         IMethod[] allMethods = type.getMethods();
 
         for (IMethod method : allMethods) {
+            HashMap<String, Boolean> mandTypeCounter = intializeHashMap(mandParamTypes);
             IAnnotation[] allAnnotations = method.getAnnotations();
 
             for (IAnnotation annotation : allAnnotations) {
@@ -126,10 +141,31 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         if (resolvedTypeName != null) {
                             isSpecialType = specialParamTypes.contains(resolvedTypeName);
                             isPrimWrapped = isWrapper(resolvedTypeName);
+                            boolean isMandParam = mandParamTypes.contains(resolvedTypeName);
+                            if (isMandParam) {
+                                if (mandTypeCounter.get(resolvedTypeName) == true) {
+                                    // TODO: throw diagnostic issue
+                                    System.out.println("Duplicate Parameter");
+                                    continue;
+                                } else {
+                                    mandTypeCounter.put(resolvedTypeName, true);
+                                }
+                            }
                         } else {
+                            // TODO: fixed the kind of hashmap we're using
                             String simpleParamType = Signature.getSignatureSimpleName(signature);
                             isSpecialType = rawSpecialParamTypes.contains(simpleParamType);
                             isPrimWrapped = isWrapper(simpleParamType);
+                            boolean isMandParam = rawMandParamTypes.contains(simpleParamType);
+                            if (isMandParam) {
+                                if (mandTypeCounter.get(simpleParamType) == true) {
+                                    // TODO: throw diagnostic issue
+                                    System.out.println("Duplicate Parameter");
+                                    continue;
+                                } else {
+                                    mandTypeCounter.put(simpleParamType, true);
+                                }
+                            }
                         }
 
                         // check parameters valid types
@@ -155,6 +191,17 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             }
                         }
                     }
+                }
+            }
+
+            // check that all mandatory parameters are present
+            for (HashMap.Entry<String, Boolean> entry : mandTypeCounter.entrySet()) {
+                if (entry.getValue() == false) {
+                    // TODO: create a method for mandatory param diagnostic createMandParamDiagMsg(mandParamTypes, methodAnnotTarget)
+                    Diagnostic diagnostic = createDiagnostic(method, unit,
+                            WebSocketConstants.DIAGNOSTIC_ON_ERROR_MAND_PARAMS_MISSING,
+                            WebSocketConstants.DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS);
+                    diagnostics.add(diagnostic);
                 }
             }
         }

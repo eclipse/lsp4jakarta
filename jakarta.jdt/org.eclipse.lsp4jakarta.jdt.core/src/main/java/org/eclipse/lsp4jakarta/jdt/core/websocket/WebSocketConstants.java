@@ -47,7 +47,10 @@ public class WebSocketConstants {
     /* Diagnostic codes */
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
+    public static final String DIAGNOSTIC_CODE_ON_ERROR_INVALID_PARAMS = "OnErrorChangeInvalidParam";
 
+    public static final String DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS = "OnErrorMandatoryParamMissing";
+    public static final String DIAGNOSTIC_ON_ERROR_MAND_PARAMS_MISSING = "OnError mandatory parameter missing";
     
     /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
     // Class Level Annotations
@@ -63,6 +66,7 @@ public class WebSocketConstants {
     /* Annotations */
     public static final String ON_OPEN = "OnOpen";
     public static final String ON_CLOSE = "OnClose";
+    public static final String ON_ERROR = "OnError";
 
     public static final String IS_ANNOTATION = "isAnnotation";
 
@@ -73,8 +77,18 @@ public class WebSocketConstants {
     public static final Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("jakarta.websocket.EndpointConfig", "jakarta.websocket.Session"));
     public static final Set<String> RAW_ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("EndpointConfig", "Session"));
 
+    // For OnClose annotation
     public static final Set<String> ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.CloseReason", "jakarta.websocket.Session"));
     public static final Set<String> RAW_ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("CloseReason", "Session"));
+
+    // For OnError annotation
+    // optional onError parameters
+    public static final Set<String> ON_ERROR_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.Session"));
+    public static final Set<String> RAW_ON_ERROR_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("Session"));
+
+    // mandatory onError parameters
+    public static final Set<String> ON_ERROR_PARAM_MAND_TYPES = new HashSet<>(Arrays.asList("java.lang.Throwable"));
+    public static final Set<String> RAW_ON_ERROR_PARAM_MAND_TYPES = new HashSet<>(Arrays.asList("Throwable"));
     
     public static final Set<String> RAW_WRAPPER_OBJS = new HashSet<>(Arrays.asList("String", "Boolean", "Integer", "Long", "Double", "Float"));
     public static final Set<String> WRAPPER_OBJS = RAW_WRAPPER_OBJS.stream().map(raw -> "java.lang.".concat(raw)).collect(Collectors.toSet());
