@@ -191,17 +191,17 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             }
                         }
                     }
-                }
-            }
 
-            // check that all mandatory parameters are present
-            for (HashMap.Entry<String, Boolean> entry : mandTypeCounter.entrySet()) {
-                if (entry.getValue() == false) {
-                    // TODO: create a method for mandatory param diagnostic createMandParamDiagMsg(mandParamTypes, methodAnnotTarget)
-                    Diagnostic diagnostic = createDiagnostic(method, unit,
-                            WebSocketConstants.DIAGNOSTIC_ON_ERROR_MAND_PARAMS_MISSING,
-                            WebSocketConstants.DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS);
-                    diagnostics.add(diagnostic);
+                    // check that all mandatory parameters are present
+                    for (HashMap.Entry<String, Boolean> entry : mandTypeCounter.entrySet()) {
+                        if (entry.getValue() == false) {
+                            // TODO: create a method for mandatory param diagnostic createMandParamDiagMsg(mandParamTypes, methodAnnotTarget)
+                            Diagnostic diagnostic = createDiagnostic(method, unit,
+                                    WebSocketConstants.DIAGNOSTIC_ON_ERROR_MAND_PARAMS_MISSING,
+                                    WebSocketConstants.DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS);
+                            diagnostics.add(diagnostic);
+                        }
+                    }
                 }
             }
         }
