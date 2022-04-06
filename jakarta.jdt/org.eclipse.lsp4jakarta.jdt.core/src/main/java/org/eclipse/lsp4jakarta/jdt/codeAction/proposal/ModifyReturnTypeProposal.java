@@ -38,9 +38,9 @@ public class ModifyReturnTypeProposal extends ChangeCorrectionProposal {
     private final Type newReturnType;
 
     /**
-     * Constructor for ModifyReturnTypeProposal that accepts a return type 
+     * Constructor for ModifyReturnTypeProposal that accepts the new return type of a method.
      * 
-     * @param newReturnType 
+     * @param newReturnType the new return type to change to
      */
     public ModifyReturnTypeProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode, 
             IBinding binding, int relevance, Type newReturnType) {
