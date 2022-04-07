@@ -232,7 +232,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             String signature = param.getTypeSignature();
                             String formatSignature = signature.replace("/", ".");
                             String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
-                            if (!resolvedTypeName.equals(WebSocketConstants.SESSION_CLASS)) {
+                            if (resolvedTypeName != null && !resolvedTypeName.equals(WebSocketConstants.SESSION_CLASS)) {
                                 WebSocketConstants.MESSAGE_FORMAT messageFormat = getMessageFormat(resolvedTypeName);
                                 boolean duplicateFound = false;
                                 switch (messageFormat) {
