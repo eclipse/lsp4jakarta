@@ -48,7 +48,7 @@ public class WebSocketConstants {
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
 
-    public static final String DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD = "Classes annotated with @ServerEndpoint may only have one @OnMessage annotated method for each of the native WebSocket message formats: text, binary and pong.";
+    public static final String DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD = "Classes annotated with @ServerEndpoint or @ClientEndpoint may only have one @OnMessage annotated method for each of the native WebSocket message formats: text, binary and pong.";
     public static final String DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD = "OnMessageDuplicateMethod";
 
     public static final String DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH = "Server endpoint paths must start with a leading '/'.";
