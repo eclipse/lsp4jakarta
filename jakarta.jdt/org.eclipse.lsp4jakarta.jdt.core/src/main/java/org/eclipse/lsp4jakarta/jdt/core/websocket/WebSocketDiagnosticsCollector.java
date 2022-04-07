@@ -122,12 +122,14 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         IMethod[] allMethods = type.getMethods();
 
         for (IMethod method : allMethods) {
-            HashMap<String, Boolean> mandTypeCounter = intializeHashMap(mandParamTypes);
             IAnnotation[] allAnnotations = method.getAnnotations();
 
             for (IAnnotation annotation : allAnnotations) {
                 if (annotation.getElementName().equals(methodAnnotTarget)) {
                     ILocalVariable[] allParams = method.getParameters();
+                    HashMap<String, Boolean> mandTypeCounter = intializeHashMap(mandParamTypes);
+                    HashMap<String, Boolean> rawMandTypeCounter = intializeHashMap(rawMandParamTypes);
+                    Boolean isResolvedType = false;
 
                     for (ILocalVariable param : allParams) {
                         String signature = param.getTypeSignature();
@@ -137,42 +139,52 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
                         boolean isSpecialType;
                         boolean isPrimWrapped;
+                        boolean isMandParam;
+
+                        // general paramType 
+                        String genParamType;
+                        Set<String> genSpecialParamTypes;
+                        Set<String> genMandParamTypes;
+                        HashMap<String, Boolean> genMandTypeCounter;
 
                         if (resolvedTypeName != null) {
-                            isSpecialType = specialParamTypes.contains(resolvedTypeName);
-                            isPrimWrapped = isWrapper(resolvedTypeName);
-                            boolean isMandParam = mandParamTypes.contains(resolvedTypeName);
-                            if (isMandParam) {
-                                if (mandTypeCounter.get(resolvedTypeName) == true) {
-                                    // TODO: throw diagnostic issue
-                                    System.out.println("Duplicate Parameter");
-                                    continue;
-                                } else {
-                                    mandTypeCounter.put(resolvedTypeName, true);
-                                }
-                            }
+                            genParamType = resolvedTypeName;
+                            genSpecialParamTypes = specialParamTypes;
+                            genMandParamTypes = mandParamTypes;
+                            isResolvedType = true;
+                            genMandTypeCounter = mandTypeCounter;
                         } else {
-                            // TODO: fixed the kind of hashmap we're using
                             String simpleParamType = Signature.getSignatureSimpleName(signature);
-                            isSpecialType = rawSpecialParamTypes.contains(simpleParamType);
-                            isPrimWrapped = isWrapper(simpleParamType);
-                            boolean isMandParam = rawMandParamTypes.contains(simpleParamType);
-                            if (isMandParam) {
-                                if (mandTypeCounter.get(simpleParamType) == true) {
-                                    // TODO: throw diagnostic issue
-                                    System.out.println("Duplicate Parameter");
-                                    continue;
-                                } else {
-                                    mandTypeCounter.put(simpleParamType, true);
-                                }
+                            genParamType = simpleParamType;
+                            genSpecialParamTypes = rawSpecialParamTypes;
+                            genMandParamTypes = rawMandParamTypes;
+                            genMandTypeCounter = rawMandTypeCounter;
+                        }
+
+                        isSpecialType = genSpecialParamTypes.contains(genParamType);
+                        isPrimWrapped = isWrapper(genParamType);
+                        isMandParam = genMandParamTypes.contains(genParamType);
+
+                        if (isMandParam) {
+                            if (genMandTypeCounter.get(genParamType)) {
+                                String diagMsg = createParamTypeDiagMsg(WebSocketConstants.DIAGNOSTIC_DUP_PARAMS_TYPES, 
+                                        methodAnnotTarget, specialParamTypes, mandParamTypes);
+                                Diagnostic diagnostic = createDiagnostic(param, unit,
+                                        diagMsg, diagnosticCode);
+                                diagnostics.add(diagnostic);
+                                continue;
+                            } else {
+                                genMandTypeCounter.put(genParamType, true);
                             }
+                            continue;
                         }
 
                         // check parameters valid types
                         if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
+                            String diagMessage = createParamTypeDiagMsg(WebSocketConstants.PARAM_TYPE_DIAG_MSG, 
+                                    methodAnnotTarget, specialParamTypes, mandParamTypes);
                             Diagnostic diagnostic = createDiagnostic(param, unit,
-                                    createParamTypeDiagMsg(specialParamTypes, methodAnnotTarget),
-                                    diagnosticCode);
+                                    diagMessage, diagnosticCode);
                             diagnostics.add(diagnostic);
                             continue;
                         }
@@ -192,13 +204,16 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         }
                     }
 
+                    // TODO: update this
+                    HashMap<String, Boolean> genMandTypeCounter = isResolvedType ? mandTypeCounter : rawMandTypeCounter;
+
                     // check that all mandatory parameters are present
-                    for (HashMap.Entry<String, Boolean> entry : mandTypeCounter.entrySet()) {
+                    for (HashMap.Entry<String, Boolean> entry : genMandTypeCounter.entrySet()) {
                         if (entry.getValue() == false) {
-                            // TODO: create a method for mandatory param diagnostic createMandParamDiagMsg(mandParamTypes, methodAnnotTarget)
+                            String diagMessage = createParamTypeDiagMsg(WebSocketConstants.DIAGNOSTIC_MAND_PARAMS_MISSING, 
+                                    methodAnnotTarget, Collections.emptySet(), mandParamTypes);
                             Diagnostic diagnostic = createDiagnostic(method, unit,
-                                    WebSocketConstants.DIAGNOSTIC_ON_ERROR_MAND_PARAMS_MISSING,
-                                    WebSocketConstants.DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS);
+                                    diagMessage, WebSocketConstants.DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS);
                             diagnostics.add(diagnostic);
                         }
                     }
@@ -307,7 +322,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     }
 
     /**
-     * Check if valueClass is a wrapper object for a primitive value Based on
+     * Check if valueClass is a wrapper object for a primitive value. Based on
      * https://github.com/eclipse/lsp4mp/blob/9789a1a996811fade43029605c014c7825e8f1da/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTTypeUtils.java#L294-L298
      * 
      * @param valueClass the resolved type of valueClass in string or the simple
@@ -360,9 +375,14 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         return wsEndpoint;
     }
 
-
-    private String createParamTypeDiagMsg(Set<String> methodParamOptTypes, String methodAnnotTarget) {
+    // TODO: fix new line addition in message
+    private String createParamTypeDiagMsg(String initialMsg, String methodAnnotTarget, Set<String> methodParamOptTypes, Set<String> mandParamTypes) {
         String paramMessage = String.join("\n- ", methodParamOptTypes);
-        return String.format(WebSocketConstants.PARAM_TYPE_DIAG_MSG, "@" + methodAnnotTarget, paramMessage);
+        
+        if (mandParamTypes.size() > 0) {
+            paramMessage += "\n- " + String.join("\n- ", mandParamTypes);
+        }
+        return String.format(initialMsg, "@" + methodAnnotTarget, paramMessage);
     }
 }
+
