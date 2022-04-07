@@ -212,9 +212,9 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     private void onMessageWSMessageFormats(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit)
             throws JavaModelException {
         IMethod[] typeMethods = type.getMethods();
-        boolean onMessageTextUsed = false;
-        boolean onMessageBinaryUsed = false;
-        boolean onMessagePongUsed = false;
+        IAnnotation onMessageTextUsed = null;
+        IAnnotation onMessageBinaryUsed = null;
+        IAnnotation onMessagePongUsed = null;
         for (IMethod method : typeMethods) {
             IAnnotation[] allAnnotations = method.getAnnotations();
             for (IAnnotation annotation : allAnnotations) {
@@ -228,32 +228,36 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             if (resolvedTypeName != null
                                     && !resolvedTypeName.equals(WebSocketConstants.SESSION_CLASS)) {
                                 WebSocketConstants.MESSAGE_FORMAT messageFormat = getMessageFormat(resolvedTypeName);
-                                boolean duplicateFound = false;
+                                IAnnotation duplicateFound = null;
                                 switch (messageFormat) {
                                 case TEXT:
-                                    if (onMessageTextUsed) {
-                                        duplicateFound = true;
+                                    if (onMessageTextUsed != null) {
+                                        duplicateFound = onMessageTextUsed;
                                     }
-                                    onMessageTextUsed = true;
+                                    onMessageTextUsed = annotation;
                                     break;
                                 case BINARY:
-                                    if (onMessageBinaryUsed) {
-                                        duplicateFound = true;
+                                    if (onMessageBinaryUsed != null) {
+                                        duplicateFound = onMessageBinaryUsed;
                                     }
-                                    onMessageBinaryUsed = true;
+                                    onMessageBinaryUsed = annotation;
                                     break;
                                 case PONG:
-                                    if (onMessagePongUsed) {
-                                        duplicateFound = true;
+                                    if (onMessagePongUsed != null) {
+                                        duplicateFound = onMessagePongUsed;
                                     }
-                                    onMessagePongUsed = true;
+                                    onMessagePongUsed = annotation;
                                     break;
                                 }
-                                if (duplicateFound) {
-                                    Diagnostic diagnostic = createDiagnostic(annotation, unit,
+                                if (duplicateFound != null) {
+                                    Diagnostic diagnostic1 = createDiagnostic(annotation, unit,
                                             WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
                                             WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                    diagnostics.add(diagnostic);
+                                    Diagnostic diagnostic2 = createDiagnostic(duplicateFound, unit,
+                                            WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
+                                            WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
+                                    diagnostics.add(diagnostic1);
+                                    diagnostics.add(diagnostic2);
                                 }
                             }
                         }
