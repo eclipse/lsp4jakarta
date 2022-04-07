@@ -109,7 +109,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(17, 66, 70, "Each WebSocket endpoint may only have one message handling method for each of the native WebSocket message formats: text, binary and pong.",
+        Diagnostic d = d(16, 4, 14, "Each WebSocket endpoint may only have one message handling method for each of the native WebSocket message formats: text, binary and pong.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageDuplicateMethod");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);

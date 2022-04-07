@@ -256,7 +256,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                                     break;
                                 }
                                 if (duplicateFound) {
-                                    Diagnostic diagnostic = createDiagnostic(param, unit,
+                                    Diagnostic diagnostic = createDiagnostic(annotation, unit,
                                             WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
                                             WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
                                     diagnostics.add(diagnostic);
