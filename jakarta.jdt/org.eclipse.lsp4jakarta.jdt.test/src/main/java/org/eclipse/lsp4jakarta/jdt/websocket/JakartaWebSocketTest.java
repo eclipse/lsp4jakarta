@@ -74,15 +74,15 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         Diagnostic d1 = d(18, 47, 59,
         "Invalid parameter type. When using @OnOpen, parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnOpenChangeInvalidParam");
-        
+
         // OnClose Invalid Param Type
         Diagnostic d2 = d(23, 73, 85,
                 "Invalid parameter type. When using @OnClose, parameter must be of type: \n- jakarta.websocket.CloseReason\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnCloseChangeInvalidParam");
-        
+
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
     }
-    
+
     @Test
     public void testPathParamInvalidURI() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
@@ -109,8 +109,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(6, 0, 27,
-                "Server endpoint paths must not contain the sequences '/../', '/./' or '//'.",
+        Diagnostic d = d(6, 0, 27, "Server endpoint paths must not contain the sequences '/../', '/./' or '//'.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
@@ -119,17 +118,15 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
     @Test
     public void testServerEndpointNoSlashURI() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject().getFile(
-                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/ServerEndpointNoSlash.java"));
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/ServerEndpointNoSlash.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d1 = d(7, 0, 23,
-                "Server endpoint paths must start with a leading '/'.",
-                DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
-        Diagnostic d2 = d(7, 0, 23,
-                "Server endpoint paths must be a URI-template (level-1) or a partial URI.",
+        Diagnostic d1 = d(7, 0, 23, "Server endpoint paths must start with a leading '/'.", DiagnosticSeverity.Error,
+                "jakarta-websocket", "ChangeInvalidServerEndpoint");
+        Diagnostic d2 = d(7, 0, 23, "Server endpoint paths must be a URI-template (level-1) or a partial URI.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
@@ -138,14 +135,13 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
     @Test
     public void testServerEndpointInvalidTemplateURI() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject().getFile(
-                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/ServerEndpointInvalidTemplateURI.java"));
+        IFile javaFile = javaProject.getProject().getFile(new Path(
+                "src/main/java/io/openliberty/sample/jakarta/websocket/ServerEndpointInvalidTemplateURI.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(6, 0, 46,
-                "Server endpoint paths must be a URI-template (level-1) or a partial URI.",
+        Diagnostic d = d(6, 0, 46, "Server endpoint paths must be a URI-template (level-1) or a partial URI.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
@@ -154,14 +150,13 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
     @Test
     public void testServerEndpointDuplicateVariableURI() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject().getFile(
-                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/ServerEndpointDuplicateVariableURI.java"));
+        IFile javaFile = javaProject.getProject().getFile(new Path(
+                "src/main/java/io/openliberty/sample/jakarta/websocket/ServerEndpointDuplicateVariableURI.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        Diagnostic d = d(6, 0, 40,
-                "Server endpoint paths must not use the same variable more than once in a path.",
+        Diagnostic d = d(6, 0, 40, "Server endpoint paths must not use the same variable more than once in a path.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "ChangeInvalidServerEndpoint");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
@@ -169,10 +164,14 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
     public void testDuplicateOnMessage() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject().getFile(
-                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/DuplicateOnMessage.java"));
+        IFile javaFile = javaProject.getProject()
+                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/websocket/DuplicateOnMessage.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-        Diagnostic d = d(16, 4, 14, "Each WebSocket endpoint may only have one message handling method for each of the native WebSocket message formats: text, binary and pong.",
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+        Diagnostic d = d(16, 4, 14,
+                "Each WebSocket endpoint may only have one message handling method for each of the native WebSocket message formats: text, binary and pong.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageDuplicateMethod");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);

@@ -132,8 +132,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         // check parameters valid types
                         if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
                             Diagnostic diagnostic = createDiagnostic(param, unit,
-                                    createParamTypeDiagMsg(specialParamTypes, methodAnnotTarget),
-                                    diagnosticCode);
+                                    createParamTypeDiagMsg(specialParamTypes, methodAnnotTarget), diagnosticCode);
                             diagnostics.add(diagnostic);
                             continue;
                         }
@@ -231,24 +230,24 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                                 WebSocketConstants.MESSAGE_FORMAT messageFormat = getMessageFormat(resolvedTypeName);
                                 boolean duplicateFound = false;
                                 switch (messageFormat) {
-                                    case TEXT:
-                                        if (onMessageTextUsed) {
-                                            duplicateFound = true;
-                                        }
-                                        onMessageTextUsed = true;
-                                        break;
-                                    case BINARY:
-                                        if (onMessageBinaryUsed) {
-                                            duplicateFound = true;
-                                        }
-                                        onMessageBinaryUsed = true;
-                                        break;
-                                    case PONG:
-                                        if (onMessagePongUsed) {
-                                            duplicateFound = true;
-                                        }
-                                        onMessagePongUsed = true;
-                                        break;
+                                case TEXT:
+                                    if (onMessageTextUsed) {
+                                        duplicateFound = true;
+                                    }
+                                    onMessageTextUsed = true;
+                                    break;
+                                case BINARY:
+                                    if (onMessageBinaryUsed) {
+                                        duplicateFound = true;
+                                    }
+                                    onMessageBinaryUsed = true;
+                                    break;
+                                case PONG:
+                                    if (onMessagePongUsed) {
+                                        duplicateFound = true;
+                                    }
+                                    onMessagePongUsed = true;
+                                    break;
                                 }
                                 if (duplicateFound) {
                                     Diagnostic diagnostic = createDiagnostic(annotation, unit,
@@ -274,9 +273,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
             if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)) {
                 for (IMemberValuePair annotationMemberValuePair : annotation.getMemberValuePairs()) {
                     if (annotationMemberValuePair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)) {
-                        String path = annotationMemberValuePair
-                                .getValue()
-                                .toString();
+                        String path = annotationMemberValuePair.getValue().toString();
                         Diagnostic diagnostic;
                         if (!JDTUtils.hasLeadingSlash(path)) {
                             diagnostic = createDiagnostic(annotation, unit,
