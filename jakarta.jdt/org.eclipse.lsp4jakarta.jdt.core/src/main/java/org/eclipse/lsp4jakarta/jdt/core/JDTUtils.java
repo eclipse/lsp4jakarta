@@ -66,6 +66,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
 import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
+import org.eclipse.jdt.internal.ui.viewsupport.FilteredElementTreeSelectionDialog;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -646,7 +647,7 @@ public class JDTUtils {
         List<String> accessorNames = new ArrayList<String>();
         accessorNames.add("get" + fieldName);
         accessorNames.add("set" + fieldName);
-        accessorNames.add("is" + fieldName);
+        accessorNames.add("is" + fieldName); 
         
         for (IType type : unit.getAllTypes()) {
             for (IMethod method : type.getMethods()) {

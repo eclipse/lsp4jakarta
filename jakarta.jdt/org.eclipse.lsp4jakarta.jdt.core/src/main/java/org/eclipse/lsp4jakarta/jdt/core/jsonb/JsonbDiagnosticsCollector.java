@@ -144,8 +144,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
     
     private List<String> getJsonbAnnotationNames(IAnnotatable annotable) throws JavaModelException {
         IAnnotation annotations[] = annotable.getAnnotations();
-        List<IAnnotation> annotationsList = Arrays.asList(annotations);
-        List<String> annotationNames = annotationsList.stream().map(
+        List<String> annotationNames = Arrays.stream(annotations).map(
                 fieldAnnotation -> fieldAnnotation.getElementName()).collect(Collectors.toList());
 
         List<String> jsonbAnnotationNames = new ArrayList<String>();
