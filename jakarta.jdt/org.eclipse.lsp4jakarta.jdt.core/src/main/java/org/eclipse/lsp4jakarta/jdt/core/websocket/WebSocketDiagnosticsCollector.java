@@ -225,39 +225,52 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             String signature = param.getTypeSignature();
                             String formatSignature = signature.replace("/", ".");
                             String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
-                            if (resolvedTypeName != null
-                                    && !resolvedTypeName.equals(WebSocketConstants.SESSION_CLASS)) {
+                            if (resolvedTypeName == null) {
+                                resolvedTypeName = Signature.getSignatureSimpleName(signature);
+                            }
+                            if (WebSocketConstants.MESSAGE_CLASSES.contains(resolvedTypeName)) {
                                 WebSocketConstants.MESSAGE_FORMAT messageFormat = getMessageFormat(resolvedTypeName);
-                                IAnnotation duplicateFound = null;
+                                Diagnostic diagnostic1, diagnostic2;
                                 switch (messageFormat) {
                                 case TEXT:
                                     if (onMessageTextUsed != null) {
-                                        duplicateFound = onMessageTextUsed;
+                                        diagnostic1 = createDiagnostic(annotation, unit,
+                                                WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
+                                        diagnostic2 = createDiagnostic(onMessageTextUsed, unit,
+                                                WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
+                                        diagnostics.add(diagnostic1);
+                                        diagnostics.add(diagnostic2);
                                     }
                                     onMessageTextUsed = annotation;
                                     break;
                                 case BINARY:
                                     if (onMessageBinaryUsed != null) {
-                                        duplicateFound = onMessageBinaryUsed;
+                                        diagnostic1 = createDiagnostic(annotation, unit,
+                                                WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
+                                        diagnostic2 = createDiagnostic(onMessageBinaryUsed, unit,
+                                                WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
+                                        diagnostics.add(diagnostic1);
+                                        diagnostics.add(diagnostic2);
                                     }
                                     onMessageBinaryUsed = annotation;
                                     break;
                                 case PONG:
                                     if (onMessagePongUsed != null) {
-                                        duplicateFound = onMessagePongUsed;
+                                        diagnostic1 = createDiagnostic(annotation, unit,
+                                                WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
+                                        diagnostic2 = createDiagnostic(onMessagePongUsed, unit,
+                                                WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
+                                        diagnostics.add(diagnostic1);
+                                        diagnostics.add(diagnostic2);
                                     }
                                     onMessagePongUsed = annotation;
                                     break;
-                                }
-                                if (duplicateFound != null) {
-                                    Diagnostic diagnostic1 = createDiagnostic(annotation, unit,
-                                            WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
-                                            WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                    Diagnostic diagnostic2 = createDiagnostic(duplicateFound, unit,
-                                            WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
-                                            WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                    diagnostics.add(diagnostic1);
-                                    diagnostics.add(diagnostic2);
                                 }
                             }
                         }

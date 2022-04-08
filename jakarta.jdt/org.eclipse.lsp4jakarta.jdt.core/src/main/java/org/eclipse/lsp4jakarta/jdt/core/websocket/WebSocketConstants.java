@@ -77,6 +77,8 @@ public class WebSocketConstants {
     public static final String BYTEBUFFER_CLASS = "java.nio.ByteBuffer";
     public static final String INPUTSTREAM_CLASS = "java.io.InputStream";
     public static final String PONGMESSAGE_CLASS = "jakarta.websocket.PongMessage";
+    public static final Set<String> MESSAGE_CLASSES = new HashSet<>(
+            Arrays.asList(STRING_CLASS, READER_CLASS, BYTEBUFFER_CLASS, INPUTSTREAM_CLASS, PONGMESSAGE_CLASS));
     public static final String SESSION_CLASS = "jakarta.websocket.Session";
 
     /* Annotations */
