@@ -40,7 +40,6 @@ public class WebSocketConstants {
     public static final String URI_SEPARATOR = "/";
     public static final String CURLY_BRACE_START = "{";
     public static final String CURLY_BRACE_END = "}";
-    public static final String PERIOD = ".";
 
     public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.";
     public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
@@ -73,15 +72,20 @@ public class WebSocketConstants {
     public static final Set<String> WS_ANNOTATION_CLASS = new HashSet<>(
             Arrays.asList(SERVER_ENDPOINT_ANNOTATION, CLIENT_ENDPOINT_ANNOTATION));
 
-    public static final String STRING_CLASS = "java.lang.String";
-    public static final String READER_CLASS = "java.io.Reader";
-    public static final String BYTEBUFFER_CLASS = "java.nio.ByteBuffer";
-    public static final String INPUTSTREAM_CLASS = "java.io.InputStream";
-    public static final String PONGMESSAGE_CLASS = "jakarta.websocket.PongMessage";
+    public static final String STRING_CLASS_LONG = "java.lang.String";
+    public static final String STRING_CLASS_SHORT = "String";
+    public static final String READER_CLASS_LONG = "java.io.Reader";
+    public static final String READER_CLASS_SHORT = "Reader";
+    public static final String BYTEBUFFER_CLASS_LONG = "java.nio.ByteBuffer";
+    public static final String BYTEBUFFER_CLASS_SHORT = "ByteBuffer";
+    public static final String INPUTSTREAM_CLASS_LONG = "java.io.InputStream";
+    public static final String INPUTSTREAM_CLASS_SHORT = "InputStream";
+    public static final String PONGMESSAGE_CLASS_LONG = "jakarta.websocket.PongMessage";
+    public static final String PONGMESSAGE_CLASS_SHORT = "PongMessage";
     public static final Set<String> LONG_MESSAGE_CLASSES = new HashSet<>(
-            Arrays.asList(STRING_CLASS, READER_CLASS, BYTEBUFFER_CLASS, INPUTSTREAM_CLASS, PONGMESSAGE_CLASS));
-    public static final Set<String> SHORT_MESSAGE_CLASSES = LONG_MESSAGE_CLASSES.stream()
-            .map(longName -> longName.split(PERIOD)[2]).collect(Collectors.toSet());
+            Arrays.asList(STRING_CLASS_LONG, READER_CLASS_LONG, BYTEBUFFER_CLASS_LONG, INPUTSTREAM_CLASS_LONG, PONGMESSAGE_CLASS_LONG));
+    public static final Set<String> SHORT_MESSAGE_CLASSES = new HashSet<>(
+            Arrays.asList(STRING_CLASS_SHORT, READER_CLASS_SHORT, BYTEBUFFER_CLASS_SHORT, INPUTSTREAM_CLASS_SHORT, PONGMESSAGE_CLASS_SHORT));
     public static final String SESSION_CLASS = "jakarta.websocket.Session";
 
     /* Annotations */
