@@ -108,10 +108,10 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    private HashMap<String, Boolean> intializeHashMap(Set<String> types) {
-        HashMap<String, Boolean> numTypes = new HashMap<>();
+    private HashMap<String, ILocalVariable> initializeHashMap(Set<String> types) {
+        HashMap<String, ILocalVariable> numTypes = new HashMap<>();
         for (String type : types) {
-            numTypes.put(type, false);
+            numTypes.put(type, null);
         }
         return numTypes;
     }
@@ -127,8 +127,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
             for (IAnnotation annotation : allAnnotations) {
                 if (annotation.getElementName().equals(methodAnnotTarget)) {
                     ILocalVariable[] allParams = method.getParameters();
-                    HashMap<String, Boolean> mandTypeCounter = intializeHashMap(mandParamTypes);
-                    HashMap<String, Boolean> rawMandTypeCounter = intializeHashMap(rawMandParamTypes);
+                    HashMap<String, ILocalVariable> mandTypeCounter = initializeHashMap(mandParamTypes);
+                    HashMap<String, ILocalVariable> rawMandTypeCounter = initializeHashMap(rawMandParamTypes);
                     Boolean isResolvedType = false;
 
                     for (ILocalVariable param : allParams) {
@@ -145,7 +145,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         String genParamType;
                         Set<String> genSpecialParamTypes;
                         Set<String> genMandParamTypes;
-                        HashMap<String, Boolean> genMandTypeCounter;
+                        HashMap<String, ILocalVariable> genMandTypeCounter;
 
                         if (resolvedTypeName != null) {
                             genParamType = resolvedTypeName;
@@ -166,15 +166,19 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         isMandParam = genMandParamTypes.contains(genParamType);
 
                         if (isMandParam) {
-                            if (genMandTypeCounter.get(genParamType)) {
+                            if (genMandTypeCounter.get(genParamType) != null) {
                                 String diagMsg = createParamTypeDiagMsg(WebSocketConstants.DIAGNOSTIC_DUP_PARAMS_TYPES, 
                                         methodAnnotTarget, specialParamTypes, mandParamTypes);
                                 Diagnostic diagnostic = createDiagnostic(param, unit,
                                         diagMsg, diagnosticCode);
                                 diagnostics.add(diagnostic);
+
+                                Diagnostic diagnostic2 = createDiagnostic(genMandTypeCounter.get(genParamType), unit,
+                                        diagMsg, diagnosticCode);
+                                diagnostics.add(diagnostic2);
                                 continue;
                             } else {
-                                genMandTypeCounter.put(genParamType, true);
+                                genMandTypeCounter.put(genParamType, param);
                             }
                             continue;
                         }
@@ -204,12 +208,11 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         }
                     }
 
-                    // TODO: update this
-                    HashMap<String, Boolean> genMandTypeCounter = isResolvedType ? mandTypeCounter : rawMandTypeCounter;
+                    HashMap<String, ILocalVariable> genMandTypeCounter = isResolvedType ? mandTypeCounter : rawMandTypeCounter;
 
                     // check that all mandatory parameters are present
-                    for (HashMap.Entry<String, Boolean> entry : genMandTypeCounter.entrySet()) {
-                        if (entry.getValue() == false) {
+                    for (HashMap.Entry<String, ILocalVariable> entry : genMandTypeCounter.entrySet()) {
+                        if (entry.getValue() == null) {
                             String diagMessage = createParamTypeDiagMsg(WebSocketConstants.DIAGNOSTIC_MAND_PARAMS_MISSING, 
                                     methodAnnotTarget, Collections.emptySet(), mandParamTypes);
                             Diagnostic diagnostic = createDiagnostic(method, unit,
