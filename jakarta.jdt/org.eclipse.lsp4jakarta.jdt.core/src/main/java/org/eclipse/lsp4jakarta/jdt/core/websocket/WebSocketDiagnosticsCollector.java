@@ -225,10 +225,13 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             String signature = param.getTypeSignature();
                             String formatSignature = signature.replace("/", ".");
                             String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
+                            String typeName = null;
                             if (resolvedTypeName == null) {
-                                resolvedTypeName = Signature.getSignatureSimpleName(signature);
+                                typeName = Signature.getSignatureSimpleName(signature);
                             }
-                            if (WebSocketConstants.MESSAGE_CLASSES.contains(resolvedTypeName)) {
+                            if ((resolvedTypeName != null
+                                    && WebSocketConstants.LONG_MESSAGE_CLASSES.contains(resolvedTypeName))
+                                    || WebSocketConstants.SHORT_MESSAGE_CLASSES.contains(typeName)) {
                                 WebSocketConstants.MESSAGE_FORMAT messageFormat = getMessageFormat(resolvedTypeName);
                                 Diagnostic diagnostic1, diagnostic2;
                                 switch (messageFormat) {

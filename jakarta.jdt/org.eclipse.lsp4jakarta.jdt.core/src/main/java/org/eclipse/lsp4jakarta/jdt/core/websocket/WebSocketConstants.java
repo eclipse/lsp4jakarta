@@ -40,6 +40,7 @@ public class WebSocketConstants {
     public static final String URI_SEPARATOR = "/";
     public static final String CURLY_BRACE_START = "{";
     public static final String CURLY_BRACE_END = "}";
+    public static final String PERIOD = ".";
 
     public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.";
     public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
@@ -77,8 +78,10 @@ public class WebSocketConstants {
     public static final String BYTEBUFFER_CLASS = "java.nio.ByteBuffer";
     public static final String INPUTSTREAM_CLASS = "java.io.InputStream";
     public static final String PONGMESSAGE_CLASS = "jakarta.websocket.PongMessage";
-    public static final Set<String> MESSAGE_CLASSES = new HashSet<>(
+    public static final Set<String> LONG_MESSAGE_CLASSES = new HashSet<>(
             Arrays.asList(STRING_CLASS, READER_CLASS, BYTEBUFFER_CLASS, INPUTSTREAM_CLASS, PONGMESSAGE_CLASS));
+    public static final Set<String> SHORT_MESSAGE_CLASSES = LONG_MESSAGE_CLASSES.stream()
+            .map(longName -> longName.split(PERIOD)[2]).collect(Collectors.toSet());
     public static final String SESSION_CLASS = "jakarta.websocket.Session";
 
     /* Annotations */
