@@ -2,8 +2,9 @@ package io.openliberty.sample.jakarta.websocket;
 
 import java.io.IOException;
 
-import jakarta.websocket.OnOpen;
+import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
+import jakarta.websocket.OnOpen;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.Session;
 
@@ -28,7 +29,7 @@ public class AnnotationTest {
 
     // Used to check
     @OnError
-    public void OnError(Session session, String missingAnnotation1, Throwable throwable) {
+    public void OnError(Session session, String missingAnnotation, Throwable throwable) {
         System.out.println("Websocket opened: " + session.getId().toString());
     }
 }

@@ -27,7 +27,7 @@ public class InvalidParamType {
     }
 
     @OnError
-    public void OnError(Session session, Object invalidParam) throws IOException {
+    public void OnError(Session session, Object invalidParam, Throwable throwable) throws IOException {
         System.out.println("WebSocket closed for " + session.getId());
     }
 }
