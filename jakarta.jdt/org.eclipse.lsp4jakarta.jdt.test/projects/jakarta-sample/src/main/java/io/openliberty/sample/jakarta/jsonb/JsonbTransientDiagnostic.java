@@ -16,6 +16,8 @@ package io.openliberty.sample.jakarta.jsonb;
 import jakarta.json.bind.annotation.JsonbCreator;
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbNillable;
+import jakarta.json.bind.annotation.JsonbAnnotation;
 
 public class JsonbTransientDiagnostic {
     @JsonbTransient
