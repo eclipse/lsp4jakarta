@@ -6,10 +6,9 @@ import jakarta.websocket.OnError;
 import jakarta.websocket.server.ServerEndpoint;
 
 /**
- * Expected Diagnostics are related to validating that the parameters for the 
- * WebSocket methods are of valid types for onOpen (diagnostic code: OnOpenChangeInvalidParam) 
- * and onClose (diagnostic code: OnCloseChangeInvalidParam).
- * See issues #247 (onOpen) and #248 (onClose)
+ * Expected Diagnostics are related to validating that the parameters for the onError 
+ * WebSocket method are not duplicate (diagnostic code: OnErrorChangeInvalidParam).
+ * See issue #249 (OnError)
  */
 @ServerEndpoint(value = "/infos")
 public class DuplicateParamCheck {

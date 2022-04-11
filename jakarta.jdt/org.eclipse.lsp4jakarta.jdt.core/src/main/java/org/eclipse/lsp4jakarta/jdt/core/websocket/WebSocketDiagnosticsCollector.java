@@ -170,11 +170,11 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                                 String diagMsg = createParamTypeDiagMsg(WebSocketConstants.DIAGNOSTIC_DUP_PARAMS_TYPES, 
                                         methodAnnotTarget, specialParamTypes, mandParamTypes);
                                 Diagnostic diagnostic = createDiagnostic(param, unit,
-                                        diagMsg, diagnosticCode);
+                                        diagMsg, WebSocketConstants.DIAGNOSTIC_CODE_DUP_PARAMS_TYPES);
                                 diagnostics.add(diagnostic);
 
                                 Diagnostic diagnostic2 = createDiagnostic(genMandTypeCounter.get(genParamType), unit,
-                                        diagMsg, diagnosticCode);
+                                        diagMsg, WebSocketConstants.DIAGNOSTIC_CODE_DUP_PARAMS_TYPES);
                                 diagnostics.add(diagnostic2);
                                 continue;
                             } else {
@@ -378,12 +378,11 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         return wsEndpoint;
     }
 
-    // TODO: fix new line addition in message
     private String createParamTypeDiagMsg(String initialMsg, String methodAnnotTarget, Set<String> methodParamOptTypes, Set<String> mandParamTypes) {
         String paramMessage = String.join("\n- ", methodParamOptTypes);
         
         if (mandParamTypes.size() > 0) {
-            paramMessage += "\n- " + String.join("\n- ", mandParamTypes);
+            paramMessage += String.join("\n- ", mandParamTypes);
         }
         return String.format(initialMsg, "@" + methodAnnotTarget, paramMessage);
     }

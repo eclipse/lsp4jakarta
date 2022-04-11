@@ -43,13 +43,14 @@ public class WebSocketConstants {
 
     public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.";
     public static final String DIAGNOSTIC_MAND_PARAMS_MISSING = "Mandatory parameters missing. %s requires to include mandatory parameters of type: \n- %s\n";
-    public static final String DIAGNOSTIC_DUP_PARAMS_TYPES = "Duplicate parameter types. %s requires to include only one parameter of type: \n- %s\n";
+    public static final String DIAGNOSTIC_DUP_PARAMS_TYPES = "Duplicate parameter types not allowed. %s requires to include only one parameter of type: \n- %s\n";
     
     /* Diagnostic codes */
     public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_ERROR_INVALID_PARAMS = "OnErrorChangeInvalidParam";
+    public static final String DIAGNOSTIC_CODE_DUP_PARAMS_TYPES = "DuplicateParamsTypes";
 
     public static final String DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS = "OnErrorMandatoryParamMissing";
     
