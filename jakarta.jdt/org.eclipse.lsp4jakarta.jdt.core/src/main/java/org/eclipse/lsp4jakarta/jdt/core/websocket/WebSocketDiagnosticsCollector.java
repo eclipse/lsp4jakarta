@@ -286,14 +286,13 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     }
 
     /**
-     * Create an error diagnostic if a ServerEndpoint annotation does not follow the
-     * rules.
+     * Create an error diagnostic if a ServerEndpoint annotation's URI contains relative
+     * paths, missing a leading slash, or does not follow a valid level-1 template URI.
      */
     private void serverEndpointErrorCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit)
             throws JavaModelException {
         for (IAnnotation annotation : type.getAnnotations()) {
-            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)
-                    || annotation.getElementName().equals(WebSocketConstants.CLIENT_ENDPOINT_ANNOTATION)) {
+            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)) {
                 for (IMemberValuePair annotationMemberValuePair : annotation.getMemberValuePairs()) {
                     if (annotationMemberValuePair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)) {
                         String path = annotationMemberValuePair.getValue().toString();

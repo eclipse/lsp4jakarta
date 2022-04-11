@@ -7,6 +7,7 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 
+// String and Reader will cause a duplicate diagnostic as they're both text message formats.
 @ServerEndpoint("/{var}")
 public class DuplicateOnMessage {
     @OnMessage
