@@ -94,6 +94,36 @@ public class WebSocketConstants {
     public static final Set<String> RAW_WRAPPER_OBJS = new HashSet<>(Arrays.asList("String", "Boolean", "Integer", "Long", "Double", "Float"));
     public static final Set<String> WRAPPER_OBJS = RAW_WRAPPER_OBJS.stream().map(raw -> "java.lang.".concat(raw)).collect(Collectors.toSet());
 
+    public static final String RAW_STRING_TYPE = "String";
+    public static final String STRING_OBJ = "java.lang.String";
+    
+    public static final String RAW_BOOLEAN_TYPE = "boolean";
+    public static final String BOOLEAN_OBJ = "java.lang.Boolean";
+    
+    public static final String RAW_BYTEBUFFER_OBJ = "ByteBuffer";
+    public static final String BYTEBUFFER_OBJ = "java.nio.ByteBuffer";
+
     // Messages
     public static final String PARAM_TYPE_DIAG_MSG = "Invalid parameter type. When using %s, parameter must be of type: \n- %s\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof";
+
+    public static final String TEXT_PARAMS_DIAG_MSG = "Invalid parameter type. OnMessage methods for handling text messages may have the following parameters: \r\n"
+            + "    - String to receive the whole message\r\n"
+            + "    - Java primitive or class equivalent to receive the whole message converted to that type\r\n"
+            + "    - String and boolean pair to receive the message in parts\r\n"
+            + "    - Reader to receive the whole message as a blocking stream\r\n"
+            + "    - any object parameter for which the endpoint has a text decoder (Decoder.Text or Decoder.TextStream)";
+
+    public static final String BINARY_PARAMS_DIAG_MSG = "Invalid parameter type. OnMessage methods for handling binary messages may have the following parameters: \r\n"
+            + "    - byte[] or ByteBuffer to receive the whole message\r\n"
+            + "    - byte[] and boolean pair, or ByteBuffer and boolean pair to receive the message in parts\r\n"
+            + "    - InputStream to receive the whole message as a blocking stream\r\n"
+            + "    - any object parameter for which the endpoint has a binary decoder (Decoder.Binary or Decoder.BinaryStream)";
+    
+    public static final String PONG_PARAMS_DIAG_MSG = "Invalid parameter type. OnMessage methods for handling pong messages may have the following parameters: \r\n"
+            + "    - PongMessage for handling pong messages";
+    
+    public static final String INVALID_PARAMS_DIAG_MSG = "Invalid parameter type. Please see @OnMessage API Specification for valid parameter specifications.";
+    
+    // Enums
+    public enum MESSAGE_FORMAT {TEXT, BINARY, PONG, INVALID};
 }

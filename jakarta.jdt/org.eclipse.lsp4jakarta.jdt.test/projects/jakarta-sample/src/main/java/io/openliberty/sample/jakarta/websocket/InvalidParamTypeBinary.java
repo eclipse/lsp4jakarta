@@ -14,9 +14,14 @@ import jakarta.websocket.server.ServerEndpoint;
  * See issues #247 (onOpen) and #248 (onClose)
  */
 @ServerEndpoint(value = "/infos")
-public class InvalidParamType {
+public class InvalidParamTypeBinary {
     @OnOpen
     public void OnOpen(Session session, Object invalidParam) throws IOException {
+        System.out.println("Websocket opened: " + session.getId().toString());
+    }
+    
+    @OnMessage
+    public void OnMessage(ByteBuffer bb, PongMessage invalid) throws IOException {
         System.out.println("Websocket opened: " + session.getId().toString());
     }
     
