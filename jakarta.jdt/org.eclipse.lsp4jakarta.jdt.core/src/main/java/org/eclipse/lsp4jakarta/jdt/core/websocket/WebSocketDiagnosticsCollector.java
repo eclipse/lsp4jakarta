@@ -414,7 +414,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         String paramMessage = String.join("\n- ", methodParamOptTypes);
         
         if (mandParamTypes.size() > 0) {
-            paramMessage += String.join("\n- ", mandParamTypes);
+            paramMessage += (methodParamOptTypes.size() > 0 ? "\n- " : "") + String.join("\n- ", mandParamTypes);
         }
         return String.format(initialMsg, "@" + methodAnnotTarget, paramMessage);
     }
