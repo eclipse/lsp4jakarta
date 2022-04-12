@@ -16,6 +16,7 @@
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,13 +78,16 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 // checks if the class uses annotation to create a WebSocket endpoint
                 if (checkWSEnd.get(WebSocketConstants.IS_ANNOTATION)) {
                     // WebSocket Invalid Parameters Diagnostic
-                    invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES,
-                            WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES,
-                            WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
-                    invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES,
-                            WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES,
-                            WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
-
+                    invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES, 
+                            WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, 
+                            Collections.emptySet(), Collections.emptySet(), unit, diagnostics);
+                    invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES, 
+                            WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, 
+                            Collections.emptySet(), Collections.emptySet(), unit, diagnostics);
+                    invalidParamsCheck(type, WebSocketConstants.ON_ERROR, WebSocketConstants.ON_ERROR_PARAM_OPT_TYPES, 
+                            WebSocketConstants.RAW_ON_ERROR_PARAM_OPT_TYPES, WebSocketConstants.DIAGNOSTIC_CODE_ON_ERROR_INVALID_PARAMS,
+                            WebSocketConstants.ON_ERROR_PARAM_MAND_TYPES, WebSocketConstants.RAW_ON_ERROR_PARAM_MAND_TYPES, unit, diagnostics);
+                    
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
                     // ServerEndpoint annotation diagnostics
@@ -95,9 +99,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes,
-            Set<String> rawSpecialParamTypes, String diagnosticCode, ICompilationUnit unit,
-            List<Diagnostic> diagnostics) throws JavaModelException {
+    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, String diagnosticCode,
+            Set<String> mandParamTypes, Set<String> rawMandParamTypes,  ICompilationUnit unit, List<Diagnostic> diagnostics) throws JavaModelException {
 
         IMethod[] allMethods = type.getMethods();
 
@@ -107,6 +110,9 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
             for (IAnnotation annotation : allAnnotations) {
                 if (annotation.getElementName().equals(methodAnnotTarget)) {
                     ILocalVariable[] allParams = method.getParameters();
+                    HashMap<String, ILocalVariable> mandTypeCounter = initializeHashMap(mandParamTypes);
+                    HashMap<String, ILocalVariable> rawMandTypeCounter = initializeHashMap(rawMandParamTypes);
+                    Boolean isResolvedType = false;
 
                     for (ILocalVariable param : allParams) {
                         String signature = param.getTypeSignature();
@@ -116,21 +122,56 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
                         boolean isSpecialType;
                         boolean isPrimWrapped;
+                        boolean isMandParam;
+
+                        // general paramType 
+                        String genParamType;
+                        Set<String> genSpecialParamTypes;
+                        Set<String> genMandParamTypes;
+                        HashMap<String, ILocalVariable> genMandTypeCounter;
 
                         if (resolvedTypeName != null) {
-                            isSpecialType = specialParamTypes.contains(resolvedTypeName);
-                            isPrimWrapped = isWrapper(resolvedTypeName);
+                            genParamType = resolvedTypeName;
+                            genSpecialParamTypes = specialParamTypes;
+                            genMandParamTypes = mandParamTypes;
+                            isResolvedType = true;
+                            genMandTypeCounter = mandTypeCounter;
                         } else {
                             String simpleParamType = Signature.getSignatureSimpleName(signature);
-                            isSpecialType = rawSpecialParamTypes.contains(simpleParamType);
-                            isPrimWrapped = isWrapper(simpleParamType);
+                            genParamType = simpleParamType;
+                            genSpecialParamTypes = rawSpecialParamTypes;
+                            genMandParamTypes = rawMandParamTypes;
+                            genMandTypeCounter = rawMandTypeCounter;
+                        }
+
+                        isSpecialType = genSpecialParamTypes.contains(genParamType);
+                        isPrimWrapped = isWrapper(genParamType);
+                        isMandParam = genMandParamTypes.contains(genParamType);
+
+                        if (isMandParam) {
+                            if (genMandTypeCounter.get(genParamType) != null) {
+                                String diagMsg = createParamTypeDiagMsg(WebSocketConstants.DIAGNOSTIC_DUP_PARAMS_TYPES, 
+                                        methodAnnotTarget, specialParamTypes, mandParamTypes);
+                                Diagnostic diagnostic = createDiagnostic(param, unit,
+                                        diagMsg, WebSocketConstants.DIAGNOSTIC_CODE_DUP_PARAMS_TYPES);
+                                diagnostics.add(diagnostic);
+
+                                Diagnostic diagnostic2 = createDiagnostic(genMandTypeCounter.get(genParamType), unit,
+                                        diagMsg, WebSocketConstants.DIAGNOSTIC_CODE_DUP_PARAMS_TYPES);
+                                diagnostics.add(diagnostic2);
+                                continue;
+                            } else {
+                                genMandTypeCounter.put(genParamType, param);
+                            }
+                            continue;
                         }
 
                         // check parameters valid types
                         if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
+                            String diagMessage = createParamTypeDiagMsg(WebSocketConstants.PARAM_TYPE_DIAG_MSG, 
+                                    methodAnnotTarget, specialParamTypes, mandParamTypes);
                             Diagnostic diagnostic = createDiagnostic(param, unit,
-                                    createParamTypeDiagMsg(specialParamTypes, methodAnnotTarget),
-                                    diagnosticCode);
+                                    diagMessage, diagnosticCode);
                             diagnostics.add(diagnostic);
                             continue;
                         }
@@ -149,9 +190,36 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             }
                         }
                     }
+
+                    HashMap<String, ILocalVariable> genMandTypeCounter = isResolvedType ? mandTypeCounter : rawMandTypeCounter;
+
+                    // check that all mandatory parameters are present
+                    for (HashMap.Entry<String, ILocalVariable> entry : genMandTypeCounter.entrySet()) {
+                        if (entry.getValue() == null) {
+                            String diagMessage = createParamTypeDiagMsg(WebSocketConstants.DIAGNOSTIC_MAND_PARAMS_MISSING, 
+                                    methodAnnotTarget, Collections.emptySet(), mandParamTypes);
+                            Diagnostic diagnostic = createDiagnostic(method, unit,
+                                    diagMessage, WebSocketConstants.DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS);
+                            diagnostics.add(diagnostic);
+                        }
+                    }
                 }
             }
         }
+    }
+
+
+    /**
+     * Creates a hashmap with the given set of keys and initializes the values to null.
+     * @param types set of parameter types
+     * @return hashmap with keys initialized to types
+     */
+    private HashMap<String, ILocalVariable> initializeHashMap(Set<String> types) {
+        HashMap<String, ILocalVariable> numTypes = new HashMap<>();
+        for (String type : types) {
+            numTypes.put(type, null);
+        }
+        return numTypes;
     }
 
     /**
@@ -295,7 +363,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     }
 
     /**
-     * Check if valueClass is a wrapper object for a primitive value Based on
+     * Check if valueClass is a wrapper object for a primitive value. Based on
      * https://github.com/eclipse/lsp4mp/blob/9789a1a996811fade43029605c014c7825e8f1da/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTTypeUtils.java#L294-L298
      * 
      * @param valueClass the resolved type of valueClass in string or the simple
@@ -348,9 +416,21 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         return wsEndpoint;
     }
 
-    private String createParamTypeDiagMsg(Set<String> methodParamOptTypes, String methodAnnotTarget) {
+    /**
+     * Creates a diagnotic message for parameter types that are not supported by
+     * @param initialMsg the initial message to be displayed
+     * @param methodAnnotTarget the annotation target of the method
+     * @param methodParamOptTypes the optional parameter types of the method
+     * @param mandParamTypes the mandatory parameter types of the method
+     * @return the final diagnostic message
+     */
+    private String createParamTypeDiagMsg(String initialMsg, String methodAnnotTarget, Set<String> methodParamOptTypes, Set<String> mandParamTypes) {
         String paramMessage = String.join("\n- ", methodParamOptTypes);
-        return String.format(WebSocketConstants.PARAM_TYPE_DIAG_MSG, "@" + methodAnnotTarget, paramMessage);
+        
+        if (mandParamTypes.size() > 0) {
+            paramMessage += (methodParamOptTypes.size() > 0 ? "\n- " : "") + String.join("\n- ", mandParamTypes);
+        }
+        return String.format(initialMsg, "@" + methodAnnotTarget, paramMessage);
     }
 
     /**
@@ -384,3 +464,4 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         return false;
     }
 }
+

@@ -42,12 +42,18 @@ public class WebSocketConstants {
     public static final String CURLY_BRACE_END = "}";
 
     public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.";
-    public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
-
+    public static final String DIAGNOSTIC_MAND_PARAMS_MISSING = "Mandatory parameters missing. %s requires to include mandatory parameters of type: \n- %s\n";
+    public static final String DIAGNOSTIC_DUP_PARAMS_TYPES = "Duplicate parameter types not allowed. %s requires to include only one parameter of type: \n- %s\n";
+    
     /* Diagnostic codes */
+    public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
+    public static final String DIAGNOSTIC_CODE_ON_ERROR_INVALID_PARAMS = "OnErrorChangeInvalidParam";
+    public static final String DIAGNOSTIC_CODE_DUP_PARAMS_TYPES = "DuplicateParamsTypes";
 
+    public static final String DIAGNOSTIC_CODE_ON_ERROR_MAND_PARAMS_MISS = "OnErrorMandatoryParamMissing";
+    
     public static final String DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH = "Server endpoint paths must start with a leading '/'.";
     public static final String DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1 = "Server endpoint paths must be a URI-template (level-1) or a partial URI.";
     public static final String DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE = "Server endpoint paths must not contain the sequences '/../', '/./' or '//'.";
@@ -68,6 +74,7 @@ public class WebSocketConstants {
     /* Annotations */
     public static final String ON_OPEN = "OnOpen";
     public static final String ON_CLOSE = "OnClose";
+    public static final String ON_ERROR = "OnError";
 
     public static final String IS_ANNOTATION = "isAnnotation";
 
@@ -78,8 +85,18 @@ public class WebSocketConstants {
     public static final Set<String> ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("jakarta.websocket.EndpointConfig", "jakarta.websocket.Session"));
     public static final Set<String> RAW_ON_OPEN_PARAM_OPT_TYPES= new HashSet<>(Arrays.asList("EndpointConfig", "Session"));
 
+    // For OnClose annotation
     public static final Set<String> ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.CloseReason", "jakarta.websocket.Session"));
     public static final Set<String> RAW_ON_CLOSE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("CloseReason", "Session"));
+
+    // For OnError annotation
+    // optional onError parameters
+    public static final Set<String> ON_ERROR_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.Session"));
+    public static final Set<String> RAW_ON_ERROR_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("Session"));
+
+    // mandatory onError parameters
+    public static final Set<String> ON_ERROR_PARAM_MAND_TYPES = new HashSet<>(Arrays.asList("java.lang.Throwable"));
+    public static final Set<String> RAW_ON_ERROR_PARAM_MAND_TYPES = new HashSet<>(Arrays.asList("Throwable"));
     
     public static final Set<String> RAW_WRAPPER_OBJS = new HashSet<>(Arrays.asList("String", "Boolean", "Integer", "Long", "Double", "Float"));
     public static final Set<String> WRAPPER_OBJS = RAW_WRAPPER_OBJS.stream().map(raw -> "java.lang.".concat(raw)).collect(Collectors.toSet());

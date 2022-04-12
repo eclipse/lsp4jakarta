@@ -41,23 +41,28 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // OnOpen PathParams Annotation check
-        Diagnostic d1 = d(17, 47, 64,
+        Diagnostic d1 = d(19, 47, 64,
                 "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation"
         );
         
         // OnClose PathParams Annotation check
-        Diagnostic d2 = d(23, 49, 67,
+        Diagnostic d2 = d(25, 49, 67,
                 "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation"
         );
         
-        Diagnostic d3 = d(23, 76, 94,
+        Diagnostic d3 = d(25, 76, 94,
                 "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation"
         );
 
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);        
+        Diagnostic d4 = d(31, 48, 65,
+                "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.",
+                DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation"
+        );
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3, d4);        
     }
 
     @Test
@@ -71,16 +76,21 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // OnOpen Invalid Param Types
-        Diagnostic d1 = d(18, 47, 59,
-        "Invalid parameter type. When using @OnOpen, parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
+        Diagnostic d1 = d(19, 47, 59,
+                "Invalid parameter type. When using @OnOpen, parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnOpenChangeInvalidParam");
         
         // OnClose Invalid Param Type
-        Diagnostic d2 = d(23, 73, 85,
+        Diagnostic d2 = d(24, 73, 85,
                 "Invalid parameter type. When using @OnClose, parameter must be of type: \n- jakarta.websocket.CloseReason\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnCloseChangeInvalidParam");
         
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
+        // OnError Invalid Param Type
+        Diagnostic d3 = d(29, 48, 60,
+                "Invalid parameter type. When using @OnError, parameter must be of type: \n- jakarta.websocket.Session\n- java.lang.Throwable\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
+                DiagnosticSeverity.Error, "jakarta-websocket", "OnErrorChangeInvalidParam");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);
     }
     
     @Test
@@ -95,6 +105,45 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         Diagnostic d = d(22, 59, 77, "PathParam value does not match specified Endpoint URI",
                 DiagnosticSeverity.Warning, "jakarta-websocket", "ChangePathParamValue");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+    }
+
+    @Test
+    public void testInvalidDupParams() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/DuplicateParamCheck.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        String message = "Duplicate parameter types not allowed. @OnError requires to include only one parameter of type: \n- jakarta.websocket.Session\n- java.lang.Throwable\n";
+
+        Diagnostic d1 = d(15, 69, 75, message, DiagnosticSeverity.Error,
+                "jakarta-websocket", "DuplicateParamsTypes");
+
+        Diagnostic d2 = d(15, 51, 57, message, DiagnosticSeverity.Error,
+                "jakarta-websocket", "DuplicateParamsTypes");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
+    }
+
+    @Test
+    public void testMandParamsType() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/MandatoryParamTypes.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        String message = "Mandatory parameters missing. @OnError requires to include mandatory parameters of type: \n- java.lang.Throwable\n";
+
+        Diagnostic d = d(13, 16, 23, message, DiagnosticSeverity.Error,
+                "jakarta-websocket", "OnErrorMandatoryParamMissing");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
