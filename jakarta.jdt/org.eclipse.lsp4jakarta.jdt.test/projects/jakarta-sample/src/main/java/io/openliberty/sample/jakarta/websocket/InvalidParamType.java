@@ -1,5 +1,5 @@
-package src.main.java.io.openliberty.sample.jakarta.websocket;
-
+package io.openliberty.sample.jakarta.websocket;
+ 
 import java.io.IOException;
 
 import jakarta.websocket.CloseReason;
