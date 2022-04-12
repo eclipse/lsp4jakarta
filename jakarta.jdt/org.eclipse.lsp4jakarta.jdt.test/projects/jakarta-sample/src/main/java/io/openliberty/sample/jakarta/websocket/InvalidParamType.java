@@ -1,4 +1,4 @@
-package io.openliberty.sample.jakarta.websocket;
+package src.main.java.io.openliberty.sample.jakarta.websocket;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ import jakarta.websocket.server.ServerEndpoint;
  * See issues #247 (onOpen) and #248 (onClose)
  */
 @ServerEndpoint(value = "/infos")
-public class OnMessageInvalidParam {
+public class InvalidParamType {
     @OnOpen
     public void OnOpen(Session session, Object invalidParam) throws IOException {
         System.out.println("Websocket opened: " + session.getId().toString());
