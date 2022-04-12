@@ -99,14 +99,6 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    private HashMap<String, ILocalVariable> initializeHashMap(Set<String> types) {
-        HashMap<String, ILocalVariable> numTypes = new HashMap<>();
-        for (String type : types) {
-            numTypes.put(type, null);
-        }
-        return numTypes;
-    }
-
     private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes, Set<String> rawSpecialParamTypes, String diagnosticCode,
             Set<String> mandParamTypes, Set<String> rawMandParamTypes,  ICompilationUnit unit, List<Diagnostic> diagnostics) throws JavaModelException {
 
@@ -214,6 +206,20 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 }
             }
         }
+    }
+
+
+    /**
+     * Creates a hashmap with the given set of keys and initializes the values to null.
+     * @param types set of parameter types
+     * @return hashmap with keys initialized to types
+     */
+    private HashMap<String, ILocalVariable> initializeHashMap(Set<String> types) {
+        HashMap<String, ILocalVariable> numTypes = new HashMap<>();
+        for (String type : types) {
+            numTypes.put(type, null);
+        }
+        return numTypes;
     }
 
     /**
@@ -410,6 +416,14 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         return wsEndpoint;
     }
 
+    /**
+     * Creates a diagnotic message for parameter types that are not supported by
+     * @param initialMsg the initial message to be displayed
+     * @param methodAnnotTarget the annotation target of the method
+     * @param methodParamOptTypes the optional parameter types of the method
+     * @param mandParamTypes the mandatory parameter types of the method
+     * @return the final diagnostic message
+     */
     private String createParamTypeDiagMsg(String initialMsg, String methodAnnotTarget, Set<String> methodParamOptTypes, Set<String> mandParamTypes) {
         String paramMessage = String.join("\n- ", methodParamOptTypes);
         
