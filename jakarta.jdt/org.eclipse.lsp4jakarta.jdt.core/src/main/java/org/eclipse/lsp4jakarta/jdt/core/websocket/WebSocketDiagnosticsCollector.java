@@ -18,21 +18,12 @@ package org.eclipse.lsp4jakarta.jdt.core.websocket;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.IAnnotation;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.core.ILocalVariable;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
@@ -42,8 +33,6 @@ import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants;
 import org.eclipse.jdt.core.*;
-
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
 
 import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
@@ -101,6 +90,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                     
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
+                    // ServerEndpoint annotation diagnostics
+                    serverEndpointErrorCheck(type, diagnostics, unit);
                 }
             }
         } catch (JavaModelException e) {
@@ -270,6 +261,47 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     }
 
     /**
+     * Create an error diagnostic if a ServerEndpoint annotation does not follow the rules.
+     */
+    private void serverEndpointErrorCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit) throws JavaModelException {
+        for (IAnnotation annotation : type.getAnnotations()) {
+            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)) {
+                for (IMemberValuePair annotationMemberValuePair : annotation.getMemberValuePairs()) {
+                    if (annotationMemberValuePair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)) {
+                        String path = annotationMemberValuePair
+                                .getValue()
+                                .toString();
+                        Diagnostic diagnostic;
+                        if (!JDTUtils.hasLeadingSlash(path)) {
+                            diagnostic = createDiagnostic(annotation, unit,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                            diagnostics.add(diagnostic);
+                        }
+                        if (hasRelativePathURIs(path)) {
+                            diagnostic = createDiagnostic(annotation, unit,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                            diagnostics.add(diagnostic);
+                        } else if (!JDTUtils.isValidLevel1URI(path)) {
+                            diagnostic = createDiagnostic(annotation, unit,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                            diagnostics.add(diagnostic);
+                        }
+                        if (hasDuplicateURIVariables(path)) {
+                            diagnostic = createDiagnostic(annotation, unit,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_DUPLICATE_VAR,
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
+                            diagnostics.add(diagnostic);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Creates a PathParam URI Mismatch Warning Diagnostic given its components
      * 
      * @param the annotation onto which the diagnostic needs to be displayed the
@@ -385,6 +417,37 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
             paramMessage += String.join("\n- ", mandParamTypes);
         }
         return String.format(initialMsg, "@" + methodAnnotTarget, paramMessage);
+    }
+
+    /**
+     * Check if a URI string contains any sequence with //, /./, or /../
+     *
+     * @param uriString ServerEndpoint URI
+     * @return if a URI has a relative path
+     */
+    private boolean hasRelativePathURIs(String uriString) {
+        return uriString.matches(WebSocketConstants.REGEX_RELATIVE_PATHS);
+    }
+
+    /**
+     * Check if a URI string has a duplicate variable
+     * 
+     * @param uriString ServerEndpoint URI
+     * @return if a URI has duplicate variables
+     */
+    private boolean hasDuplicateURIVariables(String uriString) {
+        HashSet<String> variables = new HashSet<String>();
+        for (String segment : uriString.split(WebSocketConstants.URI_SEPARATOR)) {
+            if (segment.matches(WebSocketConstants.REGEX_URI_VARIABLE)) {
+                String variable = segment.substring(1, segment.length() - 1);
+                if (variables.contains(variable)) {
+                    return true;
+                } else {
+                    variables.add(variable);
+                }
+            }
+        }
+        return false;
     }
 }
 
