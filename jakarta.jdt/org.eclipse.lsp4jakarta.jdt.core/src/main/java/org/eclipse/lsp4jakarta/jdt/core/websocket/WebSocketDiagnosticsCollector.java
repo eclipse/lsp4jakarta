@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
 
@@ -83,7 +84,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                     invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES,
                             WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES,
                             WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
-
+                    onMessageParamsCheck(type, unit, diagnostics);
+                  
                     // PathParam URI Mismatch Warning Diagnostic
                     uriMismatchWarningCheck(type, diagnostics, unit);
                     // ServerEndpoint annotation diagnostics
@@ -152,6 +154,164 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 }
             }
         }
+    }
+    
+    private void onMessageParamsCheck(IType type, ICompilationUnit unit, List<Diagnostic> diagnostics) throws JavaModelException {
+        
+        boolean endpointDecodersSpecified = checkEndpointHasDecoder(type);
+
+        IMethod[] allMethods = type.getMethods();
+        for (IMethod method : allMethods) {
+            
+            IAnnotation[] allAnnotations = method.getAnnotations();
+            for (IAnnotation annotation : allAnnotations) {
+                if (annotation.getElementName().equals(WebSocketConstants.ON_MESSAGE)) {
+                                        
+                    Set<String> seenSpecialParams = new HashSet<>();
+                    Map<String, ILocalVariable> seenMessageParams = new HashMap<>();
+               
+                    ILocalVariable[] allParams = method.getParameters();
+                    for (ILocalVariable param : allParams) {
+                        
+                        String signature = param.getTypeSignature();
+                        String formatSignature = signature.replace("/", ".");
+                        String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
+                        String finalTypeName;
+                        boolean isSpecialType;
+                        
+                        IAnnotation[] param_annotations = param.getAnnotations();
+                        boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
+                                annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
+                        
+                        if (resolvedTypeName != null) {
+                            isSpecialType = WebSocketConstants.ON_MESSAGE_PARAM_OPT_TYPES.contains(resolvedTypeName);
+                            finalTypeName = resolvedTypeName;
+                        } else {
+                            String simpleParamType = Signature.getSignatureSimpleName(signature);
+                            isSpecialType = WebSocketConstants.RAW_ON_MESSAGE_PARAM_OPT_TYPES.contains(simpleParamType);
+                            finalTypeName = simpleParamType;
+                        }
+                        
+                        if (isSpecialType) {
+                            if (seenSpecialParams.contains(finalTypeName)){
+                                Diagnostic duplicateSpecialParamDiagnostic = createDiagnostic(param, unit,
+                                        WebSocketConstants.ONMESSAGE_DUPLICATE_SPECIAL_MSG,
+                                        WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS);
+                                diagnostics.add(duplicateSpecialParamDiagnostic);
+                            } else {
+                                seenSpecialParams.add(finalTypeName);
+                            }
+                        } else if (hasPathParamAnnot) {
+                            boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
+                            boolean isPrimWrapped = isWrapper(finalTypeName);
+                            if (!isPrimitive && !isPrimWrapped) {
+                                Diagnostic invalidPathParamDiagnostic = createDiagnostic(param, unit,
+                                        WebSocketConstants.ONMESSAGE_INVALID_PATH_PARAM_MSG,
+                                        WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS);
+                                diagnostics.add(invalidPathParamDiagnostic);
+                            }
+                        } else {
+                            if (seenMessageParams.containsKey(finalTypeName)) {
+                                Diagnostic duplicateMessageParamDiagnostic = createDiagnostic(param, unit,
+                                        WebSocketConstants.ONMESSAGE_DUPLICATE_MESSAGE_PARAM_MSG,
+                                        WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS);
+                                diagnostics.add(duplicateMessageParamDiagnostic);
+                            } else {
+                                seenMessageParams.put(finalTypeName, param);
+                            }
+                        }
+                    }
+                            
+                    WebSocketConstants.MESSAGE_FORMAT methodType = null;
+                    
+                    Set<String> intersection = new HashSet<>(seenMessageParams.keySet());
+                    Set<String> difference = new HashSet<>(seenMessageParams.keySet());
+
+                    intersection.retainAll(WebSocketConstants.ON_MESSAGE_TEXT_TYPES);
+                    if (intersection.size() > 0) {
+                        // TEXT Message
+                        methodType = WebSocketConstants.MESSAGE_FORMAT.TEXT;
+                        difference.removeAll(WebSocketConstants.ON_MESSAGE_TEXT_TYPES);
+                    } else {
+                        intersection = new HashSet<>(seenMessageParams.keySet());
+                        intersection.retainAll(WebSocketConstants.ON_MESSAGE_BINARY_TYPES);
+                        if (intersection.size() > 0) {
+                            // BINARY Message
+                            methodType = WebSocketConstants.MESSAGE_FORMAT.BINARY;
+                            difference.removeAll(WebSocketConstants.ON_MESSAGE_BINARY_TYPES);
+                        } else {
+                            intersection = new HashSet<>(seenMessageParams.keySet());
+                            intersection.retainAll(WebSocketConstants.ON_MESSAGE_PONG_TYPES);
+                            if (intersection.size() > 0) {
+                                // PONG Message
+                                methodType = WebSocketConstants.MESSAGE_FORMAT.PONG;
+                                difference.removeAll(WebSocketConstants.ON_MESSAGE_PONG_TYPES);
+                            } else {
+                                // Invalid Message
+                                methodType = WebSocketConstants.MESSAGE_FORMAT.INVALID;
+                            }
+                        }
+                    }
+                    
+                    switch (methodType) {
+                    case TEXT:
+                        addDiagnosticsForInvalidMessageParams(difference, seenMessageParams, diagnostics, unit, 
+                                true, endpointDecodersSpecified, WebSocketConstants.TEXT_PARAMS_DIAG_MSG);
+                        break;
+                    case BINARY:
+                        addDiagnosticsForInvalidMessageParams(difference, seenMessageParams, diagnostics, unit, 
+                                true, endpointDecodersSpecified, WebSocketConstants.BINARY_PARAMS_DIAG_MSG);
+                        break;
+                    case PONG:
+                        addDiagnosticsForInvalidMessageParams(difference, seenMessageParams, diagnostics, unit, 
+                                false, false, WebSocketConstants.PONG_PARAMS_DIAG_MSG);
+                        break;
+                    case INVALID:
+                    default:
+                        addDiagnosticsForInvalidMessageParams(difference, seenMessageParams, diagnostics, unit, 
+                                false, false, WebSocketConstants.INVALID_PARAMS_DIAG_MSG);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void addDiagnosticsForInvalidMessageParams(Set<String> diff, Map<String, ILocalVariable> params, 
+            List<Diagnostic> diagnostics, ICompilationUnit unit, boolean boolAllowed, boolean decodersSpecified, String msg) {
+        if (!decodersSpecified) {
+            for (String invalidParam : diff) {
+                if (boolAllowed && (invalidParam.equals(WebSocketConstants.BOOLEAN_OBJ))) {
+                    continue;
+                }
+                ILocalVariable param = params.get(invalidParam);
+                Diagnostic invalidTextParam = createDiagnostic(param, unit,
+                        msg, WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS);
+                diagnostics.add(invalidTextParam);
+            }
+        }
+    }
+    
+    /**
+     * Checks if a WebSocket EndPoint annotation contains custom decoders
+     * 
+     * @param type representing the class
+     * @return boolean to represent if decoders are present
+     * @throws JavaModelException 
+     */
+    private boolean checkEndpointHasDecoder(IType type) throws JavaModelException {
+        IAnnotation[] endpointAnnotations = type.getAnnotations();
+        for (IAnnotation annotation : endpointAnnotations) {
+            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)
+                    || annotation.getElementName().equals(WebSocketConstants.CLIENT_ENDPOINT_ANNOTATION)) {
+                IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
+                for (IMemberValuePair pair : valuePairs) {
+                    if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_DECODER)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**

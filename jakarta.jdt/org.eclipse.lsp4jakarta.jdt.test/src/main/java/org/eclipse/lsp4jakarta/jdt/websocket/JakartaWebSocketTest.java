@@ -165,4 +165,62 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
+  
+    @Test
+    public void testInvalidOnMessageTextParams() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/InvalidParamTypeText.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic d = d(25, 70, 77, "Invalid parameter type. OnMessage methods for handling text messages may have the following parameters: \r\n"
+                + "    - String to receive the whole message\r\n"
+                + "    - Java primitive or class equivalent to receive the whole message converted to that type\r\n"
+                + "    - String and boolean pair to receive the message in parts\r\n"
+                + "    - Reader to receive the whole message as a blocking stream\r\n"
+                + "    - any object parameter for which the endpoint has a text decoder (Decoder.Text or Decoder.TextStream)",
+                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidMessageParams");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+    }
+    
+    @Test
+    public void testInvalidOnMessageBinaryParams() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/InvalidParamTypeBinary.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic d = d(26, 53, 60, "Invalid parameter type. OnMessage methods for handling binary messages may have the following parameters: \r\n"
+                + "    - byte[] or ByteBuffer to receive the whole message\r\n"
+                + "    - byte[] and boolean pair, or ByteBuffer and boolean pair to receive the message in parts\r\n"
+                + "    - InputStream to receive the whole message as a blocking stream\r\n"
+                + "    - any object parameter for which the endpoint has a binary decoder (Decoder.Binary or Decoder.BinaryStream)",
+                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidMessageParams");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+    }
+    
+    @Test
+    public void testInvalidOnMessagePongParams() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                new Path("src/main/java/io/openliberty/sample/jakarta/websocket/InvalidParamTypePong.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic d = d(27, 48, 55, "Invalid parameter type. OnMessage methods for handling pong messages may have the following parameters: \r\n"
+                + "    - PongMessage for handling pong messages",
+                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidMessageParams");
+
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
+    }
 }
