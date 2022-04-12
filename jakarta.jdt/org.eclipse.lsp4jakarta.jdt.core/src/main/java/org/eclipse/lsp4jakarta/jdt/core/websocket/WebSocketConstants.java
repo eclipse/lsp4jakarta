@@ -87,14 +87,11 @@ public class WebSocketConstants {
     public static final Set<String> ON_MESSAGE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.Session"));
     public static final Set<String> RAW_ON_MESSAGE_PARAM_OPT_TYPES = new HashSet<>(Arrays.asList("Session"));
     /* For OnMessage (Text) annotation */
-    public static final Set<String> ON_MESSAGE_TEXT_TYPES = new HashSet<>(Arrays.asList("java.lang.String", "java.io.Reader"));
-    public static final Set<String> RAW_ON_MESSAGE_TEXT_TYPES = new HashSet<>(Arrays.asList("String", "Reader"));
+    public static final Set<String> ON_MESSAGE_TEXT_TYPES = new HashSet<>(Arrays.asList("java.lang.String", "java.io.Reader", "String", "Reader"));
     /* For OnMessage (Text) annotation */
-    public static final Set<String> ON_MESSAGE_BINARY_TYPES = new HashSet<>(Arrays.asList("java.nio.ByteBuffer", "java.io.InputStream"));
-    public static final Set<String> RAW_ON_MESSAGE_BINARY_TYPES = new HashSet<>(Arrays.asList("ByteBuffer", "InputStream"));
+    public static final Set<String> ON_MESSAGE_BINARY_TYPES = new HashSet<>(Arrays.asList("java.nio.ByteBuffer", "java.io.InputStream", "ByteBuffer", "InputStream"));
     /* For OnMessage (Text) annotation */
-    public static final Set<String> ON_MESSAGE_PONG_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.PongMessage"));
-    public static final Set<String> RAW_ON_MESSAGE_PONG_TYPES = new HashSet<>(Arrays.asList("PongMessage"));
+    public static final Set<String> ON_MESSAGE_PONG_TYPES = new HashSet<>(Arrays.asList("jakarta.websocket.PongMessage", "PongMessage"));
     
     /* Wrapper Objects */
     public static final Set<String> RAW_WRAPPER_OBJS = new HashSet<>(Arrays.asList("String", "Boolean", "Integer", "Long", "Double", "Float"));

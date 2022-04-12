@@ -182,7 +182,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
                 + "    - String and boolean pair to receive the message in parts\r\n"
                 + "    - Reader to receive the whole message as a blocking stream\r\n"
                 + "    - any object parameter for which the endpoint has a text decoder (Decoder.Text or Decoder.TextStream)",
-                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidPathParam");
+                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidMessageParams");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
@@ -202,7 +202,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
                 + "    - byte[] and boolean pair, or ByteBuffer and boolean pair to receive the message in parts\r\n"
                 + "    - InputStream to receive the whole message as a blocking stream\r\n"
                 + "    - any object parameter for which the endpoint has a binary decoder (Decoder.Binary or Decoder.BinaryStream)",
-                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidPathParam");
+                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidMessageParams");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
@@ -219,7 +219,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         Diagnostic d = d(27, 48, 55, "Invalid parameter type. OnMessage methods for handling pong messages may have the following parameters: \r\n"
                 + "    - PongMessage for handling pong messages",
-                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidPathParam");
+                DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidMessageParams");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
     }
