@@ -99,10 +99,7 @@ public class InsertAnnotationQuickFix implements IJavaCodeActionParticipant {
         // Remove the modifier and the proper import by using JDT Core Manipulation
         // API
         ASTNode coveredNode = context.getCoveredNode().getParent();
-        String type = "";
-
-        String name = "Add " + attributes[0] + " to " + annotation;
-        name = name.concat(type);
+        String name = getLabel(annotation, attributes);
         ChangeCorrectionProposal proposal = new ModifyAnnotationProposal(name, context.getCompilationUnit(),
                 context.getASTRoot(), parentType, 0, annotation, Arrays.asList(attributes));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
@@ -122,6 +119,14 @@ public class InsertAnnotationQuickFix implements IJavaCodeActionParticipant {
             return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
         }
         return Bindings.getBindingOfParentType(node);
+    }
+
+    protected String getLabel(String annotation, String... attributes) {
+        String type = "";
+
+        String name = "Add " + attributes[0] + " to " + annotation;
+        name = name.concat(type);
+        return name;
     }
 
 }

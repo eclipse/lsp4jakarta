@@ -25,4 +25,12 @@ public class AddPathParamQuickFix extends InsertAnnotationQuickFix {
     public AddPathParamQuickFix() {
         super("jakarta.websocket.server.PathParam", false, "value");
     }
+
+    @Override
+    public String getLabel(String annotation, String... attributes) {
+        StringBuilder name = new StringBuilder("Insert ");
+        name.append("@");
+        name.append(annotation);
+        return name.toString();
+    }
 }
