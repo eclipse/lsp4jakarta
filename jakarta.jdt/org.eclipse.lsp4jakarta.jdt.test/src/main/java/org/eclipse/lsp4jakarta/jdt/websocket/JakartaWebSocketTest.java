@@ -176,7 +176,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(24, 85, 92, "Invalid parameter type. OnMessage methods for handling text messages may have the following parameters: \r\n"
+        Diagnostic d = d(23, 85, 92, "Invalid parameter type. OnMessage methods for handling text messages may have the following parameters: \r\n"
                 + "    - String to receive the whole message\r\n"
                 + "    - Java primitive or class equivalent to receive the whole message converted to that type\r\n"
                 + "    - String and boolean pair to receive the message in parts\r\n"
@@ -197,7 +197,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(24, 53, 60, "Invalid parameter type. OnMessage methods for handling binary messages may have the following parameters: \r\n"
+        Diagnostic d = d(23, 53, 60, "Invalid parameter type. OnMessage methods for handling binary messages may have the following parameters: \r\n"
                 + "    - byte[] or ByteBuffer to receive the whole message\r\n"
                 + "    - byte[] and boolean pair, or ByteBuffer and boolean pair to receive the message in parts\r\n"
                 + "    - InputStream to receive the whole message as a blocking stream\r\n"
@@ -217,7 +217,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(24, 48, 55, "Invalid parameter type. OnMessage methods for handling pong messages may have the following parameters: \r\n"
+        Diagnostic d = d(23, 48, 55, "Invalid parameter type. OnMessage methods for handling pong messages may have the following parameters: \r\n"
                 + "    - PongMessage for handling pong messages",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnMessageInvalidPathParam");
 
