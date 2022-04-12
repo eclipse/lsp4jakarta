@@ -16,7 +16,7 @@ import jakarta.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/infos")
 public class InvalidParamTypeText {
     @OnOpen
-    public void OnOpen(Session session, Object invalidParam) throws IOException {
+    public void OnOpen(Session session) throws IOException {
         System.out.println("Websocket opened: " + session.getId().toString());
     }
     
@@ -26,7 +26,7 @@ public class InvalidParamTypeText {
     }
     
     @OnClose
-    public void OnClose(Session session, CloseReason closeReason, Object invalidParam) throws IOException {
+    public void OnClose(Session session) throws IOException {
         System.out.println("WebSocket closed for " + session.getId());
     }
 }
