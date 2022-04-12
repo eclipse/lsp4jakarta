@@ -13,7 +13,7 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.annotations;
 
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationAttributesQuickFix;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationQuickFix;
 
 /**
  * Quickfix for adding missing name to @Resource
@@ -21,7 +21,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotation
  * @author Zijian Pei
  *
  */
-public class AddResourceMissingNameQuickFix extends InsertAnnotationAttributesQuickFix {
+public class AddResourceMissingNameQuickFix extends InsertAnnotationQuickFix {
 
     public AddResourceMissingNameQuickFix() {
         super("jakarta.annotation.Resource", false, "name");

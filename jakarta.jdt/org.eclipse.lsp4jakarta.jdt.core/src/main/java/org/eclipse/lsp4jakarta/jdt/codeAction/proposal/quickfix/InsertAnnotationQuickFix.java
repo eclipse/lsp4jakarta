@@ -9,6 +9,7 @@
 *
 * Contributors:
 *     IBM Corporation - initial API and implementation
+*     Lidia Ataupillco Ramos
 *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
@@ -32,12 +33,13 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyAnnotationProposal;
 
 /**
- * Quickfix for adding missing attributes to annotations
+ * Quickfix for adding missing attributes to new or existing annotations
  * 
  * @author Zijian Pei
+ * @author Lidia Ataupillco Ramos
  *
  */
-public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionParticipant {
+public class InsertAnnotationQuickFix implements IJavaCodeActionParticipant {
 
     private final String[] attributes;
 
@@ -45,7 +47,7 @@ public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionPartic
 
     protected final boolean generateOnlyOneCodeAction;
 
-    public InsertAnnotationAttributesQuickFix(String annotation, String... attributes) {
+    public InsertAnnotationQuickFix(String annotation, String... attributes) {
         this(annotation, false, attributes);
     }
 
@@ -57,7 +59,7 @@ public class InsertAnnotationAttributesQuickFix implements IJavaCodeActionPartic
      *                                  and false otherwise.
      * @param attributes                list of attributes to add.
      */
-    public InsertAnnotationAttributesQuickFix(String annotation, boolean generateOnlyOneCodeAction,
+    public InsertAnnotationQuickFix(String annotation, boolean generateOnlyOneCodeAction,
             String... attributes) {
         this.annotation = annotation;
         this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;

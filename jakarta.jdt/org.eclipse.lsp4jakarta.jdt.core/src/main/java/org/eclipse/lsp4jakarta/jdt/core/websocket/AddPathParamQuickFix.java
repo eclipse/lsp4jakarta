@@ -12,7 +12,7 @@
 *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationAttributesQuickFix;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationQuickFix;
 
 /**
  * Quick fix for adding the @PathParam annotation when one of more 
@@ -21,7 +21,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotation
  * 
  * @author Lidia Ataupillco Ramos
  */
-public class AddPathParamQuickFix extends InsertAnnotationAttributesQuickFix {
+public class AddPathParamQuickFix extends InsertAnnotationQuickFix {
     public AddPathParamQuickFix() {
         super("jakarta.websocket.server.PathParam", false, "value");
     }
