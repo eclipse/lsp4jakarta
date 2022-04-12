@@ -48,7 +48,7 @@ public class WebSocketConstants {
     /* Diagnostic codes */
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
-    public static final String DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS = "OnMessageChangeInvalidParam";
+    public static final String DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS = "OnMessageInvalidMessageParams";
 
     public static final String DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH = "Server endpoint paths must start with a leading '/'.";
     public static final String DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1 = "Server endpoint paths must be a URI-template (level-1) or a partial URI.";
@@ -109,6 +109,11 @@ public class WebSocketConstants {
     // Messages
     public static final String PARAM_TYPE_DIAG_MSG = "Invalid parameter type. When using %s, parameter must be of type: \n- %s\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof";
 
+    public static final String ONMESSAGE_DUPLICATE_SPECIAL_MSG = "Only one optional parameter of this type is allowed for a method with the @OnMessage annotation.";
+    public static final String ONMESSAGE_INVALID_PATH_PARAM_MSG = "Only String and Java primitive types are allowed to be annotated with the @PathParam annotation.";
+    public static final String ONMESSAGE_DUPLICATE_MESSAGE_PARAM_MSG = "Multiple parameters of this type are not allowed for a method with the @OnMessage annotation.";
+
+    
     public static final String TEXT_PARAMS_DIAG_MSG = "Invalid parameter type. OnMessage methods for handling text messages may have the following parameters: \r\n"
             + "    - String to receive the whole message\r\n"
             + "    - Java primitive or class equivalent to receive the whole message converted to that type\r\n"

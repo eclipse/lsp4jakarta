@@ -195,8 +195,8 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                         if (isSpecialType) {
                             if (seenSpecialParams.contains(finalTypeName)){
                                 Diagnostic duplicateSpecialParamDiagnostic = createDiagnostic(param, unit,
-                                        "Only one optional parameter of this type is allowed for a method with the @OnMessage annotation.",
-                                        "OnMessageDuplicateOptionalParam");
+                                        WebSocketConstants.ONMESSAGE_DUPLICATE_SPECIAL_MSG,
+                                        WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS);
                                 diagnostics.add(duplicateSpecialParamDiagnostic);
                             } else {
                                 seenSpecialParams.add(finalTypeName);
@@ -206,15 +206,15 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             boolean isPrimWrapped = isWrapper(finalTypeName);
                             if (!isPrimitive && !isPrimWrapped) {
                                 Diagnostic invalidPathParamDiagnostic = createDiagnostic(param, unit,
-                                        "Only String and Java primitive types are allowed to be annotated with the @PathParam annotation.",
-                                        "OnMessageInvalidPathParam");
+                                        WebSocketConstants.ONMESSAGE_INVALID_PATH_PARAM_MSG,
+                                        WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS);
                                 diagnostics.add(invalidPathParamDiagnostic);
                             }
                         } else {
                             if (seenMessageParams.containsKey(finalTypeName)) {
                                 Diagnostic duplicateMessageParamDiagnostic = createDiagnostic(param, unit,
-                                        "Multiple parameters of this type are not allowed for a method with the @OnMessage annotation.",
-                                        "OnMessageDuplicateMessageParam");
+                                        WebSocketConstants.ONMESSAGE_DUPLICATE_MESSAGE_PARAM_MSG,
+                                        WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS);
                                 diagnostics.add(duplicateMessageParamDiagnostic);
                             } else {
                                 seenMessageParams.put(finalTypeName, param);
@@ -285,7 +285,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 }
                 ILocalVariable param = params.get(invalidParam);
                 Diagnostic invalidTextParam = createDiagnostic(param, unit,
-                        msg, "OnMessageInvalidMessageParams");
+                        msg, WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS);
                 diagnostics.add(invalidTextParam);
             }
         }
