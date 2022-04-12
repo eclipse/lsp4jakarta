@@ -44,21 +44,27 @@ public class WebSocketConstants {
 
     public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.";
     public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
-    
+
     /* Diagnostic codes */
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_MESSAGE_INVALID_PARAMS = "OnMessageChangeInvalidParam";
-    
+
+    public static final String DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH = "Server endpoint paths must start with a leading '/'.";
+    public static final String DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1 = "Server endpoint paths must be a URI-template (level-1) or a partial URI.";
+    public static final String DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE = "Server endpoint paths must not contain the sequences '/../', '/./' or '//'.";
+    public static final String DIAGNOSTIC_SERVER_ENDPOINT_DUPLICATE_VAR = "Server endpoint paths must not use the same variable more than once in a path.";
+    public static final String DIAGNOSTIC_SERVER_ENDPOINT= "ChangeInvalidServerEndpoint";
+  
     /* https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications */
     // Class Level Annotations
     public static final String SERVER_ENDPOINT_ANNOTATION = "ServerEndpoint";
     public static final String CLIENT_ENDPOINT_ANNOTATION = "ClientEndpoint";
-    
+
     // Superclass
     public static final String ENDPOINT_SUPERCLASS = "Endpoint";
     public static final String IS_SUPERCLASS = "isSuperclass";
-    
+
     public static final Set<String> WS_ANNOTATION_CLASS = new HashSet<>(Arrays.asList(SERVER_ENDPOINT_ANNOTATION, CLIENT_ENDPOINT_ANNOTATION));
 
     /* Annotations */
@@ -126,4 +132,10 @@ public class WebSocketConstants {
     
     // Enums
     public enum MESSAGE_FORMAT {TEXT, BINARY, PONG, INVALID};
-}
+
+    /* Regex */
+    // Check for any URI strings that contain //, /./, or /../
+    public static final String REGEX_RELATIVE_PATHS = ".*\\/\\.{0,2}\\/.*";
+    // Check that a URI string is a valid level 1 variable (wrapped in curly brackets): alpha-numeric characters, dash, or a percent encoded character
+    public static final String REGEX_URI_VARIABLE = "\\{(\\w|-|%20|%21|%23|%24|%25|%26|%27|%28|%29|%2A|%2B|%2C|%2F|%3A|%3B|%3D|%3F|%40|%5B|%5D)+\\}";
+
