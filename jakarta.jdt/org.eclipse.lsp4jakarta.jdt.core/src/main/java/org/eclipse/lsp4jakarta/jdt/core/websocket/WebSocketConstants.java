@@ -42,8 +42,8 @@ public class WebSocketConstants {
     public static final String CURLY_BRACE_END = "}";
 
     public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.";
-    public static final String DIAGNOSTIC_CODE_PATH_PARMS_ANNOT = "AddPathParamsAnnotation";
-
+    public static final String DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT = "AddPathParamsAnnotation";
+    
     /* Diagnostic codes */
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";

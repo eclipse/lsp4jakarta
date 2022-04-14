@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
@@ -19,6 +20,7 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ImportRewrite.ImportRewriteContext;
@@ -88,9 +90,12 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
         ImportRewrite imports = createImportRewrite(newRoot);
 
         boolean isField = declNode instanceof VariableDeclarationFragment;
+        boolean isSingleVarDecl = declNode instanceof SingleVariableDeclaration;
+
         if (isField) {
             declNode = declNode.getParent();
         }
+
         if (declNode.getNodeType() == ASTNode.FIELD_DECLARATION) {
             AST ast = declNode.getAST();
             ASTRewrite rewrite = ASTRewrite.create(ast);
@@ -177,14 +182,15 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
             }
             
             return rewrite;
-        } else if (declNode instanceof TypeDeclaration || isField) {
+        } else if (declNode instanceof TypeDeclaration || isField || isSingleVarDecl) {
             AST ast = declNode.getAST();
             ASTRewrite rewrite = ASTRewrite.create(ast);
             
             ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
             List<Annotation> existingAnnotations = new ArrayList<Annotation>();
+            ChildListPropertyDescriptor property = isSingleVarDecl ? SingleVariableDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY;
             List<? extends ASTNode> children = (List<? extends ASTNode>) declNode
-                    .getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
+                    .getStructuralProperty(property);
 
             // find and save existing annotation, then remove it from ast
             for (ASTNode child : children) {
@@ -198,7 +204,7 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                     }
                 }
             }
-           
+            
             // add new annotation with fields from existing annotation
             for (String annotation : annotations) {
                 NormalAnnotation marker = ast.newNormalAnnotation();
@@ -243,8 +249,16 @@ public class ModifyAnnotationProposal extends NewAnnotationProposal {
                     values.add(memberValuePair);
                 }
                 
-                rewrite.getListRewrite(declNode,
-                        isField ? FieldDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY)
+                ChildListPropertyDescriptor newRewrite;
+                if (isSingleVarDecl) {
+                    newRewrite = SingleVariableDeclaration.MODIFIERS2_PROPERTY;
+                } else if (isField) {
+                    newRewrite = FieldDeclaration.MODIFIERS2_PROPERTY;
+                } else {
+                    newRewrite = TypeDeclaration.MODIFIERS2_PROPERTY;
+                }
+
+                rewrite.getListRewrite(declNode, newRewrite)
                         .insertFirst(marker, null);
             }
             return rewrite;

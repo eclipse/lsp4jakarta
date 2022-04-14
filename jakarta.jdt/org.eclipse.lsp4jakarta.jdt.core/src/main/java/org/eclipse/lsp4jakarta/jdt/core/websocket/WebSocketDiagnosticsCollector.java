@@ -146,7 +146,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                             if (!hasPathParamAnnot) {
                                 Diagnostic diagnostic = createDiagnostic(param, unit,
                                         WebSocketConstants.DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING,
-                                        WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARMS_ANNOT);
+                                        WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT);
                                 diagnostics.add(diagnostic);
                             }
                         }

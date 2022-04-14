@@ -12,19 +12,27 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.websocket;
 
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaCodeAction;
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.ca;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.createCodeActionParams;
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.d;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.te;
 
 import java.util.Arrays;
 
+import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.TextEdit;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.junit.Test;
 
 public class JakartaWebSocketTest extends BaseJakartaTest {
@@ -57,7 +65,16 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation"
         );
 
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);        
+        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);
+        
+        // Expected code actions
+        JakartaJavaCodeActionParams codeActionsParams = createCodeActionParams(uri, d1);
+        String newText = "\nimport jakarta.websocket.server.PathParam;\nimport jakarta.websocket.server.ServerEndpoint;\nimport jakarta.websocket.Session;\n\n" 
+                        + "/**\n * Expected Diagnostics are related to validating that the parameters have the \n * valid annotation @PathParam (code: AddPathParamsAnnotation)\n * See issue #247 (onOpen) and #248 (onClose)\n */\n" 
+                        + "@ServerEndpoint(value = \"/infos\")\npublic class AnnotationTest {\n    // @PathParam missing annotation for \"String missingAnnotation\"\n    @OnOpen\n    public void OnOpen(Session session, @PathParam(value = \"\") ";
+        TextEdit te = te(4, 32, 17, 40, newText);
+        CodeAction ca = ca(uri, "Insert @jakarta.websocket.server.PathParam", d1, te);
+        assertJavaCodeAction(codeActionsParams, JDT_UTILS, ca);
     }
 
     @Test

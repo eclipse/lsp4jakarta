@@ -64,12 +64,13 @@ import org.eclipse.lsp4jakarta.jdt.core.servlet.HttpServletQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerImplementationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletConstants;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.DeleteConflictMapKeyQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingNameQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingTypeQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.RemovePreDestroyAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.RemovePostConstructAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.AddPathParamQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -129,6 +130,7 @@ public class CodeActionHandler {
             RemoveInjectAnnotationQuickFix RemoveInjectAnnotationQuickFix = new RemoveInjectAnnotationQuickFix();
             RemoveProduceAnnotationQuickFix RemoveProduceAnnotationQuickFix = new RemoveProduceAnnotationQuickFix();
             RemoveInvalidInjectParamAnnotationQuickFix RemoveInvalidInjectParamAnnotationQuickFix = new RemoveInvalidInjectParamAnnotationQuickFix();
+            AddPathParamQuickFix AddPathParamQuickFix = new AddPathParamQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -247,6 +249,9 @@ public class CodeActionHandler {
                     if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {
                     	codeActions.addAll(RemovePreDestroyAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     	codeActions.addAll(RemoveMethodParametersQuickFix.getCodeActions(context,diagnostic,monitor));	
+                    }
+                    if(diagnostic.getCode().getLeft().equals(WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT)) {
+                        codeActions.addAll(AddPathParamQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
                 } catch (CoreException e) {
