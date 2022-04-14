@@ -33,7 +33,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyAnnotationProposal;
 
 /**
- * Quickfix for adding new annotations
+ * Quickfix for adding new annotations with or without attributes
  * 
  * @author Zijian Pei
  * @author Lidia Ataupillco Ramos
