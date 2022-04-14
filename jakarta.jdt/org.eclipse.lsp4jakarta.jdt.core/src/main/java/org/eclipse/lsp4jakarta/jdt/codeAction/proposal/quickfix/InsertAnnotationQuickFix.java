@@ -33,7 +33,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyAnnotationProposal;
 
 /**
- * Quickfix for adding missing attributes to new or existing annotations
+ * Quickfix for adding new annotations
  * 
  * @author Zijian Pei
  * @author Lidia Ataupillco Ramos
@@ -122,11 +122,10 @@ public class InsertAnnotationQuickFix implements IJavaCodeActionParticipant {
     }
 
     protected String getLabel(String annotation, String... attributes) {
-        String type = "";
-
-        String name = "Add " + attributes[0] + " to " + annotation;
-        name = name.concat(type);
-        return name;
+        StringBuilder name = new StringBuilder("Insert ");
+        name.append("@");
+        name.append(annotation);
+        return name.toString();
     }
 
 }

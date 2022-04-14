@@ -13,7 +13,7 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.annotations;
 
-import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationAttributesQuickFix;
 
 /**
  * Quickfix for adding missing type to @Resource
@@ -22,7 +22,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotation
  * @author Zijian Pei
  *
  */
-public class AddResourceMissingTypeQuickFix extends InsertAnnotationQuickFix {
+public class AddResourceMissingTypeQuickFix extends InsertAnnotationAttributesQuickFix {
 
     public AddResourceMissingTypeQuickFix() {
         super("jakarta.annotation.Resource", false, "type");
