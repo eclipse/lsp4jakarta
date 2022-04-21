@@ -54,12 +54,12 @@ public class JsonbTransientDiagnostic {
     }
     
     @JsonbTransient
-    private String getFavoriteDatabse() {
+    private String getFavoriteDatabase() {
         return favoriteDatabase;
     }
     
     @JsonbTransient
-    private String setFavoriteDatabse(String favoriteDatabase) {
+    private String setFavoriteDatabase(String favoriteDatabase) {
         this.favoriteDatabase = favoriteDatabase;
     }
     

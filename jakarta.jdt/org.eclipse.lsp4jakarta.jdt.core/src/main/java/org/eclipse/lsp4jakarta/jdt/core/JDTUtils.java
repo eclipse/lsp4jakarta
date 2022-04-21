@@ -648,9 +648,12 @@ public class JDTUtils {
 
     /**
      * Returns a list of all accessors (getter and setter) of the given field.
+     * Note that for boolean fields the accessor of the form "isField" is retuned
+     * "getField" is not present.
      * 
-     * @param unit, field
-     * @return a list of accessor methods
+     * @param unit      the compilation unit the field belongs to
+     * @param field     the accesors of this field are returned
+     * @return          a list of accessor methods
      * @throws JavaModelException
      */
     public static List<IMethod> getFieldAccessors(ICompilationUnit unit, IField field) throws JavaModelException {

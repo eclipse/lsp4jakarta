@@ -131,7 +131,8 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
                     hasFieldConflict = true;
                 }
                 
-                // Diagnostic is created on the accessor if @JsonbTransient is not mutually exclusive
+                // Diagnostic is created on the accessor if field has annotation other than JsonbTransient
+                // or if @JsonbTransient is not mutually exclusive 
                 if (hasFieldConflict || hasJsonbAnnotationOtherThanTransient(jsonbAnnotationsForAccessor))
                     createJsonbTransientDiagnostic(unit, diagnostics, accessor,
                             jsonbAnnotationsForAccessor, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR);
