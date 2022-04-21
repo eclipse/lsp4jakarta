@@ -34,12 +34,16 @@ public class JsonbTransientAnnotationQuickFix extends RemoveMultipleAnnotations 
     protected List<List<String>> getMultipleRemoveAnnotations(List<String> annotations) {
         List<List<String>> annotationsListsToRemove = new ArrayList<List<String>>();
 
-        // Provide as one option: Remove JsonbTransient
-        annotationsListsToRemove.add(Arrays.asList("jakarta.json.bind.annotation.JsonbTransient"));
+        if (annotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
+            // Provide as one option: Remove JsonbTransient
+            annotationsListsToRemove.add(Arrays.asList("jakarta.json.bind.annotation.JsonbTransient"));
+        }
         
         // Provide as another option: Remove all other JsonbAnnotations
         annotations.remove(JsonbConstants.JSONB_TRANSIENT);
-        annotationsListsToRemove.add(annotations);
+        if (annotations.size() > 0) {
+            annotationsListsToRemove.add(annotations);
+        }
 
         return annotationsListsToRemove;
     }

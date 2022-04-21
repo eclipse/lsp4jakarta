@@ -85,62 +85,91 @@ public class JsonbDiagnosticsCollectorTest extends BaseJakartaTest {
 
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
+        
+        // Diagnostic for the field "id"
+        Diagnostic d1 = d(21, 16, 18,
+                "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
+        d1.setData(new Gson().toJsonTree(Arrays.asList("JsonbTransient")));
 
         // Diagnostic for the field "name"
-        Diagnostic d1 = d(25, 19, 23,
+        Diagnostic d2 = d(25, 19, 23,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-        d1.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty",  "JsonbTransient")));
+        d2.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty",  "JsonbTransient")));
 
         // Diagnostic for the field "favoriteLanguage"
-        Diagnostic d2 = d(30, 19, 35,
+        Diagnostic d3 = d(30, 19, 35,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-        d2.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty", "JsonbAnnotation",  "JsonbTransient")));
+        d3.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty", "JsonbAnnotation",  "JsonbTransient")));
         
         // Diagnostic for the field "favoriteEditor"
-        Diagnostic d3 = d(39, 19, 33,
+        Diagnostic d4 = d(39, 19, 33,
                 "When an accessor is annotated with @JsonbTransient, then its field or the accessor must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotationOnAccessor");
-        d3.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty")));
+        d4.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty")));
         
         // Diagnostic for the getter "getId"
-        Diagnostic d4 = d(42, 16, 21,
+        Diagnostic d5 = d(42, 16, 21,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-        d4.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty")));
+        d5.setData(new Gson().toJsonTree(Arrays.asList("JsonbProperty")));
        
         // Diagnostic for the setter "setId"
-        Diagnostic d5 = d(49, 17, 22,
+        Diagnostic d6 = d(49, 17, 22,
                 "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotation");
-        d5.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable")));
+        d6.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable")));
         
-        // Diagnostic for the setter "favoriteEditor"
-        Diagnostic d6 = d(73, 19, 36,
+        // Diagnostic for the getter "getFavoriteEditor"
+        Diagnostic d7 = d(67, 19, 36,
                 "When an accessor is annotated with @JsonbTransient, then its field or the accessor must not be annotated with other JSON Binding annotations.",
                 DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotationOnAccessor");
-        d6.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable", "JsonbTransient")));
+        d7.setData(new Gson().toJsonTree(Arrays.asList("JsonbTransient")));
+       
+        // Diagnostic for the setter "setFavoriteEditor"
+        Diagnostic d8 = d(74, 19, 36,
+                "When an accessor is annotated with @JsonbTransient, then its field or the accessor must not be annotated with other JSON Binding annotations.",
+                DiagnosticSeverity.Error, "jakarta-jsonb", "NonmutualJsonbTransientAnnotationOnAccessor");
+        d8.setData(new Gson().toJsonTree(Arrays.asList("JsonbNillable", "JsonbTransient")));
   
-        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5, d6);
+        assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5, d6, d7, d8);
 
 
         // Test code actions
-        // Quick fix for the field "name"
+        // Quick fix for the field "id"
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
-        TextEdit te1 = te(24, 4, 25, 4, "");
-        TextEdit te2 = te(23, 4, 24, 4, "");
+        TextEdit te1 = te(20, 4, 21, 4, "");
         CodeAction ca1 = ca(uri, "Remove @JsonbTransient", d1, te1);
-        CodeAction ca2 = ca(uri, "Remove @JsonbProperty", d1, te2);
-        assertJavaCodeAction(codeActionParams1, utils, ca1, ca2);
+        assertJavaCodeAction(codeActionParams1, utils, ca1);
+        
+        // Quick fix for the field "name"
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
+        TextEdit te3 = te(24, 4, 25, 4, "");
+        TextEdit te4 = te(23, 4, 24, 4, "");
+        CodeAction ca3 = ca(uri, "Remove @JsonbTransient", d2, te3);
+        CodeAction ca4 = ca(uri, "Remove @JsonbProperty", d2, te4);
+        assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
        
         // Quick fix for the field "favoriteLanguage"
-        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d2);
-        TextEdit te3 = te(29, 4, 30, 4, "");
-        TextEdit te4 = te(27, 4, 29, 4, "");
-        CodeAction ca3 = ca(uri, "Remove @JsonbTransient", d2, te3);
-        CodeAction ca4 = ca(uri, "Remove @JsonbProperty, @JsonbAnnotation", d2, te4);
-        assertJavaCodeAction(codeActionParams2, utils, ca3, ca4);
+        JakartaJavaCodeActionParams codeActionParams3 = createCodeActionParams(uri, d3);
+        TextEdit te5 = te(29, 4, 30, 4, "");
+        TextEdit te6 = te(27, 4, 29, 4, "");
+        CodeAction ca5 = ca(uri, "Remove @JsonbTransient", d3, te5);
+        CodeAction ca6 = ca(uri, "Remove @JsonbProperty, @JsonbAnnotation", d3, te6);
+        assertJavaCodeAction(codeActionParams3, utils, ca5, ca6);
+        
+        // Quick fix for the accessor "getId"
+        JakartaJavaCodeActionParams codeActionParams4 = createCodeActionParams(uri, d5);
+        TextEdit te7 = te(41, 4, 42, 4, "");
+        CodeAction ca7 = ca(uri, "Remove @JsonbProperty", d5, te7);
+        assertJavaCodeAction(codeActionParams4, utils, ca7);
 
+        // Quick fix for the accessor "setId"
+        JakartaJavaCodeActionParams codeActionParams5 = createCodeActionParams(uri, d6);
+        TextEdit te8 = te(48, 4, 49, 4, "");
+        CodeAction ca8 = ca(uri, "Remove @JsonbNillable", d6, te8);
+        assertJavaCodeAction(codeActionParams5, utils, ca8);
     }
 }

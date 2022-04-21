@@ -64,12 +64,14 @@ import org.eclipse.lsp4jakarta.jdt.core.servlet.HttpServletQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerImplementationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletConstants;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.DeleteConflictMapKeyQuickFix;
-import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceConstants;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingNameQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AddResourceMissingTypeQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
+import org.eclipse.lsp4jakarta.jdt.core.annotations.PostConstructReturnTypeQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.RemovePreDestroyAnnotationQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.RemovePostConstructAnnotationQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.AddPathParamQuickFix;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 /**
@@ -120,6 +122,7 @@ public class CodeActionHandler {
             ScopeDeclarationQuickFix ScopeDeclarationQuickFix = new ScopeDeclarationQuickFix();
             RemovePreDestroyAnnotationQuickFix RemovePreDestroyAnnotationQuickFix=new RemovePreDestroyAnnotationQuickFix();
             RemovePostConstructAnnotationQuickFix RemovePostConstructAnnotationQuickFix=new RemovePostConstructAnnotationQuickFix();
+            PostConstructReturnTypeQuickFix PostConstructReturnTypeQuickFix = new PostConstructReturnTypeQuickFix();
             RemoveFinalModifierQuickFix RemoveFinalModifierQuickFix = new RemoveFinalModifierQuickFix();
             RemoveStaticModifierQuickFix RemoveStaticModifierQuickFix = new RemoveStaticModifierQuickFix();
             RemoveMethodParametersQuickFix RemoveMethodParametersQuickFix =new RemoveMethodParametersQuickFix();
@@ -129,6 +132,7 @@ public class CodeActionHandler {
             RemoveInjectAnnotationQuickFix RemoveInjectAnnotationQuickFix = new RemoveInjectAnnotationQuickFix();
             RemoveProduceAnnotationQuickFix RemoveProduceAnnotationQuickFix = new RemoveProduceAnnotationQuickFix();
             RemoveInvalidInjectParamAnnotationQuickFix RemoveInvalidInjectParamAnnotationQuickFix = new RemoveInvalidInjectParamAnnotationQuickFix();
+            AddPathParamQuickFix AddPathParamQuickFix = new AddPathParamQuickFix();
             
             for (Diagnostic diagnostic : params.getContext().getDiagnostics()) {
                 try {
@@ -146,6 +150,9 @@ public class CodeActionHandler {
                     }
                     if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE)) {
                         codeActions.addAll(AddResourceMissingTypeQuickFix.getCodeActions(context, diagnostic, monitor));
+                    }
+                    if (diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE)) {
+                        codeActions.addAll(PostConstructReturnTypeQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
                     if (diagnostic.getCode().getLeft().equals(ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE)
                             || diagnostic.getCode().getLeft()
@@ -247,6 +254,9 @@ public class CodeActionHandler {
                     if(diagnostic.getCode().getLeft().equals(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS)) {
                     	codeActions.addAll(RemovePreDestroyAnnotationQuickFix.getCodeActions(context, diagnostic, monitor));
                     	codeActions.addAll(RemoveMethodParametersQuickFix.getCodeActions(context,diagnostic,monitor));	
+                    }
+                    if(diagnostic.getCode().getLeft().equals(WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT)) {
+                        codeActions.addAll(AddPathParamQuickFix.getCodeActions(context, diagnostic, monitor));
                     }
 
                 } catch (CoreException e) {
