@@ -55,6 +55,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.ISourceReference;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeParameter;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaCore;
@@ -65,6 +66,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
 import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
+import org.eclipse.jdt.internal.ui.viewsupport.FilteredElementTreeSelectionDialog;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -646,18 +648,28 @@ public class JDTUtils {
 
     /**
      * Returns a list of all accessors (getter and setter) of the given field.
+     * Note that for boolean fields the accessor of the form "isField" is retuned
+     * "getField" is not present.
      * 
-     * @param field
-     * @return a list of accessor methods
+     * @param unit      the compilation unit the field belongs to
+     * @param field     the accesors of this field are returned
+     * @return          a list of accessor methods
      * @throws JavaModelException
      */
-    public static List<IMethod> getAccessors(IField field) throws JavaModelException {
-        List<IMethod> accessors = new ArrayList<>();
-        IMethod getter = GetterSetterUtil.getGetter(field);
-        IMethod setter = GetterSetterUtil.getSetter(field);
-        for (IMethod accessor : new IMethod[] { getter, setter }) {
-            if (accessor != null) {
-                accessors.add(accessor);
+    public static List<IMethod> getFieldAccessors(ICompilationUnit unit, IField field) throws JavaModelException {
+        List<IMethod> accessors = new ArrayList<IMethod>();
+        String fieldName = field.getElementName();
+        fieldName = fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+        List<String> accessorNames = new ArrayList<String>();
+        accessorNames.add("get" + fieldName);
+        accessorNames.add("set" + fieldName);
+        accessorNames.add("is" + fieldName); 
+        
+        for (IType type : unit.getAllTypes()) {
+            for (IMethod method : type.getMethods()) {
+                String methodName = method.getElementName();
+                if (accessorNames.contains(methodName))
+                    accessors.add(method);
             }
         }
         return accessors;

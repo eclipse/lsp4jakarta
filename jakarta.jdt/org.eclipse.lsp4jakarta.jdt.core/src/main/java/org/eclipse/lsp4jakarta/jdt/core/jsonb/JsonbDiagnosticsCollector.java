@@ -58,7 +58,7 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
 
         try {
             collectJsonbCreatorDiagnostics(unit, diagnostics);
-            collectJsonbTransientFieldDiagnostics(unit, diagnostics);
+            collectJsonbTransientDiagnostics(unit, diagnostics);
         } catch (JavaModelException e) {
             JakartaCorePlugin.logException("Cannot calculate jakarta-jsonb diagnostics", e);
         }
@@ -76,83 +76,86 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
 
             if (methods.size() > JsonbConstants.MAX_METHOD_WITH_JSONBCREATOR) {
                 for (IMethod method : methods) {
-                    Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.JSONB_CREATOR);
+                    Diagnostic diagnostic = createDiagnosticBy(unit, method, JsonbConstants.ERROR_MESSAGE_JSONB_CREATOR);
                     diagnostics.add(diagnostic);
                 }
             }
         }
     }
 
-    private void collectJsonbTransientFieldDiagnostics(ICompilationUnit unit,
+    private void collectJsonbTransientDiagnostics(ICompilationUnit unit,
             List<Diagnostic> diagnostics) throws JavaModelException {
         for (IType type : unit.getAllTypes()) {
             for (IField field : type.getFields()) {
-                List<String> jsonbAnnotationsForField = getJsonbAnnotationNames(field);
-                if (jsonbAnnotationsForField.contains(JsonbConstants.JSONB_TRANSIENT)) {
-                    boolean hasAccessorConflict = false;
-                    // Diagnostics on the getter and setter of the field are created when they are
-                    // annotated with Jsonb annotations other than JsonbTransient.
-                    for (IMethod accessor : JDTUtils.getAccessors(field)) {
-                        if (hasJsonbAnnotationOtherThanTransient(accessor)) {
-                            List<String> jsonbAnnotationsForAccessor = getJsonbAnnotationNames(accessor);
-                            Diagnostic diagnostic = createDiagnosticBy(unit, accessor, JsonbConstants.JSONB_TRANSIENT);
-                            diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotationsForAccessor)));
-                            diagnostics.add(diagnostic);
-                            hasAccessorConflict = true;
-                        }
-                    }
-                    if (hasJsonbAnnotationOtherThanTransient(field) || hasAccessorConflict) {
-                        Diagnostic diagnostic = createDiagnosticBy(unit, field, JsonbConstants.JSONB_TRANSIENT);
-                        diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotationsForField)));
-                        diagnostics.add(diagnostic);
-                    }
+                collectJsonbTransientFieldDiagnostics(unit, diagnostics, field);
+                collectJsonbTransientAccessorDiagnostics(unit, diagnostics, field);
+            }
+        }
+    }
+    
+    private void collectJsonbTransientFieldDiagnostics(ICompilationUnit unit,
+            List<Diagnostic> diagnostics, IField field) throws JavaModelException {
+        List<String> jsonbAnnotationsForField = getJsonbAnnotationNames(field);
+        if (jsonbAnnotationsForField.contains(JsonbConstants.JSONB_TRANSIENT)) {
+            boolean hasAccessorConflict = false;
+            // Diagnostics on the accessors of the field are created when they are
+            // annotated with Jsonb annotations other than JsonbTransient.
+            for (IMethod accessor : JDTUtils.getFieldAccessors(unit, field)) {
+                List<String> jsonbAnnotationsForAccessor = getJsonbAnnotationNames(accessor);
+                if (hasJsonbAnnotationOtherThanTransient(jsonbAnnotationsForAccessor)) {
+                    createJsonbTransientDiagnostic(unit, diagnostics, accessor,
+                            jsonbAnnotationsForAccessor, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_FIELD);
+                    hasAccessorConflict = true;
                 }
             }
+            // Diagnostic is created on the field if @JsonbTransient is not mutually exclusive or
+            // accessor has annoatations other than JsonbTransient
+            if (hasAccessorConflict || hasJsonbAnnotationOtherThanTransient(jsonbAnnotationsForField))
+                createJsonbTransientDiagnostic(unit, diagnostics, field,
+                        jsonbAnnotationsForField, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_FIELD);
         }
     }
-
-    private Diagnostic createDiagnosticBy(ICompilationUnit unit,
-            IMember member, String diagnosticType) throws JavaModelException {
-        Diagnostic d = new Diagnostic();
-        ISourceRange sourceRange = JDTUtils.getNameRange(member);
-        Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
-        d.setRange(range);
-        d.setSeverity(DiagnosticSeverity.Error);
-        d.setSource(JsonbConstants.DIAGNOSTIC_SOURCE);
-
-        if (diagnosticType.equals(JsonbConstants.JSONB_CREATOR))
-            addJsonbCreatorSpecificDiagnostics(d);
-        else if (diagnosticType.equals(JsonbConstants.JSONB_TRANSIENT))
-            addJsonbTransientSpecificDiagnostics(d);
-
-        return d;
-    }
     
-    private void addJsonbCreatorSpecificDiagnostics(Diagnostic d) {
-        d.setMessage(JsonbConstants.ERROR_MESSAGE_JSONB_CREATOR);
-        d.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION);
-    }
-    
-    private void addJsonbTransientSpecificDiagnostics(Diagnostic d) {
-        d.setMessage(JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT);
-        d.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD);
-    }
-    
-    private boolean hasJsonbAnnotationOtherThanTransient(IAnnotatable annotable) throws JavaModelException {
-        for (IAnnotation annotation : annotable.getAnnotations()) {
-            String annotationName = annotation.getElementName();
-            if (JsonbConstants.JSONB_ANNOTATIONS.contains(annotationName) 
-                    && !annotationName.equals(JsonbConstants.JSONB_TRANSIENT)) {
-                return true;
+    private void collectJsonbTransientAccessorDiagnostics(ICompilationUnit unit,
+            List<Diagnostic> diagnostics, IField field) throws JavaModelException {
+        boolean createDiagnosticForField = false;
+        List<String> jsonbAnnotationsForField = getJsonbAnnotationNames(field);
+
+        for (IMethod accessor : JDTUtils.getFieldAccessors(unit, field)) {
+            List<String> jsonbAnnotationsForAccessor = getJsonbAnnotationNames(accessor);
+            boolean hasFieldConflict = false;
+            if (jsonbAnnotationsForAccessor.contains(JsonbConstants.JSONB_TRANSIENT)) {
+                // Diagnostic is created if the field of this accessor has a annotation other then JsonbTransient
+                if (hasJsonbAnnotationOtherThanTransient(jsonbAnnotationsForField)) {
+                    createDiagnosticForField = true;
+                    hasFieldConflict = true;
+                }
+                
+                // Diagnostic is created on the accessor if field has annotation other than JsonbTransient
+                // or if @JsonbTransient is not mutually exclusive 
+                if (hasFieldConflict || hasJsonbAnnotationOtherThanTransient(jsonbAnnotationsForAccessor))
+                    createJsonbTransientDiagnostic(unit, diagnostics, accessor,
+                            jsonbAnnotationsForAccessor, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR);
+               
             }
         }
-        return false;
+        if (createDiagnosticForField)
+            createJsonbTransientDiagnostic(unit, diagnostics, field,
+                    jsonbAnnotationsForField, JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR);
+    }
+    
+    private boolean createJsonbTransientDiagnostic(ICompilationUnit unit,
+            List<Diagnostic> diagnostics, IMember member, List<String> jsonbAnnotations,
+            String diagnosticErrorMessage) throws JavaModelException {
+        Diagnostic diagnostic = createDiagnosticBy(unit, member, diagnosticErrorMessage);
+        diagnostic.setData((JsonArray)(new Gson().toJsonTree(jsonbAnnotations)));
+        diagnostics.add(diagnostic);
+        return true;
     }
     
     private List<String> getJsonbAnnotationNames(IAnnotatable annotable) throws JavaModelException {
-        IAnnotation fieldAnnotations[] = annotable.getAnnotations();
-        List<IAnnotation> fieldAnnotationsList = Arrays.asList(fieldAnnotations);
-        List<String> annotationNames = fieldAnnotationsList.stream().map(
+        IAnnotation annotations[] = annotable.getAnnotations();
+        List<String> annotationNames = Arrays.stream(annotations).map(
                 fieldAnnotation -> fieldAnnotation.getElementName()).collect(Collectors.toList());
 
         List<String> jsonbAnnotationNames = new ArrayList<String>();
@@ -160,5 +163,33 @@ public class JsonbDiagnosticsCollector implements DiagnosticsCollector {
             if (JsonbConstants.JSONB_ANNOTATIONS.contains(annotation))
                 jsonbAnnotationNames.add(annotation);
         return jsonbAnnotationNames;
+    }
+    
+    private boolean hasJsonbAnnotationOtherThanTransient(List<String> jsonbAnnotations) throws JavaModelException {
+        for (String annotationName : jsonbAnnotations)
+            if (JsonbConstants.JSONB_ANNOTATIONS.contains(annotationName) 
+                    && !annotationName.equals(JsonbConstants.JSONB_TRANSIENT))
+                return true;
+        return false;
+    }
+    
+    private Diagnostic createDiagnosticBy(ICompilationUnit unit,
+            IMember member, String diagnosticErrorMessage) throws JavaModelException {
+        Diagnostic d = new Diagnostic();
+        ISourceRange sourceRange = JDTUtils.getNameRange(member);
+        Range range = JDTUtils.toRange(unit, sourceRange.getOffset(), sourceRange.getLength());
+        d.setRange(range);
+        d.setSeverity(DiagnosticSeverity.Error);
+        d.setSource(JsonbConstants.DIAGNOSTIC_SOURCE);
+        d.setMessage(diagnosticErrorMessage);
+
+        if (diagnosticErrorMessage.equals(JsonbConstants.ERROR_MESSAGE_JSONB_CREATOR))
+            d.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION);
+        else if (diagnosticErrorMessage.equals(JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_FIELD))
+            d.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD);
+        else if (diagnosticErrorMessage.equals(JsonbConstants.ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR))
+            d.setCode(JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_ACCESSOR);
+
+        return d;
     }
 }
