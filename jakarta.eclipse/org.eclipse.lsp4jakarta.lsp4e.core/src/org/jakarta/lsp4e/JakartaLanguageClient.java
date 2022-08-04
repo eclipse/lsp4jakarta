@@ -70,7 +70,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
             IProgressMonitor monitor = getProgressMonitor(cancelChecker);
 
             List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-            publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(javaParams);
+            publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(javaParams, monitor);
             return publishDiagnostics;
         });
     }

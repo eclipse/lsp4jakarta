@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -85,7 +86,7 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new TransactionsDiagnosticsCollector());
         this.codeActionHandler = new CodeActionHandler();
     }
-
+    
     /**
      * Returns diagnostics for the given uris from the JakartaDiagnosticsParams.
      * 
@@ -93,6 +94,16 @@ public class JDTServicesManager {
      * @return diagnostics
      */
     public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
+    	return getJavaDiagnostics(javaParams, new NullProgressMonitor());
+    }
+
+    /**
+     * Returns diagnostics for the given uris from the JakartaDiagnosticsParams.
+     * 
+     * @param javaParams the diagnostics parameters
+     * @return diagnostics
+     */
+    public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams, IProgressMonitor monitor) {
         List<String> uris = javaParams.getUris();
         if (uris == null) {
             return Collections.emptyList();
@@ -104,10 +115,16 @@ public class JDTServicesManager {
             URI u = JDTUtils.toURI(uri);
             ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
             for (DiagnosticsCollector d : diagnosticsCollectors) {
+        		if (monitor.isCanceled()) {
+        			break;
+        		}            	
                 d.collectDiagnostics(unit, diagnostics);
             }
             PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
             publishDiagnostics.add(publishDiagnostic);
+    		if (monitor.isCanceled()) {
+    			return Collections.emptyList();
+    		}
         }
         return publishDiagnostics;
     }

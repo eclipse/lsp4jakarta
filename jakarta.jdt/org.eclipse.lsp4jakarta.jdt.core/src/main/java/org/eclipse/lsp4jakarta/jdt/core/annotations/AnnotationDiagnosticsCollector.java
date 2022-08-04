@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
@@ -33,10 +34,9 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
-import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
-import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
 
 /**
  * 
@@ -57,42 +57,58 @@ import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
  * @see https://jakarta.ee/specifications/annotations/2.0/annotations-spec-2.0.html#annotations
  *
  */
-public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
+public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
     public AnnotationDiagnosticsCollector() {
-    }
-
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(AnnotationConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(AnnotationConstants.ERROR);
+    	super();
     }
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
             try {
                 ArrayList<Tuple.Two<IAnnotation, IAnnotatable>> annotatables = new ArrayList<Two<IAnnotation, IAnnotatable>>();
-
-                for (IPackageDeclaration p : unit.getPackageDeclarations()) {
-                    for (IAnnotation annotation : p.getAnnotations()) {
-                        annotatables.add(new Tuple.Two<>(annotation, p));
+                String[] validAnnotations = {AnnotationConstants.GENERATED_FQ_NAME};
+                String[] validTypeAnnotations = {AnnotationConstants.GENERATED_FQ_NAME, AnnotationConstants.RESOURCE_FQ_NAME};
+                String[] validMethodAnnotations = {
+	                		AnnotationConstants.GENERATED_FQ_NAME, 
+	                        AnnotationConstants.POST_CONSTRUCT_FQ_NAME, 
+	                        AnnotationConstants.PRE_DESTROY_FQ_NAME, 
+	                        AnnotationConstants.RESOURCE_FQ_NAME
+                       	};
+                
+                IPackageDeclaration[] packages = unit.getPackageDeclarations();
+                for (IPackageDeclaration p : packages) {
+                	IAnnotation[] annotations = p.getAnnotations();
+                    for (IAnnotation annotation : annotations) {
+                    	if (isValidAnnotation(annotation.getElementName(), validAnnotations))
+                    		annotatables.add(new Tuple.Two<>(annotation, p));
                     }
                 }
-
-                for (IType type : unit.getAllTypes()) {
-
-                    for (IAnnotation annotation : type.getAnnotations()) {
-                        annotatables.add(new Tuple.Two<>(annotation, type));
+                
+                IType[] types = unit.getAllTypes(); 
+                for (IType type : types) {
+                	// Type
+                	IAnnotation[] annotations = type.getAnnotations();
+                    for (IAnnotation annotation : annotations) {
+                    	if (isValidAnnotation(annotation.getElementName(), validTypeAnnotations))
+                    		annotatables.add(new Tuple.Two<>(annotation, type));
                     }
-
-                    for (IMethod method : type.getMethods()) {
-                        for (IAnnotation annotation : method.getAnnotations()) {
-                            annotatables.add(new Tuple.Two<>(annotation, method));
+                    // Method
+                    IMethod[] methods = type.getMethods();
+                    for (IMethod method : methods) {
+                    	annotations = method.getAnnotations();
+                        for (IAnnotation annotation : annotations) {
+                        	if (isValidAnnotation(annotation.getElementName(), validMethodAnnotations))
+                        		annotatables.add(new Tuple.Two<>(annotation, method));
                         }
                     }
-
-                    for (IField field : type.getFields()) {
-                        for (IAnnotation annotation : field.getAnnotations()) {
-                            annotatables.add(new Tuple.Two<>(annotation, field));
+                    // Field
+                    IField[] fields = type.getFields();
+                    for (IField field : fields) {
+                    	annotations = field.getAnnotations();
+                        for (IAnnotation annotation : annotations) {
+                        	if (isValidAnnotation(annotation.getElementName(), validTypeAnnotations))
+                        		annotatables.add(new Tuple.Two<>(annotation, field));
                         }
                     }
                 }
@@ -101,7 +117,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                     IAnnotation annotation = annotatable.getFirst();
                     IAnnotatable element = annotatable.getSecond();
 
-                    if (annotation.getElementName().equals(AnnotationConstants.GENERATED)) {
+                    if (isMatchedAnnotation(unit, annotation, AnnotationConstants.GENERATED_FQ_NAME)) {
                         for (IMemberValuePair pair : annotation.getMemberValuePairs()) {
                             // If date element exists and is non-empty, it must follow ISO 8601 format.
                             if (pair.getMemberName().equals("date")) {
@@ -120,15 +136,14 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                             Diagnostic diagnostic = new Diagnostic(
                                                     annotationRange,
                                                     diagnosticMessage);
-                                            diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT);
-                                            completeDiagnostic(diagnostic);
+                                            completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT);
                                             diagnostics.add(diagnostic);
                                         }
                                     }
                                 }
                             }
                         }
-                    } else if (annotation.getElementName().equals(AnnotationConstants.RESOURCE)) {
+                    } else if (isMatchedAnnotation(unit, annotation, AnnotationConstants.RESOURCE_FQ_NAME)) {
                         if (element instanceof IType) {
                             IType type = (IType) element;
                             if (type.getElementType() == IJavaElement.TYPE && ((IType) type).isClass()) {
@@ -153,8 +168,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                     Diagnostic diagnostic = new Diagnostic(
                                             annotationRange,
                                             diagnosticMessage);
-                                    diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE);
-                                    completeDiagnostic(diagnostic);
+                                    completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE);
                                     diagnostics.add(diagnostic);
                                 }
 
@@ -163,14 +177,13 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                     Diagnostic diagnostic = new Diagnostic(
                                             annotationRange,
                                             diagnosticMessage);
-                                    diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE);
-                                    completeDiagnostic(diagnostic);
+                                    completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE);
                                     diagnostics.add(diagnostic);
                                 }
                             }
                         }
                     }
-                    if (annotation.getElementName().equals(AnnotationConstants.POST_CONSTRUCT)) {
+                    if (isMatchedAnnotation(unit, annotation, AnnotationConstants.POST_CONSTRUCT_FQ_NAME)) {
                         if (element instanceof IMethod) {
                             IMethod method = (IMethod) element;
 
@@ -184,8 +197,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
                                         diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS);
-                                completeDiagnostic(diagnostic);
+                                completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS);
                                 diagnostics.add(diagnostic);
                             }
 
@@ -194,8 +206,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
                                         diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE);
-                                completeDiagnostic(diagnostic);
+                                completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE);
                                 diagnostics.add(diagnostic);
                             }
 
@@ -204,13 +215,11 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
                                         diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION);
-                                completeDiagnostic(diagnostic);
-                                diagnostic.setSeverity(AnnotationConstants.WARNING);
+                                completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION, AnnotationConstants.WARNING);
                                 diagnostics.add(diagnostic);
                             }
                         }
-                    } else if (annotation.getElementName().equals(AnnotationConstants.PRE_DESTROY)) {
+                    } else if (isMatchedAnnotation(unit, annotation, AnnotationConstants.PRE_DESTROY_FQ_NAME)) {
                         if (element instanceof IMethod) {
                             IMethod method = (IMethod) element;
 
@@ -223,8 +232,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
                                        diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS);
-                                completeDiagnostic(diagnostic);
+                                completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS);
                                 diagnostics.add(diagnostic);
                             }
 
@@ -233,8 +241,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
                                         diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
-                                completeDiagnostic(diagnostic);
+                                completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
                                 diagnostic.setData(method.getElementType());
                                 diagnostics.add(diagnostic);
                             }
@@ -244,9 +251,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                 Diagnostic diagnostic = new Diagnostic(
                                         methodRange,
                                         diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION);
-                                completeDiagnostic(diagnostic);
-                                diagnostic.setSeverity(AnnotationConstants.WARNING);
+                                completeDiagnostic(diagnostic, AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION, AnnotationConstants.WARNING);
                                 diagnostics.add(diagnostic);
                             }
                         }
@@ -258,16 +263,22 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
     
-    public String generateDiagnosticMethod(String annotation, String message) {
-        
+    private static String generateDiagnosticMethod(String annotation, String message) {
         String finalMessage = "A method with the annotation @" + annotation + " must " + message;
         return finalMessage;
     }
     
-    public String generateDiagnosticAnnotation(String annotation, String message) {
-        
+    private static String generateDiagnosticAnnotation(String annotation, String message) {
         String finalMessage = "The annotation @" + annotation + " must " + message;
         return finalMessage;
     }
-
+    
+    private static boolean isValidAnnotation(String annotationName, String [] validAnnotations) {
+    	for (String fqName : validAnnotations) {
+    		if (fqName.endsWith(annotationName)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 }
