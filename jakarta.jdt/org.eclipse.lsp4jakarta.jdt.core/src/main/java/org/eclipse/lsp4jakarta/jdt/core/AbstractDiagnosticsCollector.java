@@ -60,9 +60,24 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
         diagnostic.setSeverity(severity);
     }
 
+	/**
+	 * Returns diagnostics for the given compilation unit.
+	 *
+	 * @param unit 			compilation unit of Java class
+	 * @param diagnostics 	diagnostics for the given compilation unit to return
+	 */
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
     }
     
+	/**
+	 * Returns true if the given annotation matches the given annotation name and
+	 * false otherwise.
+	 *
+	 * @param unit    	 		compilation unit of Java class.
+	 * @param annotation    	given annotation object.
+	 * @param annotationFQName	the fully qualified annotation name.
+	 * @return true if the given annotation matches the given annotation name and false otherwise.
+	 */    
     protected static boolean isMatchedAnnotation(ICompilationUnit unit, IAnnotation annotation, String annotationFQName) throws JavaModelException {
     	String elementName = annotation.getElementName();
     	if (annotationFQName.endsWith(elementName) && unit != null) {

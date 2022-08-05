@@ -63,6 +63,7 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
     	super();
     }
 
+    @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
             try {
@@ -100,6 +101,15 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
                         for (IAnnotation annotation : annotations) {
                         	if (isValidAnnotation(annotation.getElementName(), validMethodAnnotations))
                         		annotatables.add(new Tuple.Two<>(annotation, method));
+                        }
+                        // method parameters
+                        ILocalVariable[] parameters = method.getParameters();
+                        for (ILocalVariable parameter : parameters) {
+                        	annotations = parameter.getAnnotations();
+                            for (IAnnotation annotation : annotations) {
+                            	if (isValidAnnotation(annotation.getElementName(), validAnnotations))
+                            		annotatables.add(new Tuple.Two<>(annotation, parameter));
+                            }                        	
                         }
                     }
                     // Field

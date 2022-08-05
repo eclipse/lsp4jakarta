@@ -30,24 +30,22 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.jdt.codeAction.CodeActionHandler;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.jax_rs.Jax_RSClassDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.jsonp.JsonpDiagnosticCollector;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jax_rs.Jax_RSClassDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jsonp.JsonpDiagnosticCollector;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceEntityDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceMapKeyDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.transactions.TransactionsDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
-
-import org.eclipse.lsp4jakarta.jdt.codeAction.CodeActionHandler;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketDiagnosticsCollector;
 
 /**
  * JDT manager for Java files Modified from
