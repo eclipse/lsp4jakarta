@@ -62,8 +62,13 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
     public AnnotationDiagnosticsCollector() {
     	super();
     }
-
+    
     @Override
+	protected String getDiagnosticSource() {
+		return AnnotationConstants.DIAGNOSTIC_SOURCE;
+	}
+
+	@Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
             try {

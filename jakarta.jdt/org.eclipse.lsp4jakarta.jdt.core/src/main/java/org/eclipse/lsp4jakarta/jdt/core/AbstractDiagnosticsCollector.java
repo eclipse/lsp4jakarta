@@ -14,7 +14,9 @@
 package org.eclipse.lsp4jakarta.jdt.core;
 
 import java.util.List;
+import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportContainer;
@@ -22,13 +24,13 @@ import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.ImportContainerInfo;
 import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 
 /**
  *
@@ -37,6 +39,8 @@ import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
  */
 @SuppressWarnings("restriction")
 public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollector {
+
+	public static final String DIAGNOSTIC_SOURCE = "jakarta-annotations"; //$NON-NLS-1$
 		
     /**
      * Constructor
@@ -45,21 +49,27 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
 		super();
 	}
 
+    protected String getDiagnosticSource() {
+    	return null;
+    }
+    
 	public void completeDiagnostic(Diagnostic diagnostic) {
-    	this.completeDiagnostic(diagnostic, null, AnnotationConstants.ERROR);
+    	this.completeDiagnostic(diagnostic, null, DiagnosticSeverity.Error);
     }
 	    
     public void completeDiagnostic(Diagnostic diagnostic, String code) {
-    	this.completeDiagnostic(diagnostic, code, AnnotationConstants.ERROR);
+    	this.completeDiagnostic(diagnostic, code, DiagnosticSeverity.Error);
     }
     
     public void completeDiagnostic(Diagnostic diagnostic, String code, DiagnosticSeverity severity) {
-        diagnostic.setSource(AnnotationConstants.DIAGNOSTIC_SOURCE);
+    	String source = getDiagnosticSource();
+    	if (source != null)
+    		diagnostic.setSource(source);
         if (code != null)
         	diagnostic.setCode(code);
         diagnostic.setSeverity(severity);
     }
-
+    
 	/**
 	 * Returns diagnostics for the given compilation unit.
 	 *
@@ -77,15 +87,14 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
 	 * @param annotation    	given annotation object.
 	 * @param annotationFQName	the fully qualified annotation name.
 	 * @return true if the given annotation matches the given annotation name and false otherwise.
-	 */    
+	 */
     protected static boolean isMatchedAnnotation(ICompilationUnit unit, IAnnotation annotation, String annotationFQName) throws JavaModelException {
     	String elementName = annotation.getElementName();
     	if (annotationFQName.endsWith(elementName) && unit != null) {
 			// For performance reason, we check if the import of annotation name is
 			// declared
-	    	if (isImportedAnnotation(unit, annotation, annotationFQName) == true) {
+	    	if (isImportedJavaElement(unit, annotationFQName) == true)
 	    		return true;
-	    	}
 	    	// only check fully qualified annotations 
 	    	if (annotationFQName.equals(elementName)) {
 	    		IJavaElement parent = annotation.getParent();
@@ -102,7 +111,15 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
     	return false;
     }
     
-    private static boolean isImportedAnnotation(ICompilationUnit unit, IAnnotation annotation, String annotationFQName) throws JavaModelException {
+	/**
+	 * Returns true if the given Java class imports the given Java element and
+	 * false otherwise.
+	 *
+	 * @param type    	 			Java class.
+	 * @param javaElementFQName		given Java element fully qualified name.
+	 * @return true if the Java class imports the given Java element and false otherwise.
+	 */
+    protected static boolean isImportedJavaElement(ICompilationUnit unit, String javaElementFQName) throws JavaModelException {
 		IImportContainer container = unit.getImportContainer();
 		if (container == null) {
 			return false;
@@ -111,7 +128,6 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
 		// The following code uses JDT internal class and looks like
 		// ICompilationUnit#getImports()
 		// To avoid creating an array of IImportDeclaration, we do the following code:
-
 		JavaModelManager manager = JavaModelManager.getJavaModelManager();
 		Object info = manager.getInfo(container);
 		if (info == null) {
@@ -138,13 +154,97 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
 			if (importDeclaration.isOnDemand()) {
 				String fqn = importDeclaration.getElementName();
 				String qualifier = fqn.substring(0, fqn.lastIndexOf('.'));
-				if (qualifier.equals(annotationFQName.substring(0, annotationFQName.lastIndexOf('.')))) {
+				if (qualifier.equals(javaElementFQName.substring(0, javaElementFQName.lastIndexOf('.')))) {
 					return true;
 				}
-			} else if (importDeclaration.getElementName().equals(annotationFQName)) {
+			} else if (importDeclaration.getElementName().equals(javaElementFQName)) {
 				return true;
 			}
 		}
 		return false;
     }
+    
+	/**
+	 * Returns true if the given Java class imports one of the given Java elements and
+	 * false otherwise.
+	 *
+	 * @param type    	 			Java class.
+	 * @param javaElementFQName		given Java element fully qualified names.
+	 * @return true if the Java class imports one of the given Java elements and false otherwise.
+	 */
+    protected static boolean isImportedJavaElement(ICompilationUnit unit, String[] javaElementFQNames) throws JavaModelException {
+		IImportContainer container = unit.getImportContainer();
+		if (container == null) {
+			return false;
+		}
+		
+		// The following code uses JDT internal class and looks like
+		// ICompilationUnit#getImports()
+		// To avoid creating an array of IImportDeclaration, we do the following code:
+		JavaModelManager manager = JavaModelManager.getJavaModelManager();
+		Object info = manager.getInfo(container);
+		if (info == null) {
+			if (manager.getInfo(unit) != null) {
+				// CU was opened, but no import container, then no imports
+				// return NO_IMPORTS;
+				return false;
+			} else {
+				try {
+					unit.open(null);
+				} catch (JavaModelException e) {
+					e.printStackTrace();
+				} // force opening of CU
+				info = manager.getInfo(container);
+				if (info == null)
+					// after opening, if no import container, then no imports
+					// return NO_IMPORTS;
+					return false;
+			}
+		}
+		IJavaElement[] elements = ((ImportContainerInfo) info).getChildren();
+		for (IJavaElement child : elements) {
+			IImportDeclaration importDeclaration = (IImportDeclaration) child;
+			if (importDeclaration.isOnDemand()) {
+				String fqn = importDeclaration.getElementName();
+				String qualifier = fqn.substring(0, fqn.lastIndexOf('.'));
+				boolean imports = Stream.of(javaElementFQNames).anyMatch(elementFQName -> {
+					return qualifier.equals(elementFQName.substring(0, elementFQName.lastIndexOf('.')));
+				});				
+				if (imports == true) {
+					return true;
+				}
+			} else {
+				String importName = importDeclaration.getElementName(); 
+				if (Stream.of(javaElementFQNames).anyMatch(elementFQName -> importName.equals(elementFQName)) == true)
+					return true;
+			}
+		}
+		return false;
+    }
+    
+	/**
+	 * Returns true if the given Java class implements one of the given interfaces and
+	 * false otherwise.
+	 *
+	 * @param type    	 		Java class.
+	 * @param interfaceFQNames 	given interfaces with fully qualified name.
+	 * @return true if the Java class implements one of the given interfaces and false otherwise.
+	 */
+    protected static boolean doesImplementInterfaces(IType type, String[] interfaceFQNames) throws JavaModelException {
+    	String[] interfaceNames = type.getSuperInterfaceNames();
+
+    	// should check import statements first for the performance?
+  
+    	// check super hierarchy
+    	if (interfaceNames.length > 0) {	// the type implements interface(s)
+	        ITypeHierarchy typeHierarchy = type.newSupertypeHierarchy(new NullProgressMonitor());
+	        IType[] interfaces = typeHierarchy.getAllInterfaces();
+	        for (IType interfase : interfaces) {
+				String fqName = interfase.getFullyQualifiedName(); 
+				if (Stream.of(interfaceFQNames).anyMatch(name -> fqName.equals(name)) == true)
+					return true;	        	
+	        }    			
+    	}
+        return false;
+    }    
 }
