@@ -19,12 +19,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMemberValuePair;
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils;
 
@@ -52,9 +49,7 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
 	@Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
-        Diagnostic diagnostic;
         if (unit != null) {
-
             IType[] alltypes;
             IAnnotation[] allAnnotations;
 
@@ -65,7 +60,7 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
                     IAnnotation webServletAnnotation = null;
                     for (IAnnotation annotation : allAnnotations) {
-                        if (isMatchedAnnotation(unit, annotation, ServletConstants.WEB_SERVLET_FQ_NAME)) {
+                        if (isMatchedJavaElement(type, annotation.getElementName(), ServletConstants.WEB_SERVLET_FQ_NAME)) {
                             webServletAnnotation = annotation;
                             break;	// get the first one, the annotation is not repeatable
                         }
@@ -78,18 +73,13 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                     // check if the class extends HttpServlet
                     int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, ServletConstants.HTTP_SERVLET);
                     if (r == -1) {
-                    	ISourceRange nameRange = JDTUtils.getNameRange(type);
-                    	Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-                        diagnostic = new Diagnostic(range, "Annotated classes with @WebServlet must extend the HttpServlet class.");
-                        diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE);
-                        diagnostics.add(diagnostic);
+                        diagnostics.add(createDiagnostic(type, unit, 
+                        		"Annotated classes with @WebServlet must extend the HttpServlet class.", 
+                        		ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.SEVERITY));
                     } else if (r == 0) {	// unknown super type
-                    	ISourceRange nameRange = JDTUtils.getNameRange(type);
-                    	Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-                        diagnostic = new Diagnostic(range, "Annotated classes with @WebServlet should extend the HttpServlet class.");
-                        diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE);
-                        diagnostic.setSeverity(ServletConstants.WARNING);
-                        diagnostics.add(diagnostic);                    	
+                        diagnostics.add(createDiagnostic(type, unit, 
+                        		"Annotated classes with @WebServlet should extend the HttpServlet class.", 
+                        		ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.WARNING));                    	
                     }
 
                     /* URL pattern diagnostic check */
@@ -107,24 +97,17 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                                 isValueSpecified = true;
                             }
                         }
-                        ISourceRange annotationNameRange = JDTUtils.getNameRange(webServletAnnotation);
-                        Range annotationrange = JDTUtils.toRange(unit, annotationNameRange.getOffset(),
-                                annotationNameRange.getLength());
-
                         if (!isUrlpatternSpecified && !isValueSpecified) {
-                            diagnostic = new Diagnostic(annotationrange,
-                                    "The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.");
-                            completeDiagnostic(diagnostic, ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE);
-                            diagnostics.add(diagnostic);
+                            diagnostics.add(createDiagnostic(webServletAnnotation, unit, 
+                            		"The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.", 
+                            		ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE, null, ServletConstants.SEVERITY));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
-                            diagnostic = new Diagnostic(annotationrange,
-                                    "The annotation @WebServlet cannot have both 'value' and 'urlPatterns' attributes specified at once.");
-                            completeDiagnostic(diagnostic, ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES);
-                            diagnostics.add(diagnostic);
+                            diagnostics.add(createDiagnostic(webServletAnnotation, unit, 
+                            		"The annotation @WebServlet cannot have both 'value' and 'urlPatterns' attributes specified at once.", 
+                            		ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES, null, ServletConstants.SEVERITY));
                         }
                     }
-
                 }
             } catch (CoreException e) {
                 JakartaCorePlugin.logException("Cannot check type hierarchy", e);

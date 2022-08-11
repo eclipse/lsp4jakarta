@@ -17,13 +17,10 @@ import java.util.List;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
@@ -38,7 +35,6 @@ public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
 	}
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
-        Diagnostic diagnostic;
         if (unit != null) {
             IType[] alltypes;
             IAnnotation[] allAnnotations;
@@ -49,7 +45,7 @@ public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
                     allAnnotations = type.getAnnotations();
                     boolean isWebListenerAnnotated = false;
                     for (IAnnotation annotation : allAnnotations) {
-                    	if (isMatchedAnnotation(unit, annotation, ServletConstants.WEB_LISTENER_FQ_NAME)) {
+                    	if (isMatchedJavaElement(type, annotation.getElementName(), ServletConstants.WEB_LISTENER_FQ_NAME)) {
                             isWebListenerAnnotated = true;
                             break;
                         }
@@ -67,14 +63,10 @@ public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
                     boolean isImplemented = doesImplementInterfaces(type, interfaces);
 
                     if (isWebListenerAnnotated && !isImplemented) {
-                        ISourceRange nameRange = JDTUtils.getNameRange(type);
-                        Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-                        diagnostic = new Diagnostic(range, "Annotated classes with @WebListener "
-                                + "must implement one or more of the following interfaces: ServletContextListener, ServletContextAttributeListener,"
-                                + " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener,"
-                                + " HttpSessionAttributeListener, or HttpSessionIdListener.");
-                        completeDiagnostic(diagnostic, ServletConstants.DIAGNOSTIC_CODE_LISTENER);
-                        diagnostics.add(diagnostic);
+                        diagnostics.add(createDiagnostic(type, unit, 
+                        		"Annotated classes with @WebListener must implement one or more of the following interfaces: ServletContextListener, ServletContextAttributeListener," +
+                                " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener, HttpSessionAttributeListener, or HttpSessionIdListener.", 
+                                ServletConstants.DIAGNOSTIC_CODE_LISTENER, null, ServletConstants.SEVERITY));
                     }
                 }
             } catch (JavaModelException e) {
