@@ -91,7 +91,7 @@ public class JDTServicesManager {
      * @param javaParams the diagnostics parameters
      * @return diagnostics
      */
-    public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) { 
+    public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
     	return getJavaDiagnostics(javaParams, new NullProgressMonitor());
     }
 
