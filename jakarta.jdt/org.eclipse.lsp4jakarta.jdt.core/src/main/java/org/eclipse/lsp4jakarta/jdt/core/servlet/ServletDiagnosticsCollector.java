@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 IBM Corporation, Pengyu Xiong and others.
+* Copyright (c) 2022 IBM Corporation, Pengyu Xiong and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
@@ -66,24 +67,24 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         }
                     }
                     
-                    if (webServletAnnotation == null) {
-                        continue;
-                    }
-
-                    // check if the class extends HttpServlet
-                    int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, ServletConstants.HTTP_SERVLET);
-                    if (r == -1) {
-                        diagnostics.add(createDiagnostic(type, unit, 
-                        		"Annotated classes with @WebServlet must extend the HttpServlet class.", 
-                        		ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.SEVERITY));
-                    } else if (r == 0) {	// unknown super type
-                        diagnostics.add(createDiagnostic(type, unit, 
-                        		"Annotated classes with @WebServlet should extend the HttpServlet class.", 
-                        		ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.WARNING));                    	
-                    }
-
-                    /* URL pattern diagnostic check */
                     if (webServletAnnotation != null) {
+	                    // check if the class extends HttpServlet
+	                    try {
+	                        int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, ServletConstants.HTTP_SERVLET);
+	                        if (r == -1) {
+	                            diagnostics.add(createDiagnostic(type, unit, 
+	                            		"Annotated classes with @WebServlet must extend the HttpServlet class.", 
+	                            		ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.SEVERITY));
+	                        } else if (r == 0) {	// unknown super type
+	                            diagnostics.add(createDiagnostic(type, unit, 
+	                            		"Annotated classes with @WebServlet should extend the HttpServlet class.", 
+	                            		ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.WARNING));                    	
+	                        }
+	                    } catch (CoreException e) {
+	                        JakartaCorePlugin.logException("Cannot check type hierarchy", e);
+	                    }                    
+	
+	                    /* URL pattern diagnostic check */
                         IMemberValuePair[] memberValues = webServletAnnotation.getMemberValuePairs();
 
                         boolean isUrlpatternSpecified = false;
@@ -109,7 +110,7 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         }
                     }
                 }
-            } catch (CoreException e) {
+            } catch (JavaModelException e) {
                 JakartaCorePlugin.logException("Cannot check type hierarchy", e);
             }
         }
