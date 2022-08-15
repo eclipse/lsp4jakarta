@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils;
@@ -78,11 +79,11 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                             if (r == -1) {
                                 diagnostics.add(createDiagnostic(type, unit,
                                         "Annotated classes with @WebServlet must extend the HttpServlet class.",
-                                        ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.SEVERITY));
+                                        ServletConstants.DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                             } else if (r == 0) { // unknown super type
                                 diagnostics.add(createDiagnostic(type, unit,
                                         "Annotated classes with @WebServlet should extend the HttpServlet class.",
-                                        ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.WARNING));
+                                        ServletConstants.DIAGNOSTIC_CODE, null, DiagnosticSeverity.Warning));
                             }
                         } catch (CoreException e) {
                             JakartaCorePlugin.logException("Cannot check type hierarchy", e);
@@ -106,13 +107,13 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                             diagnostics.add(createDiagnostic(webServletAnnotation, unit,
                                     "The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.",
                                     ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE, null,
-                                    ServletConstants.SEVERITY));
+                                    DiagnosticSeverity.Error));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostics.add(createDiagnostic(webServletAnnotation, unit,
                                     "The annotation @WebServlet cannot have both 'value' and 'urlPatterns' attributes specified at once.",
                                     ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES, null,
-                                    ServletConstants.SEVERITY));
+                                    DiagnosticSeverity.Error));
                         }
                     }
                 }

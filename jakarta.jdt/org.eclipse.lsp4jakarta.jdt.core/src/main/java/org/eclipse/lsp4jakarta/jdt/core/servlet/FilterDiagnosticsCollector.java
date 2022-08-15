@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
@@ -59,7 +60,7 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
                     if (webFilterAnnotation != null && !isFilterImplemented) {
                         diagnostics.add(createDiagnostic(type, unit,
                                 "Annotated classes with @WebFilter must implement the Filter interface.",
-                                ServletConstants.DIAGNOSTIC_CODE_FILTER, null, ServletConstants.SEVERITY));
+                                ServletConstants.DIAGNOSTIC_CODE_FILTER, null, DiagnosticSeverity.Error));
                     }
 
                     /* URL pattern diagnostic check */
@@ -86,13 +87,13 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
                             diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
                                     "The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.",
                                     ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE, null,
-                                    ServletConstants.SEVERITY));
+                                    DiagnosticSeverity.Error));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
                                     "The annotation @WebFilter can not have both 'value' and 'urlPatterns' attributes specified at once.",
                                     ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES, null,
-                                    ServletConstants.SEVERITY));
+                                    DiagnosticSeverity.Error));
                         }
                     }
                 }

@@ -13,8 +13,6 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
-import org.eclipse.lsp4j.DiagnosticSeverity;
-
 public class ServletConstants {
 
     /* @WEBListener */
@@ -60,6 +58,4 @@ public class ServletConstants {
     public static final String DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE = "CompleteWebFilterAttributes";
     public static final String DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES = "InvalidWebFilterAttribute";
     public static final String DIAGNOSTIC_CODE_LISTENER = "ImplementListener";
-    public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
-    public static final DiagnosticSeverity WARNING = DiagnosticSeverity.Warning;
 }

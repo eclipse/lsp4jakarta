@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
@@ -65,7 +66,7 @@ public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         diagnostics.add(createDiagnostic(type, unit,
                                 "Annotated classes with @WebListener must implement one or more of the following interfaces: ServletContextListener, ServletContextAttributeListener,"
                                         + " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener, HttpSessionAttributeListener, or HttpSessionIdListener.",
-                                ServletConstants.DIAGNOSTIC_CODE_LISTENER, null, ServletConstants.SEVERITY));
+                                ServletConstants.DIAGNOSTIC_CODE_LISTENER, null, DiagnosticSeverity.Error));
                     }
                 }
             } catch (JavaModelException e) {
