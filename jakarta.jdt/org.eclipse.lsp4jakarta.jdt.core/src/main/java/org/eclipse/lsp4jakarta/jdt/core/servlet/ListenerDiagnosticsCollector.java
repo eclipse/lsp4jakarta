@@ -26,13 +26,13 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
     public ListenerDiagnosticsCollector() {
-    	super();
+        super();
     }
-    
+
     @Override
-	protected String getDiagnosticSource() {
-		return ServletConstants.DIAGNOSTIC_SOURCE;
-	}
+    protected String getDiagnosticSource() {
+        return ServletConstants.DIAGNOSTIC_SOURCE;
+    }
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
@@ -45,32 +45,31 @@ public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
                     allAnnotations = type.getAnnotations();
                     boolean isWebListenerAnnotated = false;
                     for (IAnnotation annotation : allAnnotations) {
-                    	if (isMatchedJavaElement(type, annotation.getElementName(), ServletConstants.WEB_LISTENER_FQ_NAME)) {
+                        if (isMatchedJavaElement(type, annotation.getElementName(),
+                                ServletConstants.WEB_LISTENER_FQ_NAME)) {
                             isWebListenerAnnotated = true;
                             break;
                         }
                     }
-                    
-                    String[] interfaces = {
-                    			ServletConstants.SERVLET_CONTEXT_LISTENER_FQ_NAME,
-                    			ServletConstants.SERVLET_CONTEXT_ATTRIBUTE_LISTENER_FQ_NAME,
-                    			ServletConstants.SERVLET_REQUEST_LISTENER_FQ_NAME,
-                    			ServletConstants.SERVLET_REQUEST_ATTRIBUTE_LISTENER_FQ_NAME,
-                    			ServletConstants.HTTP_SESSION_LISTENER_FQ_NAME,
-                    			ServletConstants.HTTP_SESSION_ATTRIBUTE_LISTENER_FQ_NAME,
-                    			ServletConstants.HTTP_SESSION_ID_LISTENER_FQ_NAME
-                    		};
+
+                    String[] interfaces = { ServletConstants.SERVLET_CONTEXT_LISTENER_FQ_NAME,
+                            ServletConstants.SERVLET_CONTEXT_ATTRIBUTE_LISTENER_FQ_NAME,
+                            ServletConstants.SERVLET_REQUEST_LISTENER_FQ_NAME,
+                            ServletConstants.SERVLET_REQUEST_ATTRIBUTE_LISTENER_FQ_NAME,
+                            ServletConstants.HTTP_SESSION_LISTENER_FQ_NAME,
+                            ServletConstants.HTTP_SESSION_ATTRIBUTE_LISTENER_FQ_NAME,
+                            ServletConstants.HTTP_SESSION_ID_LISTENER_FQ_NAME };
                     boolean isImplemented = doesImplementInterfaces(type, interfaces);
 
                     if (isWebListenerAnnotated && !isImplemented) {
-                        diagnostics.add(createDiagnostic(type, unit, 
-                        		"Annotated classes with @WebListener must implement one or more of the following interfaces: ServletContextListener, ServletContextAttributeListener," +
-                                " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener, HttpSessionAttributeListener, or HttpSessionIdListener.", 
+                        diagnostics.add(createDiagnostic(type, unit,
+                                "Annotated classes with @WebListener must implement one or more of the following interfaces: ServletContextListener, ServletContextAttributeListener,"
+                                        + " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener, HttpSessionAttributeListener, or HttpSessionIdListener.",
                                 ServletConstants.DIAGNOSTIC_CODE_LISTENER, null, ServletConstants.SEVERITY));
                     }
                 }
             } catch (JavaModelException e) {
-            	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
+                JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
         }
     }

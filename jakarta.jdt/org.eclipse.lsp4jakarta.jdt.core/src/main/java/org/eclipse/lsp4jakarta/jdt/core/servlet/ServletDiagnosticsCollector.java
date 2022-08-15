@@ -30,9 +30,12 @@ import org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils;
  * 
  * jararta.annotation Diagnostics
  * 
- * <li>Diagnostic 1: Class annotated with @WebServlet does not extend the HttpServlet class.</li>
- * <li>Diagnostic 2: @WebServlet missing 'urlPatterns' and 'value' attribute (one must be specified).</li>
- * <li>Diagnostic 3: @WebServlet has both 'urlPatterns' and 'value' attributes specified.</li>
+ * <li>Diagnostic 1: Class annotated with @WebServlet does not extend the
+ * HttpServlet class.</li>
+ * <li>Diagnostic 2: @WebServlet missing 'urlPatterns' and 'value' attribute
+ * (one must be specified).</li>
+ * <li>Diagnostic 3: @WebServlet has both 'urlPatterns' and 'value' attributes
+ * specified.</li>
  *
  * @see https://jakarta.ee/specifications/servlet/5.0/jakarta-servlet-spec-5.0.html#webservlet
  *
@@ -40,15 +43,15 @@ import org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils;
 public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
     public ServletDiagnosticsCollector() {
-    	super();
+        super();
     }
 
     @Override
-	protected String getDiagnosticSource() {
-		return ServletConstants.DIAGNOSTIC_SOURCE;
-	}
+    protected String getDiagnosticSource() {
+        return ServletConstants.DIAGNOSTIC_SOURCE;
+    }
 
-	@Override
+    @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
             IType[] alltypes;
@@ -61,30 +64,31 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
                     IAnnotation webServletAnnotation = null;
                     for (IAnnotation annotation : allAnnotations) {
-                        if (isMatchedJavaElement(type, annotation.getElementName(), ServletConstants.WEB_SERVLET_FQ_NAME)) {
+                        if (isMatchedJavaElement(type, annotation.getElementName(),
+                                ServletConstants.WEB_SERVLET_FQ_NAME)) {
                             webServletAnnotation = annotation;
-                            break;	// get the first one, the annotation is not repeatable
+                            break; // get the first one, the annotation is not repeatable
                         }
                     }
-                    
+
                     if (webServletAnnotation != null) {
-	                    // check if the class extends HttpServlet
-	                    try {
-	                        int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, ServletConstants.HTTP_SERVLET);
-	                        if (r == -1) {
-	                            diagnostics.add(createDiagnostic(type, unit, 
-	                            		"Annotated classes with @WebServlet must extend the HttpServlet class.", 
-	                            		ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.SEVERITY));
-	                        } else if (r == 0) {	// unknown super type
-	                            diagnostics.add(createDiagnostic(type, unit, 
-	                            		"Annotated classes with @WebServlet should extend the HttpServlet class.", 
-	                            		ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.WARNING));                    	
-	                        }
-	                    } catch (CoreException e) {
-	                        JakartaCorePlugin.logException("Cannot check type hierarchy", e);
-	                    }                    
-	
-	                    /* URL pattern diagnostic check */
+                        // check if the class extends HttpServlet
+                        try {
+                            int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, ServletConstants.HTTP_SERVLET);
+                            if (r == -1) {
+                                diagnostics.add(createDiagnostic(type, unit,
+                                        "Annotated classes with @WebServlet must extend the HttpServlet class.",
+                                        ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.SEVERITY));
+                            } else if (r == 0) { // unknown super type
+                                diagnostics.add(createDiagnostic(type, unit,
+                                        "Annotated classes with @WebServlet should extend the HttpServlet class.",
+                                        ServletConstants.DIAGNOSTIC_CODE, null, ServletConstants.WARNING));
+                            }
+                        } catch (CoreException e) {
+                            JakartaCorePlugin.logException("Cannot check type hierarchy", e);
+                        }
+
+                        /* URL pattern diagnostic check */
                         IMemberValuePair[] memberValues = webServletAnnotation.getMemberValuePairs();
 
                         boolean isUrlpatternSpecified = false;
@@ -99,14 +103,16 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                             }
                         }
                         if (!isUrlpatternSpecified && !isValueSpecified) {
-                            diagnostics.add(createDiagnostic(webServletAnnotation, unit, 
-                            		"The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.", 
-                            		ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE, null, ServletConstants.SEVERITY));
+                            diagnostics.add(createDiagnostic(webServletAnnotation, unit,
+                                    "The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.",
+                                    ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE, null,
+                                    ServletConstants.SEVERITY));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
-                            diagnostics.add(createDiagnostic(webServletAnnotation, unit, 
-                            		"The annotation @WebServlet cannot have both 'value' and 'urlPatterns' attributes specified at once.", 
-                            		ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES, null, ServletConstants.SEVERITY));
+                            diagnostics.add(createDiagnostic(webServletAnnotation, unit,
+                                    "The annotation @WebServlet cannot have both 'value' and 'urlPatterns' attributes specified at once.",
+                                    ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES, null,
+                                    ServletConstants.SEVERITY));
                         }
                     }
                 }

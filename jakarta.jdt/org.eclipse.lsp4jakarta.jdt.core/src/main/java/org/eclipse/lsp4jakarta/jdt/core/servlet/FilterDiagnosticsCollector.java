@@ -27,13 +27,13 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
     public FilterDiagnosticsCollector() {
-    	super();
+        super();
     }
 
     @Override
-	protected String getDiagnosticSource() {
-		return ServletConstants.DIAGNOSTIC_SOURCE;
-	}
+    protected String getDiagnosticSource() {
+        return ServletConstants.DIAGNOSTIC_SOURCE;
+    }
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
@@ -47,18 +47,19 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
                     IAnnotation webFilterAnnotation = null;
 
                     for (IAnnotation annotation : allAnnotations) {
-                        if (isMatchedJavaElement(type, annotation.getElementName(), ServletConstants.WEBFILTER_FQ_NAME)) {
+                        if (isMatchedJavaElement(type, annotation.getElementName(),
+                                ServletConstants.WEBFILTER_FQ_NAME)) {
                             webFilterAnnotation = annotation;
                         }
                     }
 
-                    String[] interfaces = {ServletConstants.FILTER_FQ_NAME};
+                    String[] interfaces = { ServletConstants.FILTER_FQ_NAME };
                     boolean isFilterImplemented = doesImplementInterfaces(type, interfaces);
-                    
+
                     if (webFilterAnnotation != null && !isFilterImplemented) {
-                        diagnostics.add(createDiagnostic(type, unit, 
-                        		"Annotated classes with @WebFilter must implement the Filter interface.", 
-                        		ServletConstants.DIAGNOSTIC_CODE_FILTER, null, ServletConstants.SEVERITY));
+                        diagnostics.add(createDiagnostic(type, unit,
+                                "Annotated classes with @WebFilter must implement the Filter interface.",
+                                ServletConstants.DIAGNOSTIC_CODE_FILTER, null, ServletConstants.SEVERITY));
                     }
 
                     /* URL pattern diagnostic check */
@@ -81,21 +82,23 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
                                 isValueSpecified = true;
                             }
                         }
-                        if (!isUrlpatternSpecified && !isValueSpecified/* && !isServletNamesSpecified*/) {
-                            diagnostics.add(createDiagnostic(webFilterAnnotation, unit, 
-                            		"The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.", 
-                            		ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE, null, ServletConstants.SEVERITY));
+                        if (!isUrlpatternSpecified && !isValueSpecified/* && !isServletNamesSpecified */) {
+                            diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
+                                    "The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.",
+                                    ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE, null,
+                                    ServletConstants.SEVERITY));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
-                            diagnostics.add(createDiagnostic(webFilterAnnotation, unit, 
-                            		"The annotation @WebFilter can not have both 'value' and 'urlPatterns' attributes specified at once.", 
-                            		ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES, null, ServletConstants.SEVERITY));
+                            diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
+                                    "The annotation @WebFilter can not have both 'value' and 'urlPatterns' attributes specified at once.",
+                                    ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES, null,
+                                    ServletConstants.SEVERITY));
                         }
                     }
                 }
             } catch (JavaModelException e) {
-            	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
+                JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
         }
-    } 
+    }
 }
