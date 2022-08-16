@@ -68,24 +68,24 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         IMemberValuePair[] memberValues = webFilterAnnotation.getMemberValuePairs();
 
                         boolean isUrlpatternSpecified = false;
-//                        boolean isServletNamesSpecified = false;
+                        boolean isServletNamesSpecified = false;
                         boolean isValueSpecified = false;
                         for (IMemberValuePair mv : memberValues) {
                             if (mv.getMemberName().equals(ServletConstants.URL_PATTERNS)) {
                                 isUrlpatternSpecified = true;
                                 continue;
                             }
-//                            if (mv.getMemberName().equals(ServletConstants.SERVLET_NAMES)) {
-//                                isServletNamesSpecified = true;
-//                                continue;
-//                            }
+                            if (mv.getMemberName().equals(ServletConstants.SERVLET_NAMES)) {
+                                isServletNamesSpecified = true;
+                                continue;
+                            }
                             if (mv.getMemberName().equals(ServletConstants.VALUE)) {
                                 isValueSpecified = true;
                             }
                         }
-                        if (!isUrlpatternSpecified && !isValueSpecified/* && !isServletNamesSpecified */) {
+                        if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
                             diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
-                                    "The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.",
+                                    "The annotation @WebServlet must define the attribute 'urlPatterns', 'servletNames' or 'value'.",
                                     ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE, null,
                                     DiagnosticSeverity.Error));
                         }

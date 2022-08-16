@@ -201,7 +201,6 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
                 info = manager.getInfo(container);
                 if (info == null)
                     // after opening, if no import container, then no imports
-                    // return NO_IMPORTS;
                     return false;
             }
         }
@@ -245,7 +244,6 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
         if (info == null) {
             if (manager.getInfo(unit) != null) {
                 // CU was opened, but no import container, then no imports
-                // return NO_IMPORTS;
                 return false;
             } else {
                 try {
@@ -256,7 +254,6 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
                 info = manager.getInfo(container);
                 if (info == null)
                     // after opening, if no import container, then no imports
-                    // return NO_IMPORTS;
                     return false;
             }
         }
