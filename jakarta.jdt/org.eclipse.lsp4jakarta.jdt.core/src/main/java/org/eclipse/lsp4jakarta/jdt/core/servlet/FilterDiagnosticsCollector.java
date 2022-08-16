@@ -85,7 +85,7 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         }
                         if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
                             diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
-                                    "The annotation @WebServlet must define the attribute 'urlPatterns', 'servletNames' or 'value'.",
+                                    "The annotation @WebFilter must define the attribute 'urlPatterns', 'servletNames' or 'value'.",
                                     ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE, null,
                                     DiagnosticSeverity.Error));
                         }
