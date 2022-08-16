@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2021, 2022 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,20 +23,18 @@ import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageDeclaration;
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
-import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
-import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
 
 /**
  * 
@@ -57,42 +55,71 @@ import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants;
  * @see https://jakarta.ee/specifications/annotations/2.0/annotations-spec-2.0.html#annotations
  *
  */
-public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
+public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
     public AnnotationDiagnosticsCollector() {
+        super();
     }
 
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(AnnotationConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(AnnotationConstants.ERROR);
+    @Override
+    protected String getDiagnosticSource() {
+        return AnnotationConstants.DIAGNOSTIC_SOURCE;
     }
 
+    @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
         if (unit != null) {
             try {
                 ArrayList<Tuple.Two<IAnnotation, IAnnotatable>> annotatables = new ArrayList<Two<IAnnotation, IAnnotatable>>();
+                String[] validAnnotations = { AnnotationConstants.GENERATED_FQ_NAME };
+                String[] validTypeAnnotations = { AnnotationConstants.GENERATED_FQ_NAME,
+                        AnnotationConstants.RESOURCE_FQ_NAME };
+                String[] validMethodAnnotations = { AnnotationConstants.GENERATED_FQ_NAME,
+                        AnnotationConstants.POST_CONSTRUCT_FQ_NAME, AnnotationConstants.PRE_DESTROY_FQ_NAME,
+                        AnnotationConstants.RESOURCE_FQ_NAME };
 
-                for (IPackageDeclaration p : unit.getPackageDeclarations()) {
-                    for (IAnnotation annotation : p.getAnnotations()) {
-                        annotatables.add(new Tuple.Two<>(annotation, p));
+                IPackageDeclaration[] packages = unit.getPackageDeclarations();
+                for (IPackageDeclaration p : packages) {
+                    IAnnotation[] annotations = p.getAnnotations();
+                    for (IAnnotation annotation : annotations) {
+                        if (isValidAnnotation(annotation.getElementName(), validAnnotations))
+                            annotatables.add(new Tuple.Two<>(annotation, p));
                     }
                 }
 
-                for (IType type : unit.getAllTypes()) {
-
-                    for (IAnnotation annotation : type.getAnnotations()) {
-                        annotatables.add(new Tuple.Two<>(annotation, type));
+                IType[] types = unit.getAllTypes();
+                for (IType type : types) {
+                    // Type
+                    IAnnotation[] annotations = type.getAnnotations();
+                    for (IAnnotation annotation : annotations) {
+                        if (isValidAnnotation(annotation.getElementName(), validTypeAnnotations))
+                            annotatables.add(new Tuple.Two<>(annotation, type));
                     }
-
-                    for (IMethod method : type.getMethods()) {
-                        for (IAnnotation annotation : method.getAnnotations()) {
-                            annotatables.add(new Tuple.Two<>(annotation, method));
+                    // Method
+                    IMethod[] methods = type.getMethods();
+                    for (IMethod method : methods) {
+                        annotations = method.getAnnotations();
+                        for (IAnnotation annotation : annotations) {
+                            if (isValidAnnotation(annotation.getElementName(), validMethodAnnotations))
+                                annotatables.add(new Tuple.Two<>(annotation, method));
+                        }
+                        // method parameters
+                        ILocalVariable[] parameters = method.getParameters();
+                        for (ILocalVariable parameter : parameters) {
+                            annotations = parameter.getAnnotations();
+                            for (IAnnotation annotation : annotations) {
+                                if (isValidAnnotation(annotation.getElementName(), validAnnotations))
+                                    annotatables.add(new Tuple.Two<>(annotation, parameter));
+                            }
                         }
                     }
-
-                    for (IField field : type.getFields()) {
-                        for (IAnnotation annotation : field.getAnnotations()) {
-                            annotatables.add(new Tuple.Two<>(annotation, field));
+                    // Field
+                    IField[] fields = type.getFields();
+                    for (IField field : fields) {
+                        annotations = field.getAnnotations();
+                        for (IAnnotation annotation : annotations) {
+                            if (isValidAnnotation(annotation.getElementName(), validTypeAnnotations))
+                                annotatables.add(new Tuple.Two<>(annotation, field));
                         }
                     }
                 }
@@ -101,7 +128,7 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                     IAnnotation annotation = annotatable.getFirst();
                     IAnnotatable element = annotatable.getSecond();
 
-                    if (annotation.getElementName().equals(AnnotationConstants.GENERATED)) {
+                    if (isMatchedAnnotation(unit, annotation, AnnotationConstants.GENERATED_FQ_NAME)) {
                         for (IMemberValuePair pair : annotation.getMemberValuePairs()) {
                             // If date element exists and is non-empty, it must follow ISO 8601 format.
                             if (pair.getMemberName().equals("date")) {
@@ -109,26 +136,17 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                     String date = (String) pair.getValue();
                                     if (!date.equals("")) {
                                         if (!Pattern.matches(AnnotationConstants.ISO_8601_REGEX, date)) {
-                                            ISourceRange annotationNameRange = JDTUtils.getNameRange(annotation);
-
-                                            Range annotationRange = JDTUtils.toRange(
-                                                    unit,
-                                                    annotationNameRange.getOffset(),
-                                                    annotationNameRange.getLength());
-                                            String diagnosticMessage = generateDiagnosticAnnotation("Generated","define the attribute 'date' following the ISO 8601 standard.");
-
-                                            Diagnostic diagnostic = new Diagnostic(
-                                                    annotationRange,
-                                                    diagnosticMessage);
-                                            diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT);
-                                            completeDiagnostic(diagnostic);
-                                            diagnostics.add(diagnostic);
+                                            String diagnosticMessage = generateDiagnosticAnnotation("Generated",
+                                                    "define the attribute 'date' following the ISO 8601 standard.");
+                                            diagnostics.add(createDiagnostic(annotation, unit, diagnosticMessage,
+                                                    AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT, null,
+                                                    DiagnosticSeverity.Error));
                                         }
                                     }
                                 }
                             }
                         }
-                    } else if (annotation.getElementName().equals(AnnotationConstants.RESOURCE)) {
+                    } else if (isMatchedAnnotation(unit, annotation, AnnotationConstants.RESOURCE_FQ_NAME)) {
                         if (element instanceof IType) {
                             IType type = (IType) element;
                             if (type.getElementType() == IJavaElement.TYPE && ((IType) type).isClass()) {
@@ -142,112 +160,74 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
                                         typeEmpty = false;
                                     }
                                 }
-                                ISourceRange annotationNameRange = JDTUtils.getNameRange(annotation);
-                                Range annotationRange = JDTUtils.toRange(unit, annotationNameRange.getOffset(),
-                                        annotationNameRange.getLength());
-                                
-                                String diagnosticMessage = generateDiagnosticAnnotation("Resource","define the attribute");
-
+                                String diagnosticMessage = generateDiagnosticAnnotation("Resource",
+                                        "define the attribute");
                                 if (nameEmpty) {
                                     diagnosticMessage = diagnosticMessage + " 'name'.";
-                                    Diagnostic diagnostic = new Diagnostic(
-                                            annotationRange,
-                                            diagnosticMessage);
-                                    diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE);
-                                    completeDiagnostic(diagnostic);
-                                    diagnostics.add(diagnostic);
+                                    diagnostics.add(createDiagnostic(annotation, unit, diagnosticMessage,
+                                            AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE, null,
+                                            DiagnosticSeverity.Error));
                                 }
 
                                 if (typeEmpty) {
                                     diagnosticMessage = diagnosticMessage + " 'type'.";
-                                    Diagnostic diagnostic = new Diagnostic(
-                                            annotationRange,
-                                            diagnosticMessage);
-                                    diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE);
-                                    completeDiagnostic(diagnostic);
-                                    diagnostics.add(diagnostic);
+                                    diagnostics.add(createDiagnostic(annotation, unit, diagnosticMessage,
+                                            AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE, null,
+                                            DiagnosticSeverity.Error));
                                 }
                             }
                         }
                     }
-                    if (annotation.getElementName().equals(AnnotationConstants.POST_CONSTRUCT)) {
+                    if (isMatchedAnnotation(unit, annotation, AnnotationConstants.POST_CONSTRUCT_FQ_NAME)) {
                         if (element instanceof IMethod) {
                             IMethod method = (IMethod) element;
-
-                            ISourceRange methodNameRange = JDTUtils.getNameRange(method);
-                            Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
-                                    methodNameRange.getLength());
-
                             if (method.getNumberOfParameters() != 0) {
-                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct","not have any parameters.");
-                      
-                                Diagnostic diagnostic = new Diagnostic(
-                                        methodRange,
-                                        diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS);
-                                completeDiagnostic(diagnostic);
-                                diagnostics.add(diagnostic);
+                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct",
+                                        "not have any parameters.");
+                                diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
+                                        AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS, null,
+                                        DiagnosticSeverity.Error));
                             }
 
                             if (!method.getReturnType().equals("V")) {
-                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct","be void.");
-                                Diagnostic diagnostic = new Diagnostic(
-                                        methodRange,
-                                        diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE);
-                                completeDiagnostic(diagnostic);
-                                diagnostics.add(diagnostic);
+                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct", "be void.");
+                                diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
+                                        AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE, null,
+                                        DiagnosticSeverity.Error));
                             }
 
                             if (method.getExceptionTypes().length != 0) {
-                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct","not throw checked exceptions.");
-                                Diagnostic diagnostic = new Diagnostic(
-                                        methodRange,
-                                        diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION);
-                                completeDiagnostic(diagnostic);
-                                diagnostic.setSeverity(AnnotationConstants.WARNING);
-                                diagnostics.add(diagnostic);
+                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct",
+                                        "not throw checked exceptions.");
+                                diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
+                                        AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION, null,
+                                        DiagnosticSeverity.Warning));
                             }
                         }
-                    } else if (annotation.getElementName().equals(AnnotationConstants.PRE_DESTROY)) {
+                    } else if (isMatchedAnnotation(unit, annotation, AnnotationConstants.PRE_DESTROY_FQ_NAME)) {
                         if (element instanceof IMethod) {
                             IMethod method = (IMethod) element;
-
-                            ISourceRange methodNameRange = JDTUtils.getNameRange(method);
-                            Range methodRange = JDTUtils.toRange(unit, methodNameRange.getOffset(),
-                                    methodNameRange.getLength());
-
                             if (method.getNumberOfParameters() != 0) {
-                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy","not have any parameters.");
-                                Diagnostic diagnostic = new Diagnostic(
-                                        methodRange,
-                                       diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS);
-                                completeDiagnostic(diagnostic);
-                                diagnostics.add(diagnostic);
+                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy",
+                                        "not have any parameters.");
+                                diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
+                                        AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS, null,
+                                        DiagnosticSeverity.Error));
                             }
 
                             if (Flags.isStatic(method.getFlags())) {
-                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy","not be static.");
-                                Diagnostic diagnostic = new Diagnostic(
-                                        methodRange,
-                                        diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC);
-                                completeDiagnostic(diagnostic);
-                                diagnostic.setData(method.getElementType());
-                                diagnostics.add(diagnostic);
+                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy", "not be static.");
+                                diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
+                                        AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC, method.getElementType(),
+                                        DiagnosticSeverity.Error));
                             }
 
                             if (method.getExceptionTypes().length != 0) {
-                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy","not throw checked exceptions.");
-                                Diagnostic diagnostic = new Diagnostic(
-                                        methodRange,
-                                        diagnosticMessage);
-                                diagnostic.setCode(AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION);
-                                completeDiagnostic(diagnostic);
-                                diagnostic.setSeverity(AnnotationConstants.WARNING);
-                                diagnostics.add(diagnostic);
+                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy",
+                                        "not throw checked exceptions.");
+                                diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
+                                        AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION, null,
+                                        DiagnosticSeverity.Warning));
                             }
                         }
                     }
@@ -257,17 +237,23 @@ public class AnnotationDiagnosticsCollector implements DiagnosticsCollector {
             }
         }
     }
-    
-    public String generateDiagnosticMethod(String annotation, String message) {
-        
+
+    private static String generateDiagnosticMethod(String annotation, String message) {
         String finalMessage = "A method with the annotation @" + annotation + " must " + message;
         return finalMessage;
     }
-    
-    public String generateDiagnosticAnnotation(String annotation, String message) {
-        
+
+    private static String generateDiagnosticAnnotation(String annotation, String message) {
         String finalMessage = "The annotation @" + annotation + " must " + message;
         return finalMessage;
     }
 
+    private static boolean isValidAnnotation(String annotationName, String[] validAnnotations) {
+        for (String fqName : validAnnotations) {
+            if (fqName.endsWith(annotationName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

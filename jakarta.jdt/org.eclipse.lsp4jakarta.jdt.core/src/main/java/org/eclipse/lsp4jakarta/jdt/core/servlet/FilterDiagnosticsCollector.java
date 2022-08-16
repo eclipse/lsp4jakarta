@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 IBM Corporation, Reza Akhavan and others.
+* Copyright (c) 2020, 2022 IBM Corporation, Reza Akhavan and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,34 +13,30 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
+import java.util.List;
+
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMemberValuePair;
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
-import java.util.List;
-
-public class FilterDiagnosticsCollector implements DiagnosticsCollector {
+public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
     public FilterDiagnosticsCollector() {
-
+        super();
     }
 
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(ServletConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(ServletConstants.SEVERITY);
+    @Override
+    protected String getDiagnosticSource() {
+        return ServletConstants.DIAGNOSTIC_SOURCE;
     }
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
-        Diagnostic diagnostic;
         if (unit != null) {
             IType[] alltypes;
             IAnnotation[] allAnnotations;
@@ -49,43 +45,27 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
                 alltypes = unit.getAllTypes();
                 for (IType type : alltypes) {
                     allAnnotations = type.getAnnotations();
+                    IAnnotation webFilterAnnotation = null;
 
-                    ISourceRange nameRange = JDTUtils.getNameRange(type);
-                    Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-
-                    boolean isWebFilterAnnotated = false;
-                    boolean isFilterImplemented = false;
-
-                    IAnnotation WebFilterAnnotation = null;
                     for (IAnnotation annotation : allAnnotations) {
-                        if (annotation.getElementName().equals(ServletConstants.WEBFILTER)) {
-                            isWebFilterAnnotated = true;
-                            WebFilterAnnotation = annotation;
+                        if (isMatchedJavaElement(type, annotation.getElementName(),
+                                ServletConstants.WEBFILTER_FQ_NAME)) {
+                            webFilterAnnotation = annotation;
                         }
                     }
 
-                    String typeExtension = type.getSuperclassName();
+                    String[] interfaces = { ServletConstants.FILTER_FQ_NAME };
+                    boolean isFilterImplemented = doesImplementInterfaces(type, interfaces);
 
-                    String[] implementedInterfaces = type.getSuperInterfaceNames();
-
-                    for (String in : implementedInterfaces) {
-                        if (in.equals(ServletConstants.FILTER)) {
-                            isFilterImplemented = true;
-                        }
-                    }
-
-                    if (isWebFilterAnnotated && !isFilterImplemented) {
-                        diagnostic = new Diagnostic(range,
-                                "Annotated classes with @WebFilter must implement the Filter interface.");
-                        completeDiagnostic(diagnostic);
-                        diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER);
-                        diagnostic.setSeverity(DiagnosticSeverity.Warning);
-                        diagnostics.add(diagnostic);
+                    if (webFilterAnnotation != null && !isFilterImplemented) {
+                        diagnostics.add(createDiagnostic(type, unit,
+                                "Annotated classes with @WebFilter must implement the Filter interface.",
+                                ServletConstants.DIAGNOSTIC_CODE_FILTER, null, DiagnosticSeverity.Error));
                     }
 
                     /* URL pattern diagnostic check */
-                    if (WebFilterAnnotation != null) {
-                        IMemberValuePair[] memberValues = WebFilterAnnotation.getMemberValuePairs();
+                    if (webFilterAnnotation != null) {
+                        IMemberValuePair[] memberValues = webFilterAnnotation.getMemberValuePairs();
 
                         boolean isUrlpatternSpecified = false;
                         boolean isServletNamesSpecified = false;
@@ -102,33 +82,24 @@ public class FilterDiagnosticsCollector implements DiagnosticsCollector {
                             if (mv.getMemberName().equals(ServletConstants.VALUE)) {
                                 isValueSpecified = true;
                             }
-
                         }
-                        ISourceRange annotationNameRange = JDTUtils.getNameRange(WebFilterAnnotation);
-                        Range annotationrange = JDTUtils.toRange(unit, annotationNameRange.getOffset(),
-                                annotationNameRange.getLength());
-
                         if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
-                            diagnostic = new Diagnostic(annotationrange,
-                                    "The annotation @WebServlet must define the attribute urlPatterns or the attribute value.");
-                            completeDiagnostic(diagnostic);
-                            diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE);
-                            diagnostics.add(diagnostic);
+                            diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
+                                    "The annotation @WebFilter must define the attribute 'urlPatterns', 'servletNames' or 'value'.",
+                                    ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE, null,
+                                    DiagnosticSeverity.Error));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
-                            diagnostic = new Diagnostic(annotationrange,
-                                    "The annotation @WebFilter must have both the 'value' and 'urlPatterns' attributes specified at once.");
-                            completeDiagnostic(diagnostic);
-                            diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES);
-                            diagnostics.add(diagnostic);
+                            diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
+                                    "The annotation @WebFilter can not have both 'value' and 'urlPatterns' attributes specified at once.",
+                                    ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES, null,
+                                    DiagnosticSeverity.Error));
                         }
-
                     }
                 }
             } catch (JavaModelException e) {
-            	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
+                JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
         }
     }
-
 }

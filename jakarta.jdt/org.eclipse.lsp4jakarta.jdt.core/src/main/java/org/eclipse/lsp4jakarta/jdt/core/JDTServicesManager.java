@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2019 Red Hat Inc. and others.
+* Copyright (c) 2019, 2022 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -29,24 +30,22 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.jdt.codeAction.CodeActionHandler;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.jax_rs.Jax_RSClassDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.jsonp.JsonpDiagnosticCollector;
 import org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jax_rs.Jax_RSClassDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jax_rs.ResourceMethodDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jsonb.JsonbDiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.jsonp.JsonpDiagnosticCollector;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceEntityDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceMapKeyDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.transactions.TransactionsDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
-
-import org.eclipse.lsp4jakarta.jdt.codeAction.CodeActionHandler;
+import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketDiagnosticsCollector;
 
 /**
  * JDT manager for Java files Modified from
@@ -93,6 +92,17 @@ public class JDTServicesManager {
      * @return diagnostics
      */
     public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
+        return getJavaDiagnostics(javaParams, new NullProgressMonitor());
+    }
+
+    /**
+     * Returns diagnostics for the given uris from the JakartaDiagnosticsParams.
+     * 
+     * @param javaParams the diagnostics parameters
+     * @return diagnostics
+     */
+    public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams,
+            IProgressMonitor monitor) {
         List<String> uris = javaParams.getUris();
         if (uris == null) {
             return Collections.emptyList();
@@ -104,10 +114,16 @@ public class JDTServicesManager {
             URI u = JDTUtils.toURI(uri);
             ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
             for (DiagnosticsCollector d : diagnosticsCollectors) {
+                if (monitor.isCanceled()) {
+                    break;
+                }
                 d.collectDiagnostics(unit, diagnostics);
             }
             PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
             publishDiagnostics.add(publishDiagnostic);
+            if (monitor.isCanceled()) {
+                return Collections.emptyList();
+            }
         }
         return publishDiagnostics;
     }
@@ -140,7 +156,7 @@ public class JDTServicesManager {
                         classpath.add(null);
                     }
                 } catch (JavaModelException e) {
-                	JakartaCorePlugin.logException("Failed to retrieve projectContext from JDT...", e);
+                    JakartaCorePlugin.logException("Failed to retrieve projectContext from JDT...", e);
                 }
             });
         } else {

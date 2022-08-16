@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 IBM Corporation, Reza Akhavan and others.
+* Copyright (c) 2020, 2022 IBM Corporation, Reza Akhavan and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,29 +17,25 @@ import java.util.List;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
-public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
+public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
     public ListenerDiagnosticsCollector() {
-
+        super();
     }
 
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(ServletConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setCode(ServletConstants.DIAGNOSTIC_CODE_LISTENER);
-        diagnostic.setSeverity(ServletConstants.SEVERITY);
+    @Override
+    protected String getDiagnosticSource() {
+        return ServletConstants.DIAGNOSTIC_SOURCE;
     }
 
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
-        Diagnostic diagnostic;
         if (unit != null) {
             IType[] alltypes;
             IAnnotation[] allAnnotations;
@@ -48,46 +44,33 @@ public class ListenerDiagnosticsCollector implements DiagnosticsCollector {
                 alltypes = unit.getAllTypes();
                 for (IType type : alltypes) {
                     allAnnotations = type.getAnnotations();
-
                     boolean isWebListenerAnnotated = false;
-                    boolean isWebListenerInterfaceImplemented = false;
-
                     for (IAnnotation annotation : allAnnotations) {
-                        if (annotation.getElementName().equals(ServletConstants.WEB_LISTENER)) {
+                        if (isMatchedJavaElement(type, annotation.getElementName(),
+                                ServletConstants.WEB_LISTENER_FQ_NAME)) {
                             isWebListenerAnnotated = true;
                             break;
                         }
                     }
-                    String typeExtension = type.getSuperclassName();
 
-                    String[] implementedInterfaces = type.getSuperInterfaceNames();
+                    String[] interfaces = { ServletConstants.SERVLET_CONTEXT_LISTENER_FQ_NAME,
+                            ServletConstants.SERVLET_CONTEXT_ATTRIBUTE_LISTENER_FQ_NAME,
+                            ServletConstants.SERVLET_REQUEST_LISTENER_FQ_NAME,
+                            ServletConstants.SERVLET_REQUEST_ATTRIBUTE_LISTENER_FQ_NAME,
+                            ServletConstants.HTTP_SESSION_LISTENER_FQ_NAME,
+                            ServletConstants.HTTP_SESSION_ATTRIBUTE_LISTENER_FQ_NAME,
+                            ServletConstants.HTTP_SESSION_ID_LISTENER_FQ_NAME };
+                    boolean isImplemented = doesImplementInterfaces(type, interfaces);
 
-                    for (String in : implementedInterfaces) {
-                        if (in.equals(ServletConstants.SERVLET_CONTEXT_LISTENER)
-                                || in.equals(ServletConstants.SERVLET_CONTEXT_ATTRIBUTE_LISTENER)
-                                || in.equals(ServletConstants.SERVLET_REQUEST_LISTENER)
-                                || in.equals(ServletConstants.SERVLET_REQUEST_ATTRIBUTE_LISTENER)
-                                || in.equals(ServletConstants.HTTP_SESSION_LISTENER)
-                                || in.equals(ServletConstants.HTTP_SESSION_ATTRIBUTE_LISTENER)
-                                || in.equals(ServletConstants.HTTP_SESSION_ID_LISTENER)) {
-                            isWebListenerInterfaceImplemented = true;
-                            break;
-                        }
-                    }
-
-                    if (isWebListenerAnnotated && !isWebListenerInterfaceImplemented) {
-                        ISourceRange nameRange = JDTUtils.getNameRange(type);
-                        Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-                        diagnostic = new Diagnostic(range, "Annotated classes with @WebListener "
-                                + "must implement one or more of the ServletContextListener, ServletContextAttributeListener,"
-                                + " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener,"
-                                + " HttpSessionAttributeListener, or HttpSessionIdListener interfaces.");
-                        completeDiagnostic(diagnostic);
-                        diagnostics.add(diagnostic);
+                    if (isWebListenerAnnotated && !isImplemented) {
+                        diagnostics.add(createDiagnostic(type, unit,
+                                "Annotated classes with @WebListener must implement one or more of the following interfaces: ServletContextListener, ServletContextAttributeListener,"
+                                        + " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener, HttpSessionAttributeListener, or HttpSessionIdListener.",
+                                ServletConstants.DIAGNOSTIC_CODE_LISTENER, null, DiagnosticSeverity.Error));
                     }
                 }
             } catch (JavaModelException e) {
-            	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
+                JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
         }
     }
