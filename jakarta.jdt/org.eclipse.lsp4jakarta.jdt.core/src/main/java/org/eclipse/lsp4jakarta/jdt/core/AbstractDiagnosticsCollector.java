@@ -304,4 +304,23 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
         }
         return false;
     }
+
+    /**
+     * Returns matched Java element fully qualified name.
+     *
+     * @param type               Java class.
+     * @param javaElement        Java element name
+     * @param javaElementFQNames given fully qualified name array.
+     * @return Matched fully qualified name and null otherwise.
+     */
+    protected static String getMatchedJavaElementName(IType type, String javaElementName, String[] javaElementFQNames)
+            throws JavaModelException {
+        String[] matches = (String[]) Stream.of(javaElementFQNames).filter(fqName -> fqName.endsWith(javaElementName))
+                .toArray(String[]::new);
+        if (matches.length > 0) {
+            if (isMatchedJavaElement(type, javaElementName, matches[0]) == true) // only check the first one for now
+                return matches[0];
+        }
+        return null;
+    }
 }
