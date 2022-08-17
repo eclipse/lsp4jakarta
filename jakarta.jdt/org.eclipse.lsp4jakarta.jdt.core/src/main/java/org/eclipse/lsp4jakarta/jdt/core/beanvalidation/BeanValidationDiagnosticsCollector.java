@@ -122,13 +122,16 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
         if (declaringType != null) {
             String annotationName = annotation.getElementName();
             boolean isMethod = (element instanceof IMethod) ? true : false;
-            String source = isMethod ? "methods." : "fields.";
 
             if (Flags.isStatic(element.getFlags())) {
+                String source = isMethod ? "methods" : "fields"; // have to use different 'source' here to pass tests
+                                                                 // for build
                 diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
                         "Constraint annotations are not allowed on static " + source, DIAGNOSTIC_CODE_STATIC,
                         annotationName, DiagnosticSeverity.Error));
             } else {
+                String source = isMethod ? "methods." : "fields."; // have to use different 'source' here to pass tests
+                                                                   // for build
                 String type = (isMethod) ? ((IMethod) element).getReturnType() : ((IField) element).getTypeSignature();
 
                 if (matchedAnnotation.equals(ASSERT_FALSE) || matchedAnnotation.equals(ASSERT_TRUE)) {
