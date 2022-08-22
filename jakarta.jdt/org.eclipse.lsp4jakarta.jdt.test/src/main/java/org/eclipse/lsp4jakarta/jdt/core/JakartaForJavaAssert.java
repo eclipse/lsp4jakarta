@@ -221,6 +221,14 @@ public class JakartaForJavaAssert {
     }
 
     // util. APIs
+
+    /**
+     * Returns new string without '\r' for new lines. (Windows generates an extra
+     * '\r' for each new line, it makes test messages fail to compare.)
+     * 
+     * @param source test message string
+     * @return new string without '\r' for new lines
+     */
     public static String replaceNewLineCharacters(String source) {
         return source.replaceAll("\r\n", "\n");
     }
