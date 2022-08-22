@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Red Hat Inc. and others.
+* Copyright (c) 2020, 2022 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,9 @@ package org.eclipse.lsp4jakarta.jdt.core;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
@@ -29,6 +29,7 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.ResourceOperation;
 import org.eclipse.lsp4j.TextDocumentEdit;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextEdit;
@@ -37,8 +38,6 @@ import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Assert;
 
 /**
@@ -82,6 +81,19 @@ public class JakartaForJavaAssert {
         });
 
         Assert.assertEquals(expected.length, actual.size());
+        
+        // remove extra '\r'
+        for (CodeAction ca : actual) {
+            ca.setTitle(replaceNewLineCharacters(ca.getTitle()));
+            List<Either<TextDocumentEdit, ResourceOperation>> tdes = ca.getEdit().getDocumentChanges();
+            for (Either<TextDocumentEdit, ResourceOperation> tde : tdes) {
+                List<TextEdit> tes = tde.getLeft().getEdits();
+                for (TextEdit te : tes) {
+                    te.setNewText(replaceNewLineCharacters(te.getNewText()));
+                }
+            }
+        }        
+        
         for (int i = 0; i < expected.length; i++) {
             Assert.assertEquals("Assert title [" + i + "]", expected[i].getTitle(),
                     ((CodeAction) actual.get(i)).getTitle());
@@ -175,6 +187,13 @@ public class JakartaForJavaAssert {
         actual.sort(diagnosticRangeOrder);
         expected.sort(diagnosticRangeOrder);
 
+        // probably don't have to do this, as the code is using same way to build
+        // 'expected Diagnostic' object
+        // remove extra '\r'
+        for (Diagnostic dia : actual) {
+            dia.setMessage(replaceNewLineCharacters(dia.getMessage()));
+        }
+
         List<Diagnostic> received = actual;
         final boolean filterMessage;
         if (expected != null && !expected.isEmpty()
@@ -201,4 +220,8 @@ public class JakartaForJavaAssert {
         return uriString.replaceFirst("file:/([^/])", "file:///$1");
     }
 
+    // util. APIs
+    public static String replaceNewLineCharacters(String source) {
+        return source.replaceAll("\r\n", "\n");
+    }
 }
