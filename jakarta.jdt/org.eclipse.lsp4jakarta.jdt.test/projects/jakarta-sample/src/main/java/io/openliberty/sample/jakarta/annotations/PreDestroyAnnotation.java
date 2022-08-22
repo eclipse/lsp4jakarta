@@ -1,10 +1,10 @@
-package io.openliberty.sample.jakarta.beanval;
+package io.openliberty.sample.jakarta.annotations;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.annotation.Resource;
 
-@Resource(type = Object.class, name = "aa")
-public class GraduatingStudent {
+@Resource(type = Object.class, name = "aa") 
+public class PreDestroyAnnotation { 
 
     private Integer studentId;
 	

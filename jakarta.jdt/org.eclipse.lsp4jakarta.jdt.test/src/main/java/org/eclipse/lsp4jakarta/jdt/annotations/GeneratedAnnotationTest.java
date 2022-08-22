@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2021, 2022 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.annotations;
 
-import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.*;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.d;
 
 import java.util.Arrays;
 
@@ -41,10 +42,12 @@ public class GeneratedAnnotationTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected annotations
-        Diagnostic d1 = d(6, 4, 63, "The annotation @Generated must define the attribute 'date' following the ISO 8601 standard.",
+        Diagnostic d1 = d(7, 4, 63,
+                "The annotation @Generated must define the attribute 'date' following the ISO 8601 standard.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
         
-        Diagnostic d2 = d(12, 4, 70, "The annotation @Generated must define the attribute 'date' following the ISO 8601 standard.",
+        Diagnostic d2 = d(13, 4, 70,
+                "The annotation @Generated must define the attribute 'date' following the ISO 8601 standard.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
         
 

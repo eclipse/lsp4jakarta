@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2021, 2022 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,12 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.annotations;
 
-import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.*;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaCodeAction;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.ca;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.createCodeActionParams;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.d;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.te;
 
 import java.util.Arrays;
 
@@ -44,10 +49,10 @@ public class ResourceAnnotationTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected annotations
-        Diagnostic d1 = d(20, 0, 22, "The annotation @Resource must define the attribute 'type'.",
+        Diagnostic d1 = d(22, 0, 22, "The annotation @Resource must define the attribute 'type'.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceTypeAttribute");
 
-        Diagnostic d2 = d(37, 0, 30, "The annotation @Resource must define the attribute 'name'.",
+        Diagnostic d2 = d(39, 0, 30, "The annotation @Resource must define the attribute 'name'.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceNameAttribute");
 
 
@@ -55,12 +60,12 @@ public class ResourceAnnotationTest extends BaseJakartaTest {
         
         
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
-        TextEdit te = te(20, 0, 20, 22,"@Resource(name = \"aa\", type = \"\")");
+        TextEdit te = te(22, 0, 22, 22, "@Resource(name = \"aa\", type = \"\")");
         CodeAction ca= ca(uri, "Add type to jakarta.annotation.Resource", d1, te);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
         
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
-        TextEdit te1 = te(37, 0, 37, 30,"@Resource(type = \"\", name = \"\")");
+        TextEdit te1 = te(39, 0, 39, 30, "@Resource(type = \"\", name = \"\")");
         CodeAction ca1= ca(uri, "Add name to jakarta.annotation.Resource", d2, te1);
         assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca1);
 

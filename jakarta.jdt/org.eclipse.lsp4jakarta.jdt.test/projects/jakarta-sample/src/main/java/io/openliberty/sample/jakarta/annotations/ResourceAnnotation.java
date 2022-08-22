@@ -1,7 +1,9 @@
+package io.openliberty.sample.jakarta.annotations;
+
 import jakarta.annotation.Resource;
 
 @Resource(type = Object.class, name = "aa")
-public class GraduatingStudent {
+public class ResourceAnnotation {
 
     private Integer studentId;
 
