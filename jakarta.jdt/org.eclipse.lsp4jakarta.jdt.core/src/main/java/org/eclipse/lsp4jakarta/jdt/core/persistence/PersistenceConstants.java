@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 IBM Corporation, Ankush Sharma and others.
+* Copyright (c) 2020, 2022 IBM Corporation, Ankush Sharma and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,14 +13,12 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.persistence;
 
-import org.eclipse.lsp4j.DiagnosticSeverity;
-
 public class PersistenceConstants {
     /* Annotation Constants */
-    public static final String ENTITY = "Entity";
-    public static final String MAPKEY = "MapKey";
-    public static final String MAPKEYCLASS = "MapKeyClass";
-    public static final String MAPKEYJOINCOLUMN = "MapKeyJoinColumn";
+    public static final String ENTITY = "jakarta.persistence.Entity";
+    public static final String MAPKEY = "jakarta.persistence.MapKey";
+    public static final String MAPKEYCLASS = "jakarta.persistence.MapKeyClass";
+    public static final String MAPKEYJOINCOLUMN = "jakarta.persistence.MapKeyJoinColumn";
 
     /* Annotation Fields */
     public static final String NAME = "name";
@@ -28,9 +26,6 @@ public class PersistenceConstants {
 
     /* Source */
     public static final String DIAGNOSTIC_SOURCE = "jakarta-persistence";
-
-    /* Severity */
-    public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 
     /* Entity Codes */
     public static final String DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR = "MissingEmptyConstructor";
@@ -41,5 +36,6 @@ public class PersistenceConstants {
     /* MapKey Codes */
     public static final String DIAGNOSTIC_CODE_INVALID_ANNOTATION = "RemoveMapKeyorMapKeyClass";
     public static final String DIAGNOSTIC_CODE_MISSING_ATTRIBUTES = "SupplyAttributesToAnnotations";
-
+    
+    public final static String[] SET_OF_PERSISTENCE_ANNOTATIONS = {MAPKEY, MAPKEYCLASS, MAPKEYJOINCOLUMN};
 }
