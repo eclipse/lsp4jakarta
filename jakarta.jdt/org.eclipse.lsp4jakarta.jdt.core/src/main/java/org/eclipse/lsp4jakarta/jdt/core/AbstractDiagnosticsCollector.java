@@ -13,6 +13,7 @@
 package org.eclipse.lsp4jakarta.jdt.core;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.core.IImportContainer;
 import org.eclipse.jdt.core.IImportDeclaration;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
@@ -326,6 +328,29 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
     }
 
     /**
+     * Returns matched Java element fully qualified names.
+     * 
+     * @param type               the type representing the class
+     * @param javaElementNames   Java element names
+     * @param javaElementFQNames given fully qualified name array
+     * @return matched Java element fully qualified names
+     */
+    protected static List<String> getMatchedJavaElementNames(IType type, String[] javaElementNames,
+            String[] javaElementFQNames) {
+        return Stream.of(javaElementFQNames).filter(fqName -> {
+            boolean anyMatch = Stream.of(javaElementNames).anyMatch(name -> {
+                try {
+                    return isMatchedJavaElement(type, name, fqName);
+                } catch (JavaModelException e) {
+                    JakartaCorePlugin.logException("Failed to get matched Java element FQ names", e);
+                    return false;
+                }
+            });
+            return anyMatch;
+        }).collect(Collectors.toList());
+    }
+
+    /**
      * Returns true if the given fully qualified name ends with the given name and
      * false otherwise
      *
@@ -339,5 +364,34 @@ public abstract class AbstractDiagnosticsCollector implements DiagnosticsCollect
         // e.g. 'jakarta.validation.constraints.DecimalMin' should NOT end with 'Min'
         // here
         return fqName.equals(name) || fqName.endsWith("." + name);
+    }
+
+    /**
+     * Returns simple name for the given fully qualified name.
+     *
+     * @param fqName a fully qualified name or simple name
+     * @return simple name for given fully qualified name
+     */
+    protected static String getSimpleName(String fqName) {
+        int idx = fqName.lastIndexOf('.');
+        if (idx != -1 && idx != fqName.length() - 1) {
+            return fqName.substring(idx + 1);
+        }
+        return fqName;
+    }
+
+    /**
+     * Returns true if the given method is a constructor and false otherwise.
+     *
+     * @param m method
+     * @return true if the given method is a constructor and false otherwise
+     */
+    protected static boolean isConstructorMethod(IMethod m) {
+        try {
+            return m.isConstructor();
+        } catch (JavaModelException e) {
+            JakartaCorePlugin.logException("Failed to check constructor method", e);
+            return false;
+        }
     }
 }
