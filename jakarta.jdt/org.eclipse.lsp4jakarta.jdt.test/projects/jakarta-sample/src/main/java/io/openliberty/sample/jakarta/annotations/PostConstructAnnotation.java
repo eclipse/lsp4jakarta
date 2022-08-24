@@ -1,10 +1,10 @@
-package io.openliberty.sample.jakarta.beanval;
+package io.openliberty.sample.jakarta.annotations;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 
 @Resource(type = Object.class, name = "aa")
-public class GraduatingStudent {
+public class PostConstructAnnotation {
 
     private Integer studentId;
 

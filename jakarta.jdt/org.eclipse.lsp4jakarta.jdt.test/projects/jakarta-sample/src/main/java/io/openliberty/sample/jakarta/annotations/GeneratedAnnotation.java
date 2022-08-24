@@ -1,8 +1,9 @@
+package io.openliberty.sample.jakarta.annotations;
+
 import jakarta.annotation.Generated;
 
-
 @Generated(value = "demoServlet", date="")
-public class GraduatingStudent {
+public class GeneratedAnnotation {
 
     @Generated(value = "demoServlet", date="not_ISO_compliant")
     private Integer studentId;
@@ -19,7 +20,7 @@ public class GraduatingStudent {
     @Generated(value="com.sun.xml.rpc.AProcessor")
     private String homeTown;
     
-    public GraduatingStudent(Integer studentId, Boolean isHappy, boolean isSad, Calendar graduationDate, Integer gpa,
+    public GeneratedAnnotation(Integer studentId, Boolean isHappy, boolean isSad, String graduationDate, Integer gpa,
             String emailAddress) {
         this.studentId = studentId;
         this.isHappy = isHappy;
