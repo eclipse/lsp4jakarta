@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2022 IBM Corporation, Ankush Sharma and others.
+* Copyright (c) 2020 IBM Corporation, Ankush Sharma and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,23 +26,21 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
-public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCollector {
+public class PersistenceEntityDiagnosticsCollector implements DiagnosticsCollector {
 
     public PersistenceEntityDiagnosticsCollector() {
-        super();
-    }
 
-    @Override
-    protected String getDiagnosticSource() {
-        return PersistenceConstants.DIAGNOSTIC_SOURCE;
     }
 
     /**
@@ -86,93 +84,135 @@ public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCo
         return false;
     }
 
+    private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
+        try {
+            ISourceRange nameRange = JDTUtils.getNameRange(el);
+            Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
+            Diagnostic diagnostic = new Diagnostic(range, msg);
+            diagnostic.setCode(code);
+            completeDiagnostic(diagnostic);
+            return diagnostic;
+        } catch (JavaModelException e) {
+        	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
+        }
+        return null;
+    }
+
+    @Override
+    public void completeDiagnostic(Diagnostic diagnostic) {
+        diagnostic.setSource(PersistenceConstants.DIAGNOSTIC_SOURCE);
+        diagnostic.setSeverity(PersistenceConstants.SEVERITY);
+    }
+
     @Override
     public void collectDiagnostics(ICompilationUnit unit, List<Diagnostic> diagnostics) {
+        // TODO Auto-generated method stub
         if (unit != null) {
             IType[] alltypes;
             IAnnotation[] allAnnotations;
-
             try {
                 alltypes = unit.getAllTypes();
                 for (IType type : alltypes) {
+                    String className = type.getElementName();
+
                     allAnnotations = type.getAnnotations();
+
+                    ISourceRange nameRange = JDTUtils.getNameRange(type);
+                    Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
 
                     /* ============ Entity Annotation Diagnostics =========== */
                     IAnnotation EntityAnnotation = null;
                     for (IAnnotation annotation : allAnnotations) {
-                        if (isMatchedJavaElement(type, annotation.getElementName(), PersistenceConstants.ENTITY)) {
+                        if (annotation.getElementName().equals(PersistenceConstants.ENTITY)) {
                             EntityAnnotation = annotation;
                         }
                     }
 
                     if (EntityAnnotation != null) {
+
+                        ISourceRange annotationNameRange = JDTUtils.getNameRange(EntityAnnotation);
+                        Range annotationrange = JDTUtils.toRange(unit, annotationNameRange.getOffset(),
+                                annotationNameRange.getLength());
+
                         // Define boolean requirements for the diagnostics
                         boolean hasPublicOrProtectedNoArgConstructor = false;
                         boolean hasArgConstructor = false;
                         boolean isEntityClassFinal = false;
+                        boolean isMethodsOrPersistentVariablesFinal = false;
 
                         // Get the Methods of the annotated Class
                         for (IMethod method : type.getMethods()) {
-                            if (isConstructorMethod(method)) {
+                            if (method.isConstructor()) {
                                 // We have found a method that is a constructor
                                 if (method.getNumberOfParameters() > 0) {
                                     hasArgConstructor = true;
                                     continue;
                                 }
+
                                 // Don't need to perform subtractions to check flags because eclipse notifies on
                                 // illegal constructor modifiers
                                 if (method.getFlags() != Flags.AccPublic && method.getFlags() != Flags.AccProtected)
                                     continue;
+
                                 hasPublicOrProtectedNoArgConstructor = true;
                             }
+
                             // All Methods of this class should not be final
-                            if (isFinal(method.getFlags())) {
-                                diagnostics.add(createDiagnostic(method, unit,
+                            if (this.isFinal(method.getFlags())) {
+                                Diagnostic d = createDiagnostic(method, unit,
                                         "A class using the @Entity annotation cannot contain any methods that are declared final",
-                                        PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS, method.getElementType(),
-                                        DiagnosticSeverity.Error));
+                                        PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS);
+                                d.setData(method.getElementType());
+                                diagnostics.add(d);
+                                isMethodsOrPersistentVariablesFinal = true;
                             }
                         }
 
                         // Go through the instance variables and make sure no instance vars are final
                         for (IField field : type.getFields()) {
+
                             // If a field is static, we do not care about it, we care about all other field
-                            if (isStatic(field.getFlags())) {
+                            if (this.isStatic(field.getFlags())) {
                                 continue;
                             }
+
                             // If we find a non-static variable that is final, this is a problem
-                            if (isFinal(field.getFlags())) {
-                                diagnostics.add(createDiagnostic(field, unit,
+                            if (this.isFinal(field.getFlags())) {
+                                Diagnostic d = createDiagnostic(field, unit,
                                         "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
-                                        PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES, field.getElementType(),
-                                        DiagnosticSeverity.Error));
+                                        PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES);
+                                d.setData(field.getElementType());
+                                diagnostics.add(d);
+                                isMethodsOrPersistentVariablesFinal = true;
                             }
+
                         }
 
                         // Ensure that the Entity class is not given a final modifier
-                        if (isFinal(type.getFlags()))
+                        if (this.isFinal(type.getFlags()))
                             isEntityClassFinal = true;
 
                         // Create Diagnostics if needed
                         if (!hasPublicOrProtectedNoArgConstructor && hasArgConstructor) {
                             diagnostics.add(createDiagnostic(type, unit,
                                     "A class using the @Entity annotation must contain a public or protected constructor with no arguments.",
-                                    PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR, null,
-                                    DiagnosticSeverity.Error));
+                                    PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR));
                         }
 
                         if (isEntityClassFinal) {
-                            diagnostics.add(createDiagnostic(type, unit,
+                            Diagnostic d = createDiagnostic(type, unit,
                                     "A class using the @Entity annotation must not be final.",
-                                    PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS, type.getElementType(),
-                                    DiagnosticSeverity.Error));
+                                    PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS);
+                            d.setData(type.getElementType());
+                            diagnostics.add(d);
                         }
                     }
                 }
             } catch (JavaModelException e) {
-                JakartaCorePlugin.logException("Cannot calculate persistence diagnostics", e);
+            	JakartaCorePlugin.logException("Cannot calculate persistence diagnostics", e);
             }
         }
         // We do not do anything if the found unit is null
     }
+
 }
