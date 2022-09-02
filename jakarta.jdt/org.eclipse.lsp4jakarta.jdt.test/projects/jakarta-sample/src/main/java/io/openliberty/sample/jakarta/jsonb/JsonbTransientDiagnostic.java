@@ -13,9 +13,9 @@
 
 package io.openliberty.sample.jakarta.jsonb;
 
-import jakarta.json.bind.annotation.JsonbCreator;
-import jakarta.json.bind.annotation.JsobTransient;
+import jakarta.json.bind.annotation.JsonbAnnotation;
 import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTransient;
 
 public class JsonbTransientDiagnostic {
     @JsonbTransient
@@ -46,7 +46,7 @@ public class JsonbTransientDiagnostic {
         return id;
     }
     
-    @JsonbNillable 
+    @JsonbAnnotation
     private void setId(int id) {
         // A diagnostic is expected on setId because as a setter, it is annotated with other 
         // Jsonb annotations while its corresponding field id is annotated with JsonbTransient
@@ -59,7 +59,7 @@ public class JsonbTransientDiagnostic {
     }
     
     @JsonbTransient
-    private String setFavoriteDatabase(String favoriteDatabase) {
+    private void setFavoriteDatabase(String favoriteDatabase) {
         this.favoriteDatabase = favoriteDatabase;
     }
     
@@ -70,9 +70,9 @@ public class JsonbTransientDiagnostic {
     }
     
     // A diagnostic will appear as @JsonbTransient is not mutually exclusive on this accessor
-    @JsonbNillable
+    @JsonbAnnotation
     @JsonbTransient
-    private String setFavoriteEditor(String favoriteEditor) {
+    private void setFavoriteEditor(String favoriteEditor) {
         this.favoriteEditor = favoriteEditor;
     }
 }

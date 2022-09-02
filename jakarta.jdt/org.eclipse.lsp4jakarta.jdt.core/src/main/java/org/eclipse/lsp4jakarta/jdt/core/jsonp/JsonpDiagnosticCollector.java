@@ -19,25 +19,26 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.ASTUtils;
-import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
 
-public class JsonpDiagnosticCollector implements DiagnosticsCollector {
+public class JsonpDiagnosticCollector extends AbstractDiagnosticsCollector {
 
     public JsonpDiagnosticCollector() {
+        super();
     }
-
+    
     @Override
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(JsonpConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(JsonpConstants.SEVERITY);
+    protected String getDiagnosticSource() {
+        return JsonpConstants.DIAGNOSTIC_SOURCE;
     }
 
     @Override
@@ -47,7 +48,13 @@ public class JsonpDiagnosticCollector implements DiagnosticsCollector {
         }
         List<MethodInvocation> allMethodInvocations = ASTUtils.getMethodInvocations(unit);
         List<MethodInvocation> createPointerInvocations = allMethodInvocations.stream()
-                .filter(this::isCreatePointerInvocation).collect(Collectors.toList());
+                .filter(mi -> {
+                    try {
+                        return isMatchedJsonCreatePointer(unit, mi);
+                    } catch (JavaModelException e) {
+                        return false;
+                    }
+                }).collect(Collectors.toList());
         for (MethodInvocation m: createPointerInvocations) {
             Expression arg = (Expression) m.arguments().get(0);
             if (isInvalidArgument(arg)) {
@@ -56,8 +63,7 @@ public class JsonpDiagnosticCollector implements DiagnosticsCollector {
                 try {
                     Range range = JDTUtils.toRange(unit, arg.getStartPosition(), arg.getLength());
                     Diagnostic diagnostic = new Diagnostic(range, JsonpConstants.CREATE_POINTER_ERROR_MESSAGE);
-                    diagnostic.setCode(JsonpConstants.DIAGNOSTIC_CODE_CREATE_POINTER);
-                    completeDiagnostic(diagnostic);
+                    completeDiagnostic(diagnostic, JsonpConstants.DIAGNOSTIC_CODE_CREATE_POINTER);
                     diagnostics.add(diagnostic);
                 } catch (JavaModelException e) {
                     JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
@@ -66,15 +72,32 @@ public class JsonpDiagnosticCollector implements DiagnosticsCollector {
         }
     }
 
-    private boolean isCreatePointerInvocation(MethodInvocation m) {
-        return m.toString().startsWith(JsonpConstants.CREATE_POINTER) && m.arguments().size() == 1;
-    }
-
     private boolean isInvalidArgument(Expression arg) {
         if (arg instanceof StringLiteral) {
             String argValue = ((StringLiteral)arg).getLiteralValue();
             if (!(argValue.isEmpty() || argValue.matches("^(\\/[^\\/]+)+$"))) {
                 return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isMatchedJsonCreatePointer(ICompilationUnit unit, MethodInvocation mi)
+            throws JavaModelException {
+        if (mi.arguments().size() == 1 && JsonpConstants.CREATE_POINTER.equals(mi.getName().getIdentifier())
+                && mi.getExpression() != null) {
+            Expression ex = mi.getExpression();
+            String qualifier = ex.toString();
+            if (JsonpConstants.JSON_FQ_NAME.endsWith(qualifier)) {
+                // For performance reason, we check if the import of Java element name is
+                // declared
+                if (isImportedJavaElement(unit, JsonpConstants.JSON_FQ_NAME) == true)
+                    return true;
+                // only check fully qualified java element
+                if (JsonpConstants.JSON_FQ_NAME.equals(qualifier)) {
+                    ITypeBinding itb = ex.resolveTypeBinding();
+                    return itb != null && qualifier.equals(itb.getQualifiedName());
+                }
             }
         }
         return false;
