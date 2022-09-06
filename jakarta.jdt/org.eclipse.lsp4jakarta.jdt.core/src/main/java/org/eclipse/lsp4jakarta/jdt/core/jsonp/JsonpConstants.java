@@ -13,18 +13,14 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.jsonp;
 
-import org.eclipse.lsp4j.DiagnosticSeverity;
-
 public class JsonpConstants {
 
     /* Source */
     public static final String DIAGNOSTIC_SOURCE = "jakarta-jsonp";
-
-    /* Severity */
-    public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
     
     /* Constants */
-    public static final String CREATE_POINTER = "Json.createPointer";
+    public static final String CREATE_POINTER = "createPointer";
+    public static final String JSON_FQ_NAME = "jakarta.json.Json";
     public static final String DIAGNOSTIC_CODE_CREATE_POINTER = "InvalidCreatePointerArg";
     public static final String CREATE_POINTER_ERROR_MESSAGE = "Json.createPointer target must be a sequence of '/' prefixed tokens or an emtpy String";
 }
