@@ -14,11 +14,14 @@
 package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.CONSTRUCTOR_DIAGNOSTIC_CODE;
+import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DEPENDENT;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DEPENDENT_FQ_NAME;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DIAGNOSTIC_CODE;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DIAGNOSTIC_CODE_SCOPEDECL;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DIAGNOSTIC_SOURCE;
+import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DISPOSES;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DISPOSES_FQ_NAME;
+import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.INJECT;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.INJECT_FQ_NAME;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.INVALID_INJECT_PARAMS_FQ;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.OBSERVES_ASYNC_FQ_NAME;
@@ -104,7 +107,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
                             && (fieldScopes.size() != 1 || !fieldScopes.get(0).equals(DEPENDENT_FQ_NAME))) {
                         diagnostics.add(createDiagnostic(field, unit,
-                                createAnnotationDiagnostic("Dependent",
+                                createAnnotationDiagnostic(DEPENDENT,
                                         "be the only scope defined by a managed bean with a non-static public field."),
                                 DIAGNOSTIC_CODE, null,
                                 DiagnosticSeverity.Error));
@@ -250,7 +253,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     // Deliver a diagnostic on all parameterized constructors that they must add an
                     // @Inject annotation
                     for (IMethod m : methodsNeedingDiagnostics) {
-                        diagnostics.add(createDiagnostic(m, unit, createAnnotationDiagnostic("Inject",
+                        diagnostics.add(createDiagnostic(m, unit, createAnnotationDiagnostic(INJECT,
                                 "define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead."),
                                 CONSTRUCTOR_DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                     }
@@ -323,7 +326,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                         if(numDisposes == 0) continue;
                         if(numDisposes > 1) {
                             diagnostics.add(createDiagnostic(method, unit,
-                                    createAnnotationDiagnostic("Disposes",
+                                    createAnnotationDiagnostic(DISPOSES,
                                             "not be defined on more than one parameter of a method."),
                                     ManagedBeanConstants.DIAGNOSTIC_CODE_REDUNDANT_DISPOSES, null,
                                     DiagnosticSeverity.Error));
