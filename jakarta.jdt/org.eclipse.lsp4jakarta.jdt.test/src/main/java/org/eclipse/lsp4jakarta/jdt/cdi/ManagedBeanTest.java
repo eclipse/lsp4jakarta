@@ -1,6 +1,11 @@
 package org.eclipse.lsp4jakarta.jdt.cdi;
 
-import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.*;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaCodeAction;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.ca;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.createCodeActionParams;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.d;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.te;
 
 import java.util.Arrays;
 
@@ -18,7 +23,6 @@ import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 
 public class ManagedBeanTest extends BaseJakartaTest {
 
@@ -72,7 +76,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
         Diagnostic d1 = d(12, 16, 17,
                 "Scope type annotations must be specified by a producer field at most once.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
-        d1.setData(new Gson().toJsonTree(Arrays.asList("ApplicationScoped", "Dependent", "Produces")));
+        d1.setData(new Gson().toJsonTree(Arrays.asList("Dependent", "ApplicationScoped", "Produces")));
 
         Diagnostic d2 = d(15, 25, 41, "Scope type annotations must be specified by a producer method at most once.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidScopeDecl");
@@ -88,8 +92,8 @@ public class ManagedBeanTest extends BaseJakartaTest {
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
         TextEdit te1 = te(11, 33, 12, 4, "");
         TextEdit te2 = te(11, 14, 11, 33, "");
-        CodeAction ca1 = ca(uri, "Remove @Dependent", d1, te1);
-        CodeAction ca2 = ca(uri, "Remove @ApplicationScoped", d1, te2);
+        CodeAction ca1 = ca(uri, "Remove @ApplicationScoped", d1, te2);
+        CodeAction ca2 = ca(uri, "Remove @Dependent", d1, te1);
         
         assertJavaCodeAction(codeActionParams1, JDT_UTILS, ca1, ca2);
         
