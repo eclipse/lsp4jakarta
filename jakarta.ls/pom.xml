@@ -76,7 +76,7 @@
             <configuration>
               <archive>
                 <manifest>
-                  <mainClass>org.eclipsecon.languageserver.Main</mainClass>
+                  <mainClass>org.eclipse.lsp4jakarta.JakartaLanguageServerLauncher</mainClass>
                 </manifest>
               </archive>
               <descriptorRefs>
