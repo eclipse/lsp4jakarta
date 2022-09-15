@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2019 Red Hat, Inc. 
+ * Copyright (c) 2019, 2022 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -43,11 +44,21 @@ import org.eclipse.lsp4e.server.ProcessStreamConnectionProvider;
 public class JakartaLSConnection extends ProcessStreamConnectionProvider {
 
     public JakartaLSConnection() {
+
+//        Locale.setDefault(new Locale("my", "TEST")); // testing code
+
         List<String> commands = new ArrayList<>();
         commands.add(computeJavaPath());
         commands.add("-classpath");
         try {
             commands.add(computeClasspath());
+
+            // set current locale to LS JVM
+            // probably don't need this when locale is set to system
+            Locale currentLocale = Locale.getDefault();
+            commands.add("-Duser.language=" + currentLocale.getLanguage());
+            commands.add("-Duser.country=" + currentLocale.getCountry());
+
             commands.add("org.eclipse.lsp4jakarta.JakartaLanguageServerLauncher");
             setCommands(commands);
             setWorkingDirectory(System.getProperty("user.dir"));
