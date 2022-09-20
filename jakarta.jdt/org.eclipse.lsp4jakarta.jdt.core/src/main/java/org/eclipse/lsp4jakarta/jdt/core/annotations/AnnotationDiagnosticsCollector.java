@@ -35,6 +35,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Tuple;
 import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * 
@@ -136,8 +137,9 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
                                     String date = (String) pair.getValue();
                                     if (!date.equals("")) {
                                         if (!Pattern.matches(AnnotationConstants.ISO_8601_REGEX, date)) {
-                                            String diagnosticMessage = generateDiagnosticAnnotation("Generated",
-                                                    "define the attribute 'date' following the ISO 8601 standard.");
+
+                                            String diagnosticMessage = Messages.getMessage(
+                                                    "AnnotationMustDefineAttributeFollowing8601", "@Generated", "date");
                                             diagnostics.add(createDiagnostic(annotation, unit, diagnosticMessage,
                                                     AnnotationConstants.DIAGNOSTIC_CODE_DATE_FORMAT, null,
                                                     DiagnosticSeverity.Error));
@@ -160,17 +162,18 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
                                         typeEmpty = false;
                                     }
                                 }
-                                String diagnosticMessage = generateDiagnosticAnnotation("Resource",
-                                        "define the attribute");
+                                String diagnosticMessage;
                                 if (nameEmpty) {
-                                    diagnosticMessage = diagnosticMessage + " 'name'.";
+                                    diagnosticMessage = Messages.getMessage("AnnotationMustDefineAttribute",
+                                            "@Resource", "name");
                                     diagnostics.add(createDiagnostic(annotation, unit, diagnosticMessage,
                                             AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_NAME_ATTRIBUTE, null,
                                             DiagnosticSeverity.Error));
                                 }
 
                                 if (typeEmpty) {
-                                    diagnosticMessage = diagnosticMessage + " 'type'.";
+                                    diagnosticMessage = Messages.getMessage("AnnotationMustDefineAttribute",
+                                            "@Resource", "type");
                                     diagnostics.add(createDiagnostic(annotation, unit, diagnosticMessage,
                                             AnnotationConstants.DIAGNOSTIC_CODE_MISSING_RESOURCE_TYPE_ATTRIBUTE, null,
                                             DiagnosticSeverity.Error));
@@ -240,11 +243,6 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
 
     private static String generateDiagnosticMethod(String annotation, String message) {
         String finalMessage = "A method with the annotation @" + annotation + " must " + message;
-        return finalMessage;
-    }
-
-    private static String generateDiagnosticAnnotation(String annotation, String message) {
-        String finalMessage = "The annotation @" + annotation + " must " + message;
         return finalMessage;
     }
 

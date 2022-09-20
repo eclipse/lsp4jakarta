@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Red Hat Inc. and others.
+* Copyright (c) 2020, 2022 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import org.eclipse.lsp4j.MarkupKind;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4jakarta.utils.Messages;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -172,7 +173,8 @@ public class SnippetRegistry {
             String label = snippet.getPrefixes().get(0);
             CompletionItem item = new CompletionItem();
             item.setLabel(label);
-            item.setDetail(snippet.getDescription());
+//            item.setDetail(snippet.getDescription());
+            item.setDetail(Messages.getMessage(snippet.getDescription()));
             String insertText = getInsertText(snippet, false, lineDelimiter);
             item.setKind(CompletionItemKind.Snippet);
             item.setDocumentation(Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimiter)));
