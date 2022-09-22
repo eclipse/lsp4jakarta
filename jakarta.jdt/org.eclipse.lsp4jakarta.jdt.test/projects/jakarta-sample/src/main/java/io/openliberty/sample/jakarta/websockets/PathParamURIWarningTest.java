@@ -1,4 +1,4 @@
-package org.eclipse.lsp4jakarta.jdt.websockets;
+package io.openliberty.sample.jakarta.websockets;
 
 import java.io.IOException;
 import jakarta.websocket.server.PathParam;

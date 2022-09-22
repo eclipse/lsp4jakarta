@@ -1,4 +1,4 @@
-package src.main.java.io.openliberty.sample.jakarta.websocket;
+package io.openliberty.sample.jakarta.websocket;
 
 import jakarta.websocket.server.ServerEndpoint;
 
