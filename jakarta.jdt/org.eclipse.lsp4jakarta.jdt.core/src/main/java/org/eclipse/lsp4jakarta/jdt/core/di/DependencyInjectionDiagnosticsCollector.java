@@ -1,6 +1,5 @@
-
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2021, 2022 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,26 +14,30 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.di;
 
-import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.*;
+import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT;
+import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR;
+import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL;
+import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_GENERIC;
+import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_STATIC;
+import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.DIAGNOSTIC_SOURCE;
+import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.INJECT;
+import static org.eclipse.lsp4jakarta.jdt.core.di.DependencyInjectionConstants.INJECT_FQ_NAME;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
-import org.eclipse.jdt.core.IJavaElement;
 
 /**
  * 
@@ -50,39 +53,15 @@ import org.eclipse.jdt.core.IJavaElement;
  *
  */
 
-public class DependencyInjectionDiagnosticsCollector implements DiagnosticsCollector {
-
-    private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
-
-        try {
-            ISourceRange nameRange = JDTUtils.getNameRange(el);
-            Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-            Diagnostic diagnostic = new Diagnostic(range, msg);
-            diagnostic.setCode(code);
-            completeDiagnostic(diagnostic);
-            return diagnostic;
-        } catch (JavaModelException e) {
-
-            JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
-        }
-        return null;
+public class DependencyInjectionDiagnosticsCollector extends AbstractDiagnosticsCollector {
+    
+    public DependencyInjectionDiagnosticsCollector() {
+        super();
     }
-
-
+    
     @Override
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(SEVERITY);
-    }
-
-
-    // checks if a method is a constructor
-    private boolean isConstructorMethod(IMethod m) {
-        try {
-            return m.isConstructor();
-        } catch (JavaModelException e) {
-            return false;
-        }
+    protected String getDiagnosticSource() {
+        return DIAGNOSTIC_SOURCE;
     }
 
     @Override
@@ -90,109 +69,67 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
         if (unit == null)
             return;
 
-
-        Diagnostic diagnostic;
         IType[] alltypes;
-        IAnnotation[] allAnnotations;
         try {
             alltypes = unit.getAllTypes();
             for (IType type : alltypes) {
-                allAnnotations = type.getAnnotations();
                 IField[] allFields = type.getFields();
                 for (IField field : allFields) {
-                    int fieldFlags = field.getFlags();
-                    List<IAnnotation> fieldAnnotations = Arrays.asList(field.getAnnotations());
-
-                    boolean isInjectField = fieldAnnotations.stream().anyMatch(
-                            annotation -> annotation.getElementName().equals(DependencyInjectionConstants.INJECT));
-
-                    boolean isFinal = Flags.isFinal(fieldFlags);
-
-                    if (isFinal && isInjectField) {
-                        String msg = createAnnotationDiagnostic("Inject","a final field.");
-                        diagnostic = createDiagnostic(field, unit, msg,
-                                DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
-                        diagnostic.setData(field.getElementType());
-                        diagnostics.add(diagnostic);
+                    if (Flags.isFinal(field.getFlags())
+                            && containsAnnotation(type, field.getAnnotations(), INJECT_FQ_NAME)) {
+                        String msg = createAnnotationDiagnostic(INJECT, "a final field.");
+                        diagnostics.add(createDiagnostic(field, unit, msg,
+                                DIAGNOSTIC_CODE_INJECT_FINAL, field.getElementType(),
+                                DiagnosticSeverity.Error));
                     }
                 }
 
+                List<IMethod> injectedConstructors = new ArrayList<IMethod>();
                 IMethod[] allMethods = type.getMethods();
                 for (IMethod method : allMethods) {
-                    List<IAnnotation> methodAnnotations = Arrays.asList(method.getAnnotations());
-
-                    boolean isInjectMethod = methodAnnotations.stream().anyMatch(
-                            annotation -> annotation.getElementName().equals(DependencyInjectionConstants.INJECT));
-
                     int methodFlag = method.getFlags();
                     boolean isFinal = Flags.isFinal(methodFlag);
                     boolean isAbstract = Flags.isAbstract(methodFlag);
                     boolean isStatic = Flags.isStatic(methodFlag);
                     boolean isGeneric = method.getTypeParameters().length != 0;
 
-                    if (isFinal && isInjectMethod) {
-                        String msg = createAnnotationDiagnostic("Inject","a final method.");
-                        diagnostic = createDiagnostic(method, unit, msg,
-                                DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_FINAL);
-                        diagnostic.setData(method.getElementType());
-                        diagnostics.add(diagnostic);
-                    }
-
-                    if (isAbstract && isInjectMethod) {
-                        String msg = createAnnotationDiagnostic("Inject","an abstract method.");
-                        diagnostic = createDiagnostic(method, unit, msg,
-                                DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_ABSTRACT);
-                        diagnostic.setData(method.getElementType());
-                        diagnostics.add(diagnostic);
-                    }
-
-                    if (isStatic && isInjectMethod) {
-                        String msg = createAnnotationDiagnostic("Inject","a static method.");
-                        diagnostic = createDiagnostic(method, unit, msg,
-                                DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_STATIC);
-                        diagnostic.setData(method.getElementType());
-                        diagnostics.add(diagnostic);
-                    }
-
-                    if (isGeneric && isInjectMethod) {
-                        String msg = createAnnotationDiagnostic("Inject","a generic method.");
-                        diagnostic = createDiagnostic(method, unit, msg,
-                                DependencyInjectionConstants.DIAGNOSTIC_CODE_INJECT_GENERIC);
-                        diagnostic.setData(method.getElementType());
-                        diagnostics.add(diagnostic);
-                    }
-                }
-            }
-
-            for (IType type : alltypes) {
-                List<IMethod> constructorMethods = Arrays.stream(type.getMethods()).filter(this::isConstructorMethod)
-                        .collect(Collectors.toList());
-                // there are no constructors
-                if (constructorMethods.size() == 0)
-                    return;
-                boolean hasInjectConstructor = false;
-                boolean multipleInjectConstructor = false;
-                int numInjectedConstructors = 0;
-                List<IMethod> injectedConstructors = new ArrayList<IMethod>();
-                for (IMethod m : constructorMethods) {
-
-                    hasInjectConstructor = Arrays.stream(m.getAnnotations())
-                            .map(annotation -> annotation.getElementName())
-                            .anyMatch(annotation -> annotation.equals("Inject"));
-                    if (hasInjectConstructor) {
-                        injectedConstructors.add(m);
-                        numInjectedConstructors++;
-                        if (numInjectedConstructors > 1) {
-                            multipleInjectConstructor = true; // if more than one constructor, add diagnostic to all
-                                                              // constructors
+                    if (containsAnnotation(type, method.getAnnotations(), INJECT_FQ_NAME)) {
+                        if (isConstructorMethod(method))
+                            injectedConstructors.add(method);
+                        if (isFinal) {
+                            String msg = createAnnotationDiagnostic(INJECT, "a final method.");
+                            diagnostics.add(createDiagnostic(method, unit, msg,
+                                    DIAGNOSTIC_CODE_INJECT_FINAL, method.getElementType(),
+                                    DiagnosticSeverity.Error));
+                        }
+                        if (isAbstract) {
+                            String msg = createAnnotationDiagnostic(INJECT, "an abstract method.");
+                            diagnostics.add(createDiagnostic(method, unit, msg,
+                                    DIAGNOSTIC_CODE_INJECT_ABSTRACT, method.getElementType(),
+                                    DiagnosticSeverity.Error));
+                        }
+                        if (isStatic) {
+                            String msg = createAnnotationDiagnostic(INJECT, "a static method.");
+                            diagnostics.add(createDiagnostic(method, unit, msg,
+                                    DIAGNOSTIC_CODE_INJECT_STATIC, method.getElementType(),
+                                    DiagnosticSeverity.Error));
+                        }
+    
+                        if (isGeneric) {
+                            String msg = createAnnotationDiagnostic(INJECT, "a generic method.");
+                            diagnostics.add(createDiagnostic(method, unit, msg,
+                                    DIAGNOSTIC_CODE_INJECT_GENERIC, method.getElementType(),
+                                    DiagnosticSeverity.Error));
                         }
                     }
                 }
-                if (multipleInjectConstructor) {
-                    String msg = createAnnotationDiagnostic("Inject","more than one constructor.");
+                
+                // if more than one 'inject' constructor, add diagnostic to all constructors
+                if (injectedConstructors.size() > 1) {
+                    String msg = createAnnotationDiagnostic(INJECT, "more than one constructor.");
                     for (IMethod m : injectedConstructors) {
                         diagnostics.add(createDiagnostic(m, unit,msg,
-                                DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR));
+                                DIAGNOSTIC_CODE_INJECT_CONSTRUCTOR, null, DiagnosticSeverity.Error));
                     }
                 }
             }
@@ -202,9 +139,18 @@ public class DependencyInjectionDiagnosticsCollector implements DiagnosticsColle
     }
     
     private  String createAnnotationDiagnostic(String annotation, String attributeType) {
-        
-        String finalMessage = "The annotation @" + annotation + " must not define " + attributeType;
-        return finalMessage;
+        return "The annotation @" + annotation + " must not define " + attributeType;
+    }
+
+    private boolean containsAnnotation(IType type, IAnnotation[] annotations, String annotationFQName) {
+        return Stream.of(annotations).anyMatch(annotation -> {
+            try {
+                return isMatchedJavaElement(type, annotation.getElementName(), annotationFQName);
+            } catch (JavaModelException e) {
+                JakartaCorePlugin.logException("Cannot validate annotations", e);
+                return false;
+            }
+        });
     }
 }
 
