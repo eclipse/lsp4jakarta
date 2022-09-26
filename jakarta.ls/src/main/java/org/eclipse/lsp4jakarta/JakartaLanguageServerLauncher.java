@@ -15,6 +15,7 @@ package org.eclipse.lsp4jakarta;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -32,12 +33,13 @@ public class JakartaLanguageServerLauncher {
         JakartaLanguageServer server = new JakartaLanguageServer();
 
         Function<MessageConsumer, MessageConsumer> wrapper;
-        if ("false".equals(System.getProperty("watchParentProcess"))) {
-            wrapper = it -> it;
-        } else {
-            wrapper = new ParentProcessWatcher(server);
+        wrapper = it -> it;
+        if ("true".equals(System.getProperty("runAsync")) ) {
+            wrapper = it -> msg -> CompletableFuture.runAsync(() -> it.consume(msg));
         }
-
+        if (!"false".equals(System.getProperty("watchParentProcess"))) {
+            wrapper = new ParentProcessWatcher(server, wrapper);
+        }
         Launcher<LanguageClient> launcher = createServerLauncher(server, System.in, System.out,
                 Executors.newCachedThreadPool());
 
