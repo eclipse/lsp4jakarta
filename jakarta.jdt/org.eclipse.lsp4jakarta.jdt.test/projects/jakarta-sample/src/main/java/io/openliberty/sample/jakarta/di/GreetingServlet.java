@@ -12,12 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.inject.Produces;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 
-@Path("/di")
-public abstract class GreetingServlet {
+@WebServlet(name = "greetingServlet", urlPatterns = { "/di" })
+public abstract class GreetingServlet extends HttpServlet {
 
     /**
      *
