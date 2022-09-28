@@ -1,20 +1,12 @@
 package io.openliberty.sample.jakarta.di;
 
 import jakarta.inject.Inject;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.enterprise.inject.Produces;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.enterprise.inject.Produces;
-
-@WebServlet(name = "greetingServlet", urlPatterns = { "/di" })
-public abstract class GreetingServlet extends HttpServlet {
+public abstract class GreetingServlet {
 
     /**
      *
@@ -53,18 +45,5 @@ public abstract class GreetingServlet extends HttpServlet {
         // do nothing
         return new ArrayList<T>();
     };
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        // use @Inject greeting
-        String greetingString = greeting.greet("Bob");
-        // abc(greetingString);
-
-        // use @Produces greeting
-        // String greetingString = getInstance().greet("Bob");
-
-        res.setContentType("text/html;charset=UTF-8");
-        res.getWriter().println(greetingString);
-    }
 
 }

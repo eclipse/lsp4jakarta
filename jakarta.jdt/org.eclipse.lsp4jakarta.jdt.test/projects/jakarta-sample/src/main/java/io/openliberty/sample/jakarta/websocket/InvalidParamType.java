@@ -18,11 +18,11 @@ import jakarta.websocket.server.ServerEndpoint;
 public class InvalidParamType {
     @OnOpen
     public void OnOpen(Session session, Object invalidParam) throws IOException {
-        System.out.println("Websocket opened.");
+        System.out.println("WebSocket closed for " + session.getId());
     }
     
     @OnClose
     public void OnClose(Session session, CloseReason closeReason, Object invalidParam) throws IOException {
-        System.out.println("WebSocket closed.");
+        System.out.println("WebSocket closed for " + session.getId());
     }
 }
