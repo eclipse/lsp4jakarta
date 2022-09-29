@@ -14,20 +14,22 @@
 package org.eclipse.lsp4jakarta.jdt.core.transactions;
 
 import static org.eclipse.lsp4jakarta.jdt.core.transactions.TransactionsConstants.DIAGNOSTIC_SOURCE;
-import static org.eclipse.lsp4jakarta.jdt.core.transactions.TransactionsConstants.SEVERITY;
 
 import java.util.List;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 
-public class TransactionsDiagnosticsCollector implements DiagnosticsCollector {
+public class TransactionsDiagnosticsCollector extends AbstractDiagnosticsCollector {
+
+    public TransactionsDiagnosticsCollector() {
+        super();
+    }
 
     @Override
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(SEVERITY);
+    protected String getDiagnosticSource() {
+        return DIAGNOSTIC_SOURCE;
     }
 
     @Override
