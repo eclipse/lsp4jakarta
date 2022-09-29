@@ -15,49 +15,41 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.websocket;
 
+import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IAnnotation;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.ILocalVariable;
+import org.eclipse.jdt.core.IMemberValuePair;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Signature;
+import org.eclipse.jdt.internal.core.JavaModel;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4jakarta.jdt.core.DiagnosticsCollector;
+import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
-import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketConstants;
-import org.eclipse.jdt.core.*;
-import org.eclipse.lsp4jakarta.jdt.core.AnnotationUtil;
 
-import static org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils.doesITypeHaveSuperType;
-
-public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
+public class WebSocketDiagnosticsCollector extends AbstractDiagnosticsCollector {
     public WebSocketDiagnosticsCollector() {
-    }
-
-    private Diagnostic createDiagnostic(IJavaElement el, ICompilationUnit unit, String msg, String code) {
-        try {
-            ISourceRange nameRange = JDTUtils.getNameRange(el);
-            Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-            Diagnostic diagnostic = new Diagnostic(range, msg);
-            diagnostic.setCode(code);
-            completeDiagnostic(diagnostic);
-            return diagnostic;
-        } catch (JavaModelException e) {
-            JakartaCorePlugin.logException(WebSocketConstants.DIAGNOSTIC_ERR_MSG, e);
-        }
-        return null;
+        super();
     }
 
     @Override
-    public void completeDiagnostic(Diagnostic diagnostic) {
-        diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(WebSocketConstants.ERROR);
+    protected String getDiagnosticSource() {
+        return WebSocketConstants.DIAGNOSTIC_SOURCE;
     }
 
     @Override
@@ -67,9 +59,7 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
 
         IType[] alltypes;
-
         HashMap<String, Boolean> checkWSEnd = null;
-
         try {
             alltypes = unit.getAllTypes();
             for (IType type : alltypes) {
@@ -77,18 +67,22 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                 // checks if the class uses annotation to create a WebSocket endpoint
                 if (checkWSEnd.get(WebSocketConstants.IS_ANNOTATION)) {
                     // WebSocket Invalid Parameters Diagnostic
-                    invalidParamsCheck(type, WebSocketConstants.ON_OPEN, WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES,
-                            WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES,
-                            WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS, unit, diagnostics);
-                    invalidParamsCheck(type, WebSocketConstants.ON_CLOSE, WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES,
-                            WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES,
-                            WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS, unit, diagnostics);
-
-                    // PathParam URI Mismatch Warning Diagnostic
-                    uriMismatchWarningCheck(type, diagnostics, unit);
+                    invalidParamsCheck(type, unit, diagnostics);
+                    
+                    /* @PathParam Value Mismatch Warning */
+                    List<String> endpointPathVars = findAndProcessEndpointURI(type);
+                    /*
+                     * WebSocket endpoint annotations must be attached to a class, and thus is
+                     * guaranteed to be processed before any of the member method annotations
+                     */
+                    if (endpointPathVars != null) {
+                        // PathParam URI Mismatch Warning Diagnostic
+                        uriMismatchWarningCheck(type, endpointPathVars, diagnostics, unit);
+                    }
 
                     // OnMessage validation for WebSocket message formats
                     onMessageWSMessageFormats(type, diagnostics, unit);
+
                     // ServerEndpoint annotation diagnostics
                     serverEndpointErrorCheck(type, diagnostics, unit);
                 }
@@ -98,24 +92,32 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         }
     }
 
-    private void invalidParamsCheck(IType type, String methodAnnotTarget, Set<String> specialParamTypes,
-            Set<String> rawSpecialParamTypes, String diagnosticCode, ICompilationUnit unit,
-            List<Diagnostic> diagnostics) throws JavaModelException {
-
+    private void invalidParamsCheck(IType type, ICompilationUnit unit, List<Diagnostic> diagnostics)
+            throws JavaModelException {
         IMethod[] allMethods = type.getMethods();
-
         for (IMethod method : allMethods) {
             IAnnotation[] allAnnotations = method.getAnnotations();
+            Set<String> specialParamTypes = null, rawSpecialParamTypes = null;
 
             for (IAnnotation annotation : allAnnotations) {
-                if (annotation.getElementName().equals(methodAnnotTarget)) {
-                    ILocalVariable[] allParams = method.getParameters();
+                String annotationName = annotation.getElementName();
+                String diagnosticCode = null;
 
+                if (isMatchedJavaElement(type, annotationName, WebSocketConstants.ON_OPEN)) {
+                    specialParamTypes = WebSocketConstants.ON_OPEN_PARAM_OPT_TYPES;
+                    rawSpecialParamTypes = WebSocketConstants.RAW_ON_OPEN_PARAM_OPT_TYPES;
+                    diagnosticCode = WebSocketConstants.DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS;
+                } else if (isMatchedJavaElement(type, annotationName, WebSocketConstants.ON_CLOSE)) {
+                    specialParamTypes = WebSocketConstants.ON_CLOSE_PARAM_OPT_TYPES;
+                    rawSpecialParamTypes = WebSocketConstants.RAW_ON_CLOSE_PARAM_OPT_TYPES;
+                    diagnosticCode = WebSocketConstants.DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS;
+                }
+                if (diagnosticCode != null) {
+                    ILocalVariable[] allParams = method.getParameters();
                     for (ILocalVariable param : allParams) {
                         String signature = param.getTypeSignature();
                         String formatSignature = signature.replace("/", ".");
                         String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
-
                         boolean isPrimitive = JavaModelUtil.isPrimitive(formatSignature);
                         boolean isSpecialType;
                         boolean isPrimWrapped;
@@ -131,23 +133,29 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
                         // check parameters valid types
                         if (!(isSpecialType || isPrimWrapped || isPrimitive)) {
-                            Diagnostic diagnostic = createDiagnostic(param, unit,
-                                    createParamTypeDiagMsg(specialParamTypes, methodAnnotTarget), diagnosticCode);
-                            diagnostics.add(diagnostic);
+                            diagnostics.add(createDiagnostic(param, unit,
+                                    createParamTypeDiagMsg(specialParamTypes, annotationName), diagnosticCode, null,
+                                    DiagnosticSeverity.Error));
                             continue;
                         }
 
                         if (!isSpecialType) {
                             // check that if parameter is not a specialType, it has a @PathParam annotation
                             IAnnotation[] param_annotations = param.getAnnotations();
-                            boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(
-                                    annot -> annot.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION));
-
+                            boolean hasPathParamAnnot = Arrays.asList(param_annotations).stream().anyMatch(annot -> {
+                                try {
+                                    return isMatchedJavaElement(type, annot.getElementName(),
+                                            WebSocketConstants.PATH_PARAM_ANNOTATION);
+                                } catch (JavaModelException e) {
+                                    JakartaCorePlugin.logException("Failed to get matched annotation", e);
+                                    return false;
+                                }
+                            });
                             if (!hasPathParamAnnot) {
-                                Diagnostic diagnostic = createDiagnostic(param, unit,
+                                diagnostics.add(createDiagnostic(param, unit,
                                         WebSocketConstants.DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING,
-                                        WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT);
-                                diagnostics.add(diagnostic);
+                                        WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT, null,
+                                        DiagnosticSeverity.Error));
                             }
                         }
                     }
@@ -164,33 +172,27 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
      * @param type representing the class list of diagnostics for this class
      *             compilation unit with which the type is associated
      */
-    private void uriMismatchWarningCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit)
+    private void uriMismatchWarningCheck(IType type, List<String> endpointPathVars, List<Diagnostic> diagnostics,
+            ICompilationUnit unit)
             throws JavaModelException {
-
-        /* @PathParam Value Mismatch Warning */
-        List<String> endpointPathVars = findAndProcessEndpointURI(type);
-        /*
-         * WebSocket endpoint annotations must be attached to a class, and thus is
-         * guaranteed to be processed before any of the member method annotations
-         */
-        if (endpointPathVars == null) {
-            return;
-        }
         IMethod[] typeMethods = type.getMethods();
         for (IMethod method : typeMethods) {
             ILocalVariable[] methodParams = method.getParameters();
             for (ILocalVariable param : methodParams) {
                 IAnnotation[] paramAnnotations = param.getAnnotations();
                 for (IAnnotation annotation : paramAnnotations) {
-                    if (annotation.getElementName() == WebSocketConstants.PATHPARAM_ANNOTATION) {
+                    if (isMatchedJavaElement(type, annotation.getElementName(),
+                            WebSocketConstants.PATHPARAM_ANNOTATION)) {
                         IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
                         for (IMemberValuePair pair : valuePairs) {
                             if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)
                                     && pair.getValueKind() == IMemberValuePair.K_STRING) {
                                 String pathValue = (String) pair.getValue();
                                 if (!endpointPathVars.contains(pathValue)) {
-                                    Diagnostic d = createPathParamWarningDiagnostic(annotation, unit);
-                                    diagnostics.add(d);
+                                    diagnostics.add(createDiagnostic(annotation, unit,
+                                            WebSocketConstants.PATHPARAM_VALUE_WARN_MSG,
+                                            WebSocketConstants.PATHPARAM_DIAGNOSTIC_CODE, null,
+                                            DiagnosticSeverity.Warning));
                                 }
                             }
                         }
@@ -218,10 +220,10 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
         for (IMethod method : typeMethods) {
             IAnnotation[] allAnnotations = method.getAnnotations();
             for (IAnnotation annotation : allAnnotations) {
-                if (annotation.getElementName().equals(WebSocketConstants.ON_MESSAGE)) {
+                if (isMatchedJavaElement(type, annotation.getElementName(), WebSocketConstants.ON_MESSAGE)) {
                     ILocalVariable[] allParams = method.getParameters();
                     for (ILocalVariable param : allParams) {
-                        if (!isParamPath(param)) {
+                        if (!isParamPath(type, param)) {
                             String signature = param.getTypeSignature();
                             String formatSignature = signature.replace("/", ".");
                             String resolvedTypeName = JavaModelUtil.getResolvedTypeName(formatSignature, type);
@@ -235,44 +237,43 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
                                 WebSocketConstants.MESSAGE_FORMAT messageFormat = resolvedTypeName != null
                                         ? getMessageFormat(resolvedTypeName, true)
                                         : getMessageFormat(typeName, false);
-                                Diagnostic diagnostic1, diagnostic2;
                                 switch (messageFormat) {
                                 case TEXT:
                                     if (onMessageTextUsed != null) {
-                                        diagnostic1 = createDiagnostic(annotation, unit,
+                                        diagnostics.add(createDiagnostic(annotation, unit,
                                                 WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
-                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                        diagnostic2 = createDiagnostic(onMessageTextUsed, unit,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
+                                                DiagnosticSeverity.Error));
+                                        diagnostics.add(createDiagnostic(onMessageTextUsed, unit,
                                                 WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
-                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                        diagnostics.add(diagnostic1);
-                                        diagnostics.add(diagnostic2);
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
+                                                DiagnosticSeverity.Error));
                                     }
                                     onMessageTextUsed = annotation;
                                     break;
                                 case BINARY:
                                     if (onMessageBinaryUsed != null) {
-                                        diagnostic1 = createDiagnostic(annotation, unit,
+                                        diagnostics.add(createDiagnostic(annotation, unit,
                                                 WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
-                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                        diagnostic2 = createDiagnostic(onMessageBinaryUsed, unit,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
+                                                DiagnosticSeverity.Error));
+                                        diagnostics.add(createDiagnostic(onMessageBinaryUsed, unit,
                                                 WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
-                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                        diagnostics.add(diagnostic1);
-                                        diagnostics.add(diagnostic2);
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
+                                                DiagnosticSeverity.Error));
                                     }
                                     onMessageBinaryUsed = annotation;
                                     break;
                                 case PONG:
                                     if (onMessagePongUsed != null) {
-                                        diagnostic1 = createDiagnostic(annotation, unit,
+                                        diagnostics.add(createDiagnostic(annotation, unit,
                                                 WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
-                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                        diagnostic2 = createDiagnostic(onMessagePongUsed, unit,
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
+                                                DiagnosticSeverity.Error));
+                                        diagnostics.add(createDiagnostic(onMessagePongUsed, unit,
                                                 WebSocketConstants.DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD,
-                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD);
-                                        diagnostics.add(diagnostic1);
-                                        diagnostics.add(diagnostic2);
+                                                WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
+                                                DiagnosticSeverity.Error));
                                     }
                                     onMessagePongUsed = annotation;
                                     break;
@@ -291,57 +292,36 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
      */
     private void serverEndpointErrorCheck(IType type, List<Diagnostic> diagnostics, ICompilationUnit unit)
             throws JavaModelException {
-        for (IAnnotation annotation : type.getAnnotations()) {
-            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)) {
+        IAnnotation[] annotations = type.getAnnotations();
+        for (IAnnotation annotation : annotations) {
+            if (isMatchedJavaElement(type, annotation.getElementName(),
+                    WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)) {
                 for (IMemberValuePair annotationMemberValuePair : annotation.getMemberValuePairs()) {
                     if (annotationMemberValuePair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)) {
                         String path = annotationMemberValuePair.getValue().toString();
-                        Diagnostic diagnostic;
                         if (!JDTUtils.hasLeadingSlash(path)) {
-                            diagnostic = createDiagnostic(annotation, unit,
+                            diagnostics.add(createDiagnostic(annotation, unit,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH,
-                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                            diagnostics.add(diagnostic);
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT, null, DiagnosticSeverity.Error));
                         }
                         if (hasRelativePathURIs(path)) {
-                            diagnostic = createDiagnostic(annotation, unit,
+                            diagnostics.add(createDiagnostic(annotation, unit,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE,
-                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                            diagnostics.add(diagnostic);
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT, null, DiagnosticSeverity.Error));
                         } else if (!JDTUtils.isValidLevel1URI(path)) {
-                            diagnostic = createDiagnostic(annotation, unit,
+                            diagnostics.add(createDiagnostic(annotation, unit,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1,
-                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                            diagnostics.add(diagnostic);
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT, null, DiagnosticSeverity.Error));
                         }
                         if (hasDuplicateURIVariables(path)) {
-                            diagnostic = createDiagnostic(annotation, unit,
+                            diagnostics.add(createDiagnostic(annotation, unit,
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT_DUPLICATE_VAR,
-                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT);
-                            diagnostics.add(diagnostic);
+                                    WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT, null, DiagnosticSeverity.Error));
                         }
                     }
                 }
             }
         }
-    }
-
-    /**
-     * Creates a PathParam URI Mismatch Warning Diagnostic given its components
-     * 
-     * @param the annotation onto which the diagnostic needs to be displayed the
-     *            compilation unit with which said annotation is associated
-     * @return the final Diagnostic with its attributes set as needed
-     */
-    private Diagnostic createPathParamWarningDiagnostic(IJavaElement annotation, IOpenable unit)
-            throws JavaModelException {
-        ISourceRange nameRange = JDTUtils.getNameRange(annotation);
-        Range range = JDTUtils.toRange(unit, nameRange.getOffset(), nameRange.getLength());
-        Diagnostic diagnostic = new Diagnostic(range, WebSocketConstants.PATHPARAM_VALUE_WARN_MSG);
-        diagnostic.setSource(WebSocketConstants.DIAGNOSTIC_SOURCE);
-        diagnostic.setSeverity(WebSocketConstants.WARNING);
-        diagnostic.setCode(WebSocketConstants.PATHPARAM_DIAGNOSTIC_CODE);
-        return diagnostic;
     }
 
     /**
@@ -355,9 +335,10 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
     private List<String> findAndProcessEndpointURI(IType type) throws JavaModelException {
         String endpointURI = null;
         IAnnotation[] typeAnnotations = type.getAnnotations();
+        String[] targetAnnotations = {WebSocketConstants.SERVER_ENDPOINT_ANNOTATION, WebSocketConstants.CLIENT_ENDPOINT_ANNOTATION};
         for (IAnnotation annotation : typeAnnotations) {
-            if (annotation.getElementName().equals(WebSocketConstants.SERVER_ENDPOINT_ANNOTATION)
-                    || annotation.getElementName().equals(WebSocketConstants.CLIENT_ENDPOINT_ANNOTATION)) {
+            String matchedAnnotation = getMatchedJavaElementName(type, annotation.getElementName(), targetAnnotations);
+            if (matchedAnnotation != null) {
                 IMemberValuePair[] valuePairs = annotation.getMemberValuePairs();
                 for (IMemberValuePair pair : valuePairs) {
                     if (pair.getMemberName().equals(WebSocketConstants.ANNOTATION_VALUE)
@@ -416,29 +397,28 @@ public class WebSocketDiagnosticsCollector implements DiagnosticsCollector {
 
         // Check that class follows
         // https://jakarta.ee/specifications/websocket/2.0/websocket-spec-2.0.html#applications
-        List<String> scopes = AnnotationUtil.getScopeAnnotations(type, WebSocketConstants.WS_ANNOTATION_CLASS);
-        boolean useAnnotation = scopes.size() > 0;
+        List<String> endpointAnnotations = getMatchedJavaElementNames(type,
+                Stream.of(type.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new),
+                WebSocketConstants.WS_ANNOTATION_CLASS);
 
         boolean useSuperclass = false;
-
-        String superclass = type.getSuperclassName();
         try {
-            int r = doesITypeHaveSuperType(type, WebSocketConstants.ENDPOINT_SUPERCLASS);
-            useSuperclass = (r >= 0);
+            useSuperclass = doesITypeHaveSuperType(type, WebSocketConstants.ENDPOINT_SUPERCLASS) >= 0;
         } catch (CoreException e) {
             JakartaCorePlugin.logException(WebSocketConstants.DIAGNOSTIC_ERR_MSG, e);
         }
 
-        wsEndpoint.put(WebSocketConstants.IS_ANNOTATION, useAnnotation);
+        wsEndpoint.put(WebSocketConstants.IS_ANNOTATION, (endpointAnnotations.size() > 0));
         wsEndpoint.put(WebSocketConstants.IS_SUPERCLASS, useSuperclass);
 
         return wsEndpoint;
     }
 
-    private boolean isParamPath(ILocalVariable param) throws JavaModelException {
+    private boolean isParamPath(IType type, ILocalVariable param) throws JavaModelException {
         IAnnotation[] allVariableAnnotations = param.getAnnotations();
         for (IAnnotation variableAnnotation : allVariableAnnotations) {
-            if (variableAnnotation.getElementName().equals(WebSocketConstants.PATH_PARAM_ANNOTATION)) {
+            if (isMatchedJavaElement(type, variableAnnotation.getElementName(),
+                    WebSocketConstants.PATH_PARAM_ANNOTATION)) {
                 return true;
             }
         }

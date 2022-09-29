@@ -30,7 +30,7 @@ public class WebSocketConstants {
 
     public static final String DIAGNOSTIC_ERR_MSG = "Cannot calculate WebSocket diagnostics";
 
-    public static final String PATHPARAM_ANNOTATION = "PathParam";
+    public static final String PATHPARAM_ANNOTATION = "jakarta.websocket.server.PathParam";
     public static final String PATHPARAM_VALUE_WARN_MSG = "PathParam value does not match specified Endpoint URI";
 
     public static final String PATHPARAM_DIAGNOSTIC_CODE = "ChangePathParamValue";
@@ -62,15 +62,14 @@ public class WebSocketConstants {
      * applications
      */
     // Class Level Annotations
-    public static final String SERVER_ENDPOINT_ANNOTATION = "ServerEndpoint";
-    public static final String CLIENT_ENDPOINT_ANNOTATION = "ClientEndpoint";
+    public static final String SERVER_ENDPOINT_ANNOTATION = "jakarta.websocket.server.ServerEndpoint";
+    public static final String CLIENT_ENDPOINT_ANNOTATION = "jakarta.websocket.ClientEndpoint";
 
     // Superclass
     public static final String ENDPOINT_SUPERCLASS = "Endpoint";
     public static final String IS_SUPERCLASS = "isSuperclass";
 
-    public static final Set<String> WS_ANNOTATION_CLASS = new HashSet<>(
-            Arrays.asList(SERVER_ENDPOINT_ANNOTATION, CLIENT_ENDPOINT_ANNOTATION));
+    public static final String[] WS_ANNOTATION_CLASS = { SERVER_ENDPOINT_ANNOTATION, CLIENT_ENDPOINT_ANNOTATION };
 
     public static final String STRING_CLASS_LONG = "java.lang.String";
     public static final String STRING_CLASS_SHORT = "String";
@@ -89,14 +88,14 @@ public class WebSocketConstants {
     public static final String SESSION_CLASS = "jakarta.websocket.Session";
 
     /* Annotations */
-    public static final String ON_OPEN = "OnOpen";
-    public static final String ON_CLOSE = "OnClose";
-    public static final String ON_MESSAGE = "OnMessage";
+    public static final String ON_OPEN = "jakarta.websocket.OnOpen";
+    public static final String ON_CLOSE = "jakarta.websocket.OnClose";
+    public static final String ON_MESSAGE = "jakarta.websocket.OnMessage";
 
     public static final String IS_ANNOTATION = "isAnnotation";
 
     /* Types */
-    public static final String PATH_PARAM_ANNOTATION = "PathParam";
+    public static final String PATH_PARAM_ANNOTATION = "jakarta.websocket.server.PathParam";
 
     // For OnOpen annotation
     public static final Set<String> ON_OPEN_PARAM_OPT_TYPES = new HashSet<>(

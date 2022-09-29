@@ -13,11 +13,8 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.transactions;
 
-import org.eclipse.lsp4j.DiagnosticSeverity;
-
 public class TransactionsConstants {
 
     public static final String DIAGNOSTIC_SOURCE = "jakarta-transactions";
-    public static final DiagnosticSeverity SEVERITY = DiagnosticSeverity.Error;
 
 }
