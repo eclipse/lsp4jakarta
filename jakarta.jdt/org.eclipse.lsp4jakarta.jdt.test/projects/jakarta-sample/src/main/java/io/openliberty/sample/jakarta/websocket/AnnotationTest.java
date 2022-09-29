@@ -2,6 +2,7 @@ package io.openliberty.sample.jakarta.websocket;
 
 import java.io.IOException;
 
+import jakarta.websocket.OnClose;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.Session;

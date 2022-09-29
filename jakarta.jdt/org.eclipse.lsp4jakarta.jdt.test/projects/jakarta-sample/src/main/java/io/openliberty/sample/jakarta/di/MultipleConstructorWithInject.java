@@ -15,21 +15,21 @@ package io.openliberty.sample.jakarta.di;
 
 import jakarta.inject.Inject;
 
-public class productIdentity{
+public class MultipleConstructorWithInject{
     private int productNum;
     private String productDesc;
 	
     @Inject
-    public productIdentity(int productNum) {
+    public MultipleConstructorWithInject(int productNum) {
         this.productNum = productNum;
 	}
     @Inject
-    public productIdentity(String productDesc) {
+    public MultipleConstructorWithInject(String productDesc) {
         this.productDesc = productDesc;
 	}
 
     @Inject
-    protected productIdentity(int productNum, String productDesc) {
+    protected MultipleConstructorWithInject(int productNum, String productDesc) {
         this.productNum = productNum;
         this.productDesc = productDesc;
 	}

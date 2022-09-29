@@ -49,18 +49,18 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // OnOpen PathParams Annotation check
-        Diagnostic d1 = d(17, 47, 64,
+        Diagnostic d1 = d(18, 47, 64,
                 "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation"
         );
         
         // OnClose PathParams Annotation check
-        Diagnostic d2 = d(23, 49, 67,
+        Diagnostic d2 = d(24, 49, 67,
                 "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation"
         );
         
-        Diagnostic d3 = d(23, 76, 94,
+        Diagnostic d3 = d(24, 76, 94,
                 "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "AddPathParamsAnnotation"
         );
@@ -72,7 +72,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         String newText = "\nimport jakarta.websocket.server.PathParam;\nimport jakarta.websocket.server.ServerEndpoint;\nimport jakarta.websocket.Session;\n\n" 
                         + "/**\n * Expected Diagnostics are related to validating that the parameters have the \n * valid annotation @PathParam (code: AddPathParamsAnnotation)\n * See issue #247 (onOpen) and #248 (onClose)\n */\n" 
                         + "@ServerEndpoint(value = \"/infos\")\npublic class AnnotationTest {\n    // @PathParam missing annotation for \"String missingAnnotation\"\n    @OnOpen\n    public void OnOpen(Session session, @PathParam(value = \"\") ";
-        TextEdit te = te(4, 32, 17, 40, newText);
+        TextEdit te = te(5, 32, 18, 40, newText);
         CodeAction ca = ca(uri, "Insert @jakarta.websocket.server.PathParam", d1, te);
         assertJavaCodeAction(codeActionsParams, JDT_UTILS, ca);
     }
@@ -88,12 +88,12 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // OnOpen Invalid Param Types
-        Diagnostic d1 = d(18, 47, 59,
+        Diagnostic d1 = d(19, 47, 59,
         "Invalid parameter type. When using @OnOpen, parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnOpenChangeInvalidParam");
 
         // OnClose Invalid Param Type
-        Diagnostic d2 = d(23, 73, 85,
+        Diagnostic d2 = d(24, 73, 85,
                 "Invalid parameter type. When using @OnClose, parameter must be of type: \n- jakarta.websocket.CloseReason\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnCloseChangeInvalidParam");
 

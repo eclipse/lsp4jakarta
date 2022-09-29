@@ -46,14 +46,14 @@ public class JakartaServletTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected
-        Diagnostic d = d(10, 13, 34, "Annotated classes with @WebServlet must extend the HttpServlet class.",
+        Diagnostic d = d(5, 13, 34, "Annotated classes with @WebServlet must extend the HttpServlet class.",
                 DiagnosticSeverity.Warning, "jakarta-servlet", "ExtendHttpServlet");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);
 
         // test associated quick-fix code action
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-        TextEdit te = te(10, 34, 10, 34, " extends HttpServlet");
+        TextEdit te = te(5, 34, 5, 34, " extends HttpServlet");
         CodeAction ca = ca(uri, "Let 'DontExtendHttpServlet' extend 'HttpServlet'", d, te);
         assertJavaCodeAction(codeActionParams, JDT_UTILS, ca);
     }

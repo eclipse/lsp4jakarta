@@ -109,11 +109,11 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
         
-        Diagnostic d1 = d(9, 12, 44,
+        Diagnostic d1 = d(19, 12, 44,
                 "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
 
-        Diagnostic d2 = d(13, 14, 46,
+        Diagnostic d2 = d(23, 14, 46,
                 "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
 

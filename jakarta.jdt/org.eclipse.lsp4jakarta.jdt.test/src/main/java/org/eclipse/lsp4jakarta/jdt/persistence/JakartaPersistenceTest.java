@@ -190,7 +190,7 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalVariables");
         d4.setData(IJavaElement.FIELD);
 
-        Diagnostic d5 = d(5, 19, 29,
+        Diagnostic d5 = d(5, 19, 33,
                 "A class using the @Entity annotation must not be final.",
                 DiagnosticSeverity.Error, "jakarta-persistence", "InvalidClass");
         d5.setData(IJavaElement.TYPE);

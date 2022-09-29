@@ -46,15 +46,15 @@ public class MultipleConstructorInjectTest extends BaseJakartaTest {
         
 
         // test expected diagnostic
-        Diagnostic d1 = d(22, 11, 26,
+        Diagnostic d1 = d(22, 11, 40,
                 "The annotation @Inject must not define more than one constructor.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
         
-        Diagnostic d2 = d(26, 11, 26,
+        Diagnostic d2 = d(26, 11, 40,
                 "The annotation @Inject must not define more than one constructor.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
         
-        Diagnostic d3 = d(31, 14, 29,
+        Diagnostic d3 = d(31, 14, 43,
                 "The annotation @Inject must not define more than one constructor.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInject");
         
