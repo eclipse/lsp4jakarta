@@ -26,6 +26,7 @@ Require-Bundle:
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
  org.eclipse.ltk.core.refactoring,
+ org.eclipse.jdt.ls.core;resolution:=optional,
  org.eclipse.lsp4j.jsonrpc,
  org.eclipse.lsp4j,
  com.google.gson,
@@ -34,7 +35,7 @@ Require-Bundle:
  org.jsoup;bundle-version="1.8.3",
  org.apache.commons.io,
  org.apache.commons.lang3
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: 

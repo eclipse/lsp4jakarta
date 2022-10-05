@@ -1,11 +1,11 @@
 package org.eclipse.lsp4jakarta.jdt.internal.core.ls;
 
 import java.util.List;
-import java.util.ArrayList;
+
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
-import org.eclipse.lsp4j.CompletionList;
-import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ls.core.internal.IDelegateCommandHandler;
 
 public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHandler {
 
