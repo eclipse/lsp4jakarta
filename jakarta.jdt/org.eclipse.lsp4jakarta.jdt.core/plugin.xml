@@ -5,4 +5,11 @@
 	<requires>
 		<import plugin="org.eclipse.core.runtime" />
 	</requires>
+
+	<!-- Delegate command handler for Java file -->
+	<extension point="org.eclipse.jdt.ls.core.delegateCommandHandler">
+		<delegateCommandHandler class="org.eclipse.lsp4mp.jdt.internal.core.ls.JakartaDelegateCommandHandlerForJava">
+			<command id="jakarta/java/classpath"/>
+		</delegateCommandHandler>
+	</extension>
 </plugin>
