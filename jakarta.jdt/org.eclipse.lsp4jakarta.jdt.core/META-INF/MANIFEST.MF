@@ -20,7 +20,9 @@ Require-Bundle:
  org.eclipse.lsp4j,
  org.eclipse.buildship.core,
  org.eclipse.text,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ com.google.gson,
+ com.google.guava
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
