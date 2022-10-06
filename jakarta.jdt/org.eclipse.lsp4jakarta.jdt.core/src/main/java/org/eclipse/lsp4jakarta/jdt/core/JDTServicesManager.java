@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
@@ -138,6 +139,7 @@ public class JDTServicesManager {
      * @return List<String>
      */
     public List<String> getExistingContextsFromClassPath(String uri, List<String> snippetContexts) {
+        JavaLanguageServerPlugin.logInfo("getExistingContextsFromClassPath");
         // Initialize the list that will hold the classpath
         List<String> classpath = new ArrayList<>();
         // Convert URI into a compilation unit
@@ -156,7 +158,7 @@ public class JDTServicesManager {
                         classpath.add(null);
                     }
                 } catch (JavaModelException e) {
-                    JakartaCorePlugin.logException("Failed to retrieve projectContext from JDT...", e);
+                    JavaLanguageServerPlugin.logException("Failed to retrieve projectContext from JDT...", e);
                 }
             });
         } else {
@@ -165,6 +167,7 @@ public class JDTServicesManager {
                 classpath.add(null);
             });
         }
+        JavaLanguageServerPlugin.logInfo("Returning classpath: " + classpath);
         return classpath;
     }
 

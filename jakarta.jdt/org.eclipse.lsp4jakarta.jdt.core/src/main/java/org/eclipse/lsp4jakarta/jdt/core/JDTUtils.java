@@ -65,6 +65,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
 import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
+import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -114,6 +115,7 @@ public class JDTUtils {
      * @return compilation unit
      */
     public static ICompilationUnit resolveCompilationUnit(URI uri) {
+        JavaLanguageServerPlugin.logInfo("resolveCompilationUnit");
         if (uri == null || JDT_SCHEME.equals(uri.getScheme()) || !uri.isAbsolute()) {
             return null;
         }
@@ -126,7 +128,7 @@ public class JDTUtils {
             if (resource.getFileExtension() != null) {
                 String name = resource.getName();
                 // FIXME disabled to get jdt ls to recognize lsp4jakarta.jdt, removed org.eclipse.jdt.ui from MANIFEST.MF
-                /** if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
+//                if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
                     ICompilationUnit unit = JavaCore.createCompilationUnitFrom(resource);
                     try {
                         // Give underlying resource time to catch up
@@ -134,11 +136,14 @@ public class JDTUtils {
                         long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
                         while (!unit.isConsistent() && System.currentTimeMillis() < endTime) { }
                     } catch (JavaModelException e) { }
+                    JavaLanguageServerPlugin.logInfo("resolveCompilationUnit returning unit");
                     return unit;
-                }**/
+//                }
             }
+            JavaLanguageServerPlugin.logInfo("resolveCompilationUnit returning null");
             return null;
         } else {
+            JavaLanguageServerPlugin.logInfo("resolveCompilationUnit returning FakeCompilationUnit");
             return getFakeCompilationUnit(uri, new NullProgressMonitor());
         }
     }

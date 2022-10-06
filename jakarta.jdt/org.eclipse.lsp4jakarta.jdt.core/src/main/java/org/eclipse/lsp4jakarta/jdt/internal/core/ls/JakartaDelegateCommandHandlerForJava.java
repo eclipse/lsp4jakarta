@@ -1,11 +1,17 @@
 package org.eclipse.lsp4jakarta.jdt.internal.core.ls;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ls.core.internal.IDelegateCommandHandler;
+import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
+import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
+import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
 
 public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHandler {
 
@@ -24,7 +30,7 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 			// return getCodeActionForJava(arguments, commandId, progress);
 		case JAVA_COMPLETION_COMMAND_ID:
 			// System.out.println("Registered command " + JAVA_COMPLETION_COMMAND_ID);
-			return getContextBasedFilter(arguments, commandId, progress);
+			return getContextBasedFilter(arguments, progress);
 		case JAVA_DIAGNOSTICS_COMMAND_ID:
 			return null;
 			// return getDiagnosticsForJava(arguments, commandId, progress);
@@ -143,13 +149,28 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	//  * @throws JavaModelException
 	//  * @throws CoreException
 	//  */
-	public String getContextBasedFilter(List<Object> arguments, String commandId, IProgressMonitor progress) throws Exception {
-		return "Hello, World";
-		// return CompletableFutures.computeAsync((cancelChecker) -> {
-		// 	return JDTServicesManager.getInstance().getExistingContextsFromClassPath(null, null);
-        //     // return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetContexts);
-        // });
+	public CompletableFuture<Object> getContextBasedFilter(List<Object> arguments, IProgressMonitor progress) throws Exception {
+	    
+	    Map<String, Object> obj = getFirst(arguments); // TODO null check
+	    String uri = getString(obj, "uri");
+	    List<String> snippetCtx = getStringList(obj, "snippetCtx");
+		 return CompletableFutures.computeAsync((cancelChecker) -> {
+              return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetCtx);
+         });
 	}
+	
+	public static Map<String, Object> getFirst(List<Object> arguments) {
+        return arguments.isEmpty() ? null : (Map<String, Object>) arguments.get(0);
+    }
+
+    public static String getString(Map<String, Object> obj, String key) {
+        return (String) obj.get(key);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<String> getStringList(Map<String, Object> obj, String key) {
+        return (List<String>) obj.get(key);
+    }
 
 	// /**
 	//  * Create the completion parameters from the given argument map

@@ -23,6 +23,7 @@ import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
+import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 
 /**
@@ -52,7 +53,7 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
      *         classpath and null for those that do not
      */
     @JsonRequest("jakarta/java/classpath")
-    default CompletableFuture<List<String>> getContextBasedFilter(String uri, List<String> snippetContexts) {
+    default CompletableFuture<List<String>> getContextBasedFilter(JakartaClasspathParams classpathParams) {
         return CompletableFuture.completedFuture(null);
     }
 

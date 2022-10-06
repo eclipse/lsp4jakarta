@@ -37,6 +37,7 @@ import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
+import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.SnippetContextForJava;
 import org.eclipse.lsp4jakarta.commons.SnippetRegistry;
@@ -83,12 +84,28 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
+        LOGGER.info("Completion request");
         /*
          * Code completion functionality for eclipse Jakarta EE. This method is
          * automatically called by the Language Server Client provided it has provided a
          * java-completion-computer extension on the client side.
          */
         String uri = position.getTextDocument().getUri();
+        LOGGER.info("uri: " + uri);
+
+        
+        
+//        List<String> snippetctx = snippetRegistry.getSnippets().stream().map(snippet -> {
+//            return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
+//        }).collect(Collectors.toList());
+//        
+//        CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
+//            jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetctx));
+//        }).thenApply(classpath -> {
+//            LOGGER.info("classpath: " + classpath);
+//            return classpath;
+//        });
+ 
         // Method that gets all the snippet contexts and send to JDT to find which exist
         // in classpath
         CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
@@ -96,8 +113,9 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
             }).collect(Collectors.toList());
         }).thenCompose(snippetctx -> {
-            return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(uri, snippetctx);
+            return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetctx));
         }).thenApply(classpath -> {
+            LOGGER.info("classpath: " + classpath);
             return classpath;
         });
 
