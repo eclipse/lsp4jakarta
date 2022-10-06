@@ -55,7 +55,6 @@
 							<version>${jdt.ls.version}</version>
 						</artifact>
 					</target>
-					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
 					<ignoreTychoRepositories>true</ignoreTychoRepositories>
 				</configuration>
@@ -81,15 +80,6 @@
 						<!-- kill test JVM if tests take more than 1 minute (60 seconds) to 
 							finish -->
 						<forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-surefire-plugin</artifactId>
-					<version>${tycho.version}</version>
-					<configuration>
-						<useUIHarness>false</useUIHarness>
-						<argLine>${tycho.test.jvmArgs}</argLine>
 					</configuration>
 				</plugin>
 			</plugins>

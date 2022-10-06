@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -66,7 +65,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
 import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
-import org.eclipse.jdt.internal.ui.viewsupport.FilteredElementTreeSelectionDialog;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -127,7 +125,8 @@ public class JDTUtils {
             }
             if (resource.getFileExtension() != null) {
                 String name = resource.getName();
-                if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
+                // FIXME disabled to get jdt ls to recognize lsp4jakarta.jdt, removed org.eclipse.jdt.ui from MANIFEST.MF
+                /** if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
                     ICompilationUnit unit = JavaCore.createCompilationUnitFrom(resource);
                     try {
                         // Give underlying resource time to catch up
@@ -136,7 +135,7 @@ public class JDTUtils {
                         while (!unit.isConsistent() && System.currentTimeMillis() < endTime) { }
                     } catch (JavaModelException e) { }
                     return unit;
-                }
+                }**/
             }
             return null;
         } else {
@@ -290,11 +289,12 @@ public class JDTUtils {
             // On Mac, Linked resources are referenced via the "real" URI, i.e
             // file://USERS/username/...
             // instead of file://Users/username/..., so we check against that real URI.
-            URI realUri = FileUtil.realURI(uri);
+            // FIXME disabled to get jdt ls to recognize lsp4jakarta.jdt, removed org.eclipse.jdt.ui from MANIFEST.MF
+            /**URI realUri = FileUtil.realURI(uri);
             if (!uri.equals(realUri)) {
                 uri = realUri;
                 resources = resourceFinder.apply(uri);
-            }
+            }**/
         }
         if (resources.length == 0 && Platform.OS_WIN32.equals(Platform.getOS())
                 && uri.toString().startsWith(FILE_UNC_PREFIX)) {
