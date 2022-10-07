@@ -24,13 +24,20 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 
 	@Override
 	public Object executeCommand(String commandId, List<Object> arguments, IProgressMonitor progress) throws Exception {
-		switch (commandId) {
+	    JavaLanguageServerPlugin.logInfo("executeCommand: " + commandId);
+	    switch (commandId) {
 		case JAVA_CODEACTION_COMMAND_ID:
 			return null;
 			// return getCodeActionForJava(arguments, commandId, progress);
 		case JAVA_COMPLETION_COMMAND_ID:
 			// System.out.println("Registered command " + JAVA_COMPLETION_COMMAND_ID);
-			return getContextBasedFilter(arguments, progress);
+		    Object ctxFilter = getContextBasedFilter(arguments, progress).get();
+		    JavaLanguageServerPlugin.logInfo("ctxFilter: " + ctxFilter);
+		    if (ctxFilter != null) {
+		        List<String> ctxFilterList = (List<String>) ctxFilter;
+		        JavaLanguageServerPlugin.logInfo("ctxFilter List: " + ctxFilterList.toString());
+ 		    }
+			return ctxFilter;
 		case JAVA_DIAGNOSTICS_COMMAND_ID:
 			return null;
 			// return getDiagnosticsForJava(arguments, commandId, progress);
@@ -154,6 +161,7 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	    Map<String, Object> obj = getFirst(arguments); // TODO null check
 	    String uri = getString(obj, "uri");
 	    List<String> snippetCtx = getStringList(obj, "snippetCtx");
+	    JavaLanguageServerPlugin.logInfo("gettingContextBasedFilter...");
 		 return CompletableFutures.computeAsync((cancelChecker) -> {
               return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetCtx);
          });

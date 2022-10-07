@@ -15,8 +15,11 @@ package org.eclipse.lsp4jakarta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -35,10 +38,12 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.Snippet;
 import org.eclipse.lsp4jakarta.commons.SnippetContextForJava;
 import org.eclipse.lsp4jakarta.commons.SnippetRegistry;
 import org.eclipse.lsp4mp.commons.DocumentFormat;
@@ -81,9 +86,10 @@ public class JakartaTextDocumentService implements TextDocumentService {
         jakartaLanguageServer.getLanguageClient()
                 .publishDiagnostics(new PublishDiagnosticsParams(uri, new ArrayList<Diagnostic>()));
     }
-
+    
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
+     // textDocument/completion request
         LOGGER.info("Completion request");
         /*
          * Code completion functionality for eclipse Jakarta EE. This method is
@@ -92,20 +98,26 @@ public class JakartaTextDocumentService implements TextDocumentService {
          */
         String uri = position.getTextDocument().getUri();
         LOGGER.info("uri: " + uri);
+        // Method that gets all the snippet contexts and send to JDT to find which exist
+        // in classpath
+        List<String> snippetReg = snippetRegistry.getSnippets().stream().map(snippet -> {
+            return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
+        }).collect(Collectors.toList());
 
-        
-        
-//        List<String> snippetctx = snippetRegistry.getSnippets().stream().map(snippet -> {
-//            return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
-//        }).collect(Collectors.toList());
-//        
-//        CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
-//            jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetctx));
+
+//        CompletableFuture<List<String>> getSnippetContextFuture = CompletableFuture.supplyAsync(() -> {
+//            // Sending jakarta/java/classpath request to the client, to be passed to the
+//            // lsp4jakarta JDT LS ext
+//            return jakartaLanguageServer.getLanguageClient()
+//                    .getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg));
+//        }).thenCompose(snippet -> {
+//            LOGGER.info("snippet: " + snippet); // returning org.eclipse.lsp4j.jsonrpc.RemoteEndpoint
+//            return snippet;
 //        }).thenApply(classpath -> {
-//            LOGGER.info("classpath: " + classpath);
+//            LOGGER.info("classpath: " + classpath); // returning null
 //            return classpath;
 //        });
- 
+        
         // Method that gets all the snippet contexts and send to JDT to find which exist
         // in classpath
         CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
@@ -113,18 +125,25 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
             }).collect(Collectors.toList());
         }).thenCompose(snippetctx -> {
-            return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetctx));
+            LOGGER.info("inside thenCompose: " + jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)));
+            return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg));
         }).thenApply(classpath -> {
             LOGGER.info("classpath: " + classpath);
             return classpath;
         });
-
-        // An array of snippet contexts is provided to the snippet registry to determine
-        // which snippets to show
-        return getSnippetContexts.thenApply(ctx -> {
-            return Either.forLeft(snippetRegistry
-                    .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
-        });
+        
+    
+//      // An array of snippet contexts is provided to the snippet registry to determine
+//      // which snippets to show
+//      return getSnippetContexts.thenApply(ctx -> {
+//          LOGGER.info("ctx: " + ctx);
+//          return Either.forLeft(snippetRegistry
+//                  .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
+//      });
+        
+        // return empty completion item list for proof of concept
+        LOGGER.info("Returning empty list ");
+        return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
     }
 
     @Override
