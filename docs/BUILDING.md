@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-[JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) (Eclipse IDE for Enterprise Java and Web Developers is recommended) are required to build the lsp4jakarta project.
+[JavaSE-17](https://www.oracle.com/ca-en/java/technologies/downloads/#java17), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) (Eclipse IDE for Enterprise Java and Web Developers is recommended) are required to build the lsp4jakarta project.
 
 Ensure the [Eclipse Plug-in Development Environment (PDE)](https://marketplace.eclipse.org/content/eclipse-pde-plug-development-environment) is installed in your Eclipse workspace.
 
@@ -31,7 +31,7 @@ The following are instructions to set up your Eclipse workspace
     
     <img src="/docs/images/building_tycho_configurator_2.png" alt="Discover m2e connectors" height="40%" width="40%"/> <img src="/docs/images/building_tycho_configurator_3.png" alt="Installing Tycho Project Configurators" height="50%" width="50%"/>
 
-4. Ensure that the Java projects are being built with `JavaSE-11` (Right-click project --> "Properties" --> "Java Build Path" --> "Libraries")
+4. Ensure that the Java projects are being built with `JavaSE-17` (Right-click project --> "Properties" --> "Java Build Path" --> "Libraries")
 
 5. Configure the Java build path for the `org.eclipse.lsp4jakarta.lsp4e.core` project:
 
@@ -53,7 +53,7 @@ The following are instructions to set up your Eclipse workspace
 &nbsp;- *Bundle 'org.apache.commons.lang3' cannot be resolved* in Eclipse workspace  
 &nbsp;Solution: [#46](https://github.com/eclipse/lsp4jakarta/issues/46)
 
-2. If during initial setup `mvn verify` returns errors or compilation failures, verify that you are using [JavaSE-11](https://www.oracle.com/ca-en/java/technologies/javase-jdk11-downloads.html). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
+2. If during initial setup `mvn verify` returns errors or compilation failures, verify that you are using [JavaSE-17](https://www.oracle.com/ca-en/java/technologies/downloads/#java17). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
 
 ## Running as an Eclipse application
 
