@@ -93,7 +93,7 @@ public class JDTServicesManager {
      * @return diagnostics
      */
     public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
-        return getJavaDiagnostics(javaParams, new NullProgressMonitor());
+        return getJavaDiagnostics(javaParams.getUris(), new NullProgressMonitor());
     }
 
     /**
@@ -102,9 +102,9 @@ public class JDTServicesManager {
      * @param javaParams the diagnostics parameters
      * @return diagnostics
      */
-    public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams,
+    public List<PublishDiagnosticsParams> getJavaDiagnostics(List<String> uris,
             IProgressMonitor monitor) {
-        List<String> uris = javaParams.getUris();
+//        List<String> uris = javaParams.getUris();
         if (uris == null) {
             return Collections.emptyList();
         }
@@ -118,6 +118,7 @@ public class JDTServicesManager {
                 if (monitor.isCanceled()) {
                     break;
                 }
+                // TODO debug here
                 d.collectDiagnostics(unit, diagnostics);
             }
             PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);

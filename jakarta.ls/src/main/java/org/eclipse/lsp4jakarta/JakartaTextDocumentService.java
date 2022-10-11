@@ -162,6 +162,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
         if (uris.isEmpty()) {
             return;
         }
+        LOGGER.info("1: " + uris);
         JakartaDiagnosticsParams javaParams = new JakartaDiagnosticsParams(uris);
         // TODO: Use settings to see if markdown is supported
         // boolean markdownSupported =
@@ -170,15 +171,24 @@ public class JakartaTextDocumentService implements TextDocumentService {
         // javaParams.setDocumentFormat(DocumentFormat.Markdown);
         // }
         javaParams.setDocumentFormat(DocumentFormat.Markdown);
-        jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams) //
-                .thenApply(diagnostics -> {
-                    if (diagnostics == null) {
-                        return null;
-                    }
-                    for (PublishDiagnosticsParams diagnostic : diagnostics) {
-                        jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
-                    }
-                    return null;
-                });
+        LOGGER.info("2: " + uris);
+        List<PublishDiagnosticsParams> jakartaDiagnostics;
+        try {
+            LOGGER.info("3");
+            jakartaDiagnostics = jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).get(); // stuck here
+            LOGGER.info("4: " + jakartaDiagnostics.toString());
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.severe("Could not calculate LSP4Jakarta diagnostics: " + e.getMessage());
+            return;
+        }
+        
+        if (jakartaDiagnostics == null) {
+            LOGGER.info("5");
+            return;
+        }
+        for (PublishDiagnosticsParams diagnostic : jakartaDiagnostics) {
+            LOGGER.info("6: " + diagnostic);
+            jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
+        }
     }
 }

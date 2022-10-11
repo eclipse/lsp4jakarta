@@ -1,5 +1,6 @@
 package org.eclipse.lsp4jakarta.jdt.internal.core.ls;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -9,6 +10,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ls.core.internal.IDelegateCommandHandler;
 import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
+import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
@@ -37,107 +39,6 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 			throw new UnsupportedOperationException(String.format("Unsupported command '%s'!", commandId));
 		}
 	}
-
-	/**
-	 * Returns the code action for the given Java file.
-	 *
-	 * @param arguments
-	 * @param commandId
-	 * @param monitor
-	 * @return the code action for the given Java file.
-	 * @throws CoreException
-	 * @throws JavaModelException
-	 */
-	// private static List<? extends CodeAction> getCodeActionForJava(List<Object> arguments, String commandId,
-	// 		IProgressMonitor monitor) throws JavaModelException, CoreException {
-	// 	return null;
-	// 	// // Create java code action parameter
-	// 	// MicroProfileJavaCodeActionParams params = createMicroProfileJavaCodeActionParams(arguments, commandId);
-	// 	// // Return code action from the code action parameter
-	// 	// return PropertiesManagerForJava.getInstance().codeAction(params, JDTUtilsLSImpl.getInstance(), monitor);
-	// }
-
-	// /**
-	//  * Create java code action parameter from the given arguments map.
-	//  *
-	//  * @param arguments
-	//  * @param commandId
-	//  *
-	//  * @return java code action parameter
-	//  */
-	// private static MicroProfileJavaCodeActionParams createMicroProfileJavaCodeActionParams(List<Object> arguments,
-	// 		String commandId) {
-	// 	Map<String, Object> obj = getFirst(arguments);
-	// 	if (obj == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with one MicroProfileJavaCodeActionParams argument!", commandId));
-	// 	}
-	// 	TextDocumentIdentifier texdDocumentIdentifier = getTextDocumentIdentifier(obj, "textDocument");
-	// 	if (texdDocumentIdentifier == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with required MicroProfileJavaCodeActionParams.texdDocumentIdentifier",
-	// 				commandId));
-	// 	}
-	// 	Range range = getRange(obj, "range");
-	// 	CodeActionContext context = getCodeActionContext(obj, "context");
-	// 	boolean resourceOperationSupported = getBoolean(obj, "resourceOperationSupported");
-	// 	boolean commandConfigurationUpdateSupported = getBoolean(obj, "commandConfigurationUpdateSupported");
-	// 	MicroProfileJavaCodeActionParams params = new MicroProfileJavaCodeActionParams();
-	// 	params.setTextDocument(texdDocumentIdentifier);
-	// 	params.setRange(range);
-	// 	params.setContext(context);
-	// 	params.setResourceOperationSupported(resourceOperationSupported);
-	// 	params.setCommandConfigurationUpdateSupported(commandConfigurationUpdateSupported);
-	// 	return params;
-	// }
-
-	// /**
-	//  * Returns the code lenses for the given Java file.
-	//  *
-	//  * @param arguments
-	//  * @param commandId
-	//  * @param monitor
-	//  * @return the code lenses for the given Java file.
-	//  * @throws CoreException
-	//  * @throws JavaModelException
-	//  */
-	// private static List<? extends CodeLens> getCodeLensForJava(List<Object> arguments, String commandId,
-	// 		IProgressMonitor monitor) throws JavaModelException, CoreException {
-	// 	// Create java code lens parameter
-	// 	MicroProfileJavaCodeLensParams params = createMicroProfileJavaCodeLensParams(arguments, commandId);
-	// 	// Return code lenses from the lens parameter
-	// 	return PropertiesManagerForJava.getInstance().codeLens(params, JDTUtilsLSImpl.getInstance(), monitor);
-	// }
-
-	// /**
-	//  * Create java code lens parameter from the given arguments map.
-	//  *
-	//  * @param arguments
-	//  * @param commandId
-	//  *
-	//  * @return java code lens parameter
-	//  */
-	// private static MicroProfileJavaCodeLensParams createMicroProfileJavaCodeLensParams(List<Object> arguments,
-	// 		String commandId) {
-	// 	Map<String, Object> obj = getFirst(arguments);
-	// 	if (obj == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with one MicroProfileJavaCodeLensParams argument!", commandId));
-	// 	}
-	// 	String javaFileUri = getString(obj, "uri");
-	// 	if (javaFileUri == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with required MicroProfileJavaCodeLensParams.uri (java URI)!",
-	// 				commandId));
-	// 	}
-	// 	MicroProfileJavaCodeLensParams params = new MicroProfileJavaCodeLensParams(javaFileUri);
-	// 	params.setUrlCodeLensEnabled(getBoolean(obj, "urlCodeLensEnabled"));
-	// 	params.setCheckServerAvailable(getBoolean(obj, "checkServerAvailable"));
-	// 	params.setOpenURICommand(getString(obj, "openURICommand"));
-	// 	params.setLocalServerPort(getInt(obj, "localServerPort"));
-	// 	return params;
-	// }
-
 	// /**
 	//  * Return the completion items for the given arguments
 	//  *
@@ -158,94 +59,6 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 			return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetCtx);
 		});
 	}
-	
-	public static Map<String, Object> getFirst(List<Object> arguments) {
-        return arguments.isEmpty() ? null : (Map<String, Object>) arguments.get(0);
-    }
-
-    public static String getString(Map<String, Object> obj, String key) {
-        return (String) obj.get(key);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static List<String> getStringList(Map<String, Object> obj, String key) {
-        return (List<String>) obj.get(key);
-    }
-
-	// /**
-	//  * Create the completion parameters from the given argument map
-	//  *
-	//  * @param arguments
-	//  * @param commandId
-	//  * @return the completion parameters from the given argument map
-	//  */
-	// private static MicroProfileJavaCompletionParams createMicroProfileJavaCompletionParams(List<Object> arguments,
-	// 		String commandId) {
-	// 	Map<String, Object> obj = getFirst(arguments);
-	// 	if (obj == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with one MicroProfileJavaCompletionParams argument!", commandId));
-	// 	}
-	// 	String javaFileUri = getString(obj, "uri");
-	// 	if (javaFileUri == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with required MicroProfileJavaCompletionParams.uri (java URI)!",
-	// 				commandId));
-	// 	}
-	// 	Position position = getPosition(obj, "position");
-	// 	if (position == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with required MicroProfileJavaCompletionParams.position (completion trigger location)!",
-	// 				commandId));
-	// 	}
-	// 	MicroProfileJavaCompletionParams params = new MicroProfileJavaCompletionParams(javaFileUri, position);
-	// 	return params;
-	// }
-
-	// /**
-	//  * Returns the list o <code>MicroProfileLocationLink</code> for the definition
-	//  * described in <code>arguments</code>
-	//  *
-	//  * @param arguments
-	//  * @param commandId
-	//  * @param monitor
-	//  * @return
-	//  * @throws JavaModelException
-	//  * @throws CoreException
-	//  */
-	// private static List<MicroProfileDefinition> getDefinitionForJava(List<Object> arguments, String commandId,
-	// 		IProgressMonitor monitor) throws JavaModelException, CoreException {
-	// 	// Create java definition parameter
-	// 	MicroProfileJavaDefinitionParams params = createMicroProfileJavaDefinitionParams(arguments, commandId);
-	// 	// Return hover info from hover parameter
-	// 	return PropertiesManagerForJava.getInstance().definition(params, JDTUtilsLSImpl.getInstance(), monitor);
-	// }
-
-	// /**
-	//  * Returns the java definition parameters from the given arguments map.
-	//  *
-	//  * @param arguments
-	//  * @param commandId
-	//  *
-	//  * @return the definition hover parameters
-	//  */
-	// private static MicroProfileJavaDefinitionParams createMicroProfileJavaDefinitionParams(List<Object> arguments,
-	// 		String commandId) {
-	// 	Map<String, Object> obj = getFirst(arguments);
-	// 	if (obj == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with one MicroProfileJavaDefinitionParams argument!", commandId));
-	// 	}
-	// 	String javaFileUri = getString(obj, "uri");
-	// 	if (javaFileUri == null) {
-	// 		throw new UnsupportedOperationException(String.format(
-	// 				"Command '%s' must be called with required MicroProfileJavaDefinitionParams.uri (java URI)!",
-	// 				commandId));
-	// 	}
-
-	// 	Position hoverPosition = getPosition(obj, "position");
-	// 	return new MicroProfileJavaDefinitionParams(javaFileUri, hoverPosition);
-	// }
 
 	/**
 	 * Returns the publish diagnostics list for a given java file URIs.
@@ -257,20 +70,30 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	 */
 	private CompletableFuture<List<PublishDiagnosticsParams>> getDiagnosticsForJava(List<Object> arguments, String commandId,
 			IProgressMonitor monitor) {
-		// return null;
-		// // Create java diagnostics parameter
-		// MicroProfileJavaDiagnosticsParams params = createMicroProfileJavaDiagnosticsParams(arguments, commandId);
-		// // Return diagnostics from parameter
-		// return PropertiesManagerForJava.getInstance().diagnostics(params, JDTUtilsLSImpl.getInstance(), monitor);
-
+	    Map<String, Object> obj = getFirst(arguments); // TODO null check
+        List<String> uri = getStringList(obj, "uris");
+        JavaLanguageServerPlugin.logInfo("getDiagnosticsForJava: " + uri);
+//        List<String> snippetCtx = getStringList(obj, "snippetCtx");
 		return CompletableFutures.computeAsync((cancelChecker) -> {
-            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-
+//            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
             List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-            publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(javaParams, monitor);
+            publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(uri, monitor);
             return publishDiagnostics;
         });
 	}
+
+	   public static Map<String, Object> getFirst(List<Object> arguments) {
+	        return arguments.isEmpty() ? null : (Map<String, Object>) arguments.get(0);
+	    }
+
+	    public static String getString(Map<String, Object> obj, String key) {
+	        return (String) obj.get(key);
+	    }
+
+	    @SuppressWarnings("unchecked")
+	    public static List<String> getStringList(Map<String, Object> obj, String key) {
+	        return (List<String>) obj.get(key);
+	    }
 
 	// /**
 	//  * Returns the java diagnostics parameters from the given arguments map.
