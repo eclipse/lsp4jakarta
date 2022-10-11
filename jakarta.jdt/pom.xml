@@ -10,19 +10,19 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<tycho.version>2.3.0</tycho.version>
+		<tycho.version>2.7.5</tycho.version>
 		<tycho.extras.version>${tycho.version}</tycho.extras.version>
 		<tycho.scmUrl>scm:git:https://github.com/eclipse/lsp4mp</tycho.scmUrl>
 		<tycho.generateSourceReferences>true</tycho.generateSourceReferences>
-		<jdt.ls.version>1.7.0.20211216164144</jdt.ls.version>
+		<jdt.ls.version>1.16.0.20220929145237</jdt.ls.version>
 		<tycho.test.platformArgs />
 		<tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
 	</properties>
 	<repositories>
 		<repository>
-			<id>2021-12</id>
+			<id>2022-09</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2021-12</url>
+			<url>http://download.eclipse.org/releases/2022-09</url>
 		</repository>
 		<repository>
 			<id>jdt.ls.p2</id>
