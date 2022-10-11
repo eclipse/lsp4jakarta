@@ -30,17 +30,9 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 			return null;
 			// return getCodeActionForJava(arguments, commandId, progress);
 		case JAVA_COMPLETION_COMMAND_ID:
-			// System.out.println("Registered command " + JAVA_COMPLETION_COMMAND_ID);
-		    Object ctxFilter = getContextBasedFilter(arguments, progress).get();
-		    JavaLanguageServerPlugin.logInfo("ctxFilter: " + ctxFilter);
-		    if (ctxFilter != null) {
-		        List<String> ctxFilterList = (List<String>) ctxFilter;
-		        JavaLanguageServerPlugin.logInfo("ctxFilter List: " + ctxFilterList.toString());
- 		    }
-			return ctxFilter;
+		    return getContextBasedFilter(arguments, progress).get();
 		case JAVA_DIAGNOSTICS_COMMAND_ID:
-			return null;
-			// return getDiagnosticsForJava(arguments, commandId, progress);
+			return getDiagnosticsForJava(arguments, commandId, progress);
 		default:
 			throw new UnsupportedOperationException(String.format("Unsupported command '%s'!", commandId));
 		}
@@ -162,9 +154,9 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	    String uri = getString(obj, "uri");
 	    List<String> snippetCtx = getStringList(obj, "snippetCtx");
 	    JavaLanguageServerPlugin.logInfo("gettingContextBasedFilter...");
-		 return CompletableFutures.computeAsync((cancelChecker) -> {
-              return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetCtx);
-         });
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetCtx);
+		});
 	}
 	
 	public static Map<String, Object> getFirst(List<Object> arguments) {
@@ -262,16 +254,23 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	 * @param commandId
 	 * @param monitor
 	 * @return the publish diagnostics list for a given java file URIs.
-	 * @throws JavaModelException
 	 */
-	// private static List<PublishDiagnosticsParams> getDiagnosticsForJava(List<Object> arguments, String commandId,
-	// 		IProgressMonitor monitor) throws JavaModelException {
-	// 	return null;
-	// 	// // Create java diagnostics parameter
-	// 	// MicroProfileJavaDiagnosticsParams params = createMicroProfileJavaDiagnosticsParams(arguments, commandId);
-	// 	// // Return diagnostics from parameter
-	// 	// return PropertiesManagerForJava.getInstance().diagnostics(params, JDTUtilsLSImpl.getInstance(), monitor);
-	// }
+	private CompletableFuture<List<PublishDiagnosticsParams>> getDiagnosticsForJava(List<Object> arguments, String commandId,
+			IProgressMonitor monitor) {
+		// return null;
+		// // Create java diagnostics parameter
+		// MicroProfileJavaDiagnosticsParams params = createMicroProfileJavaDiagnosticsParams(arguments, commandId);
+		// // Return diagnostics from parameter
+		// return PropertiesManagerForJava.getInstance().diagnostics(params, JDTUtilsLSImpl.getInstance(), monitor);
+
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+
+            List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
+            publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(javaParams, monitor);
+            return publishDiagnostics;
+        });
+	}
 
 	// /**
 	//  * Returns the java diagnostics parameters from the given arguments map.

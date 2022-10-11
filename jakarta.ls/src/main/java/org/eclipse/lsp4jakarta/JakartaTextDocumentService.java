@@ -104,15 +104,11 @@ public class JakartaTextDocumentService implements TextDocumentService {
             List<String> snippetReg = snippetRegistry.getSnippets().stream().map(snippet -> {
                 return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
             }).collect(Collectors.toList());
-            // return snippetRegistry.getSnippets().stream().map(snippet -> {
-            //     return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
-            // }).collect(Collectors.toList());
             try {
-                LOGGER.info("Venus is literally very hot.");
                 return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)).get();
             } catch (Exception e) {
-                LOGGER.info("Jupiter is literally very big.");
-                return null;
+                LOGGER.severe("Return request from client did not succeed: " + e.getMessage());
+                return new ArrayList<String>();
             }
         }).thenApply((classpath) -> {
             LOGGER.info("classpath: " + classpath);
@@ -161,6 +157,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
     }
 
+    // diagnostic request
     private void triggerValidationFor(List<String> uris) {
         if (uris.isEmpty()) {
             return;
