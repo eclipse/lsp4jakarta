@@ -89,7 +89,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
     
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
-     // textDocument/completion request
+        // textDocument/completion request
         LOGGER.info("Completion request");
         /*
          * Code completion functionality for eclipse Jakarta EE. This method is
@@ -98,52 +98,32 @@ public class JakartaTextDocumentService implements TextDocumentService {
          */
         String uri = position.getTextDocument().getUri();
         LOGGER.info("uri: " + uri);
-        // Method that gets all the snippet contexts and send to JDT to find which exist
-        // in classpath
-        List<String> snippetReg = snippetRegistry.getSnippets().stream().map(snippet -> {
-            return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
-        }).collect(Collectors.toList());
 
-
-//        CompletableFuture<List<String>> getSnippetContextFuture = CompletableFuture.supplyAsync(() -> {
-//            // Sending jakarta/java/classpath request to the client, to be passed to the
-//            // lsp4jakarta JDT LS ext
-//            return jakartaLanguageServer.getLanguageClient()
-//                    .getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg));
-//        }).thenCompose(snippet -> {
-//            LOGGER.info("snippet: " + snippet); // returning org.eclipse.lsp4j.jsonrpc.RemoteEndpoint
-//            return snippet;
-//        }).thenApply(classpath -> {
-//            LOGGER.info("classpath: " + classpath); // returning null
-//            return classpath;
-//        });
-        
-        // Method that gets all the snippet contexts and send to JDT to find which exist
-        // in classpath
+        // write async thread that retrieves         
         CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
-            return snippetRegistry.getSnippets().stream().map(snippet -> {
+            List<String> snippetReg = snippetRegistry.getSnippets().stream().map(snippet -> {
                 return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
             }).collect(Collectors.toList());
-        }).thenCompose(snippetctx -> {
-            LOGGER.info("inside thenCompose: " + jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)));
-            return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg));
-        }).thenApply(classpath -> {
+            // return snippetRegistry.getSnippets().stream().map(snippet -> {
+            //     return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
+            // }).collect(Collectors.toList());
+            try {
+                LOGGER.info("Venus is literally very hot.");
+                return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)).get();
+            } catch (Exception e) {
+                LOGGER.info("Jupiter is literally very big.");
+                return null;
+            }
+        }).thenApply((classpath) -> {
             LOGGER.info("classpath: " + classpath);
             return classpath;
         });
         
-    
-//      // An array of snippet contexts is provided to the snippet registry to determine
-//      // which snippets to show
-//      return getSnippetContexts.thenApply(ctx -> {
-//          LOGGER.info("ctx: " + ctx);
-//          return Either.forLeft(snippetRegistry
-//                  .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
-//      });
-        
-        // return empty completion item list for proof of concept
-        LOGGER.info("Returning empty list ");
-        return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+        return getSnippetContexts.thenApply(ctx -> {
+            LOGGER.info("ctx: " + ctx);
+            return Either.forLeft(snippetRegistry
+                    .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
+        });
     }
 
     @Override
