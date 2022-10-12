@@ -191,7 +191,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
          * list<PublishDiagnosticsParams>
          * publish list<PublishDiagnosticsParams>
          */
-
         CompletableFuture<List<PublishDiagnosticsParams>> getJakartaDiagnostics = CompletableFuture.supplyAsync(() -> {
             
             try {

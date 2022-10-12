@@ -69,20 +69,20 @@ public class JDTServicesManager {
 
     private JDTServicesManager() {
         diagnosticsCollectors.add(new ServletDiagnosticsCollector());
-//        diagnosticsCollectors.add(new AnnotationDiagnosticsCollector());
-//        diagnosticsCollectors.add(new FilterDiagnosticsCollector());
-//        diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
-//        diagnosticsCollectors.add(new BeanValidationDiagnosticsCollector());
-//        diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
-//        diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
-//        diagnosticsCollectors.add(new ResourceMethodDiagnosticsCollector());
-//        diagnosticsCollectors.add(new Jax_RSClassDiagnosticsCollector());
-//        diagnosticsCollectors.add(new JsonbDiagnosticsCollector());
-//        diagnosticsCollectors.add(new ManagedBeanDiagnosticsCollector());
-//        diagnosticsCollectors.add(new DependencyInjectionDiagnosticsCollector());
-//        diagnosticsCollectors.add(new JsonpDiagnosticCollector());
-//        diagnosticsCollectors.add(new WebSocketDiagnosticsCollector());
-//        diagnosticsCollectors.add(new TransactionsDiagnosticsCollector());
+        diagnosticsCollectors.add(new AnnotationDiagnosticsCollector());
+        diagnosticsCollectors.add(new FilterDiagnosticsCollector());
+        diagnosticsCollectors.add(new ListenerDiagnosticsCollector());
+        diagnosticsCollectors.add(new BeanValidationDiagnosticsCollector());
+        diagnosticsCollectors.add(new PersistenceEntityDiagnosticsCollector());
+        diagnosticsCollectors.add(new PersistenceMapKeyDiagnosticsCollector());
+        diagnosticsCollectors.add(new ResourceMethodDiagnosticsCollector());
+        diagnosticsCollectors.add(new Jax_RSClassDiagnosticsCollector());
+        diagnosticsCollectors.add(new JsonbDiagnosticsCollector());
+        diagnosticsCollectors.add(new ManagedBeanDiagnosticsCollector());
+        diagnosticsCollectors.add(new DependencyInjectionDiagnosticsCollector());
+        diagnosticsCollectors.add(new JsonpDiagnosticCollector());
+        diagnosticsCollectors.add(new WebSocketDiagnosticsCollector());
+        diagnosticsCollectors.add(new TransactionsDiagnosticsCollector());
         this.codeActionHandler = new CodeActionHandler();
     }
 
