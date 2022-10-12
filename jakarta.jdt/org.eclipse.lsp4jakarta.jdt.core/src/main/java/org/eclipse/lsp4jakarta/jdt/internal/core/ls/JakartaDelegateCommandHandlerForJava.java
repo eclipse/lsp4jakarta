@@ -34,7 +34,9 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 		case JAVA_COMPLETION_COMMAND_ID:
 		    return getContextBasedFilter(arguments, progress).get();
 		case JAVA_DIAGNOSTICS_COMMAND_ID:
-			return getDiagnosticsForJava(arguments, commandId, progress);
+		    Object jakartaDiagnostics = getDiagnosticsForJava(arguments, commandId, progress).get();
+		    JavaLanguageServerPlugin.logInfo("jakartaDiagnostics: " + jakartaDiagnostics.toString());
+			return jakartaDiagnostics;
 		default:
 			throw new UnsupportedOperationException(String.format("Unsupported command '%s'!", commandId));
 		}

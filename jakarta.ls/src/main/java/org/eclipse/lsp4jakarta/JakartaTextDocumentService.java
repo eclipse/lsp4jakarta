@@ -98,6 +98,16 @@ public class JakartaTextDocumentService implements TextDocumentService {
          */
         String uri = position.getTextDocument().getUri();
         LOGGER.info("uri: " + uri);
+        
+        /**
+         * prep params
+         * wrapped
+         * goes to client
+         * unwrapped
+         * list<string>
+         * put in Either and wrap
+         * return as completablefuture
+         */
 
         // write async thread that retrieves         
         CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
@@ -105,18 +115,18 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
             }).collect(Collectors.toList());
             try {
+                // getLanguageClient() -> wraps client response in a CompletableFuture
+                // get() unwraps the client response CompletableFuture into just a list of strings
                 return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)).get();
             } catch (Exception e) {
                 LOGGER.severe("Return request from client did not succeed: " + e.getMessage());
                 return new ArrayList<String>();
             }
-        }).thenApply((classpath) -> {
-            LOGGER.info("classpath: " + classpath);
-            return classpath;
         });
         
         return getSnippetContexts.thenApply(ctx -> {
             LOGGER.info("ctx: " + ctx);
+            // putting into Either and thenApply chains into a CompletableFuture
             return Either.forLeft(snippetRegistry
                     .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
         });
@@ -172,23 +182,34 @@ public class JakartaTextDocumentService implements TextDocumentService {
         // }
         javaParams.setDocumentFormat(DocumentFormat.Markdown);
         LOGGER.info("2: " + uris);
-        List<PublishDiagnosticsParams> jakartaDiagnostics;
-        try {
-            LOGGER.info("3");
-            jakartaDiagnostics = jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).get(); // stuck here
-            LOGGER.info("4: " + jakartaDiagnostics.toString());
-        } catch (InterruptedException | ExecutionException e) {
-            LOGGER.severe("Could not calculate LSP4Jakarta diagnostics: " + e.getMessage());
-            return;
-        }
         
-        if (jakartaDiagnostics == null) {
-            LOGGER.info("5");
-            return;
-        }
-        for (PublishDiagnosticsParams diagnostic : jakartaDiagnostics) {
-            LOGGER.info("6: " + diagnostic);
-            jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
-        }
+        /**
+         * prep params
+         * wrapped
+         * goes to client
+         * unwrapped
+         * list<PublishDiagnosticsParams>
+         * publish list<PublishDiagnosticsParams>
+         */
+
+        CompletableFuture<List<PublishDiagnosticsParams>> getJakartaDiagnostics = CompletableFuture.supplyAsync(() -> {
+            
+            try {
+                LOGGER.info("3????");
+                // new thread
+                return jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).get();
+            } catch (Exception e) {
+                LOGGER.severe("Return request from client did not succeed: " + e.getMessage());
+                return new ArrayList<PublishDiagnosticsParams>();
+            }
+        }).thenApply(jakartaDiagnostics -> {
+            LOGGER.info("5: " + jakartaDiagnostics);
+            for (PublishDiagnosticsParams diagnostic : jakartaDiagnostics) {
+                LOGGER.info("6: " + diagnostic);
+                jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
+            }
+            return jakartaDiagnostics;
+        });
+        LOGGER.info("~4");
     }
 }
