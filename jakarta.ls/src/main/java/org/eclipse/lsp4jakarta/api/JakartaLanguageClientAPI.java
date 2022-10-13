@@ -25,6 +25,7 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 
 /**
  * API of the client consuming the Jakarta EE Language Server Used to send
@@ -58,7 +59,7 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
     }
 
     @JsonRequest("jakarta/java/codeaction")
-    default CompletableFuture<List<CodeAction>> getCodeAction(CodeActionParams params) {
+    default CompletableFuture<List<CodeAction>> getCodeAction(JakartaJavaCodeActionParams params) {
         return CompletableFuture.completedFuture(null);
     }
 }

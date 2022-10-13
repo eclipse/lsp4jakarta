@@ -43,6 +43,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.Snippet;
 import org.eclipse.lsp4jakarta.commons.SnippetContextForJava;
 import org.eclipse.lsp4jakarta.commons.SnippetRegistry;
@@ -156,7 +157,17 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
-        return jakartaLanguageServer.getLanguageClient().getCodeAction(params) //
+        /**
+         * prep params
+         * wrapped
+         * goes to client
+         * unwrapped
+         * list<string>
+         * put in Either and wrap
+         * return as completablefuture
+         */
+        JakartaJavaCodeActionParams jakartaCodeActionParams = new JakartaJavaCodeActionParams(params);
+        return jakartaLanguageServer.getLanguageClient().getCodeAction(jakartaCodeActionParams) //
                 .thenApply(codeActions -> {
                     return codeActions.stream() //
                             .map(ca -> {

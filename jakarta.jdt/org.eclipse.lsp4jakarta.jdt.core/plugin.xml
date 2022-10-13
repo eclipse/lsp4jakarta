@@ -11,6 +11,7 @@
 		<delegateCommandHandler class="org.eclipse.lsp4jakarta.jdt.internal.core.ls.JakartaDelegateCommandHandlerForJava">
 			<command id="jakarta/java/classpath"/>
 			<command id="jakarta/java/diagnostics"/>
+			<command id="jakarta/java/codeaction"/>
 		</delegateCommandHandler>
 	</extension>
 </plugin>

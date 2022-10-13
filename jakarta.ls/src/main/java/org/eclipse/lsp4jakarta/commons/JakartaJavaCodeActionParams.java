@@ -20,10 +20,11 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 
 /**
- * Java codeAction parameters. reused from
- * https://github.com/eclipse/lsp4mp/blob/master/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaCodeActionParams.java
- *
- * @author credit to Angelo ZERR
+ * This is a duplicate JakartaJavaCodeActionParams from lsp4jakarta. This class
+ * is required so that the eclipse test plugin (org.eclipse.lsp4jakarta.tests)
+ * can make use of JakartaJavaCodeActionParams.
+ * 
+ * @author Kathryn Kodama
  *
  */
 public class JakartaJavaCodeActionParams extends CodeActionParams {
@@ -37,6 +38,10 @@ public class JakartaJavaCodeActionParams extends CodeActionParams {
     public JakartaJavaCodeActionParams(final TextDocumentIdentifier textDocument, final Range range,
             final CodeActionContext context) {
         super(textDocument, range, context);
+    }
+
+    public JakartaJavaCodeActionParams(CodeActionParams params) {
+        super(params.getTextDocument(), params.getRange(), params.getContext());
     }
 
     public String getUri() {

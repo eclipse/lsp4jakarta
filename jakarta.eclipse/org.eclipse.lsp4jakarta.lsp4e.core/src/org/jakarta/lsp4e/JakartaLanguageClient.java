@@ -93,15 +93,15 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
         });
     }
 
-    public CompletableFuture<List<CodeAction>> getCodeAction(CodeActionParams params) {
+    public CompletableFuture<List<CodeAction>> getCodeAction(JakartaJavaCodeActionParams params) {
         JDTUtils utils = new JDTUtils();
 
         return CompletableFutures.computeAsync((cancelChecker) -> {
             IProgressMonitor monitor = getProgressMonitor(cancelChecker);
             try {
-                JakartaJavaCodeActionParams JakartaParams = new JakartaJavaCodeActionParams(params.getTextDocument(),
-                        params.getRange(), params.getContext());
-                return (List<CodeAction>) JDTServicesManager.getInstance().getCodeAction(JakartaParams, utils, monitor);
+//                JakartaJavaCodeActionParams JakartaParams = new JakartaJavaCodeActionParams(params.getTextDocument(),
+//                        params.getRange(), params.getContext());
+                return (List<CodeAction>) JDTServicesManager.getInstance().getCodeAction(params, utils, monitor);
             } catch (JavaModelException e) {
                 return null;
             }

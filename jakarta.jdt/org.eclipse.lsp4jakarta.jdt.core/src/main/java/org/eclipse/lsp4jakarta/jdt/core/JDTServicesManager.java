@@ -104,36 +104,28 @@ public class JDTServicesManager {
      */
     public List<PublishDiagnosticsParams> getJavaDiagnostics(List<String> uris,
             IProgressMonitor monitor) {
-        JavaLanguageServerPlugin.logInfo("JDTServicesManager 1");
 //        List<String> uris = javaParams.getUris();
         if (uris == null) {
             return Collections.emptyList();
         }
 
-        JavaLanguageServerPlugin.logInfo("JDTServicesManager 2");
         List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
         for (String uri : uris) {
             List<Diagnostic> diagnostics = new ArrayList<>();
             URI u = JDTUtils.toURI(uri);
-            JavaLanguageServerPlugin.logInfo("JDTServicesManager 3");
             ICompilationUnit unit = JDTUtils.resolveCompilationUnit(u);
-            JavaLanguageServerPlugin.logInfo("JDTServicesManager 4 unit: " + unit);
             for (DiagnosticsCollector d : diagnosticsCollectors) {
                 if (monitor.isCanceled()) {
                     break;
                 }
-                // TODO debug here
-                JavaLanguageServerPlugin.logInfo("JDTServicesManager 5");
                 d.collectDiagnostics(unit, diagnostics);
             }
-            JavaLanguageServerPlugin.logInfo("JDTServicesManager 6");
             PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
             publishDiagnostics.add(publishDiagnostic);
             if (monitor.isCanceled()) {
                 return Collections.emptyList();
             }
         }
-        JavaLanguageServerPlugin.logInfo("JDTServicesManager 7: " + publishDiagnostics);
         return publishDiagnostics;
     }
 
