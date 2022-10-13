@@ -9,78 +9,78 @@
         "context": {
             "type": "jakarta.persistence.PersistenceContextType"
         }
-      },
-      "PersistenceContext annotation - express a dependency on a container-managed entity manager that exists beyond the scope of a single transaction.": {
-        "prefix": "persistctxext",
-        "body": [
-          "@PersistenceContext(type=PersistenceContextType.EXTENDED)",
-          "${2:EntityManager} ${3:em};"
-        ],
-        "description": "PersistenceContext annotation - express a dependency on a container-managed entity manager that exists beyond the scope of a single transaction.",
-        "context": {
-            "type": "jakarta.persistence.PersistenceContextType"
-        }
-      },
-      "PersistenceContext annotation - express a dependency on a container-managed entity manager, that must be explcitly joined to the current transaction. ": {
-        "prefix": "persistunsync",
-        "body": [
-            "@PersistenceContext(type=PersistenceContextType.EXTENDED, synchronization = SynchronizationType.UNSYNCHRONIZED)",
-            "${1:EntityManager} {2:em};"
-        ],
-        "description": "PersistenceContext annotation - express a dependency on a container-managed entity manager, that must be explcitly joined to the current transaction. ",
-        "context": {
-            "type": "jakarta.persistence.PersistenceContextType"
-        }
-        },
-        "Generate a Generic Jakarta Persistence Entity Model": {
-            "prefix": "persistentity",
-            "body": [
-              "package ${1:packagename};",
-              "",
-              "import jakarta.persistence.Entity;",
-              "import jakarta.persistence.Table;",
-              "import jakarta.persistence.NamedQuery;",
-              "import jakarta.persistence.GeneratedValue;",
-              "import jakarta.persistence.Id;",
-              "import jakarta.persistence.Column;",
-              "import jakarta.persistence.GenerationType;",
-              "",
-              "@Entity",
-              "@Table(name = \"${2:entityName}\")",
-              "@NamedQuery(name=\"\", query=\"\")",
-              "public class ${2:entityName} {",
-              "",
-              "\t@GeneratedValue(strategy = GenerationType.AUTO)",
-              "\t@Id",
-              "\t@Column(name=\"${3:idName}\")",
-              "\tprivate int id;",
-              "",
-              "\t@Column(name=\"${4:columnName}\")",
-              "\tprivate String ${4:columnName};",
-              "",
-              "\tpublic ${2:entityName}() { ",
-              "\t}",
-              "",
-              "\tpublic int getId() {",
-              "\t\treturn id;",
-              "\t}",
-              "",
-              "\tpublic void setId(int id) {",
-              "\t\tthis.id = id;",
-              "\t}",
-              "",
-              "\tpublic String get${4:columnName}() {",
-              "\t\treturn ${4:columnName};",
-              "\t}",
-              "",
-              "\tpublic void set${4:columnName}(String example) {",
-              "\t\tthis.${4:columnName} = example;",
-              "\t}",
-              "}"
-            ],
-            "description": "Generate a Generic Jakarta Persistence Entity Model",
-            "context": {
-                "type": "jakarta.persistence.Entity"
-            }
-          }
+    },
+	"PersistenceContext annotation - express a dependency on a container-managed entity manager that exists beyond the scope of a single transaction.": {
+		"prefix": "persistctxext",
+		"body": [
+		    "@PersistenceContext(type=PersistenceContextType.EXTENDED)",
+		    "${2:EntityManager} ${3:em};"
+		],
+		"description": "PersistenceContext annotation - express a dependency on a container-managed entity manager that exists beyond the scope of a single transaction.",
+		"context": {
+		    "type": "jakarta.persistence.PersistenceContextType"
+		}
+	},
+	"PersistenceContext annotation - express a dependency on a container-managed entity manager, that must be explcitly joined to the current transaction. ": {
+	    "prefix": "persistunsync",
+	    "body": [
+	        "@PersistenceContext(type=PersistenceContextType.EXTENDED, synchronization = SynchronizationType.UNSYNCHRONIZED)",
+	        "${1:EntityManager} {2:em};"
+	    ],
+	    "description": "PersistenceContext annotation - express a dependency on a container-managed entity manager, that must be explcitly joined to the current transaction. ",
+	    "context": {
+	        "type": "jakarta.persistence.PersistenceContextType"
+	    }
+	},
+	"Generate a Generic Jakarta Persistence Entity Model": {
+	    "prefix": "persistentity",
+	    "body": [
+	      "package ${1:packagename};",
+	      "",
+	      "import jakarta.persistence.Entity;",
+	      "import jakarta.persistence.Table;",
+	      "import jakarta.persistence.NamedQuery;",
+	      "import jakarta.persistence.GeneratedValue;",
+	      "import jakarta.persistence.Id;",
+	      "import jakarta.persistence.Column;",
+	      "import jakarta.persistence.GenerationType;",
+	      "",
+	      "@Entity",
+	      "@Table(name = \"${2:entityName}\")",
+	      "@NamedQuery(name=\"\", query=\"\")",
+	      "public class ${2:classname} {",
+	      "",
+	      "\t@GeneratedValue(strategy = GenerationType.AUTO)",
+	      "\t@Id",
+	      "\t@Column(name=\"${3:idName}\")",
+	      "\tprivate int id;",
+	      "",
+	      "\t@Column(name=\"${4:columnName}\")",
+	      "\tprivate String ${4:columnName};",
+	      "",
+	      "\tpublic ${2:classname}() { ",
+	      "\t}",
+	      "",
+	      "\tpublic int getId() {",
+	      "\t\treturn id;",
+	      "\t}",
+	      "",
+	      "\tpublic void setId(int id) {",
+	      "\t\tthis.id = id;",
+	      "\t}",
+	      "",
+	      "\tpublic String get${4:columnName}() {",
+	      "\t\treturn ${4:columnName};",
+	      "\t}",
+	      "",
+	      "\tpublic void set${4:columnName}(String example) {",
+	      "\t\tthis.${4:columnName} = example;",
+	      "\t}",
+	      "}"
+	    ],
+	    "description": "Generate a Generic Jakarta Persistence Entity Model",
+	    "context": {
+	        "type": "jakarta.persistence.Entity"
+	    }
+	}
 }
