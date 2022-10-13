@@ -22,10 +22,14 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+<<<<<<< HEAD
 import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
+=======
+>>>>>>> origin/main
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
@@ -45,7 +49,6 @@ import org.eclipse.lsp4jakarta.jdt.core.persistence.PersistenceMapKeyDiagnostics
 import org.eclipse.lsp4jakarta.jdt.core.servlet.FilterDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ListenerDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.servlet.ServletDiagnosticsCollector;
-import org.eclipse.lsp4jakarta.jdt.core.transactions.TransactionsDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketDiagnosticsCollector;
 
 /**
@@ -82,7 +85,8 @@ public class JDTServicesManager {
         diagnosticsCollectors.add(new DependencyInjectionDiagnosticsCollector());
         diagnosticsCollectors.add(new JsonpDiagnosticCollector());
         diagnosticsCollectors.add(new WebSocketDiagnosticsCollector());
-        diagnosticsCollectors.add(new TransactionsDiagnosticsCollector());
+        // comment it out as the collector is doing nothing
+        // diagnosticsCollectors.add(new TransactionsDiagnosticsCollector());
         this.codeActionHandler = new CodeActionHandler();
     }
 
@@ -145,7 +149,7 @@ public class JDTServicesManager {
         // Convert URI into a compilation unit
         ICompilationUnit unit = JDTUtils.resolveCompilationUnit(JDTUtils.toURI(uri));
         // Get Java Project
-        JavaProject project = (JavaProject) unit.getJavaProject();
+        IJavaProject project = unit.getJavaProject();
         // Get Java Project
         if (project != null) {
             snippetContexts.forEach(ctx -> {

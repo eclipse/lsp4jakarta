@@ -12,16 +12,16 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<tycho.version>2.3.0</tycho.version>
-		<tycho.extras.version>2.3.0</tycho.extras.version>
+		<tycho.version>2.7.5</tycho.version>
+		<tycho.extras.version>2.7.5</tycho.extras.version>
 		<tycho.test.platformArgs />
 		<tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
 	</properties>
 	<repositories>
 		<repository>
-			<id>2020-12</id>
+			<id>2022-09</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2020-12</url>
+			<url>http://download.eclipse.org/releases/2022-09</url>
 		</repository>
 	</repositories>
 	<build>

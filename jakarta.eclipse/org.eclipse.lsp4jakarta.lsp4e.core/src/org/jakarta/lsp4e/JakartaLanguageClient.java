@@ -23,8 +23,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4e.LanguageClientImpl;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionParams;
-import org.eclipse.lsp4j.Hover;
-import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
@@ -49,20 +47,6 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
             };
         };
         return monitor;
-    }
-
-    @Override
-    public CompletableFuture<Hover> getJavaHover(HoverParams params) {
-        return CompletableFuture.completedFuture(null);
-        // return dummy test hover object
-//		return CompletableFutures.computeAsync((cancelChecker) -> {
-//			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-//			Hover testHover = new Hover();
-//			List<Either<String, MarkedString>> contents = new ArrayList<>();
-//			contents.add(Either.forLeft("this is test hover"));
-//			testHover.setContents(contents);
-//			return testHover;
-//		});
     }
 
     @Override

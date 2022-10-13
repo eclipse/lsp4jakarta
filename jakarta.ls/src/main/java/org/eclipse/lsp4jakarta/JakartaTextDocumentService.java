@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 IBM Corporation and others.
+* Copyright (c) 2020, 2022 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -152,7 +152,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
     @Override
     public CompletableFuture<Hover> hover(HoverParams params) {
         LOGGER.info("received textDocument/hover request");
-        return jakartaLanguageServer.getLanguageClient().getJavaHover(params);
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

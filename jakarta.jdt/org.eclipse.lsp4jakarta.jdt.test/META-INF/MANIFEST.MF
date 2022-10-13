@@ -5,7 +5,7 @@ Bundle-Vendor: Eclipse
 Bundle-SymbolicName: org.eclipse.lsp4jakarta.jdt.test
 Bundle-Version: 0.0.1.qualifier
 Automatic-Module-Name: org.eclipse.lsp4jakarta.jdt.test
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: 
  org.junit,
  org.apache.commons.io,
@@ -17,7 +17,6 @@ Require-Bundle:
  org.eclipse.core.resources,
  org.eclipse.lsp4jakarta.jdt.core,
  org.eclipse.m2e.core,
- org.eclipse.m2e.maven.runtime,
- org.eclipse.m2e.lifecyclemapping.defaults
+ org.eclipse.m2e.maven.runtime
 Bundle-ClassPath: . 
 Import-Package: com.google.gson

@@ -188,8 +188,7 @@ public class SnippetRegistry {
 
             TextEdit textEdit = new TextEdit(replaceRange, insertText);
             formatTextEdit(textEdit); // Fixes indentation on the lines based on tabs
-            item.setTextEdit(textEdit);
-            item.setInsertTextFormat(InsertTextFormat.Snippet);
+            item.setTextEdit(Either.forLeft(textEdit));
             item.setInsertTextFormat(InsertTextFormat.Snippet);
             return item;
         }).filter(completionItems -> completionItems != null).collect(Collectors.toList());
@@ -225,7 +224,7 @@ public class SnippetRegistry {
 
             TextEdit textEdit = new TextEdit(replaceRange, insertText);
             formatTextEdit(textEdit); // Fixes indentation on the lines based on tabs
-            item.setTextEdit(textEdit);
+            item.setTextEdit(Either.forLeft(textEdit));
             item.setInsertTextFormat(InsertTextFormat.Snippet);
             return item;
         }).collect(Collectors.toList());
