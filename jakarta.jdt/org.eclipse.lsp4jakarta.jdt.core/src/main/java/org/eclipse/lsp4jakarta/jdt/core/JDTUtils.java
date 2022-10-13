@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -65,7 +66,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
 import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
-import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
@@ -111,11 +111,10 @@ public class JDTUtils {
      * Given the uri returns a {@link ICompilationUnit}. May return null if it can
      * not associate the uri with a Java file.
      *
-     * @param uriString
+     * @param uri
      * @return compilation unit
      */
     public static ICompilationUnit resolveCompilationUnit(URI uri) {
-        JavaLanguageServerPlugin.logInfo("resolveCompilationUnit");
         if (uri == null || JDT_SCHEME.equals(uri.getScheme()) || !uri.isAbsolute()) {
             return null;
         }
@@ -127,25 +126,13 @@ public class JDTUtils {
             }
             if (resource.getFileExtension() != null) {
                 String name = resource.getName();
-                // FIXME disabled to get jdt ls to recognize lsp4jakarta.jdt, removed org.eclipse.jdt.ui from MANIFEST.MF
-//                if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
-                    ICompilationUnit unit = JavaCore.createCompilationUnitFrom(resource);
-                    try {
-                        // Give underlying resource time to catch up
-                        // (timeout at COMPILATION_UNIT_UPDATE_TIMEOUT milliseconds).
-                        long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
-                        while (!unit.isConsistent() && System.currentTimeMillis() < endTime) { }
-                    } catch (JavaModelException e) { }
-                    JavaLanguageServerPlugin.logInfo("resolveCompilationUnit returning unit");
-                    return unit;
-//                }
+                if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
+                    return JavaCore.createCompilationUnitFrom(resource);
+                }
             }
-            JavaLanguageServerPlugin.logInfo("resolveCompilationUnit returning null");
-            return null;
-        } else {
-            JavaLanguageServerPlugin.logInfo("resolveCompilationUnit returning FakeCompilationUnit");
-            return getFakeCompilationUnit(uri, new NullProgressMonitor());
         }
+        return getFakeCompilationUnit(uri, new NullProgressMonitor());
+
     }
 
     static ICompilationUnit getFakeCompilationUnit(URI uri, IProgressMonitor monitor) {
@@ -291,15 +278,13 @@ public class JDTUtils {
         }
         IResource[] resources = resourceFinder.apply(uri);
         if (resources.length == 0) {
-            // On Mac, Linked resources are referenced via the "real" URI, i.e
-            // file://USERS/username/...
-            // instead of file://Users/username/..., so we check against that real URI.
-            // FIXME disabled to get jdt ls to recognize lsp4jakarta.jdt, removed org.eclipse.jdt.ui from MANIFEST.MF
-            /**URI realUri = FileUtil.realURI(uri);
+            //On Mac, Linked resources are referenced via the "real" URI, i.e file://USERS/username/...
+            //instead of file://Users/username/..., so we check against that real URI.
+            URI realUri = FileUtil.realURI(uri);
             if (!uri.equals(realUri)) {
                 uri = realUri;
                 resources = resourceFinder.apply(uri);
-            }**/
+            }
         }
         if (resources.length == 0 && Platform.OS_WIN32.equals(Platform.getOS())
                 && uri.toString().startsWith(FILE_UNC_PREFIX)) {

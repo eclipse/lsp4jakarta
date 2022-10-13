@@ -15,11 +15,8 @@ package org.eclipse.lsp4jakarta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -38,13 +35,11 @@ import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-import org.eclipse.lsp4jakarta.commons.Snippet;
 import org.eclipse.lsp4jakarta.commons.SnippetContextForJava;
 import org.eclipse.lsp4jakarta.commons.SnippetRegistry;
 import org.eclipse.lsp4mp.commons.DocumentFormat;
@@ -90,15 +85,12 @@ public class JakartaTextDocumentService implements TextDocumentService {
     
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
-        // textDocument/completion request
-        LOGGER.info("Completion request");
         /*
          * Code completion functionality for eclipse Jakarta EE. This method is
          * automatically called by the Language Server Client provided it has provided a
          * java-completion-computer extension on the client side.
          */
         String uri = position.getTextDocument().getUri();
-        LOGGER.info("uri: " + uri);
         
         /**
          * prep params
@@ -126,7 +118,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
         });
         
         return getSnippetContexts.thenApply(ctx -> {
-            LOGGER.info("ctx: " + ctx);
             // putting into Either and thenApply chains into a CompletableFuture
             return Either.forLeft(snippetRegistry
                     .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
@@ -183,7 +174,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
         if (uris.isEmpty()) {
             return;
         }
-        LOGGER.info("1: " + uris);
         JakartaDiagnosticsParams javaParams = new JakartaDiagnosticsParams(uris);
         // TODO: Use settings to see if markdown is supported
         // boolean markdownSupported =
@@ -192,7 +182,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
         // javaParams.setDocumentFormat(DocumentFormat.Markdown);
         // }
         javaParams.setDocumentFormat(DocumentFormat.Markdown);
-        LOGGER.info("2: " + uris);
         
         /**
          * prep params
@@ -205,7 +194,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
         CompletableFuture<List<PublishDiagnosticsParams>> getJakartaDiagnostics = CompletableFuture.supplyAsync(() -> {
             
             try {
-                LOGGER.info("3????");
                 // new thread
                 return jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).get();
             } catch (Exception e) {
@@ -213,13 +201,10 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 return new ArrayList<PublishDiagnosticsParams>();
             }
         }).thenApply(jakartaDiagnostics -> {
-            LOGGER.info("5: " + jakartaDiagnostics);
             for (PublishDiagnosticsParams diagnostic : jakartaDiagnostics) {
-                LOGGER.info("6: " + diagnostic);
                 jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
             }
             return jakartaDiagnostics;
         });
-        LOGGER.info("~4");
     }
 }

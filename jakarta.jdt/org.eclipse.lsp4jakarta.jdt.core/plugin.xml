@@ -6,7 +6,7 @@
 		<import plugin="org.eclipse.core.runtime" />
 	</requires>
 
-	<!-- Delegate command handler for Java file -->
+	<!-- Delegate command handler for custom LSP4Jakarta commands contributed to Eclipse JDT LS -->
 	<extension point="org.eclipse.jdt.ls.core.delegateCommandHandler">
 		<delegateCommandHandler class="org.eclipse.lsp4jakarta.jdt.internal.core.ls.JakartaDelegateCommandHandlerForJava">
 			<command id="jakarta/java/classpath"/>

@@ -25,11 +25,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-<<<<<<< HEAD
-import org.eclipse.jdt.internal.core.JavaProject;
 import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
-=======
->>>>>>> origin/main
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
@@ -101,14 +97,13 @@ public class JDTServicesManager {
     }
 
     /**
-     * Returns diagnostics for the given uris from the JakartaDiagnosticsParams.
+     * Returns diagnostics for the given uris
      * 
-     * @param javaParams the diagnostics parameters
+     * @param uris the list of uris to collect diagnostics for
      * @return diagnostics
      */
     public List<PublishDiagnosticsParams> getJavaDiagnostics(List<String> uris,
             IProgressMonitor monitor) {
-//        List<String> uris = javaParams.getUris();
         if (uris == null) {
             return Collections.emptyList();
         }
@@ -143,7 +138,6 @@ public class JDTServicesManager {
      * @return List<String>
      */
     public List<String> getExistingContextsFromClassPath(String uri, List<String> snippetContexts) {
-        JavaLanguageServerPlugin.logInfo("getExistingContextsFromClassPath");
         // Initialize the list that will hold the classpath
         List<String> classpath = new ArrayList<>();
         // Convert URI into a compilation unit
@@ -171,7 +165,6 @@ public class JDTServicesManager {
                 classpath.add(null);
             });
         }
-        JavaLanguageServerPlugin.logInfo("Returning classpath: " + classpath);
         return classpath;
     }
 
