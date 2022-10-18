@@ -31,7 +31,6 @@ import org.eclipse.lsp4j.MarkupKind;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.eclipse.lsp4jakarta.JakartaTextDocumentService;
 import org.eclipse.lsp4jakarta.utils.Messages;
 
 import com.google.gson.GsonBuilder;
@@ -46,7 +45,6 @@ import com.google.gson.stream.JsonReader;
  * @author Ankush Sharma, credit to Angelo ZERR
  */
 public class SnippetRegistry {
-   
     List<Snippet> snippets; // Hold all snippets in this list
 
     /**

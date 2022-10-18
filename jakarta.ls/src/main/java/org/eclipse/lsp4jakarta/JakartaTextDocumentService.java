@@ -79,46 +79,37 @@ public class JakartaTextDocumentService implements TextDocumentService {
     public void didClose(DidCloseTextDocumentParams params) {
         documents.onDidCloseTextDocument(params);
         String uri = params.getTextDocument().getUri();
+        // clear diagnostics
         jakartaLanguageServer.getLanguageClient()
                 .publishDiagnostics(new PublishDiagnosticsParams(uri, new ArrayList<Diagnostic>()));
     }
-    
+
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
-        /*
-         * Code completion functionality for eclipse Jakarta EE. This method is
-         * automatically called by the Language Server Client provided it has provided a
-         * java-completion-computer extension on the client side.
-         */
         String uri = position.getTextDocument().getUri();
-        
-        /**
-         * prep params
-         * wrapped
-         * goes to client
-         * unwrapped
-         * list<string>
-         * put in Either and wrap
-         * return as completablefuture
-         */
-
-        // write async thread that retrieves         
+        // Async thread to query the JDT LS ext for snippet contexts on project's
+        // classpath
         CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
+            // Get the list of snippet contexts to pass to the JDT LS ext
             List<String> snippetReg = snippetRegistry.getSnippets().stream().map(snippet -> {
                 return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
             }).collect(Collectors.toList());
             try {
-                // getLanguageClient() -> wraps client response in a CompletableFuture
-                // get() unwraps the client response CompletableFuture into just a list of strings
-                return jakartaLanguageServer.getLanguageClient().getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)).get();
+                // Pass JakartaClasspathParams to IDE client, to be forwarded to the JDT LS ext
+                // Returns a CompletableFuture List<String> of snippet context that are on the
+                // project's classpath
+                return jakartaLanguageServer.getLanguageClient()
+                        .getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)).get();
             } catch (Exception e) {
                 LOGGER.severe("Return request from client did not succeed: " + e.getMessage());
                 return new ArrayList<String>();
             }
         });
-        
+
+        // Put list of CompletionItems in an Either and wrap as a CompletableFuture
         return getSnippetContexts.thenApply(ctx -> {
-            // putting into Either and thenApply chains into a CompletableFuture
+            // Given the snippet contexts that are on the project's classpath, return the
+            // corresponding list of CompletionItems
             return Either.forLeft(snippetRegistry
                     .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
         });
@@ -148,23 +139,19 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
-        /**
-         * prep params
-         * wrapped
-         * goes to client
-         * unwrapped
-         * list<string>
-         * put in Either and wrap
-         * return as completablefuture
-         */
+        // Prepare the JakartaJavaCodeActionParams
         JakartaJavaCodeActionParams jakartaCodeActionParams = new JakartaJavaCodeActionParams(params);
+        // Pass the JakartaJavaCodeActionParams to IDE client, to be forwarded to the
+        // JDT LS ext
+        // Async thread to get the list of code actions from the JDT LS ext
         return jakartaLanguageServer.getLanguageClient().getCodeAction(jakartaCodeActionParams) //
                 .thenApply(codeActions -> {
-                    return codeActions.stream() //
-                            .map(ca -> {
-                                Either<Command, CodeAction> e = Either.forRight(ca);
-                                return e;
-                            }).collect(Collectors.toList());
+                    // Return the corresponding list of CodeActions, put in an Either and wrap as a
+                    // CompletableFuture
+                    return codeActions.stream().map(ca -> {
+                        Either<Command, CodeAction> e = Either.forRight(ca);
+                        return e;
+                    }).collect(Collectors.toList());
                 });
 
     }
@@ -174,6 +161,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
         if (uris.isEmpty()) {
             return;
         }
+        // Prepare the JakartaDiagnosticsParams
         JakartaDiagnosticsParams javaParams = new JakartaDiagnosticsParams(uris);
         // TODO: Use settings to see if markdown is supported
         // boolean markdownSupported =
@@ -182,25 +170,20 @@ public class JakartaTextDocumentService implements TextDocumentService {
         // javaParams.setDocumentFormat(DocumentFormat.Markdown);
         // }
         javaParams.setDocumentFormat(DocumentFormat.Markdown);
-        
-        /**
-         * prep params
-         * wrapped
-         * goes to client
-         * unwrapped
-         * list<PublishDiagnosticsParams>
-         * publish list<PublishDiagnosticsParams>
-         */
+
+        // Async thread to query the JDT LS ext for Jakarta EE diagnostics
         CompletableFuture<List<PublishDiagnosticsParams>> getJakartaDiagnostics = CompletableFuture.supplyAsync(() -> {
-            
             try {
-                // new thread
+                // Pass the JakartaDiagnosticsParams to IDE client, to be forwarded to the JDT
+                // LS ext
                 return jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).get();
             } catch (Exception e) {
                 LOGGER.severe("Return request from client did not succeed: " + e.getMessage());
                 return new ArrayList<PublishDiagnosticsParams>();
             }
         }).thenApply(jakartaDiagnostics -> {
+            // Publish the corresponding diagnostic items returned from the IDE client (from
+            // the JDT LS ext)
             for (PublishDiagnosticsParams diagnostic : jakartaDiagnostics) {
                 jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
             }

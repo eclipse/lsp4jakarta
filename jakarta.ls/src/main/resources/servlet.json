@@ -2,7 +2,7 @@
     "GenericServlet - protocol independent servlet": {
         "prefix": "genericservlet",
         "body": [
-          "package ${1: packagename};",
+          "package ${1:packagename};",
           "",
           "import jakarta.servlet.GenericServlet;",
           "import jakarta.servlet.ServletRequest;",
@@ -10,7 +10,7 @@
           "import jakarta.servlet.ServletException;",
           "import java.io.IOException;",
           "",
-          "public class ${2: classname} extends GenericServlet {",
+          "public class ${2:classname} extends GenericServlet {",
           "\t@Override",
           "\tpublic void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {",
           "\t\tres.setContentType(\"text/html\");",
@@ -26,7 +26,7 @@
     "HttpServlet - supports HTTP GET requests": {
         "prefix": "httpservletget",
         "body": [
-            "package ${1: packagename};",
+            "package ${1:packagename};",
             "",
             "import jakarta.servlet.ServletException;",
             "import jakarta.servlet.annotation.WebServlet;",
@@ -36,7 +36,7 @@
             "import java.io.IOException;",
             "",
             "@WebServlet(name = \"${2:servletName}\", urlPatterns = { \"/${3:path}\" })",
-            "public class ${4: classname} extends HttpServlet {",
+            "public class ${4:classname} extends HttpServlet {",
             "\t@Override",
             "\tprotected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
             "\t\tres.setContentType(\"text/html;charset=UTF-8\");",
@@ -52,7 +52,7 @@
     "HttpServlet - supports HTTP POST requests": {
         "prefix": "httpservletpost",
         "body": [
-            "package ${1: packagename};",
+            "package ${1:packagename};",
             "",
             "import jakarta.servlet.ServletException;",
             "import jakarta.servlet.annotation.WebServlet;",
@@ -62,7 +62,7 @@
             "import java.io.IOException;",
             "",
             "@WebServlet(name = \"${2:servletName}\", urlPatterns = { \"/${3:path}\" })",
-            "public class ${4: classname} extends HttpServlet {",
+            "public class ${4:classname} extends HttpServlet {",
             "\t@Override",
             "\tprotected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {",
             "\t\tres.setContentType(\"text/html;charset=UTF-8\");",
@@ -92,7 +92,7 @@
           "import java.io.IOException;",
           "",
           "@WebFilter(filterName = \"${2:filterName}\", urlPatterns = {\"${3:urlPattern}\"})",
-          "public class ${4:className} implements Filter {",
+          "public class ${4:classname} implements Filter {",
           "\t@Override",
           "\tpublic void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException{",
           "\t\tchain.doFilter(req, res);",
