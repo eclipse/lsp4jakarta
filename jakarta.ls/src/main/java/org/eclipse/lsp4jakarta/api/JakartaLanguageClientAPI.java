@@ -17,17 +17,16 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
+import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 
 /**
- * API of the client consuming the Jakarta EE Language Server Used to send
- * messages back to the client to ask for information about the Java project
- * Client then delegates that request to the IDEs built in java language
- * support.
+ * API of the client consuming the Language Server for Jakarta EE. Used to send
+ * messages back to the client to ask for information about the Java project.
  */
 public interface JakartaLanguageClientAPI extends LanguageClient {
 
@@ -38,20 +37,19 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
 
     /**
      * @author Ankush Sharma
-     * @param uri
-     * @param snippetContext
+     * @param classpathParams
      * @return A List of Strings, each representing an item in the project classpath
      *         This method compares JavaProject classpath to the snippets contexts,
      *         returning a String for the snippets contexts that exist in the
      *         classpath and null for those that do not
      */
     @JsonRequest("jakarta/java/classpath")
-    default CompletableFuture<List<String>> getContextBasedFilter(String uri, List<String> snippetContexts) {
+    default CompletableFuture<List<String>> getContextBasedFilter(JakartaClasspathParams classpathParams) {
         return CompletableFuture.completedFuture(null);
     }
 
     @JsonRequest("jakarta/java/codeaction")
-    default CompletableFuture<List<CodeAction>> getCodeAction(CodeActionParams params) {
+    default CompletableFuture<List<CodeAction>> getCodeAction(JakartaJavaCodeActionParams params) {
         return CompletableFuture.completedFuture(null);
     }
 }

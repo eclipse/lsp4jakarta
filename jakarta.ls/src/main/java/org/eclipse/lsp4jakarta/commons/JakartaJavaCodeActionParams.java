@@ -39,6 +39,10 @@ public class JakartaJavaCodeActionParams extends CodeActionParams {
         super(textDocument, range, context);
     }
 
+    public JakartaJavaCodeActionParams(CodeActionParams params) {
+        super(params.getTextDocument(), params.getRange(), params.getContext());
+    }
+
     public String getUri() {
         return getTextDocument().getUri();
     }

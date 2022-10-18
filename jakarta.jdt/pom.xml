@@ -15,8 +15,6 @@
 		<tycho.scmUrl>scm:git:https://github.com/eclipse/lsp4mp</tycho.scmUrl>
 		<tycho.generateSourceReferences>true</tycho.generateSourceReferences>
 		<jdt.ls.version>1.16.0.20220929145237</jdt.ls.version>
-		<tycho.test.platformArgs />
-		<tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
 	</properties>
 	<repositories>
 		<repository>
@@ -27,10 +25,14 @@
 		<repository>
 			<id>jdt.ls.p2</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/jdtls/snapshots/repository/latest/</url>
+			<url>https://download.eclipse.org/jdtls/milestones/1.16.0/repository/</url>
 		</repository>
 		<repository>
-			<id>jdt.ls.maven</id>
+			<id>jdt.ls.maven.snapshots</id>
+			<url>https://repo.eclipse.org/content/repositories/jdtls-snapshots/</url>
+		</repository>
+		<repository>
+			<id>jdt.ls.maven.releases</id>
 			<url>https://repo.eclipse.org/content/repositories/jdtls-releases/</url>
 		</repository>
 	</repositories>
@@ -55,7 +57,6 @@
 							<version>${jdt.ls.version}</version>
 						</artifact>
 					</target>
-					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
 					<ignoreTychoRepositories>true</ignoreTychoRepositories>
 				</configuration>
@@ -77,24 +78,41 @@
 					<version>${tycho.version}</version>
 					<configuration>
 						<useUIHarness>true</useUIHarness>
-						<argLine>${tycho.test.jvmArgs}</argLine>
+						<argLine>-Xmx512m</argLine>
 						<!-- kill test JVM if tests take more than 1 minute (60 seconds) to 
 							finish -->
 						<forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
 					</configuration>
 				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-surefire-plugin</artifactId>
-					<version>${tycho.version}</version>
-					<configuration>
-						<useUIHarness>false</useUIHarness>
-						<argLine>${tycho.test.jvmArgs}</argLine>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
+	<profiles>
+		<profile>
+			<id>platform-mac</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<useUIHarness>true</useUIHarness>
+							<argLine>-Xmx512m -XstartOnFirstThread</argLine>
+							<!-- kill test JVM if tests take more than 1 minute (60 seconds) to 
+								finish -->
+							<forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<modules>
 		<module>org.eclipse.lsp4jakarta.jdt.core</module>
 		<module>org.eclipse.lsp4jakarta.jdt.test</module>

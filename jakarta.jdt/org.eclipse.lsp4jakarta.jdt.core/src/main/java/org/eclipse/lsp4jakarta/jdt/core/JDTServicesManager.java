@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
@@ -92,18 +93,17 @@ public class JDTServicesManager {
      * @return diagnostics
      */
     public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
-        return getJavaDiagnostics(javaParams, new NullProgressMonitor());
+        return getJavaDiagnostics(javaParams.getUris(), new NullProgressMonitor());
     }
 
     /**
-     * Returns diagnostics for the given uris from the JakartaDiagnosticsParams.
+     * Returns diagnostics for the given uris
      * 
-     * @param javaParams the diagnostics parameters
+     * @param uris the list of uris to collect diagnostics for
      * @return diagnostics
      */
-    public List<PublishDiagnosticsParams> getJavaDiagnostics(JakartaDiagnosticsParams javaParams,
+    public List<PublishDiagnosticsParams> getJavaDiagnostics(List<String> uris,
             IProgressMonitor monitor) {
-        List<String> uris = javaParams.getUris();
         if (uris == null) {
             return Collections.emptyList();
         }
@@ -156,7 +156,7 @@ public class JDTServicesManager {
                         classpath.add(null);
                     }
                 } catch (JavaModelException e) {
-                    JakartaCorePlugin.logException("Failed to retrieve projectContext from JDT...", e);
+                    JavaLanguageServerPlugin.logException("Failed to retrieve projectContext from JDT...", e);
                 }
             });
         } else {
