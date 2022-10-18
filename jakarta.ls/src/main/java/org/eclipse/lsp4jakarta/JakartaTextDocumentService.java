@@ -101,7 +101,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 return jakartaLanguageServer.getLanguageClient()
                         .getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)).get();
             } catch (Exception e) {
-                LOGGER.severe("Return request from client did not succeed: " + e.getMessage());
+                LOGGER.severe("Return LSP4Jakarta getContextBasedFilter() from client did not succeed: " + e.getMessage());
                 return new ArrayList<String>();
             }
         });
@@ -178,7 +178,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 // LS ext
                 return jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).get();
             } catch (Exception e) {
-                LOGGER.severe("Return request from client did not succeed: " + e.getMessage());
+                LOGGER.severe("Return LSP4Jakarta getJavaDiagnostics() from client did not succeed: " + e.getMessage());
                 return new ArrayList<PublishDiagnosticsParams>();
             }
         }).thenApply(jakartaDiagnostics -> {
