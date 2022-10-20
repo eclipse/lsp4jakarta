@@ -21,7 +21,7 @@
             "\t}",
             "}"
         ],
-        "description": "Initializes a UserTransaction object via Injection. Provides a template for begin(), commit(), and rollback() of the said UserTransaction object.",
+        "description": "Initializes a UserTransaction object via Injection.",
         "context": {
             "type": "jakarta.transaction.UserTransaction"
         }
@@ -46,7 +46,7 @@
             "\t}",
             "}"
         ],
-        "description": "Initializes a UserTransaction object via JNDI lookup. Provides a template for begin(), commit(), and rollback() of the said UserTransaction object.",
+        "description": "Initializes a UserTransaction object via JNDI lookup.",
         "context": {
             "type": "jakarta.transaction.UserTransaction"
         }
@@ -58,7 +58,7 @@
             "\trollbackOn={SQLException.class, IOException.class},",
             "\tdontRollbackOn={IllegalStateException.class})"
         ],
-        "description": "Transactional annotation - specify exception types that will and will not cause a rollback for transaction",
+        "description": "Specify exception types that will and will not cause a rollback for transaction",
         "context": {
             "type": "jakarta.transaction.Transactional"
         }
