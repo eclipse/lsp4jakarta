@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
@@ -56,8 +55,6 @@ public class SnippetRegistry {
     private static final String PACKAGE_NAME = "packagename";
     private static final String CLASS_NAME = "classname";
     private static final String[] RESOLVE_VARIABLES = { PACKAGE_NAME, CLASS_NAME };
-
-    private static final Logger LOGGER = Logger.getLogger(SnippetRegistry.class.getName());
 
     List<Snippet> snippets; // Hold all snippets in this list
 
