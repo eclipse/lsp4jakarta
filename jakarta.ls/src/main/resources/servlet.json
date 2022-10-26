@@ -18,7 +18,7 @@
           "\t}",
           "}"
         ],
-        "description": "GenericServletDescription",
+        "description": "Generic Servlet",
         "context": {
             "type": "jakarta.servlet.GenericServlet"
         }
@@ -44,7 +44,7 @@
             "\t}",
             "}"
         ],
-        "description": "HttpServlet - supports HTTP GET requests",
+        "description": "Supports HTTP GET requests",
         "context":{
             "type": "jakarta.servlet.http.HttpServlet"
         }
@@ -72,7 +72,7 @@
             "\t}",
             "}"
         ],
-        "description": "HttpServlet - supports HTTP POST requests",
+        "description": "Supports HTTP POST requests",
         "context":{
             "type": "jakarta.servlet.http.HttpServlet"
         }
