@@ -165,6 +165,17 @@ public class JDTServicesManager {
                 classpath.add(null);
             });
         }
+
+        // FOR NOW, append package name and class name to the list in order for LS to
+        // resolve ${packagename} and ${classname} variables
+        String className = unit.getElementName();
+        if (className.endsWith(".java") == true) {
+            className = className.substring(0, className.length() - 5);
+        }
+        String packageName = unit.getParent() != null ? unit.getParent().getElementName() : "";
+        classpath.add(packageName);
+        classpath.add(className);
+
         return classpath;
     }
 
