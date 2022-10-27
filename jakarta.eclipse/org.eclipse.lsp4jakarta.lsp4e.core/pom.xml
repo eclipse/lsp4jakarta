@@ -5,12 +5,28 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-    <artifactId>org.eclipse.lsp4jakarta.lsp4e</artifactId>
-    <groupId>org.eclipse.lsp4jakarta</groupId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
+		<artifactId>org.eclipse.lsp4jakarta.lsp4e</artifactId>
+		<groupId>org.eclipse.lsp4jakarta</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+  	</parent>
 	<artifactId>org.eclipse.lsp4jakarta.lsp4e.core</artifactId>
 	<packaging>eclipse-plugin</packaging>
+
+	<name>Eclipse LSP4Jakarta LSP4E Plugin</name>
+	<description>Eclipse LSP4Jakarta LSP4E Plugin</description>
+
+	<organization>
+		<name>Eclipse LSP4Jakarta</name>
+		<url>https://github.com/eclipse/lsp4jakarta</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>EPL-2.0</name>
+			<url>https://www.eclipse.org/legal/epl-2.0/</url>
+			<comments>Eclipse Public License 2.0</comments>
+		</license>
+	</licenses>
 
 	<build>
 		<plugins>

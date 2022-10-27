@@ -6,7 +6,23 @@
 	<artifactId>jdt-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>lsp4jakarta.jdt.ls parent</name>
+	
+	<name>Eclipse LSP4Jakarta JDT Plugin Parent</name>
+	<description>Eclipse LSP4Jakarta JDT Plugin Parent</description>
+
+	<organization>
+		<name>Eclipse LSP4Jakarta</name>
+		<url>https://github.com/eclipse/lsp4jakarta</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>EPL-2.0</name>
+			<url>https://www.eclipse.org/legal/epl-2.0/</url>
+			<comments>Eclipse Public License 2.0</comments>
+		</license>
+	</licenses>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

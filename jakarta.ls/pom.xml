@@ -7,6 +7,22 @@
   <artifactId>org.eclipse.lsp4jakarta.ls</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 
+	<name>Eclipse LSP4Jakarta Language Server</name>
+	<description>Eclipse LSP4Jakarta Language Server</description>
+
+	<organization>
+		<name>Eclipse LSP4Jakarta</name>
+		<url>https://github.com/eclipse/lsp4jakarta</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>EPL-2.0</name>
+			<url>https://www.eclipse.org/legal/epl-2.0/</url>
+			<comments>Eclipse Public License 2.0</comments>
+		</license>
+	</licenses>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>

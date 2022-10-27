@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin id="org.eclipse.lsp4jakarta.jdt"
-	name="Lsp4Jakarta JDT Extension">
+	name="Eclipse Lsp4Jakarta JDT Extension">
 	<requires>
 		<import plugin="org.eclipse.core.runtime" />
 	</requires>
 
-	<!-- Delegate command handler for custom LSP4Jakarta commands contributed to Eclipse JDT LS -->
+	<!-- Delegate command handler for custom Eclipse LSP4Jakarta commands contributed to Eclipse JDT LS -->
 	<extension point="org.eclipse.jdt.ls.core.delegateCommandHandler">
 		<delegateCommandHandler class="org.eclipse.lsp4jakarta.jdt.internal.core.ls.JakartaDelegateCommandHandlerForJava">
 			<command id="jakarta/java/classpath"/>
