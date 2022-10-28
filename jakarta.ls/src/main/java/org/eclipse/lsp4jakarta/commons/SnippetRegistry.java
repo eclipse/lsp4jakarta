@@ -407,6 +407,14 @@ public class SnippetRegistry {
         return expr.toString();
     }
 
+    /**
+     * Get all matched variables from given string line.
+     * 
+     * @param line    - given string to search
+     * @param start   - position/index to start the search from
+     * @param vars    - searching variables
+     * @param matched - found variables
+     */
     private static void getMatchedVariables(String line, int start, String[] vars,
             Map<String, Set<String>> matched) {
         int idxS = line.indexOf("${", start);
