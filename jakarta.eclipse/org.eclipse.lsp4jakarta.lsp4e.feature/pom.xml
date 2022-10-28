@@ -8,5 +8,20 @@
   </parent>
   <artifactId>org.eclipse.lsp4jakarta.lsp4e.feature</artifactId>
   <packaging>eclipse-feature</packaging>
-  <name>org.eclipse.lsp4jakarta.lsp4e :: feature</name>
+
+  <name>Eclipse LSP4Jakarta LSP4E Feature</name>
+  <description>Eclipse LSP4Jakarta LSP4E Feature</description>
+
+	<organization>
+		<name>Eclipse LSP4Jakarta</name>
+		<url>https://github.com/eclipse/lsp4jakarta</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>EPL-2.0</name>
+			<url>https://www.eclipse.org/legal/epl-2.0/</url>
+			<comments>Eclipse Public License 2.0</comments>
+		</license>
+	</licenses>
 </project>

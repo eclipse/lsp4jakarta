@@ -8,6 +8,22 @@
 	</parent>
 	<artifactId>org.eclipse.lsp4jakarta.jdt.core</artifactId>
 	<packaging>eclipse-plugin</packaging>
+
+	<name>Eclipse LSP4Jakarta JDT Plugin</name>
+	<description>Eclipse LSP4Jakarta JDT Plugin</description>
+
+	<organization>
+		<name>Eclipse LSP4Jakarta</name>
+		<url>https://github.com/eclipse/lsp4jakarta</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>EPL-2.0</name>
+			<url>https://www.eclipse.org/legal/epl-2.0/</url>
+			<comments>Eclipse Public License 2.0</comments>
+		</license>
+	</licenses>
 	
 	<dependencies>
 		<dependency>
