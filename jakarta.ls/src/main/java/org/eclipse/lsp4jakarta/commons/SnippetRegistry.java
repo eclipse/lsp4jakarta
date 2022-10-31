@@ -20,7 +20,13 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
@@ -45,6 +51,11 @@ import com.google.gson.stream.JsonReader;
  * @author Ankush Sharma, credit to Angelo ZERR
  */
 public class SnippetRegistry {
+
+    private static final String PACKAGE_NAME = "packagename";
+    private static final String CLASS_NAME = "classname";
+    private static final String[] RESOLVE_VARIABLES = { PACKAGE_NAME, CLASS_NAME };
+
     List<Snippet> snippets; // Hold all snippets in this list
 
     /**
@@ -165,9 +176,16 @@ public class SnippetRegistry {
      */
     public List<CompletionItem> getCompletionItem(final Range replaceRange, final String lineDelimiter,
             boolean canSupportMarkdown, List<String> context) {
+        List<Snippet> snippets = getSnippets();
+        Map<String, String> values = new HashMap<String, String>();
+        int size = context.size();
+        if (size == snippets.size() + 2) { // the last 2 strings are package name and class name
+            values.put(PACKAGE_NAME, context.get(size - 2));
+            values.put(CLASS_NAME, context.get(size - 1));
+        }
         // TODO Add context based filtering
-        return getSnippets().stream().map(snippet -> {
-            if (context.get(getSnippets().indexOf(snippet)) == null) {
+        return snippets.stream().map(snippet -> {
+            if (context.get(snippets.indexOf(snippet)) == null) {
                 return null;
             }
             String label = snippet.getPrefixes().get(0);
@@ -175,9 +193,10 @@ public class SnippetRegistry {
             item.setLabel(label);
 //            item.setDetail(snippet.getDescription());
             item.setDetail(Messages.getMessage(snippet.getDescription()));
-            String insertText = getInsertText(snippet, false, lineDelimiter);
+            String insertText = getInsertText(snippet, false, lineDelimiter, values);
             item.setKind(CompletionItemKind.Snippet);
-            item.setDocumentation(Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimiter)));
+            item.setDocumentation(
+                    Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimiter, values)));
             item.setFilterText(label);
 
             TextEdit textEdit = new TextEdit(replaceRange, insertText);
@@ -210,10 +229,11 @@ public class SnippetRegistry {
             CompletionItem item = new CompletionItem();
             item.setLabel(label);
             item.setDetail(snippet.getDescription());
-            String insertText = getInsertText(snippet, false, lineDelimeter);
+            String insertText = getInsertText(snippet, false, lineDelimeter, null);
 
             item.setKind(CompletionItemKind.Snippet);
-            item.setDocumentation(Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimeter)));
+            item.setDocumentation(
+                    Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimeter, null)));
             item.setFilterText(label);
 
             TextEdit textEdit = new TextEdit(replaceRange, insertText);
@@ -256,7 +276,7 @@ public class SnippetRegistry {
     }
 
     private static MarkupContent createDocumentation(Snippet snippet, boolean canSupportMarkdown,
-            String lineDelimiter) {
+            String lineDelimiter, Map<String, String> values) {
         StringBuilder doc = new StringBuilder();
         if (canSupportMarkdown) {
             doc.append(System.lineSeparator());
@@ -267,7 +287,7 @@ public class SnippetRegistry {
             }
             doc.append(System.lineSeparator());
         }
-        String insertText = getInsertText(snippet, true, lineDelimiter);
+        String insertText = getInsertText(snippet, true, lineDelimiter, values);
         doc.append(insertText);
         if (canSupportMarkdown) {
             doc.append(System.lineSeparator());
@@ -277,12 +297,31 @@ public class SnippetRegistry {
         return new MarkupContent(canSupportMarkdown ? MarkupKind.MARKDOWN : MarkupKind.PLAINTEXT, doc.toString());
     }
 
-    private static String getInsertText(Snippet snippet, boolean replace, String lineDelimiter) {
+    private static String getInsertText(Snippet snippet, boolean replace, String lineDelimiter,
+            Map<String, String> values) {
         StringBuilder text = new StringBuilder();
         int i = 0;
         List<String> body = snippet.getBody();
         if (body != null) {
+            Map<String, Set<String>> foundVars = new HashMap<String, Set<String>>();
             for (String bodyLine : body) {
+                // resolve specific variables by values
+                if (values != null && values.size() > 0) {
+                    foundVars.clear();
+                    // search for specific variables
+                    getMatchedVariables(bodyLine, 0, RESOLVE_VARIABLES, foundVars);
+                    if (foundVars.size() > 0) { // resolve specific variables by values
+                        for (String key : foundVars.keySet()) {
+                            String replacement = values.get(key);
+                            if (replacement != null) {
+                                Set<String> vars = foundVars.get(key);
+                                for (Iterator<String> it = vars.iterator(); it.hasNext();) {
+                                    bodyLine = bodyLine.replace(it.next(), replacement);
+                                }
+                            }
+                        }
+                    }
+                }
                 if (i > 0) {
                     text.append(lineDelimiter);
                 }
@@ -366,5 +405,33 @@ public class SnippetRegistry {
             }
         }
         return expr.toString();
+    }
+
+    /**
+     * Get all matched variables from given string line.
+     * 
+     * @param line    - given string to search
+     * @param start   - position/index to start the search from
+     * @param vars    - searching variables
+     * @param matched - found variables
+     */
+    private static void getMatchedVariables(String line, int start, String[] vars,
+            Map<String, Set<String>> matched) {
+        int idxS = line.indexOf("${", start);
+        if (idxS != -1) {
+            int idxE = line.indexOf('}', idxS);
+            if (idxE - 1 > idxS + 2) {
+                String varStr = line.substring(idxS + 2, idxE).trim().toLowerCase();
+                Arrays.stream(vars).forEach(var -> {
+                    if (varStr.endsWith(var) == true) {
+                        if (matched.containsKey(var) != true) {
+                            matched.put(var, new HashSet<String>());
+                        }
+                        matched.get(var).add(line.substring(idxS, idxE + 1));
+                    }
+                });
+                getMatchedVariables(line, idxE, vars, matched);
+            }
+        }
     }
 }
