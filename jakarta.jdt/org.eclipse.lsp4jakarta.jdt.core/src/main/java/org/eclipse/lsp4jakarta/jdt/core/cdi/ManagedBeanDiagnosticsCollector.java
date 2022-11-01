@@ -314,10 +314,10 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                             for (IAnnotation annotation : annotations) {
                                 String matchedAnnotation = getMatchedJavaElementName(type, annotation.getElementName(),
                                         INVALID_INJECT_PARAMS_FQ);
-                                if (matchedAnnotation.equals(DISPOSES_FQ_NAME)) {
+                                if (DISPOSES_FQ_NAME.equals(matchedAnnotation)) {
                                     numDisposes++;
-                                } else if (matchedAnnotation.equals(OBSERVES_FQ_NAME)
-                                        || matchedAnnotation.equals(OBSERVES_ASYNC_FQ_NAME)) {
+                                } else if (OBSERVES_FQ_NAME.equals(matchedAnnotation)
+                                        || OBSERVES_ASYNC_FQ_NAME.equals(matchedAnnotation)) {
                                     invalidAnnotations.add("@" + annotation.getElementName());
                                 }
                             }
