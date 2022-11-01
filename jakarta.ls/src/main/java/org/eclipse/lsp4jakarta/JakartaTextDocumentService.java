@@ -153,7 +153,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
                         return e;
                     }).collect(Collectors.toList());
                 });
-
     }
 
     // diagnostic request
@@ -172,7 +171,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
         javaParams.setDocumentFormat(DocumentFormat.Markdown);
 
         // Async thread to query the JDT LS ext for Jakarta EE diagnostics
-        CompletableFuture<List<PublishDiagnosticsParams>> getJakartaDiagnostics = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture.supplyAsync(() -> {
             try {
                 // Pass the JakartaDiagnosticsParams to IDE client, to be forwarded to the JDT
                 // LS ext
@@ -188,6 +187,14 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
             }
             return jakartaDiagnostics;
+        });
+    }
+
+    protected void cleanDiagnostics() {
+        // clear existing diagnostics
+        documents.all().forEach(doc -> {
+            jakartaLanguageServer.getLanguageClient()
+                    .publishDiagnostics(new PublishDiagnosticsParams(doc.getUri(), new ArrayList<Diagnostic>()));
         });
     }
 }
