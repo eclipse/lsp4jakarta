@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Eclipse LSP4Jakarta JDT Extension
+Bundle-Name: Eclipse LSP4Jakarta JDT Extension (Incubation)
 Bundle-Vendor: Eclipse LSP4Jakarta
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.lsp4jakarta.jdt.core;singleton:=true
