@@ -21,6 +21,7 @@ import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.ServerCapabilities;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
@@ -70,8 +71,10 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
 
     @Override
     public CompletableFuture<Object> shutdown() {
-        // TODO Auto-generated method stub
-        return null;
+        // when shutting down LS, TextDocumentService.didClose() may not be called
+        // properly, need to clear existing diagnostics
+        ((JakartaTextDocumentService) textDocumentService).cleanDiagnostics();
+        return CompletableFutures.computeAsync(cc -> new Object());
     }
 
     @Override
