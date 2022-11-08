@@ -43,6 +43,7 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.SnippetContextForJava;
 import org.eclipse.lsp4jakarta.commons.SnippetRegistry;
 import org.eclipse.lsp4mp.commons.DocumentFormat;
+import org.eclipse.lsp4mp.ls.commons.BadLocationException;
 import org.eclipse.lsp4mp.ls.commons.TextDocument;
 import org.eclipse.lsp4mp.ls.commons.TextDocuments;
 
@@ -105,14 +106,22 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 return new ArrayList<String>();
             }
         });
-
-        // Put list of CompletionItems in an Either and wrap as a CompletableFuture
-        return getSnippetContexts.thenApply(ctx -> {
-            // Given the snippet contexts that are on the project's classpath, return the
-            // corresponding list of CompletionItems
-            return Either.forLeft(snippetRegistry
-                    .getCompletionItem(new Range(position.getPosition(), position.getPosition()), "\n", true, ctx));
-        });
+        TextDocument document = documents.get(uri);
+        try {
+            int offset = document.offsetAt(position.getPosition());
+            Range replaceRange = getReplaceRange(document, offset);
+            if (replaceRange != null) {
+                // Put list of CompletionItems in an Either and wrap as a CompletableFuture
+                return getSnippetContexts.thenApply(ctx -> {
+                    // Given the snippet contexts that are on the project's classpath, return the
+                    // corresponding list of CompletionItems
+                    return Either.forLeft(snippetRegistry.getCompletionItem(replaceRange, "\n", true, ctx));
+                });
+            }
+        } catch (BadLocationException e) {
+            LOGGER.severe("Failed to get completions: " + e.getMessage());
+        }
+        return CompletableFuture.completedFuture(Either.forLeft(new ArrayList<CompletionItem>()));
     }
 
     @Override
@@ -196,5 +205,25 @@ public class JakartaTextDocumentService implements TextDocumentService {
             jakartaLanguageServer.getLanguageClient()
                     .publishDiagnostics(new PublishDiagnosticsParams(doc.getUri(), new ArrayList<Diagnostic>()));
         });
+    }
+
+    private Range getReplaceRange(TextDocument document, int offset) throws BadLocationException {
+        String text = document.getText();
+        if (offset < 0 || offset > text.length()) {
+            return null;
+        }
+        int start = offset;
+        if (offset != 0) {
+            // look for start position of "Range"
+            for (int i = offset - 1; i >= 0; i--) {
+                if (!Character.isJavaIdentifierPart(text.charAt(i))) {
+                    break;
+                } else {
+                    start = i;
+                }
+            }
+            // ignore/leave all characters within same "identifier" after the offset
+        }
+        return new Range(document.positionAt(start), document.positionAt(offset));
     }
 }
