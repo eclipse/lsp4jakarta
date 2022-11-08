@@ -1,6 +1,6 @@
 {
-    "GenericServlet - protocol independent servlet": {
-        "prefix": "genericservlet",
+    "Jakarta Servlet - protocol independent servlet": {
+        "prefix": "servlet_generic",
         "body": [
           "package ${1:packagename};",
           "",
@@ -18,13 +18,13 @@
           "\t}",
           "}"
         ],
-        "description": "Generic Servlet",
+        "description": "Generic protocol independent servlet",
         "context": {
             "type": "jakarta.servlet.GenericServlet"
         }
     },
-    "HttpServlet - supports HTTP GET requests": {
-        "prefix": "httpservletget",
+    "Jakarta Servlet - HTTPServlet GET request": {
+        "prefix": "servlet_doget",
         "body": [
             "package ${1:packagename};",
             "",
@@ -44,13 +44,13 @@
             "\t}",
             "}"
         ],
-        "description": "Supports HTTP GET requests",
+        "description": "HTTPServlet with GET request",
         "context":{
             "type": "jakarta.servlet.http.HttpServlet"
         }
     },
-    "HttpServlet - supports HTTP POST requests": {
-        "prefix": "httpservletpost",
+    "Jakarta Servlet - HTTPServlet POST request": {
+        "prefix": "servlet_dopost",
         "body": [
             "package ${1:packagename};",
             "",
@@ -72,13 +72,13 @@
             "\t}",
             "}"
         ],
-        "description": "Supports HTTP POST requests",
+        "description": "HTTPServlet with POST request",
         "context":{
             "type": "jakarta.servlet.http.HttpServlet"
         }
     },
-    "Jakarta Servlet WebFilter": {
-        "prefix": "servletwebfilter",
+    "Jakarta Servlet - WebFilter": {
+        "prefix": "servlet_webfilter",
         "body": [
           "package ${1:packagename};",
           "",
@@ -99,7 +99,7 @@
           "\t}",
           "}"
         ],
-        "description": "Jakarta Servlet WebFilter",
+        "description": "Servlet WebFilter",
         "context":{
             "type": "jakarta.servlet.Filter"
         }

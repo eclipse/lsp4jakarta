@@ -1,6 +1,6 @@
 {
-    "JAX-RS - new resource class": {
-      "prefix": "jaxrc",
+    "Jakarta RESTful Web Services - new resource class": {
+      "prefix": "rest_class",
       "body": [
         "package ${1:packagename};",
         "",
@@ -19,13 +19,13 @@
         "\t}",
         "}"
       ],
-      "description": "JAX-RS REST resource class",
+      "description": "Resource class with GET resource method",
       "context": {
         "type": "jakarta.ws.rs.GET"
       }
     },
-    "JAX-RS - new GET resource method": {
-      "prefix": "jaxrmget",
+    "Jakarta RESTful Web Services - new GET resource method": {
+      "prefix": "rest_get",
       "body": [
         "@GET",
         "@Produces(MediaType.TEXT_PLAIN)",
@@ -33,13 +33,13 @@
         "\treturn \"hello\";",
         "}"
       ],
-      "description": "JAX-RS GET resource method",
+      "description": "GET resource method",
       "context": {
         "type": "jakarta.ws.rs.GET"
       }
     },
-    "JAX-RS - new POST resource method": {
-      "prefix": "jaxrmpost",
+    "Jakarta RESTful Web Services - new POST resource method": {
+      "prefix": "rest_post",
       "body": [
         "@POST",
         "@Consumes(MediaType.TEXT_PLAIN)",
@@ -47,13 +47,13 @@
         "\t// Store the message",
         "}"
       ],
-      "description": "JAX-RS POST resource method",
+      "description": "POST resource method",
       "context": {
         "type": "jakarta.ws.rs.POST"
       }
     },
-    "JAX-RS - new PUT resource method": {
-      "prefix": "jaxrmput",
+    "Jakarta RESTful Web Services - new PUT resource method": {
+      "prefix": "rest_put",
       "body": [
         "@PUT",
         "@Consumes(MediaType.TEXT_PLAIN)",
@@ -61,13 +61,13 @@
         "\t// Store the message",
         "}"
       ],
-      "description": "JAX-RS PUT resource method",
+      "description": "PUT resource method",
       "context": {
         "type": "jakarta.ws.rs.PUT"
       }
     },
-    "JAX-RS - new DELETE resource method": {
-      "prefix": "jaxrmdelete",
+    "Jakarta RESTful Web Services - new DELETE resource method": {
+      "prefix": "rest_delete",
       "body": [
         "@DELETE",
         "@Consumes(MediaType.TEXT_PLAIN)",
@@ -75,13 +75,13 @@
         "\t// Delete the message",
         "}"
       ],
-      "description": "JAX-RS DELETE resource method",
+      "description": "DELETE resource method",
       "context": {
         "type": "jakarta.ws.rs.DELETE"
       }
     },
-    "JAX-RS - new HEAD resource method": {
-      "prefix": "jaxrmhead",
+    "Jakarta RESTful Web Services - new HEAD resource method": {
+      "prefix": "rest_head",
       "body": [
         "@HEAD",
         "@Produces(MediaType.TEXT_PLAIN)",
@@ -89,7 +89,7 @@
         "\treturn \"this body will be ignored\";",
         "}"
       ],
-      "description": "JAX-RS HEAD resource method",
+      "description": "HEAD resource method",
       "context": {
         "type": "jakarta.ws.rs.HEAD"
       }
