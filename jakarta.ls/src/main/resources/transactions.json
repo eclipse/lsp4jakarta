@@ -1,6 +1,6 @@
 {
-    "Initialize a UserTransaction object via Injection": {
-        "prefix": "userTransactionInjection",
+    "Jakarta Transactions - UserTransaction object via injection": {
+        "prefix": "tx_user_inject",
         "body": [
             "@Resource",
             "UserTransaction ${1:transactionName};",
@@ -21,13 +21,13 @@
             "\t}",
             "}"
         ],
-        "description": "Initializes a UserTransaction object via Injection.",
+        "description": "Initializes a UserTransaction object via injection",
         "context": {
             "type": "jakarta.transaction.UserTransaction"
         }
     },
-    "Initialize a UserTransaction object via JNDI Lookup": {
-        "prefix": "userTransactionJNDI",
+    "Jakarta Transactions - UserTransaction object via JNDI lookup": {
+        "prefix": "tx_user_jndi",
         "body": [
             "Context context = new InitialContext();",
             "UserTransaction ${1:transactionName} = (UserTransaction) context.lookup(\"${2:address}\");",
@@ -46,19 +46,19 @@
             "\t}",
             "}"
         ],
-        "description": "Initializes a UserTransaction object via JNDI lookup.",
+        "description": "Initializes a UserTransaction object via JNDI lookup",
         "context": {
             "type": "jakarta.transaction.UserTransaction"
         }
     },
-    "@Transactional": {
-        "prefix": "transactionbehav",
+    "Jakarta Transactions - @Transactional": {
+        "prefix": "@Transactional",
         "body": [
             "@Transactional(",
             "\trollbackOn={SQLException.class, IOException.class},",
             "\tdontRollbackOn={IllegalStateException.class})"
         ],
-        "description": "Specify exception types that will and will not cause a rollback for transaction",
+        "description": "Transactional annotation with rollbackOn and dontRollbackOn",
         "context": {
             "type": "jakarta.transaction.Transactional"
         }
