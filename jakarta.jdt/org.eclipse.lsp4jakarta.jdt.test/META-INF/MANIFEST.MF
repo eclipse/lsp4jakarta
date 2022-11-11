@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: LSP4Jakarta JDT Test Plugin (Incubation)
+Bundle-Name: Eclipse LSP4Jakarta JDT Test Plugin (Incubation)
 Bundle-Vendor: Eclipse LSP4Jakarta
 Bundle-SymbolicName: org.eclipse.lsp4jakarta.jdt.test
 Bundle-Version: 0.0.1.qualifier
