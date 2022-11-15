@@ -31,7 +31,7 @@ pipeline {
     //         '''
     //     }
     //   }
-    }
+    // }
     stage("Build LSP4Jakarta Language Server") {
       steps {
         withMaven {
