@@ -27,8 +27,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<tycho.version>2.7.5</tycho.version>
-		<tycho.extras.version>2.7.5</tycho.extras.version>
+		<tycho.version>2.7.2</tycho.version>
+		<tycho.extras.version>${tycho.version}</tycho.extras.version>
 		<tycho.test.platformArgs />
 		<tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
 	</properties>

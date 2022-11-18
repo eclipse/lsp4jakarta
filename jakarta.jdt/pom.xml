@@ -26,7 +26,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<tycho.version>2.7.5</tycho.version>
+		<tycho.version>2.7.2</tycho.version>
 		<tycho.extras.version>${tycho.version}</tycho.extras.version>
 		<tycho.scmUrl>scm:git:https://github.com/eclipse/lsp4mp</tycho.scmUrl>
 		<tycho.generateSourceReferences>true</tycho.generateSourceReferences>
