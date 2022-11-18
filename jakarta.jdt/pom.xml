@@ -99,7 +99,7 @@
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho.version}</version>
 					<configuration>
-						<useUIHarness>true</useUIHarness>
+						<useUIHarness>false</useUIHarness>
 						<argLine>-Xmx512m</argLine>
 						<!-- kill test JVM if tests take more than 1 minute (60 seconds) to 
 							finish -->
@@ -124,7 +124,7 @@
 						<artifactId>tycho-surefire-plugin</artifactId>
 						<version>${tycho.version}</version>
 						<configuration>
-							<useUIHarness>true</useUIHarness>
+							<useUIHarness>false</useUIHarness>
 							<argLine>-Xmx512m -XstartOnFirstThread</argLine>
 							<!-- kill test JVM if tests take more than 1 minute (60 seconds) to 
 								finish -->
