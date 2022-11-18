@@ -35,7 +35,7 @@ pipeline {
     stage("Build LSP4Jakarta Language Server") {
       steps {
         withMaven {
-          sh 'cd jakarta.ls && ./mvnw clean verify -B -Dcbi.jarsigner.skip=false && cd ../..'
+          sh 'cd jakarta.ls && ./mvnw clean verify -B -Dcbi.jarsigner.skip=false && cd ..'
         }
       }
     }
