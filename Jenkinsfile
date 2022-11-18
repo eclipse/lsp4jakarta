@@ -11,7 +11,7 @@ pipeline {
     stage("Build LSP4Jakarta JDT extension"){
       steps {
         withMaven {
-          sh 'cd jakarta.jdt && ./mvnw clean verify -B  -Peclipse-sign && cd ..'
+          sh 'cd jakarta.jdt && ./mvnw clean verify -B -Peclipse-sign -X && cd ..'
         }
       }
     }
@@ -35,7 +35,7 @@ pipeline {
     stage("Build LSP4Jakarta Language Server") {
       steps {
         withMaven {
-          sh 'cd jakarta.ls && ./mvnw clean verify -B -Dcbi.jarsigner.skip=false && cd ..'
+          sh 'cd jakarta.ls && ./mvnw clean verify -B -Dcbi.jarsigner.skip=false -X && cd ..'
         }
       }
     }
