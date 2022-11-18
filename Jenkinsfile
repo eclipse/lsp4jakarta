@@ -15,23 +15,23 @@ pipeline {
         }
       }
     }
-    // stage('Deploy LSP4Jakarta JDT extension to downloads.eclipse.org') {
-    //   when {
-    //     branch 'master'
-    //   }
-    //   steps {
-    //     sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
-    //       sh '''
-    //         VERSION=`grep -o '[0-9].*[0-9]' jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/target/maven-archiver/pom.properties`
-    //         targetDir=/home/data/httpd/download.eclipse.org/lsp4jakarta/snapshots/$VERSION
-    //         ssh genie.lsp4jakarta@projects-storage.eclipse.org rm -rf $targetDir
-    //         ssh genie.lsp4jakarta@projects-storage.eclipse.org mkdir -p $targetDir
-    //         scp -r jakarta.jdt/org.eclipse.lsp4jakarta.jdt.site/target/*.zip genie.lsp4jakarta@projects-storage.eclipse.org:$targetDir
-    //         ssh genie.lsp4jakarta@projects-storage.eclipse.org unzip $targetDir/*.zip -d $targetDir/repository
-    //         '''
-    //     }
-    //   }
-    // }
+    stage('Deploy LSP4Jakarta JDT extension to downloads.eclipse.org') {
+      when {
+        branch 'main'
+      }
+      steps {
+        sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
+          sh '''
+            VERSION=`grep -o '[0-9].*[0-9]' jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/target/maven-archiver/pom.properties`
+            targetDir=/home/data/httpd/download.eclipse.org/lsp4jakarta/snapshots/$VERSION
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org rm -rf $targetDir
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org mkdir -p $targetDir
+            scp -r jakarta.jdt/org.eclipse.lsp4jakarta.jdt.site/target/*.zip genie.lsp4jakarta@projects-storage.eclipse.org:$targetDir
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org unzip $targetDir/*.zip -d $targetDir/repository
+            '''
+        }
+      }
+    }
     stage("Build LSP4Jakarta Language Server") {
       steps {
         withMaven {
@@ -39,16 +39,16 @@ pipeline {
         }
       }
     }
-    // stage ('Deploy LSP4Jakarta Language Server artifacts to Maven repository') {
-    //   when {
-    //       branch 'master'
-    //   }
-    //   steps {
-    //     withMaven {
-    //       sh 'cd jakarta.ls && ./mvnw deploy -B -DskipTests'
-    //     }
-    //   }
-    // }
+    stage ('Deploy LSP4Jakarta Language Server artifacts to Maven repository') {
+      when {
+         branch 'main'
+      }
+      steps {
+        withMaven {
+          sh 'cd jakarta.ls && ./mvnw deploy -B -DskipTests'
+        }
+      }
+    }
   }
   post {
     always {

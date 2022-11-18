@@ -28,6 +28,10 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <lsp4j.version>0.17.0</lsp4j.version>
+    <releases.repo.id>repo.eclipse.org</releases.repo.id>
+    <releases.repo.url>https://repo.eclipse.org/content/repositories/lsp4jakarta-releases/</releases.repo.url>
+    <snapshots.repo.id>repo.eclipse.org</snapshots.repo.id>
+    <snapshots.repo.url>https://repo.eclipse.org/content/repositories/lsp4jakarta-snapshots/</snapshots.repo.url>
   </properties>
 
   <dependencies>
@@ -121,4 +125,17 @@
       </plugin>
     </plugins>
   </build>
+  
+  <distributionManagement>
+ 		<!--<repository>
+			<id>${releases.repo.id}</id>
+			<name>Eclipse Releases Repository</name>
+ 			<url>${releases.repo.url}</url>
+		</repository>-->
+		<snapshotRepository>
+		    <id>${snapshots.repo.id}</id>
+		    <name>Eclipse Snapshots Repository</name>
+		    <url>${snapshots.repo.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
