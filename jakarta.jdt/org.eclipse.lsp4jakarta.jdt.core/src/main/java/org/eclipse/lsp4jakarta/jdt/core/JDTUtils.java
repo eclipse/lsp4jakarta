@@ -64,7 +64,6 @@ import org.eclipse.jdt.core.SourceRange;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
 import org.eclipse.jdt.internal.corext.dom.IASTSharedValues;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
@@ -126,10 +125,20 @@ public class JDTUtils {
             }
             if (resource.getFileExtension() != null) {
                 String name = resource.getName();
-                if (org.eclipse.jdt.internal.core.util.Util.isJavaLikeFileName(name)) {
-                    return JavaCore.createCompilationUnitFrom(resource);
+                if (JavaCore.isJavaLikeFileName(name)) {
+                    ICompilationUnit unit = JavaCore.createCompilationUnitFrom(resource);
+                    try {
+                        // Give underlying resource time to catch up
+                        // (timeout at COMPILATION_UNIT_UPDATE_TIMEOUT milliseconds).
+                        long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
+                        while (!unit.isConsistent() && System.currentTimeMillis() < endTime) {
+                        }
+                    } catch (JavaModelException e) {
+                    }
+                    return unit;
                 }
             }
+            return null;
         }
         return getFakeCompilationUnit(uri, new NullProgressMonitor());
 
