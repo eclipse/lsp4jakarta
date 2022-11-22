@@ -31,6 +31,10 @@
 		<tycho.scmUrl>scm:git:https://github.com/eclipse/lsp4mp</tycho.scmUrl>
 		<tycho.generateSourceReferences>true</tycho.generateSourceReferences>
 		<jdt.ls.version>1.16.0.20220929145237</jdt.ls.version>
+		<releases.repo.id>repo.eclipse.org</releases.repo.id>
+		<releases.repo.url>https://repo.eclipse.org/content/repositories/lsp4jakarta-releases/</releases.repo.url>
+		<snapshots.repo.id>repo.eclipse.org</snapshots.repo.id>
+		<snapshots.repo.url>https://repo.eclipse.org/content/repositories/lsp4jakarta-snapshots/</snapshots.repo.url>
 	</properties>
 	<repositories>
 		<repository>
@@ -58,6 +62,18 @@
 			<url>https://repo.eclipse.org/content/repositories/cbi-releases/</url>
 		</pluginRepository>
 	</pluginRepositories>
+	<distributionManagement>
+		<!--<repository>
+		   	<id>${releases.repo.id}</id>
+		   	<name>Eclipse Releases Repository</name>
+			<url>${releases.repo.url}</url>
+	   	</repository>-->
+	   	<snapshotRepository>
+		   	<id>${snapshots.repo.id}</id>
+		   	<name>Eclipse Snapshots Repository</name>
+		   	<url>${snapshots.repo.url}</url>
+		</snapshotRepository>
+   	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
