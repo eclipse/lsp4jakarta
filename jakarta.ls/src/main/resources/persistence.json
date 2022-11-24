@@ -25,7 +25,7 @@
 	    "prefix": "persist_context_extended_unsync",
 	    "body": [
 	        "@PersistenceContext(type=PersistenceContextType.EXTENDED, synchronization = SynchronizationType.UNSYNCHRONIZED)",
-	        "${1:EntityManager} {2:em};"
+	        "${1:EntityManager} ${2:em};"
 	    ],
 	    "description": "Entity manager injection with extended, unsynchronized persistence context",
 	    "context": {
