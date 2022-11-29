@@ -11,15 +11,18 @@ pipeline {
     stage("Build LSP4Jakarta JDT extension"){
       steps {
         withMaven {
-          sh 'cd jakarta.jdt && ./mvnw clean verify -B -Peclipse-sign -X && cd ..'
+          sh 'cd jakarta.jdt && ./mvnw clean verify -B -Peclipse-sign && cd ..'
         }
       }
     }
-    stage('Deploy LSP4Jakarta JDT extension to downloads.eclipse.org') {
+    stage('Deploy LSP4Jakarta JDT extension to repo.eclipse.org and downloads.eclipse.org') {
       when {
         branch 'main'
       }
       steps {
+        withMaven {
+            sh 'cd jakarta.jdt && ./mvnw deploy -B -Peclipse-sign -DskipTests && cd ..'
+        }
         sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
           sh '''
             VERSION=`grep -o '[0-9].*[0-9]' jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/target/maven-archiver/pom.properties`
@@ -29,16 +32,6 @@ pipeline {
             scp -r jakarta.jdt/org.eclipse.lsp4jakarta.jdt.site/target/*.zip genie.lsp4jakarta@projects-storage.eclipse.org:$targetDir
             ssh genie.lsp4jakarta@projects-storage.eclipse.org unzip $targetDir/*.zip -d $targetDir/repository
             '''
-        }
-      }
-    }
-    stage("Deploy LSP4Jakarta JDT extension to repo.eclipse.org") {
-      when {
-        branch 'main'
-      }
-      steps {
-        withMaven {
-          sh 'cd jakarta.jdt && ./mvnw deploy -B -Peclipse-sign -X && cd ..'
         }
       }
     }
