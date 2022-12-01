@@ -109,13 +109,15 @@ public class JakartaTextDocumentService implements TextDocumentService {
         TextDocument document = documents.get(uri);
         try {
             int offset = document.offsetAt(position.getPosition());
-            Range replaceRange = getReplaceRange(document, offset);
+            StringBuffer prefix = new StringBuffer();
+            Range replaceRange = getReplaceRange(document, offset, prefix);
             if (replaceRange != null) {
                 // Put list of CompletionItems in an Either and wrap as a CompletableFuture
                 return getSnippetContexts.thenApply(ctx -> {
                     // Given the snippet contexts that are on the project's classpath, return the
                     // corresponding list of CompletionItems
-                    return Either.forLeft(snippetRegistry.getCompletionItem(replaceRange, "\n", true, ctx));
+                    return Either.forLeft(
+                            snippetRegistry.getCompletionItem(replaceRange, "\n", true, ctx, prefix.toString()));
                 });
             }
         } catch (BadLocationException e) {
@@ -207,7 +209,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
         });
     }
 
-    private Range getReplaceRange(TextDocument document, int offset) throws BadLocationException {
+    private Range getReplaceRange(TextDocument document, int offset, StringBuffer prefix) throws BadLocationException {
         String text = document.getText();
         if (offset < 0 || offset > text.length()) {
             return null;
@@ -216,10 +218,12 @@ public class JakartaTextDocumentService implements TextDocumentService {
         if (offset != 0) {
             // look for start position of "Range"
             for (int i = offset - 1; i >= 0; i--) {
-                if (!Character.isJavaIdentifierPart(text.charAt(i))) {
+                char ch = text.charAt(i);
+                if (!Character.isJavaIdentifierPart(ch)) {
                     break;
                 } else {
                     start = i;
+                    prefix.insert(0, ch);
                 }
             }
             // ignore/leave all characters within same "identifier" after the offset
