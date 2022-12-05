@@ -190,7 +190,7 @@ public class SnippetRegistry {
             String label = snippet.getPrefixes().get(0);
             if (context.get(snippets.indexOf(snippet)) == null
                     // in Eclipse, the filter is not working properly, have to add additional one
-                    || (filter != null && filterLable(filter, label.toLowerCase()) != true)) {
+                    || (filter != null && filterLabel(filter, label.toLowerCase()) != true)) {
                 return null;
             }
             CompletionItem item = new CompletionItem();
