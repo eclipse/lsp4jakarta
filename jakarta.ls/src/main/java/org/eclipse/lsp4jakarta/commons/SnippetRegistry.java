@@ -171,11 +171,12 @@ public class SnippetRegistry {
      * @param lineDelimiter      the line delimiter.
      * @param canSupportMarkdown true if markdown is supported to generate
      *                           documentation and false otherwise.
-     * @param contextFilter      the context filter.
+     * @param context            the context filter.
+     * @param prefix             completion prefix.
      * @return the snippet completion items according to the context filter.
      */
     public List<CompletionItem> getCompletionItem(final Range replaceRange, final String lineDelimiter,
-            boolean canSupportMarkdown, List<String> context) {
+            boolean canSupportMarkdown, List<String> context, String prefix) {
         List<Snippet> snippets = getSnippets();
         Map<String, String> values = new HashMap<String, String>();
         int size = context.size();
@@ -183,12 +184,15 @@ public class SnippetRegistry {
             values.put(PACKAGE_NAME, context.get(size - 2));
             values.put(CLASS_NAME, context.get(size - 1));
         }
+        String filter = (prefix != null) ? prefix.toLowerCase() : null;
         // TODO Add context based filtering
         return snippets.stream().map(snippet -> {
-            if (context.get(snippets.indexOf(snippet)) == null) {
+            String label = snippet.getPrefixes().get(0);
+            if (context.get(snippets.indexOf(snippet)) == null
+                    // in Eclipse, the filter is not working properly, have to add additional one
+                    || (filter != null && filterLabel(filter, label.toLowerCase()) != true)) {
                 return null;
             }
-            String label = snippet.getPrefixes().get(0);
             CompletionItem item = new CompletionItem();
             item.setLabel(label);
 //            item.setDetail(snippet.getDescription());
@@ -205,7 +209,7 @@ public class SnippetRegistry {
             return item;
         }).filter(completionItems -> completionItems != null).collect(Collectors.toList());
     }
-
+    
     /**
      * Returns all snippet completion items. This method does not take into account
      * the current context such as ClassPath, or imports, etc...
@@ -400,5 +404,22 @@ public class SnippetRegistry {
                 getMatchedVariables(line, idxE, vars, matched);
             }
         }
+    }
+
+    private boolean filterLabel(String filter, String label) {
+        boolean pass = true;
+        if (label.contains(filter) != true) {
+            char[] chars = filter.toCharArray();
+            int start = 0;
+            for (char ch : chars) {
+                start = label.indexOf(ch, start);
+                if (start == -1) {
+                    pass = false;
+                    break;
+                }
+                start++;
+            }
+        }
+        return pass;
     }
 }
