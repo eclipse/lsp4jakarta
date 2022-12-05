@@ -406,7 +406,7 @@ public class SnippetRegistry {
         }
     }
 
-    private boolean filterLable(String filter, String label) {
+    private boolean filterLabel(String filter, String label) {
         boolean pass = true;
         if (label.contains(filter) != true) {
             char[] chars = filter.toCharArray();
