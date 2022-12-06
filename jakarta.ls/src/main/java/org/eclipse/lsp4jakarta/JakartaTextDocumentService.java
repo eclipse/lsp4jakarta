@@ -143,6 +143,11 @@ public class JakartaTextDocumentService implements TextDocumentService {
     }
 
     @Override
+    public CompletableFuture<Hover> hover(HoverParams params) {
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
     public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
         // Prepare the JakartaJavaCodeActionParams
         JakartaJavaCodeActionParams jakartaCodeActionParams = new JakartaJavaCodeActionParams(params);
