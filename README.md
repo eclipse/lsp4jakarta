@@ -32,7 +32,7 @@ Eclipse LSP4Jakarta is consumed by the following IDEs:
 
 ## Jakarta EE API Language Features
 
-The following is a list of Eclipse LSP4Jakarta snippets offered for each [Jakarta EE API](https://jakarta.ee/specifications/). For a full list of langauge features (snippets, diagnostics and quick-fixes) currently offered by Eclipse LSP4Jakarta see [issue #16](https://github.com/eclipse/lsp4jakarta/issues/16). Language features will only be delivered for a given Jakarta EE API if that API is found on the project's classpath. Eclipse LSP4Jakarta is currently targeting Jakarta EE 9/9.1 (jakarta.x namespace). 
+The following is a list of Eclipse LSP4Jakarta snippets offered for each [Jakarta EE API](https://jakarta.ee/specifications/). For a full list of language features (snippets, diagnostics and quick-fixes) currently offered by Eclipse LSP4Jakarta refer to the checked off items in [issue #16](https://github.com/eclipse/lsp4jakarta/issues/16). Language features will only be delivered for a given Jakarta EE API if that API is found on the project's classpath. Eclipse LSP4Jakarta is currently targeting Jakarta EE 9/9.1 (jakarta.x namespace). 
  
 If you would like to see language feature assistance for a Jakarta EE API that is not yet listed here, please open an issue on the [issue tracker](https://github.com/eclipse/lsp4jakarta/issues).
 
