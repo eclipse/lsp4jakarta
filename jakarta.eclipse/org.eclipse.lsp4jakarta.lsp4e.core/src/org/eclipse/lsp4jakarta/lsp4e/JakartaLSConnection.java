@@ -9,7 +9,7 @@
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
 
-package org.jakarta.lsp4e;
+package org.eclipse.lsp4jakarta.lsp4e;
 
 import java.io.File;
 import java.io.IOException;

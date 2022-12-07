@@ -29,10 +29,10 @@
    <extension
          point="org.eclipse.lsp4e.languageServer">
       <server
-            class="org.jakarta.lsp4e.JakartaLSConnection"
+            class="org.eclipse.lsp4jakarta.lsp4e.JakartaLSConnection"
             id="org.jakartaee.lsp4e.jakartaserver"
             label="JakartaEE Language Server"
-            clientImpl="org.jakarta.lsp4e.JakartaLanguageClient" >
+            clientImpl="org.eclipse.lsp4jakarta.lsp4e.JakartaLanguageClient" >
       </server>
       <contentTypeMapping
             contentType="org.jakartaee.lsp4e.javaContentType"
@@ -45,8 +45,8 @@
          point="org.eclipse.jdt.ui.javaCompletionProposalComputer">
       <javaCompletionProposalComputer
             activate="true"
-            categoryId="org.jakarta.lsp4e.extensions.jakarta-java-completion-computer"
-            class="org.jakarta.lsp4e.extensions.JakartaJavaCompletionProposalComputer"
+            categoryId="org.eclipse.lsp4jakarta.lsp4e.extensions.jakarta-java-completion-computer"
+            class="org.eclipse.lsp4jakarta.lsp4e.extensions.JakartaJavaCompletionProposalComputer"
             needsSortingAfterFiltering="false">
       </javaCompletionProposalComputer>
    </extension>
