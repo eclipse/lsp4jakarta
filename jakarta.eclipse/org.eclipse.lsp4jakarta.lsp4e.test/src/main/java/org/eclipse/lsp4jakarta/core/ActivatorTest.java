@@ -3,7 +3,7 @@ package org.eclipse.lsp4jakarta.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.jakarta.lsp4e.Activator;
+import org.eclipse.lsp4jakarta.lsp4e.Activator;
 import org.junit.Test;
 
 /**
