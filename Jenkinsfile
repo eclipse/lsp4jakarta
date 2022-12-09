@@ -33,6 +33,16 @@ pipeline {
             ssh genie.lsp4jakarta@projects-storage.eclipse.org unzip $targetDir/*.zip -d $targetDir/repository
             '''
         }
+        sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
+          sh '''
+            VERSION=latest
+            targetDir=/home/data/httpd/download.eclipse.org/lsp4jakarta/snapshots/$VERSION
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org rm -rf $targetDir
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org mkdir -p $targetDir
+            scp -r jakarta.jdt/org.eclipse.lsp4jakarta.jdt.site/target/*.zip genie.lsp4jakarta@projects-storage.eclipse.org:$targetDir
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org unzip $targetDir/*.zip -d $targetDir/repository
+            '''
+        }
       }
     }
     stage("Build LSP4Jakarta Language Server") {
