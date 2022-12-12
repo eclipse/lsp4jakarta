@@ -48,6 +48,17 @@ pipeline {
             ssh genie.lsp4jakarta@projects-storage.eclipse.org unzip $targetDir/*.zip -d $targetDir/repository
             '''
         }
+        //Push release to latest
+        sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
+          sh "VERSION=latest"
+          sh '''
+            targetDir=/home/data/httpd/download.eclipse.org/lsp4jakarta/releases/$VERSION
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org rm -rf $targetDir
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org mkdir -p $targetDir
+            scp -r jakarta.jdt/org.eclipse.lsp4jakarta.jdt.site/target/*.zip genie.lsp4jakarta@projects-storage.eclipse.org:$targetDir
+            ssh genie.lsp4jakarta@projects-storage.eclipse.org unzip $targetDir/*.zip -d $targetDir/repository
+            '''
+        }
       }
     }
 
