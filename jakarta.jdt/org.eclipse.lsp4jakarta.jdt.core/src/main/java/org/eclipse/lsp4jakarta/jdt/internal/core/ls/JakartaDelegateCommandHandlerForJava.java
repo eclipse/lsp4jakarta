@@ -28,7 +28,7 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-import org.eclipse.lsp4jakarta.jdt.core.PropertiesManagerForJava;
+import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 
 /**
@@ -77,7 +77,7 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
         String uri = ArgumentUtils.getString(obj, "uri");
         List<String> snippetCtx = ArgumentUtils.getStringList(obj, "snippetCtx");
         return CompletableFutures.computeAsync((cancelChecker) -> {
-            return PropertiesManagerForJava.getInstance().getExistingContextsFromClassPath(uri, snippetCtx);
+            return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetCtx);
         });
     }
 
@@ -100,7 +100,7 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
         List<String> uri = ArgumentUtils.getStringList(obj, "uris");
         return CompletableFutures.computeAsync((cancelChecker) -> {
             List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-            publishDiagnostics = PropertiesManagerForJava.getInstance().getJavaDiagnostics(uri, monitor);
+            publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(uri, monitor);
             return publishDiagnostics;
         });
     }
@@ -140,7 +140,7 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
         return CompletableFutures.computeAsync((cancelChecker) -> {
             List<CodeAction> codeActions = new ArrayList<CodeAction>();
             try {
-                codeActions = PropertiesManagerForJava.getInstance().getCodeAction(params, utils, monitor);
+                codeActions = JDTServicesManager.getInstance().getCodeAction(params, utils, monitor);
             } catch (JavaModelException e) {
                 // TODO Auto-generated catch block
                 JavaLanguageServerPlugin
