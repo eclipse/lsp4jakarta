@@ -61,7 +61,7 @@ public class JakartaForJavaAssert {
 
     public static void assertJavaCodeAction(JakartaJavaCodeActionParams params, JDTUtils utils, CodeAction... expected)
             throws JavaModelException {
-        List<? extends CodeAction> actual = PropertiesManagerForJava.getInstance().getCodeAction(params, utils,
+        List<? extends CodeAction> actual = JDTServicesManager.getInstance().getCodeAction(params, utils,
                 new NullProgressMonitor());
         assertCodeActions(actual != null && actual.size() > 0 ? actual : Collections.emptyList(), expected);
     }
@@ -159,7 +159,7 @@ public class JakartaForJavaAssert {
 
     public static void assertJavaDiagnostics(JakartaDiagnosticsParams params, JDTUtils utils, Diagnostic... expected)
             throws JavaModelException {
-        List<PublishDiagnosticsParams> actual = PropertiesManagerForJava.getInstance().getJavaDiagnostics(params);
+        List<PublishDiagnosticsParams> actual = JDTServicesManager.getInstance().getJavaDiagnostics(params);
 
         assertDiagnostics(
                 actual != null && actual.size() > 0 ? actual.get(0).getDiagnostics() : Collections.emptyList(),

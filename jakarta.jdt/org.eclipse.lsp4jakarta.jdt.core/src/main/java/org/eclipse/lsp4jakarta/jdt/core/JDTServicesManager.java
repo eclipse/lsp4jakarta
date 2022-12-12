@@ -54,19 +54,19 @@ import org.eclipse.lsp4jakarta.jdt.core.websocket.WebSocketDiagnosticsCollector;
  * Server
  * 
  */
-public class PropertiesManagerForJava {
+public class JDTServicesManager {
 
     private List<DiagnosticsCollector> diagnosticsCollectors = new ArrayList<>();
 
-    private static final PropertiesManagerForJava INSTANCE = new PropertiesManagerForJava();
+    private static final JDTServicesManager INSTANCE = new JDTServicesManager();
 
     private final CodeActionHandler codeActionHandler;
 
-    public static PropertiesManagerForJava getInstance() {
+    public static JDTServicesManager getInstance() {
         return INSTANCE;
     }
 
-    private PropertiesManagerForJava() {
+    private JDTServicesManager() {
         diagnosticsCollectors.add(new ServletDiagnosticsCollector());
         diagnosticsCollectors.add(new AnnotationDiagnosticsCollector());
         diagnosticsCollectors.add(new FilterDiagnosticsCollector());

@@ -30,7 +30,7 @@ import org.eclipse.lsp4jakarta.api.JakartaLanguageClientAPI;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-import org.eclipse.lsp4jakarta.jdt.core.PropertiesManagerForJava;
+import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
@@ -56,7 +56,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
             IProgressMonitor monitor = getProgressMonitor(cancelChecker);
 
             List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
-            publishDiagnostics = PropertiesManagerForJava.getInstance().getJavaDiagnostics(jakartaParams.getUris(), monitor);
+            publishDiagnostics = JDTServicesManager.getInstance().getJavaDiagnostics(jakartaParams.getUris(), monitor);
             return publishDiagnostics;
         });
     }
@@ -64,7 +64,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
     @Override
     public CompletableFuture<List<String>> getContextBasedFilter(JakartaClasspathParams classpathParams) {
         return CompletableFutures.computeAsync((cancelChecker) -> {
-            return PropertiesManagerForJava.getInstance().getExistingContextsFromClassPath(classpathParams.getUri(),
+            return JDTServicesManager.getInstance().getExistingContextsFromClassPath(classpathParams.getUri(),
                     classpathParams.getSnippetCtx());
         });
     }
@@ -75,7 +75,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
         return CompletableFutures.computeAsync((cancelChecker) -> {
             IProgressMonitor monitor = getProgressMonitor(cancelChecker);
             try {
-                return (List<CodeAction>) PropertiesManagerForJava.getInstance().getCodeAction(params, utils, monitor);
+                return (List<CodeAction>) JDTServicesManager.getInstance().getCodeAction(params, utils, monitor);
             } catch (JavaModelException e) {
                 return null;
             }
