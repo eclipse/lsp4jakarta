@@ -70,11 +70,11 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<distributionManagement>
-		<!--<repository>
+		<repository>
 		   	<id>${releases.repo.id}</id>
 		   	<name>Eclipse Releases Repository</name>
 			<url>${releases.repo.url}</url>
-	   	</repository>-->
+	   	</repository>
 	   	<snapshotRepository>
 		   	<id>${snapshots.repo.id}</id>
 		   	<name>Eclipse Snapshots Repository</name>
