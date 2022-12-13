@@ -22,7 +22,8 @@ pipeline {
           sh "VERSION=${params.VERSION}"
           sh '''
                 cd jakarta.jdt
-                ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION-SNAPSHOT
+                ./mvnw versions:set -DnewVersion=$VERSION
+                ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
                 ./mvnw versions:set-scm-tag -DnewTag=$VERSION
                 ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
                 cd ..
