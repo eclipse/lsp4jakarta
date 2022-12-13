@@ -14,6 +14,13 @@
 		<name>Eclipse LSP4Jakarta</name>
 		<url>https://github.com/eclipse/lsp4jakarta</url>
 	</organization>
+	
+	<scm>
+	    <connection>scm:git:git@github.com:eclipse/lsp4jakarta.git</connection>
+	    <developerConnection>scm:git:git@github.com:eclipse/lsp4jakarta.git</developerConnection>
+	    <url>git@github.com:eclipse/lsp4jakarta.git</url>
+	    <tag>HEAD</tag>
+  	</scm>
 
 	<licenses>
 		<license>
@@ -127,11 +134,11 @@
   </build>
   
   <distributionManagement>
- 		<!--<repository>
+ 		<repository>
 			<id>${releases.repo.id}</id>
 			<name>Eclipse Releases Repository</name>
  			<url>${releases.repo.url}</url>
-		</repository>-->
+		</repository>
 		<snapshotRepository>
 		    <id>${snapshots.repo.id}</id>
 		    <name>Eclipse Snapshots Repository</name>
