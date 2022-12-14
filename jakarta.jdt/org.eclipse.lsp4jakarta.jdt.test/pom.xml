@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.eclipse.lsp4jakarta</groupId>
     <artifactId>jdt-parent</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>org.eclipse.lsp4jakarta.jdt.test</artifactId>
   <packaging>eclipse-test-plugin</packaging>
