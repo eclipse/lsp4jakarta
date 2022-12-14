@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.eclipse.lsp4jakarta</groupId>
 		<artifactId>jdt-parent</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.1.0</version>
 	</parent>
 	<artifactId>org.eclipse.lsp4jakarta.jdt.site</artifactId>
 	<packaging>eclipse-repository</packaging>
