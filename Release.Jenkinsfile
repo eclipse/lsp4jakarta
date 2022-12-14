@@ -65,7 +65,7 @@ pipeline {
 
     stage('Push tag to git') {
       steps {
-		sshagent(['git.eclipse.org-bot-ssh']) {
+        sshagent(['git.eclipse.org-bot-ssh']) {
           sh "VERSION=${params.VERSION}"
           sh '''
             git config --global user.email "lsp4jakarta-bot@eclipse.org"
