@@ -1,13 +1,33 @@
-# Building 
+# Developing Eclipse LSP4Jakarta
+
+- [Projects](#projects)
+- [Prerequisites](#prerequisites)
+- [Project setup in the Eclipse IDE](#project-setup-in-the-eclipse-ide)
+- [Common errors](#common-errors)
+- [Run and Debug](#run-and-debug)
+- [Snippets](#contributing-snippets)
+
+## Projects
+
+This repo contains a couple projects providing language support for Jakarta EE APIs.
+
+- [jakarta.ls](./jakarta.ls/)- Language Server for Jakarta EE
+- [jakarta.jdt](./jakarta.jdt/) - Jakarta EE Eclipse [JDT LS](https://github.com/eclipse/eclipse.jdt.ls/) extension 
+- [jakarta.eclipse](./jakarta.eclipse) - Eclipse IDE client (for local testing) that consumes the Language Server for Jakarta EE
+
+To test the changes interactively, you must use a language client.
+
+Below, we will document how to build and test using the Eclipse IDE client in this repository (jakarta.eclipse).
 
 ## Prerequisites
 
-[JavaSE-17](https://www.oracle.com/ca-en/java/technologies/downloads/#java17), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) (Eclipse IDE for Enterprise Java and Web Developers is recommended) are required to build the lsp4jakarta project.
+[JavaSE-17](https://www.oracle.com/ca-en/java/technologies/downloads/#java17), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) (Eclipse IDE for Enterprise Java and Web Developers is recommended) are required to build the Eclipse LSP4Jakarta project.
 
 Ensure the [Eclipse Plug-in Development Environment (PDE)](https://marketplace.eclipse.org/content/eclipse-pde-plug-development-environment) is installed in your Eclipse workspace.
 
-## Setup instructions
-The following are instructions to set up your Eclipse workspace
+## Project setup in the Eclipse IDE
+
+The following are instructions to set up your Eclipse IDE workspace.
 
 1. Clone this repository onto your local machine
 
@@ -55,7 +75,7 @@ The following are instructions to set up your Eclipse workspace
 
 2. If during initial setup `mvn verify` returns errors or compilation failures, verify that you are using [JavaSE-17](https://www.oracle.com/ca-en/java/technologies/downloads/#java17). You may have to configure `$JAVA_HOME` variable and make sure it is pointing to the correct location.
 
-## Running as an Eclipse application
+## Run and Debug
 
 Run `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a new instance of Eclipse with LSP4Jakarta (Right-click on the `org.eclipse.lsp4jakarta.lsp4e.core` project, "Run As" --> "Eclipse Application"). A new Eclipse application will launch with the LSP4Jakarta Eclipse client plug-in installed.
 
@@ -66,3 +86,23 @@ Run `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a n
 Debug `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a new instance of Eclipse with LSP4Jakarta (Right-click on the `org.eclipse.lsp4jakarta.lsp4e.core` project, "Debug As" --> "Eclipse Application"). A new Eclipse application will launch with the LSP4Jakarta Eclipse client plug-in installed.
 
 <img src="/docs/images/building_debug_lsp4e.png" alt="Debug lsp4e Eclipse plug-in" height="60%" width="60%"/>
+
+## Snippets
+
+Snippets are completion items that contain a block of helpful code for users. Snippets in Eclipse LSP4Jakarta are contributed through [JSON files](../jakarta.ls/src/main/resources/). After adding snippets update the [Jakarta EE API language features](../README.md#jakarta-ee-api-language-features) documentation.
+
+Snippets follow the format:
+
+```yaml
+"<Jakarta EE API Name> - <brief description>": {
+      "prefix": "<Jakarta EE API shortened name>_<noun describing the snippet>",
+      "body": [
+        "<body of snippet, this is the code that will be injected on selection>"
+      ],
+      "description": "<brief description of snippet, should not be longer than 1 sentence>",
+      "context": {
+        // snippets will only appear for users if the package specified here is found on the project's classpath
+        "type": "<package required for snippet (ie. jakarta.servlet.http.HttpServlet)>"
+      }
+    }
+```
