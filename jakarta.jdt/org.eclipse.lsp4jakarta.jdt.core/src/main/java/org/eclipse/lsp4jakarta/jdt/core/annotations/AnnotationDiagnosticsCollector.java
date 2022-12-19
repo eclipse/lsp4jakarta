@@ -242,7 +242,7 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
     }
 
     private static String generateDiagnosticMethod(String annotation, String message) {
-        String finalMessage = "A method with the annotation @" + annotation + " must " + message;
+        String finalMessage = "A method with the @" + annotation + " annotation must " + message;
         return finalMessage;
     }
 
