@@ -9,7 +9,7 @@
 
 ## Projects
 
-This repo contains a couple projects providing language support for Jakarta EE APIs.
+This repo contains a few projects that provide language support for Jakarta EE APIs.
 
 - [jakarta.ls](./jakarta.ls/)- Language Server for Jakarta EE
 - [jakarta.jdt](./jakarta.jdt/) - Jakarta EE Eclipse [JDT LS](https://github.com/eclipse/eclipse.jdt.ls/) extension 
@@ -17,7 +17,7 @@ This repo contains a couple projects providing language support for Jakarta EE A
 
 To test the changes interactively, you must use a language client.
 
-Below, we will document how to build and test using the Eclipse IDE client in this repository (jakarta.eclipse).
+In the following sections, we document how to build and test using the Eclipse IDE client in this repository (jakarta.eclipse).
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ Ensure the [Eclipse Plug-in Development Environment (PDE)](https://marketplace.e
 
 ## Project setup in the Eclipse IDE
 
-The following are instructions to set up your Eclipse IDE workspace.
+The following instructions explain how to set up your Eclipse IDE workspace.
 
 1. Clone this repository onto your local machine
 
@@ -89,9 +89,9 @@ Debug `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a
 
 ## Snippets
 
-Snippets are completion items that contain a block of helpful code for users. Snippets in Eclipse LSP4Jakarta are contributed through [JSON files](../jakarta.ls/src/main/resources/). After adding snippets update the [Jakarta EE API language features](../README.md#jakarta-ee-api-language-features) documentation.
+Snippets are completion items that contain a block of helpful code for users. Snippets in Eclipse LSP4Jakarta are contributed through [JSON files](../jakarta.ls/src/main/resources/). If you add new snippets, update the [Jakarta EE API language features](../README.md#jakarta-ee-api-language-features) documentation
 
-Snippets follow the format:
+Snippets use the following format:
 
 ```yaml
 "<Jakarta EE API Name> - <brief description>": {

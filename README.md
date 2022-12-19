@@ -46,11 +46,11 @@ The following is a list of Eclipse LSP4Jakarta language features offered for eac
  
 If you would like to see language feature assistance for a Jakarta EE API that is not yet listed here, please open an issue on the [issue tracker](https://github.com/eclipse/lsp4jakarta/issues).
 
-Helpful code snippets are provided to quickly generate a popular block of code.
+Code snippets help you quickly generate common blocks of code
 
 ![Eclipse LSP4Jakarta code snippet to generate a new RESTful web services GET method](./docs/images/restful-ws-snippet.png)
 
-Diagnostics are delivered to indicate incorrect API usage with associated quick-fixes to correct API usage.
+Diagnostics indicate incorrect API usage and suggest associated quick-fixes to correct API usage.
 
 ![Eclipse LSP4Jakarta diagnostic and quick-fix for invalid RESTful web services usage](./docs/images/restful-ws-diagnostic-quick-fix.png)
 
