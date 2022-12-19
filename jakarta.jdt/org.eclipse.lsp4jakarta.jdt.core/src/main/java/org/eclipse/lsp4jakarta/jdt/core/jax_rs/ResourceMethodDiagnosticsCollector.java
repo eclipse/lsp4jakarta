@@ -72,7 +72,7 @@ public class ResourceMethodDiagnosticsCollector extends AbstractDiagnosticsColle
                         }
                         if (!isValid) {
                             diagnostics.add(createDiagnostic(method, unit,
-                                    "Only public methods may be exposed as resource methods",
+                                    "Only public methods can be exposed as resource methods",
                                     Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC, null, DiagnosticSeverity.Error));
                         }
                         if (isResourceMethod) {

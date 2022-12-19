@@ -121,7 +121,7 @@ public class Jax_RSClassDiagnosticsCollector extends AbstractDiagnosticsCollecto
                         if (equalMaxParamMethods.size() > 1) { // more than one
                             for (IMethod method : equalMaxParamMethods) {
                                 diagnostics.add(createDiagnostic(method, unit,
-                                        "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
+                                        "Multiple constructors have the same number of parameters, it might be ambiguous which constructor is used.",
                                         Jax_RSConstants.DIAGNOSTIC_CODE_AMBIGUOUS_CONSTRUCTORS, null,
                                         DiagnosticSeverity.Warning));
                             }

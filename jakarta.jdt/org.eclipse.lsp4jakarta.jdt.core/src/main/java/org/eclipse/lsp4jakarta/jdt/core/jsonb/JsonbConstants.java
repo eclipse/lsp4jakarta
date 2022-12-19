@@ -36,7 +36,7 @@ public class JsonbConstants {
     public static final String JSONB_TRANSIENT = JSONB_PREFIX + "Transient";
     public static final String JSONB_TRANSIENT_FQ_NAME = JSONB_PACKAGE + JSONB_PREFIX + "Transient";
     public static final String ERROR_MESSAGE_JSONB_TRANSIENT_ON_FIELD = "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.";
-    public static final String ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR = "When an accessor is annotated with @JsonbTransient, then its field or the accessor must not be annotated with other JSON Binding annotations.";
+    public static final String ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR = "When an accessor is annotated with @JsonbTransient, its field or the accessor must not be annotated with other JSON Binding annotations.";
 
     public static final String JSONB_ANNOTATION = JSONB_PACKAGE + JSONB_PREFIX + "Annotation";
     public static final String JSONB_DATE_FORMAT = JSONB_PACKAGE + JSONB_PREFIX + "DateFormat";

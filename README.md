@@ -113,10 +113,10 @@ Eclipse LSP4Jakarta provides the following [Jakarta Dependency Injection diagnos
 
 | Diagnostic description | Severity | Associated quick-fix(s) |
 | --------- | ----- | ------------ |
-| The annotation @Inject must not define a final method. | Error | Remove @Inject OR Remove the 'final' modifier from this field | 
-| The annotation @Inject must not define a final/abstract/static method. | Error | Remove @Inject OR Remove the 'final/asbtract/static' modifier from this method |
-| The annotation @Inject must not define a generic method. | Error | Remove @Inject |
-| The annotation @Inject must not define more than one constructor. | Error | Remove @Inject |
+| The @Inject annotation must not define a final method. | Error | Remove @Inject OR Remove the 'final' modifier from this field | 
+| The @Inject annotation must not define a final/abstract/static method. | Error | Remove @Inject OR Remove the 'final/asbtract/static' modifier from this method |
+| The @Inject annotation must not define a generic method. | Error | Remove @Inject |
+| The @Inject annotation must not define more than one constructor. | Error | Remove @Inject |
 
 ### Jakarta JSON Binding
 
@@ -126,7 +126,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta JSON Binding diagnostics](./
 | --------- | ----- | ------------ |
 | Only one constructor or static factory method can be annotated with @JsonbCreator in a given class. | Error | Remove @JsonbCreator |
 | When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations. | Error |  Remove @JsonbTransient OR Remove @JsonbProperty/@JsonbAnnotation |
-| When an accessor is annotated with @JsonbTransient, then its field or the accessor must not be annotated with other JSON Binding annotations. | Error | Remove @JsonbTransient OR Remove @JsonbProperty/@JsonbAnnotation |
+| When an accessor is annotated with @JsonbTransient, its field or the accessor must not be annotated with other JSON Binding annotations. | Error | Remove @JsonbTransient OR Remove @JsonbProperty/@JsonbAnnotation |
 
 
 ### Jakarta JSON Processing
@@ -180,9 +180,9 @@ Eclipse LSP4Jakarta provides the following [Jakarta RESTful Web Services diagnos
 | --------- | ----- | ------------ |
 | Resource methods cannot have more than one entity parameter. | Error | Remove all entity parameters except 'entity_param_name' | 
 | Provider/Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor. | Error | Make constructor public OR Add a no-arg public constructor to this class |
-| Only public methods may be exposed as resource methods. | Error | Make method public |
+| Only public methods can be exposed as resource methods. | Error | Make method public |
 | This constructor is unused, as root resource classes will only use the constructor with the most parameters. | Warning | N/A |
-| Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used. | Warning | N/A | 
+| Multiple constructors have the same number of parameters, it might be ambiguous which constructor is used. | Warning | N/A | 
 
 ### Jakarta Servlet
 
@@ -200,7 +200,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Servlet diagnostics](./jakar
 | Diagnostic description | Severity | Associated quick-fix(s) |
 | --------- | ----- | ------------ |
 | Annotated classes with @WebServlet must extend the HttpServlet class. | Error | Let 'class_name' extend 'HttpServlet' |
-| The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'. | Error | Add the 'value' attribute to @WebServlet OR Add the 'urlPatterns' attribute to @WebServlet |
+| The @WebServlet annotation must define the attribute 'urlPatterns' or 'value'. | Error | Add the 'value' attribute to @WebServlet OR Add the 'urlPatterns' attribute to @WebServlet |
 
 ### Jakarta Transactions
 
@@ -219,7 +219,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta WebSocket diagnostics](./jak
 | Diagnostic description | Severity | Associated quick-fix(s) |
 | --------- | ----- | ------------ |
 | Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams. | Error | Insert @PathParam |
-| Classes annotated with @ServerEndpoint or @ClientEndpoint may only have one @OnMessage annotated method for each of the native WebSocket message formats: text, binary and pong. | Error | N/A |
+| Classes annotated with @ServerEndpoint or @ClientEndpoint must have only one @OnMessage annotated method for each of the native WebSocket message formats: text, binary and pong. | Error | N/A |
 | Invalid parameter type. When using @OnOpen, parameter must be of type: jakarta.websocket.EndpointConfig, jakarta.websocket.Session, annotated with @PathParams and of type String or any Java primitive type or boxed version thereof. | Error | N/A |
 | Invalid parameter type. When using @OnClose, parameter must be of type: jakarta.websocket.CloseReason, jakarta.websocket.Session, annotated with @PathParams and of type String or any Java primitive type or boxed version thereof. | Error | N/A | 
 | Server endpoint paths must not use the same variable more than once in a path. | Error | N/A | 
