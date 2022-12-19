@@ -22,5 +22,5 @@ public class JsonpConstants {
     public static final String CREATE_POINTER = "createPointer";
     public static final String JSON_FQ_NAME = "jakarta.json.Json";
     public static final String DIAGNOSTIC_CODE_CREATE_POINTER = "InvalidCreatePointerArg";
-    public static final String CREATE_POINTER_ERROR_MESSAGE = "Json.createPointer target must be a sequence of '/' prefixed tokens or an emtpy String";
+    public static final String CREATE_POINTER_ERROR_MESSAGE = "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String";
 }

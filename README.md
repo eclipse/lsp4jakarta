@@ -42,7 +42,7 @@ Eclipse LSP4Jakarta is consumed by the following client IDEs.
 
 ## Features
 
-The langauge features currently offered by Eclipse LSP4Jakarta to Jakarata EE APIs are code snippets, diagnostics, and quick-fixes.
+The language features currently offered by Eclipse LSP4Jakarta to Jakarata EE APIs are code snippets, diagnostics, and quick-fixes.
 
 Code snippets help you quickly generate common blocks of code.
 
@@ -61,15 +61,15 @@ If you would like to see language feature assistance for a Jakarta EE API that i
 
 Eclipse LSP4Jakarta provides the following [Jakarta Annotations diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/annotations/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
 | The @Generated annotation must define the 'date' attribute following the ISO 8601 standard. | Error | N/A |
-| The annotation @Resource must define the attribute 'type' when applied on a class. | Error | Add type to  jakarta.annotation.Resource |
-| The annotation @Resource must define the attribute 'name' when applied on a class. | Error | Add name to  jakarta.annotation.Resource |
-| A method with the annotation @PostConstruct must be void | Error | Change return type to void |
-| A method with the annotation @PreDestroy must not be static. | Error | N/A | 
-| A method with the annotation @PostConstruct/@PreDestroy  must not have any parameters. | Error |  Remove @PostConstruct/@PreDestroy OR  Remove all parameters | 
-| A method with the annotation @PostConstruct/@PreDestroy  must not throw checked exceptions. | Warning | N/A |
+| The @Resource annotation must define the attribute 'type' when applied on a class. | Error | Add type to  jakarta.annotation.Resource |
+| The @Resource annotation must define the attribute 'name' when applied on a class. | Error | Add name to  jakarta.annotation.Resource |
+| A method with the @PostConstruct annotation must be void | Error | Change return type to void |
+| A method with the @PreDestroy annotation must not be static. | Error | N/A | 
+| A method with the @PostConstruct/@PreDestroy annotation must not have any parameters. | Error |  Remove @PostConstruct/@PreDestroy OR  Remove all parameters | 
+| A method with the @PostConstruct/@PreDestroy annotation must not throw checked exceptions. | Warning | N/A |
 
 ### Jakarta Bean Validation
 
@@ -81,7 +81,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Bean Validation snippets](./
 
 Eclipse LSP4Jakarta provides the following [Jakarta Bean Validation diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/beanvalidation/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
 | Constraint annotations are not allowed on static fields or methods. | Error | Remove the constraint annotation OR Remove the static modifier |
 | The @AssertTrue/@AssertFalse annotation can only be used on boolean and Boolean type fields or methods. | Error | Remove @AssertTrue/@AssertFalse |
@@ -96,22 +96,22 @@ Eclipse LSP4Jakarta provides the following [Jakarta Bean Validation diagnostics]
 
 Eclipse LSP4Jakarta provides the following [Jakarta Contexts and Dependency Injection diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/cdi/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
 | A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes/@Observes/@ObservesAsync | Error | Remove @Inject OR Remove the '@Disposes/@Observes/@ObservesAsync' modifier from parameter 'parameter_name' | 
 | A producer method cannot have parameter(s) annotated with  @Disposes/@Observes/@ObservesAsync | Error | Remove @Produces OR Remove the '@Disposes/@Observes/@ObservesAsync' modifier from parameter 'parameter_name' |
 | The @Disposes annotation must not be defined on more than one parameter of a method. | Error | N/A |
 | Managed bean class of generic type must have scope @Dependent | Error | Replace current scope with @Dependent |
-| The annotation @Dependent must be the only scope defined by a managed bean with a non-static public field. | Error | Replace current scope with @Dependent | 
-| The annotation @Inject must define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead. | Error | Insert @Inject OR Add a no-arg protected constructor to this class OR Add a no-arg public constructor to this class. |
-| The annotations @Produces and @Inject must not be used on the same field or property. | Error | Remove @Produces OR @Inject |
+| The  @Dependent annotation must be the only scope defined by a managed bean with a non-static public field. | Error | Replace current scope with @Dependent | 
+| The @Inject annotation must define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead. | Error | Insert @Inject OR Add a no-arg protected constructor to this class OR Add a no-arg public constructor to this class. |
+| The @Produces and @Inject annotations must not be used on the same field or property. | Error | Remove @Produces OR @Inject |
 | Scope type annotations must be specified by a managed bean class/producer field or method at most once. | Error | N/A |
 
 ### Jakarta Dependency Injection
 
 Eclipse LSP4Jakarta provides the following [Jakarta Dependency Injection diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/di/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
 | The @Inject annotation must not define a final method. | Error | Remove @Inject OR Remove the 'final' modifier from this field | 
 | The @Inject annotation must not define a final/abstract/static method. | Error | Remove @Inject OR Remove the 'final/asbtract/static' modifier from this method |
@@ -122,7 +122,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Dependency Injection diagnos
 
 Eclipse LSP4Jakarta provides the following [Jakarta JSON Binding diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/jsonb/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
 | Only one constructor or static factory method can be annotated with @JsonbCreator in a given class. | Error | Remove @JsonbCreator |
 | When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations. | Error |  Remove @JsonbTransient OR Remove @JsonbProperty/@JsonbAnnotation |
@@ -133,9 +133,9 @@ Eclipse LSP4Jakarta provides the following [Jakarta JSON Binding diagnostics](./
 
 Eclipse LSP4Jakarta provides the following [Jakarta JSON Processing diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/jsonp/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
-| Json.createPointer target must be a sequence of '/' prefixed tokens or an emtpy String | Error | N/A |
+| Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String | Error | N/A |
 
 
 ### Jakarta Persistence
@@ -151,9 +151,9 @@ Eclipse LSP4Jakarta provides the following [Jakarta Persistence snippets](./jaka
 
 Eclipse LSP4Jakarta provides the following [Jakarta Peristence diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/persistence/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
-| A class using the @Entity annotation must contain a public or protected constructor with no arguments. | Error | Add a no-arg protected constructor to this class OR Add a no-arg public constructor to this calss |
+| A class using the @Entity annotation must contain a public or protected constructor with no arguments. | Error | Add a no-arg protected constructor to this class OR Add a no-arg public constructor to this class |
 | A class using the @Entity annotation must not be final. | Error | Remove the 'final' modifier from this class |
 | A class using the @Entity annotation cannot contain any methods that are declared final | Error | Remove the 'final' modifier from this method | 
 | A class using the @Entity annotation cannot contain any persistent instance variables that are declared final | Error | Remove the 'final' modifier from this field |
@@ -176,7 +176,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta RESTful Web Services snippet
 
 Eclipse LSP4Jakarta provides the following [Jakarta RESTful Web Services diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/jax_rs/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
 | Resource methods cannot have more than one entity parameter. | Error | Remove all entity parameters except 'entity_param_name' | 
 | Provider/Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor. | Error | Make constructor public OR Add a no-arg public constructor to this class |
@@ -197,7 +197,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Servlet snippets](./jakarta.
 
 Eclipse LSP4Jakarta provides the following [Jakarta Servlet diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/servlet/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
 | Annotated classes with @WebServlet must extend the HttpServlet class. | Error | Let 'class_name' extend 'HttpServlet' |
 | The @WebServlet annotation must define the attribute 'urlPatterns' or 'value'. | Error | Add the 'value' attribute to @WebServlet OR Add the 'urlPatterns' attribute to @WebServlet |
@@ -216,7 +216,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Transactions snippets](./jak
 
 Eclipse LSP4Jakarta provides the following [Jakarta WebSocket diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/websocket/).
 
-| Diagnostic description | Severity | Associated quick-fix(s) |
+| Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |
 | Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams. | Error | Insert @PathParam |
 | Classes annotated with @ServerEndpoint or @ClientEndpoint must have only one @OnMessage annotated method for each of the native WebSocket message formats: text, binary and pong. | Error | N/A |
