@@ -63,7 +63,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Annotations diagnostics](./j
 
 | Diagnostic description | Severity | Associated quick-fix(s) |
 | --------- | ----- | ------------ |
-| The annotation @Generated must define the attribute 'date' following the ISO 8601 standard. | Error | N/A |
+| The @Generated annotation must define the 'date' attribute following the ISO 8601 standard. | Error | N/A |
 | The annotation @Resource must define the attribute 'type' when applied on a class. | Error | Add type to  jakarta.annotation.Resource |
 | The annotation @Resource must define the attribute 'name' when applied on a class. | Error | Add name to  jakarta.annotation.Resource |
 | A method with the annotation @PostConstruct must be void | Error | Change return type to void |
@@ -100,7 +100,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Contexts and Dependency Inje
 | --------- | ----- | ------------ |
 | A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with @Disposes/@Observes/@ObservesAsync | Error | Remove @Inject OR Remove the '@Disposes/@Observes/@ObservesAsync' modifier from parameter 'parameter_name' | 
 | A producer method cannot have parameter(s) annotated with  @Disposes/@Observes/@ObservesAsync | Error | Remove @Produces OR Remove the '@Disposes/@Observes/@ObservesAsync' modifier from parameter 'parameter_name' |
-| The annotation @Disposes must not be defined on more than one parameter of a method. | Error | N/A |
+| The @Disposes annotation must not be defined on more than one parameter of a method. | Error | N/A |
 | Managed bean class of generic type must have scope @Dependent | Error | Replace current scope with @Dependent |
 | The annotation @Dependent must be the only scope defined by a managed bean with a non-static public field. | Error | Replace current scope with @Dependent | 
 | The annotation @Inject must define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead. | Error | Insert @Inject OR Add a no-arg protected constructor to this class OR Add a no-arg public constructor to this class. |

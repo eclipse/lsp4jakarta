@@ -89,7 +89,7 @@ Debug `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a
 
 ## Snippets
 
-Snippets are completion items that contain a block of helpful code for users. Snippets in Eclipse LSP4Jakarta are contributed through [JSON files](../jakarta.ls/src/main/resources/). If you add new snippets, update the [Jakarta EE API language features](../README.md#jakarta-ee-api-language-features) documentation
+Snippets are completion items that contain a block of helpful code for users. Snippets in Eclipse LSP4Jakarta are contributed through [JSON files](../jakarta.ls/src/main/resources/). If you add new snippets, update the [Jakarta EE API language features](../README.md#jakarta-ee-api-language-features) documentation.
 
 Snippets use the following format:
 
