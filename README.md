@@ -28,7 +28,6 @@ This project contains:
    - [Jakarta Servlet](#jakarta-servlet)
    - [Jakarta Transactions](#jakarta-transactions)
    - [Jakarta WebSocket](#jakarta-websocket)
-- [Building](#Building)
 - [Contributing](#Contributing)
 - [License](#license)
 - [Feedback](#Feedback)
@@ -229,13 +228,9 @@ Eclipse LSP4Jakarta provides the following [Jakarta WebSocket diagnostics](./jak
 | Server endpoint paths must start with a leading '/'. | Error | N/A |
 | Server endpoint paths must not contain the sequences '/../', '/./' or '//'. | Error | N/A |
 
-## Building
-
-Refer to our [building](docs/BUILDING.md) document for information about prerequisites, setting up an Eclipse workspace, and common errors. 
-
 ## Contributing
 
-See the [DEVELOPING](docs/DEVELOPING.md) and [CONTRIBUTING](docs/CONTRIBUTING.md) documents for more details.
+See the [DEVELOPING](./DEVELOPING.md) and [CONTRIBUTING](./CONTRIBUTING.md) documents for more details.
 
 ## License
 
