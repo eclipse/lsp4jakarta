@@ -4,7 +4,7 @@
 [![Build](https://github.com/eclipse/lsp4jakarta/workflows/Java%20CI%20-%20LSP4Jakarta/badge.svg)](https://github.com/eclipse/lsp4jakarta/actions)
 [![Gitter](https://badges.gitter.im/eclipse/jakartaee-languageserver.svg)](https://gitter.im/eclipse/jakartaee-languageserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-The Eclipse LSP4Jakarta (Language Server for Jakarta EE) project provides language support capabilities for the specifications defined under the Jakarta EE (EE4J) umbrella. It adheres to the [language server protocol](https://github.com/Microsoft/language-server-protocol).
+The Eclipse LSP4Jakarta (Language Server for Jakarta EE) project provides language support capabilities for the specifications defined under the [Jakarta EE](https://jakarta.ee) umbrella. It adheres to the [language server protocol](https://github.com/Microsoft/language-server-protocol).
 
 This project contains: 
 
@@ -39,6 +39,8 @@ Eclipse LSP4Jakarta is consumed by the following client IDEs.
 -  Eclipse IDE with [Liberty Tools for Eclipse](https://github.com/OpenLiberty/liberty-tools-eclipse#welcome-to-the-liberty-tools-for-eclipse-project)
 -  Visual Studio Code with [Liberty Tools for Visual Studio Code](https://github.com/OpenLiberty/liberty-tools-vscode#liberty-tools-for-visual-studio-code)
 -  IntelliJ IDEA with [Liberty Tools for IntelliJ IDEA](https://github.com/OpenLiberty/liberty-tools-intellij#liberty-tools-for-intellij-idea)
+
+Submit a PR to have your tools that use Eclipse LSP4Jakarta listed.
 
 ## Features
 
