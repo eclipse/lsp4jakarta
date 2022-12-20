@@ -9,8 +9,8 @@ The Eclipse LSP4Jakarta (Language Server for Jakarta EE) project provides langua
 This project contains: 
 
 - [jakarta.ls](/jakarta.ls) - Language Server for Jakarta EE
-- [jakarta.jdt](/jakarta.jdt) - Jakarta EE Eclipse JDT LS extension 
-- [jakarta.eclipse](/jakarta.eclipse) - Eclipse IDE client (for local testing) that consumes the Language Server for Jakarta EE
+- [jakarta.jdt](/jakarta.jdt) - Eclipse JDT LS extension for Eclipse LSP4Jakarta
+- [jakarta.eclipse](/jakarta.eclipse) - Eclipse IDE client (for local testing) that consumes Eclipse LSP4Jakarta
 
 <img src="/docs/images/components.png" alt="component diagram" height="80%" width="80%"/>
 

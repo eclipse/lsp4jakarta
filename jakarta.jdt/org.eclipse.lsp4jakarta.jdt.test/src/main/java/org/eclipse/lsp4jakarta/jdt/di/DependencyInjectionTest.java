@@ -39,23 +39,23 @@ public class DependencyInjectionTest extends BaseJakartaTest {
         /* create expected diagnostics
          * 
          */
-        Diagnostic d1 = d(17, 27, 35, "The annotation @Inject must not define a final field.",
+        Diagnostic d1 = d(17, 27, 35, "The @Inject annotation must not define a final field.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectOrFinal");
         d1.setData(IType.FIELD);
 
-        Diagnostic d2 = d(33, 25, 39, "The annotation @Inject must not define an abstract method.",
+        Diagnostic d2 = d(33, 25, 39, "The @Inject annotation must not define an abstract method.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectOrAbstract");
         d2.setData(IType.METHOD);
         
-        Diagnostic d3 = d(26, 22, 33, "The annotation @Inject must not define a final method.",
+        Diagnostic d3 = d(26, 22, 33, "The @Inject annotation must not define a final method.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectOrFinal");
         d3.setData(IType.METHOD);
  
-        Diagnostic d4 = d(43, 23, 36, "The annotation @Inject must not define a generic method.",
+        Diagnostic d4 = d(43, 23, 36, "The @Inject annotation must not define a generic method.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectForGeneric");
         d4.setData(IType.METHOD);
         
-        Diagnostic d5 = d(37, 23, 35, "The annotation @Inject must not define a static method.",
+        Diagnostic d5 = d(37, 23, 35, "The @Inject annotation must not define a static method.",
                 DiagnosticSeverity.Error, "jakarta-di", "RemoveInjectOrStatic");
         d5.setData(IType.METHOD);
         

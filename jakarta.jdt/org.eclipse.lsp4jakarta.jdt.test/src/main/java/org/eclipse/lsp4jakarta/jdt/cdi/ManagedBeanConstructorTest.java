@@ -46,7 +46,7 @@ public class ManagedBeanConstructorTest extends BaseJakartaTest {
 
         // test expected diagnostic
         Diagnostic d = d(21, 8, 30,
-                "The annotation @Inject must define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead.",
+                "The @Inject annotation must define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanConstructor");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);

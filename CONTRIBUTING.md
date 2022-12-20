@@ -1,48 +1,62 @@
 # Contributing to Eclipse LSP4Jakarta
 
-We welcome contributions, and request you follow these guidelines.
+Thanks for your interest in this project.
 
- - [Raising issues](#raising-issues)
- - [Legal](#legal)
- - [Coding Standards](#coding-standards)
- - [Developing](#developing))
+## Project description
 
+A language server implementation based on the Language Server Protocol for the
+Jakarta EE programming model.  This LSP4Jakarta (Language Server for Jakarta
+EE) will provide core language support capabilities (such as code complete,
+diagnostics, quick fixes) to enable developers to easily and quickly develop
+cloud-native applications using the Jakarta EE APIs. The Eclipse client for the
+Language Server for Jakarta EE will surface the capabilities provided by the
+language server to developers using the Eclipse (desktop) IDE.
 
-## Raising issues
+* https://projects.eclipse.org/projects/technology.lsp4jakarta
 
-Please raise any bug reports on the [issue tracker](https://github.com/eclipse/lsp4jakarta/issues). Be sure to search the list to see if your issue has already been raised.
+## Terms of Use
 
-A good bug report makes it easy for us to understand what you were trying to do and what went wrong. Provide as much context as possible so we can try to recreate the issue.
+This repository is subject to the Terms of Use of the Eclipse Foundation
 
-## Legal
+* https://www.eclipse.org/legal/termsofuse.php
 
-In order to make contribution as easy as possible, we follow the [Developer's Certificate of Origin 1.1 (DCO)](https://developercertificate.org/) process for code contributions. We ask you to certify your contributions by signing off in your pull requests.
+## Developer resources
 
-When you submit a pull request for review, you
-must include a sign-off statement in the commit message.
+Information regarding source code management, builds, coding standards, and
+more.
 
-The following example includes a `Signed-off-by` line, which indicates that the
-submitter accepts the DCO:
+* https://projects.eclipse.org/projects/technology.lsp4jakarta/developer
 
-```text
-Signed-off-by: John Doe <john.doe@example.com>
-```
+The project maintains the following source code repositories
 
-You can include this automatically when you commit a change to your
-local git repository using the following command:
+* https://github.com/eclipse/lsp4jakarta
 
-```bash
-git commit -s
-```
+## Eclipse Development Process
 
-## Coding Standards
+This Eclipse Foundation open project is governed by the Eclipse Foundation
+Development Process and operates under the terms of the Eclipse IP Policy.
 
-This project follows Eclipse standard Java language [coding conventions](https://wiki.eclipse.org/Coding_Conventions).
+* https://eclipse.org/projects/dev_process
+* https://www.eclipse.org/org/documents/Eclipse_IP_Policy.pdf
 
-Please note:
- - all PRs must pass Java CheckStyle checks
- - all PRs must have passing builds
+## Eclipse Contributor Agreement
 
- ## Developing
+In order to be able to contribute to Eclipse Foundation projects you must
+electronically sign the Eclipse Contributor Agreement (ECA).
 
- To learn how to set up, run, add new language features, and test your development environment, see [Developing Eclipse LSP4Jakarta](./DEVELOPING.md).
+* https://www.eclipse.org/legal/ECA.php
+
+The ECA provides the Eclipse Foundation with a permanent record that you agree
+that each of your contributions will comply with the commitments documented in
+the Developer Certificate of Origin (DCO). Having an ECA on file associated with
+the email address matching the "Author" field of your contribution's Git commits
+fulfills the DCO's requirement that you sign-off on your contributions.
+
+For more information, please see the Eclipse Committer Handbook:
+https://www.eclipse.org/projects/handbook/#resources-commit
+
+## Contact
+
+Contact the project developers via the project's "dev" list.
+
+* https://accounts.eclipse.org/mailing-list/lsp4jakarta-dev

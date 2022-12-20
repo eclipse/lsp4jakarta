@@ -46,7 +46,7 @@ public class ResourceMethodTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         
-        Diagnostic d = d(20, 17, 30, "Only public methods may be exposed as resource methods",
+        Diagnostic d = d(20, 17, 30, "Only public methods can be exposed as resource methods",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "NonPublicResourceMethod");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d);
