@@ -9,7 +9,7 @@ The Eclipse LSP4Jakarta (Language Server for Jakarta EE) project provides langua
 This project contains: 
 
 - [jakarta.ls](/jakarta.ls) - Language Server for Jakarta EE
-- [jakarta.jdt](/jakarta.jdt) - Eclipse JDT LS extension for Eclipse LSP4Jakarta
+- [jakarta.jdt](/jakarta.jdt) - [Eclipse JDT LS](https://github.com/eclipse/eclipse.jdt.ls) extension for Eclipse LSP4Jakarta
 - [jakarta.eclipse](/jakarta.eclipse) - Eclipse IDE client (for local testing) that consumes Eclipse LSP4Jakarta
 
 <img src="/docs/images/components.png" alt="component diagram" height="80%" width="80%"/>
@@ -44,7 +44,7 @@ Submit a PR to have your tools that use Eclipse LSP4Jakarta listed.
 
 ## Features
 
-The language features currently offered by Eclipse LSP4Jakarta to Jakarata EE APIs are code snippets, diagnostics, and quick-fixes.
+The language features currently offered by Eclipse LSP4Jakarta to Jakarta EE APIs are code snippets, diagnostics, and quick-fixes.
 
 Code snippets help you quickly generate common blocks of code.
 
@@ -54,7 +54,7 @@ Diagnostics indicate incorrect API usage and suggest associated quick-fixes to c
 
 ![Eclipse LSP4Jakarta diagnostic and quick-fix for invalid RESTful web services usage](./docs/images/restful-ws-diagnostic-quick-fix.png)
 
-The following is a list of Eclipse LSP4Jakarta language features offered for each [Jakarta EE API](https://jakarta.ee/specifications/). Language features will only be delivered for a given Jakarta EE API if that API is found on the project's classpath. Eclipse LSP4Jakarta is currently targeting Jakarta EE 9/9.1 (jakarta.x namespace). 
+The following is a list of Eclipse LSP4Jakarta language features offered for each [Jakarta EE API](https://jakarta.ee/specifications/). Language features will only be delivered for a given Jakarta EE API if that API is found on the project's class path. Eclipse LSP4Jakarta is currently targeting Jakarta EE 9/9.1 (jakarta.x namespace). 
  
 If you would like to see language feature assistance for a Jakarta EE API that is not yet listed here, please open an issue on the [issue tracker](https://github.com/eclipse/lsp4jakarta/issues).
 
@@ -151,7 +151,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Persistence snippets](./jaka
 | persist_context_extended_unsync | Entity manager injection with extended, unsynchronized persistence context |
 | persist_entity | Generic persistence entity model |
 
-Eclipse LSP4Jakarta provides the following [Jakarta Peristence diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/persistence/).
+Eclipse LSP4Jakarta provides the following [Jakarta Persistence diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/persistence/).
 
 | Diagnostic description | Severity | Associated quick-fixes |
 | --------- | ----- | ------------ |

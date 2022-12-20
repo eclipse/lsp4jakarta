@@ -5,19 +5,19 @@
 - [Project setup in the Eclipse IDE](#project-setup-in-the-eclipse-ide)
 - [Common errors](#common-errors)
 - [Run and Debug](#run-and-debug)
-- [Snippets](#contributing-snippets)
+- [Snippets](#snippets)
 
 ## Projects
 
-This repo contains a few projects that provide language support for Jakarta EE APIs.
+This repository contains a few projects that provide language support for Jakarta EE APIs.
 
 - [jakarta.ls](./jakarta.ls/)- Language Server for Jakarta EE
-- [jakarta.jdt](./jakarta.jdt/) - Jakarta EE Eclipse [JDT LS](https://github.com/eclipse/eclipse.jdt.ls/) extension 
-- [jakarta.eclipse](./jakarta.eclipse) - Eclipse IDE client (for local testing) that consumes the Language Server for Jakarta EE
+- [jakarta.jdt](./jakarta.jdt/) - [Eclipse JDT LS](https://github.com/eclipse/eclipse.jdt.ls/) extension for Eclipse LSP4Jakarta
+- [jakarta.eclipse](./jakarta.eclipse) - Eclipse IDE client (for local testing) that consumes Eclipse LSP4Jakarta
 
 To test the changes interactively, you must use a language client.
 
-In the following sections, we document how to build and test using the Eclipse IDE client in this repository (jakarta.eclipse).
+In the following sections, we document how to build and test using the Eclipse IDE client in this repository (./jakarta.eclipse).
 
 ## Prerequisites
 
@@ -35,11 +35,11 @@ The following instructions explain how to set up your Eclipse IDE workspace.
 
 2. Build the project with Maven by running the `./buildAll.sh` script from the `lsp4jakarta` directory with Maven and [Tycho](https://github.com/eclipse/tycho). This script runs `mvn clean install` on the components in the following order:
 
-    1. Builds Jakarta EE JDT LS Extension and runs automated tests
+    1. Builds Eclipse JDT LS extension for Eclipse LSP4Jakarta (./jakarta.jdt) and runs automated tests
 
-    2. Builds Jakarta EE Language Server, creating the `org.eclipse.lsp4jakarta.ls-x.x.x-SNAPSHOT-jar-with-dependencies.jar`
+    2. Builds Language Server for Jakarta EE (./jakarta.ls), creating the `org.eclipse.lsp4jakarta.ls-x.x.x-SNAPSHOT-jar-with-dependencies.jar`
 
-    3. Builds Eclipse client plug-in that consumes the Jakarta EE Language Server and runs automated tests, copies the `org.eclipse.lsp4jakarta.ls-x.x.x-SNAPSHOT-jar-with-dependencies.jar` to the `./jakarta.eclipse/org.eclipse.lsp4jakarta.lsp4jakarta.lsp4e.core/server/` directory
+    3. Builds Eclipse IDE client plug-in that consumes Eclipse LSP4Jakarta (./jakarta.eclipse) and runs automated tests, copies the `org.eclipse.lsp4jakarta.ls-x.x.x-SNAPSHOT-jar-with-dependencies.jar` to the `./jakarta.eclipse/org.eclipse.lsp4jakarta.lsp4jakarta.lsp4e.core/server/` directory
 
 3. Import `jakarta.ls`, `org.eclipse.lsp4jakarta.core`, `org.eclipse.lsp4jakarta.tests` and `lsp4jakarta` projects in Eclipse (File --> Open projects from file system --> Select your LSP4Jakarta clone)
 
@@ -77,19 +77,19 @@ The following instructions explain how to set up your Eclipse IDE workspace.
 
 ## Run and Debug
 
-Run `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a new instance of Eclipse with LSP4Jakarta (Right-click on the `org.eclipse.lsp4jakarta.lsp4e.core` project, "Run As" --> "Eclipse Application"). A new Eclipse application will launch with the LSP4Jakarta Eclipse client plug-in installed.
+Run `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a new instance of the Eclipse IDE with Eclipse LSP4Jakarta (Right-click on the `org.eclipse.lsp4jakarta.lsp4e.core` project, "Run As" --> "Eclipse Application"). A new Eclipse application will launch with the Eclipse LSP4Jakarta Eclipse IDE client plug-in installed.
 
-<img src="/docs/images/building_run_lsp4e.png" alt="Run lsp4e Eclipse plug-in" height="60%" width="60%"/>
+<img src="/docs/images/building_run_lsp4e.png" alt="Run lsp4e Eclipse IDE plug-in" height="60%" width="60%"/>
 
 **To Debug**:
 
-Debug `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a new instance of Eclipse with LSP4Jakarta (Right-click on the `org.eclipse.lsp4jakarta.lsp4e.core` project, "Debug As" --> "Eclipse Application"). A new Eclipse application will launch with the LSP4Jakarta Eclipse client plug-in installed.
+Debug `org.eclipse.lsp4jakarta.lsp4e.core` as an Eclipse Application to launch a new instance of the Eclipse IDE with Eclipse LSP4Jakarta (Right-click on the `org.eclipse.lsp4jakarta.lsp4e.core` project, "Debug As" --> "Eclipse Application"). A new Eclipse application will launch with the Eclipse LSP4Jakarta Eclipse IDE client plug-in installed.
 
-<img src="/docs/images/building_debug_lsp4e.png" alt="Debug lsp4e Eclipse plug-in" height="60%" width="60%"/>
+<img src="/docs/images/building_debug_lsp4e.png" alt="Debug lsp4e Eclipse IDE plug-in" height="60%" width="60%"/>
 
 ## Snippets
 
-Snippets are completion items that contain a block of helpful code for users. Snippets in Eclipse LSP4Jakarta are contributed through [JSON files](../jakarta.ls/src/main/resources/). If you add new snippets, update the [Jakarta EE API language features](../README.md#jakarta-ee-api-language-features) documentation.
+Code snippets are completion items that quickly generate common blocks of code. Snippets in Eclipse LSP4Jakarta are contributed through [JSON files](../jakarta.ls/src/main/resources/). If you add new snippets, update the [features](../README.md#features) documentation.
 
 Snippets use the following format:
 
@@ -101,7 +101,7 @@ Snippets use the following format:
       ],
       "description": "<brief description of snippet, should not be longer than 1 sentence>",
       "context": {
-        // snippets will only appear for users if the package specified here is found on the project's classpath
+        // snippets will only appear for users if the package specified here is found on the project's class path
         "type": "<package required for snippet (ie. jakarta.servlet.http.HttpServlet)>"
       }
     }
