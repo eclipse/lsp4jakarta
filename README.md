@@ -53,7 +53,7 @@ Diagnostics indicate incorrect API usage and suggest associated quick-fixes to c
 
 ![Eclipse LSP4Jakarta diagnostic and quick-fix for invalid RESTful web services usage](./docs/images/restful-ws-diagnostic-quick-fix.png)
 
-The following is a list of Eclipse LSP4Jakarta language features offered for each [Jakarta EE API](https://jakarta.ee/specifications/). Language features will only be delivered for a given Jakarta EE API if that API is found on the project's class path. Eclipse LSP4Jakarta is currently targeting Jakarta EE 9/9.1 (jakarta.x namespace). 
+The following is a list of Eclipse LSP4Jakarta language features offered for each [Jakarta EE API](https://jakarta.ee/specifications/). Language features will only be delivered for a given Jakarta EE API if that API is found on the project's class path. Eclipse LSP4Jakarta is currently targeting Jakarta EE 9/9.1 (jakarta.* namespace). 
  
 If you would like to see language feature assistance for a Jakarta EE API that is not yet listed here, please open an issue on the [issue tracker](https://github.com/eclipse/lsp4jakarta/issues).
 

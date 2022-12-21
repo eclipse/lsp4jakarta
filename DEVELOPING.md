@@ -21,7 +21,7 @@ In the following sections, we document how to build and test using the Eclipse I
 
 ## Prerequisites
 
-[JavaSE-17](https://adoptium.net/en-GB/marketplace/), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) (Eclipse IDE for Enterprise Java and Web Developers is recommended) are required to build the Eclipse LSP4Jakarta project.
+[Java SE 17](https://adoptium.net/en-GB/marketplace/), [Maven](https://maven.apache.org/download.cgi), and [Eclipse](https://www.eclipse.org/downloads/) (Eclipse IDE for Enterprise Java and Web Developers is recommended) are required to build the Eclipse LSP4Jakarta project.
 
 Ensure the [Eclipse Plug-in Development Environment (PDE)](https://marketplace.eclipse.org/content/eclipse-pde-plug-development-environment) is installed in your Eclipse workspace.
 
