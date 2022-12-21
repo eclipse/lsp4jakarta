@@ -49,10 +49,10 @@ public class ResourceAnnotationTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected annotations
-        Diagnostic d1 = d(22, 0, 22, "The annotation @Resource must define the attribute 'type'.",
+        Diagnostic d1 = d(22, 0, 22, "The @Resource annotation must define the attribute 'type'.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceTypeAttribute");
 
-        Diagnostic d2 = d(39, 0, 30, "The annotation @Resource must define the attribute 'name'.",
+        Diagnostic d2 = d(39, 0, 30, "The @Resource annotation must define the attribute 'name'.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceNameAttribute");
 
 

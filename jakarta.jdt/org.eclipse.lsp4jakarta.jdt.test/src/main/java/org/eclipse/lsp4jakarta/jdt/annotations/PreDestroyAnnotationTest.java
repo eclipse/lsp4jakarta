@@ -45,14 +45,14 @@ public class PreDestroyAnnotationTest extends BaseJakartaTest {
 
         // expected annotations
         
-        Diagnostic d1 = d(20, 16, 28, "A method with the annotation @PreDestroy must not have any parameters.",
+        Diagnostic d1 = d(20, 16, 28, "A method with the @PreDestroy annotation must not have any parameters.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyParams");
         
-        Diagnostic d2 = d(26, 20, 31, "A method with the annotation @PreDestroy must not be static.",
+        Diagnostic d2 = d(26, 20, 31, "A method with the @PreDestroy annotation must not be static.",
                 DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyStatic");
         d2.setData(9);
         
-        Diagnostic d3 = d(31, 13, 25, "A method with the annotation @PreDestroy must not throw checked exceptions.",
+        Diagnostic d3 = d(31, 13, 25, "A method with the @PreDestroy annotation must not throw checked exceptions.",
                 DiagnosticSeverity.Warning, "jakarta-annotations", "PreDestroyException");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d2, d1, d3);

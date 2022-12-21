@@ -40,7 +40,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
 
         // test expected diagnostic
         Diagnostic d1 = d(6, 12, 13,
-                "The annotation @Dependent must be the only scope defined by a managed bean with a non-static public field.",
+                "The @Dependent annotation must be the only scope defined by a managed bean with a non-static public field.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanAnnotation");
         
         Diagnostic d2 = d(5, 13, 24,
@@ -127,10 +127,10 @@ public class ManagedBeanTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d1 = d(16, 18, 23, "The annotations @Produces and @Inject must not be used on the same field or property.",
+        Diagnostic d1 = d(16, 18, 23, "The @Produces and @Inject annotations must not be used on the same field or property.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrInject");
 
-        Diagnostic d2 = d(11, 19, 27, "The annotations @Produces and @Inject must not be used on the same field or property.",
+        Diagnostic d2 = d(11, 19, 27, "The @Produces and @Inject annotations must not be used on the same field or property.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "RemoveProducesOrInject");
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
@@ -441,7 +441,7 @@ public class ManagedBeanTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         Diagnostic d = d(9, 18, 23,
-                "The annotation @Disposes must not be defined on more than one parameter of a method.",
+                "The @Disposes annotation must not be defined on more than one parameter of a method.",
                 DiagnosticSeverity.Error, "jakarta-cdi", "RemoveExtraDisposes");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d);

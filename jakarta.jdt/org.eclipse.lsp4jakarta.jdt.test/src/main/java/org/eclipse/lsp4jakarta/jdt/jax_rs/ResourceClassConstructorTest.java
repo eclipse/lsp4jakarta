@@ -44,11 +44,11 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
 
         // test expected diagnostics
         Diagnostic d1 = d(7, 8, 45,
-                "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
+                "Multiple constructors have the same number of parameters, it might be ambiguous which constructor is used.",
                 DiagnosticSeverity.Warning, "jakarta-jax_rs", "AmbiguousConstructors");
 
         Diagnostic d2 = d(11, 8, 45,
-                "Multiple constructors have the same number of parameters, it may be ambiguous which constructor is used.",
+                "Multiple constructors have the same number of parameters, it might be ambiguous which constructor is used.",
                 DiagnosticSeverity.Warning, "jakarta-jax_rs", "AmbiguousConstructors");
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);

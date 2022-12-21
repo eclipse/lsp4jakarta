@@ -1,5 +1,5 @@
 ## jakarta.eclipse
-Eclipse client plug-in that consumes the Jakarta EE Language Server.
+Eclipse client plug-in that consumes Eclipse LSP4Jakarta.
 This project is built using Eclipse Tycho (https://www.eclipse.org/tycho/) and requires at least maven 3.0 (http://maven.apache.org/download.html) to be built via CLI. 
 Simply run :
 ```

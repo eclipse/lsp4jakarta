@@ -105,13 +105,13 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         }
                         if (!isUrlpatternSpecified && !isValueSpecified) {
                             diagnostics.add(createDiagnostic(webServletAnnotation, unit,
-                                    "The annotation @WebServlet must define the attribute 'urlPatterns' or 'value'.",
+                                    "The @WebServlet annotation must define the attribute 'urlPatterns' or 'value'.",
                                     ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE, null,
                                     DiagnosticSeverity.Error));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostics.add(createDiagnostic(webServletAnnotation, unit,
-                                    "The annotation @WebServlet cannot have both 'value' and 'urlPatterns' attributes specified at once.",
+                                    "The @WebServlet annotation cannot have both 'value' and 'urlPatterns' attributes specified at once.",
                                     ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES, null,
                                     DiagnosticSeverity.Error));
                         }
