@@ -16,9 +16,6 @@ pipeline {
       }
     }
     stage('Deploy LSP4Jakarta JDT extension to repo.eclipse.org and downloads.eclipse.org') {
-      when {
-        branch 'main'
-      }
       steps {
         withMaven {
             sh 'cd jakarta.jdt && ./mvnw deploy -B -Peclipse-sign -DskipTests && cd ..'
@@ -53,9 +50,6 @@ pipeline {
       }
     }
     stage ('Deploy LSP4Jakarta Language Server artifacts to Maven repository') {
-      when {
-         branch 'main'
-      }
       steps {
         withMaven {
           sh 'cd jakarta.ls && ./mvnw deploy -B -DskipTests'
