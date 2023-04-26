@@ -72,8 +72,10 @@ public class JakartaTextDocumentService implements TextDocumentService {
     @Override
     public void didChange(DidChangeTextDocumentParams params) {
         TextDocument document = documents.onDidChangeTextDocument(params);
-        String uri = document.getUri();
-        triggerValidationFor(Arrays.asList(uri));
+        if (document != null) {
+            String uri = document.getUri();
+            triggerValidationFor(Arrays.asList(uri));
+        }
     }
 
     @Override
