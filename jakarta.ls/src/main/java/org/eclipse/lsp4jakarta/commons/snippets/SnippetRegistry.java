@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.lsp4jakarta.commons;
+package org.eclipse.lsp4jakarta.commons.snippets;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +37,7 @@ import org.eclipse.lsp4j.MarkupKind;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4jakarta.snippets.JakartaEESnippetRegistryLoader;
 import org.eclipse.lsp4jakarta.utils.Messages;
 
 import com.google.gson.GsonBuilder;

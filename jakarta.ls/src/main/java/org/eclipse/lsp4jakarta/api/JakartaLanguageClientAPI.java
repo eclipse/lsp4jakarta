@@ -23,7 +23,7 @@ import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 
 /**
@@ -47,6 +47,16 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
      */
     @JsonRequest("jakarta/java/classpath")
     default CompletableFuture<List<String>> getContextBasedFilter(JakartaClasspathParams classpathParams) {
+        return CompletableFuture.completedFuture(null);
+    }
+    
+    @JsonRequest("microprofile/java/javaCursorContext")
+	default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaClasspathParams context) {
+		return CompletableFuture.completedFuture(null);
+	}
+
+    @JsonRequest("jakarta/java/completion")
+    default CompletableFuture<JakartaJavaCompletionResult> getJavaCompletion(JakartaClasspathParams classpathParams) {
         return CompletableFuture.completedFuture(null);
     }
 
