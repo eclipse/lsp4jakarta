@@ -71,15 +71,13 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         IBinding parentType = getBinding(node);
         if (parentType != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
             removeAnnotations(diagnostic, context, parentType, codeActions);
-            return codeActions;
         }
-        return null;
-
+        return codeActions;
     }
 
     protected void removeAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,

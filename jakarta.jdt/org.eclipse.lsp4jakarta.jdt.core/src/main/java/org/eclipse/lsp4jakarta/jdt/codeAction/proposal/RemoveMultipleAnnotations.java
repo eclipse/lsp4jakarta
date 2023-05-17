@@ -46,6 +46,7 @@ public abstract class RemoveMultipleAnnotations extends RemoveAnnotationConflict
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         IBinding parentType = getBinding(node);
 
@@ -55,16 +56,14 @@ public abstract class RemoveMultipleAnnotations extends RemoveAnnotationConflict
                 .mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
 
         if (parentType != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
             
             List<List<String>> annotationsListsToRemove = getMultipleRemoveAnnotations(annotations);
             for (List<String> annotationList : annotationsListsToRemove) {
                 String[] annotationsToRemove = annotationList.toArray(new String[annotationList.size()]);
                 removeAnnotation(diagnostic, context, parentType, codeActions, annotationsToRemove);
             }
-            return codeActions;
         }
-        return null;
+        return codeActions;
     }
     
     /**

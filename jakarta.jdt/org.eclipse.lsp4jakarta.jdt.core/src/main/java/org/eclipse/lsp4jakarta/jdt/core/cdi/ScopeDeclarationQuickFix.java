@@ -38,6 +38,7 @@ public class ScopeDeclarationQuickFix extends RemoveAnnotationConflictQuickFix {
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         IBinding parentType = getBinding(node);
 
@@ -49,7 +50,6 @@ public class ScopeDeclarationQuickFix extends RemoveAnnotationConflictQuickFix {
         annotations.remove(ManagedBeanConstants.PRODUCES);
 
         if (parentType != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
             /**
              * for each annotation, choose the current annotation to keep and remove the
              * rest since we can have at most one scope annotation.
@@ -62,9 +62,8 @@ public class ScopeDeclarationQuickFix extends RemoveAnnotationConflictQuickFix {
                         resultingAnnotations.toArray(new String[] {}));
             }
 
-            return codeActions;
         }
-        return null;
+        return codeActions;
 
     }
 }

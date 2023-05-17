@@ -45,12 +45,12 @@ public class ResourceMethodMultipleEntityParamsQuickFix implements IJavaCodeActi
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
         IMethodBinding parentMethod = parentNode.resolveBinding();
 
         if (parentMethod != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
 
             List<SingleVariableDeclaration> params = (List<SingleVariableDeclaration>) parentNode.parameters();
 
@@ -76,9 +76,8 @@ public class ResourceMethodMultipleEntityParamsQuickFix implements IJavaCodeActi
                 codeActions.add(codeAction);
             }
 
-            return codeActions;
         }
-        return null;
+        return codeActions;
     }
 
     /**

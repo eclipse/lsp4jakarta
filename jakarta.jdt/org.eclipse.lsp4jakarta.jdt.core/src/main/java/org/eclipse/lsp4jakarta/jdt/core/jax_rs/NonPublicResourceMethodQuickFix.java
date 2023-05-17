@@ -41,12 +41,12 @@ public class NonPublicResourceMethodQuickFix implements IJavaCodeActionParticipa
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
         IMethodBinding parentMethod = parentNode.resolveBinding();
 
         if (parentMethod != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
 
             final String TITLE_MESSAGE = "Make method public";
 
@@ -57,9 +57,8 @@ public class NonPublicResourceMethodQuickFix implements IJavaCodeActionParticipa
             CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
             codeAction.setTitle(TITLE_MESSAGE);
             codeActions.add(codeAction);
-            return codeActions;
         }
-        return null;
+        return codeActions;
     }
 
 }

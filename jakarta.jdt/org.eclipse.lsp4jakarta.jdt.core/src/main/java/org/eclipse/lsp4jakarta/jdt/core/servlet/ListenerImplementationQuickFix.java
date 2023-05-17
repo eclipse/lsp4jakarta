@@ -45,10 +45,10 @@ public class ListenerImplementationQuickFix implements IJavaCodeActionParticipan
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         ITypeBinding parentType = Bindings.getBindingOfParentType(node);
         if (parentType != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
             // Create code action
             // interface
 
@@ -77,9 +77,8 @@ public class ListenerImplementationQuickFix implements IJavaCodeActionParticipan
             codeActions.add(ca4);
             codeActions.add(ca5);
             codeActions.add(ca6);
-            return codeActions;
         }
-        return null;
+        return codeActions;
     }
 
     private CodeAction setUpCodeAction(ITypeBinding parentType, Diagnostic diagnostic, JavaCodeActionContext context,
