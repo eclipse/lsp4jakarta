@@ -72,14 +72,13 @@ public class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipa
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         IBinding parentType = getBinding(node);
         if (parentType != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
             insertAnnotations(diagnostic, context, parentType, codeActions);
-            return codeActions;
         }
-        return null;
+        return codeActions;
     }
 
     protected static IBinding getBinding(ASTNode node) {

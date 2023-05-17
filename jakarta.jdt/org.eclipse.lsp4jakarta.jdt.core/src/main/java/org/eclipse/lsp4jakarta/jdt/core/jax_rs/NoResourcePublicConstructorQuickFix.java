@@ -47,13 +47,13 @@ public class NoResourcePublicConstructorQuickFix implements IJavaCodeActionParti
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
         IMethodBinding parentMethod = parentNode.resolveBinding();
         IBinding parentType = getBinding(node);
         
         if (parentMethod != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
 
             final String TITLE_MESSAGE = "Make constructor public";
 
@@ -72,9 +72,8 @@ public class NoResourcePublicConstructorQuickFix implements IJavaCodeActionParti
             codeAction = context.convertToCodeAction(proposal, diagnostic);
             codeActions.add(codeAction);
             
-            return codeActions;
         }
-        return null;
+        return codeActions;
     }
 
     protected static IBinding getBinding(ASTNode node) {

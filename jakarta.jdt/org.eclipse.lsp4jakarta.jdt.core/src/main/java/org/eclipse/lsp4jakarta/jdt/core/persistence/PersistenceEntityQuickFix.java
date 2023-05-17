@@ -64,19 +64,17 @@ public class PersistenceEntityQuickFix implements IJavaCodeActionParticipant {
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         IBinding parentType = getBinding(node);
         if (parentType != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
             
             // add constructor
             if (diagnostic.getCode().getLeft().equals(PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR)) {
                 codeActions.addAll(addConstructor(diagnostic, context, parentType));
             }
-            
-            return codeActions;
         }
-        return null;
+        return codeActions;
     }
     
     protected static IBinding getBinding(ASTNode node) {

@@ -45,10 +45,10 @@ public class HttpServletQuickFix implements IJavaCodeActionParticipant {
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
             IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         ITypeBinding parentType = Bindings.getBindingOfParentType(node);
         if (parentType != null) {
-            List<CodeAction> codeActions = new ArrayList<>();
             // Create code action
             // interface
             final String TITLE_MESSAGE = "Let ''{0}'' extend ''{1}''";
@@ -60,8 +60,7 @@ public class HttpServletQuickFix implements IJavaCodeActionParticipant {
             CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
             codeAction.setTitle(MessageFormat.format(TITLE_MESSAGE, args));
             codeActions.add(codeAction);
-            return codeActions;
         }
-        return null;
+        return codeActions;
     }
 }
