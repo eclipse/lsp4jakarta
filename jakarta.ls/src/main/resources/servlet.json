@@ -20,7 +20,8 @@
         ],
         "description": "Generic protocol independent servlet",
         "context": {
-            "type": "jakarta.servlet.GenericServlet"
+            "type": "jakarta.servlet.GenericServlet",
+            "contentType": "class"
         }
     },
     "Jakarta Servlet - HTTPServlet GET request": {
@@ -46,7 +47,8 @@
         ],
         "description": "HTTPServlet with GET request",
         "context":{
-            "type": "jakarta.servlet.http.HttpServlet"
+            "type": "jakarta.servlet.http.HttpServlet",
+            "contentType": "class"
         }
     },
     "Jakarta Servlet - HTTPServlet POST request": {
@@ -74,7 +76,8 @@
         ],
         "description": "HTTPServlet with POST request",
         "context":{
-            "type": "jakarta.servlet.http.HttpServlet"
+            "type": "jakarta.servlet.http.HttpServlet",
+            "contentType": "class"
         }
     },
     "Jakarta Servlet - WebFilter": {
@@ -101,7 +104,8 @@
         ],
         "description": "Servlet WebFilter",
         "context":{
-            "type": "jakarta.servlet.Filter"
+            "type": "jakarta.servlet.Filter",
+            "contentType": "class"
         }
       }
 }
