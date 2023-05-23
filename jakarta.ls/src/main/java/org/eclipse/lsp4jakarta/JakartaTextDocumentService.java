@@ -40,6 +40,9 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextKind;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.commons.SnippetContextForJava;
 import org.eclipse.lsp4jakarta.commons.SnippetRegistry;
 import org.eclipse.lsp4mp.commons.DocumentFormat;
@@ -97,17 +100,34 @@ public class JakartaTextDocumentService implements TextDocumentService {
             List<String> snippetReg = snippetRegistry.getSnippets().stream().map(snippet -> {
                 return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
             }).collect(Collectors.toList());
+            JakartaClasspathParams filterParams = new JakartaClasspathParams(uri, snippetReg);
             try {
                 // Pass JakartaClasspathParams to IDE client, to be forwarded to the JDT LS ext
                 // Returns a CompletableFuture List<String> of snippet context that are on the
                 // project's classpath
                 return jakartaLanguageServer.getLanguageClient()
-                        .getContextBasedFilter(new JakartaClasspathParams(uri, snippetReg)).get();
+                        .getContextBasedFilter(filterParams).get();
             } catch (Exception e) {
                 LOGGER.severe("Return LSP4Jakarta getContextBasedFilter() from client did not succeed: " + e.getMessage());
                 return new ArrayList<String>();
             }
         });
+
+        // Async thread to query the JDT LS ext for cursor contexts in Java
+        JakartaJavaCompletionParams javaParams = new JakartaJavaCompletionParams(position.getTextDocument().getUri(), position.getPosition());
+        CompletableFuture<JavaCursorContextResult> getCursorContext = CompletableFuture.supplyAsync(() -> {
+            try {
+                // Pass JakartaJavaCompletionParams to IDE client, to be forwarded to the JDT LS ext
+                // Returns a CompletableFuture JavaCursorContextResult of cursor context in the Java file
+                JavaCursorContextResult res = jakartaLanguageServer.getLanguageClient()
+                        .getJavaCursorContext(javaParams).get();
+                return res;
+            } catch (Exception e) {
+                LOGGER.severe("Return LSP4Jakarta getJavaCursorContext() from client did not succeed: " + e.getMessage());
+                return new JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error recovery
+            }
+        });
+
         TextDocument document = documents.get(uri);
         try {
             int offset = document.offsetAt(position.getPosition());
@@ -115,11 +135,16 @@ public class JakartaTextDocumentService implements TextDocumentService {
             Range replaceRange = getReplaceRange(document, offset, prefix);
             if (replaceRange != null) {
                 // Put list of CompletionItems in an Either and wrap as a CompletableFuture
-                return getSnippetContexts.thenApply(ctx -> {
+                return getCursorContext.thenCombineAsync(getSnippetContexts, (javaContext, list) -> {
                     // Given the snippet contexts that are on the project's classpath, return the
                     // corresponding list of CompletionItems
+                    if (javaContext == null) {
+                        LOGGER.severe("No Java cursor context provided, using default values to compute snippets.");
+                        javaContext = new JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error recovery
+                    }
+                    var kind = javaContext.getKind();
                     return Either.forLeft(
-                            snippetRegistry.getCompletionItem(replaceRange, "\n", true, ctx, prefix.toString()));
+                            snippetRegistry.getCompletionItem(replaceRange, "\n", true, list, prefix.toString()));
                 });
             }
         } catch (BadLocationException e) {

@@ -23,6 +23,8 @@ import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 
 /**
  * API of the client consuming the Language Server for Jakarta EE. Used to send
@@ -45,6 +47,11 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
      */
     @JsonRequest("jakarta/java/classpath")
     default CompletableFuture<List<String>> getContextBasedFilter(JakartaClasspathParams classpathParams) {
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @JsonRequest("jakarta/java/cursorcontext")
+    default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams context) {
         return CompletableFuture.completedFuture(null);
     }
 
