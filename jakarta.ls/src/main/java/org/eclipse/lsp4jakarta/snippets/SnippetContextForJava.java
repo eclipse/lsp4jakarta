@@ -79,19 +79,19 @@ public class SnippetContextForJava implements ISnippetContext<JavaSnippetComplet
 			typeMatches = true;
 		}
 
-		return typeMatches && snippetContentAppliesToContext(contentType, context.getJavaCursorContextResult());
+		return typeMatches && snippetContentAppliesToContext(context.getJavaCursorContextResult());
 	}
 
-	private static boolean snippetContentAppliesToContext(SnippetContentType content, JavaCursorContextResult context) {
+	public boolean snippetContentAppliesToContext(JavaCursorContextResult context) {
 		// content/context being null signals that the client doesn't support getting
 		// the completion context
-		if (content == null || context == null) {
+		if (contentType == null || context == null) {
             return true;
         }
         JavaCursorContextKind kind = context.getKind();
 		String prefix = context.getPrefix();
 		boolean prefixMatchesAnnotation = prefix.startsWith("@");
-		switch (content) {
+		switch (contentType) {
 		case METHOD_ANNOTATION:
 			return prefixMatchesAnnotation && (kind == JavaCursorContextKind.BEFORE_METHOD
 					|| kind == JavaCursorContextKind.IN_METHOD_ANNOTATIONS);

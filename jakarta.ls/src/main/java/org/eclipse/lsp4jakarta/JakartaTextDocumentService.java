@@ -41,8 +41,11 @@ import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextKind;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.commons.snippets.SnippetRegistry;
+import org.eclipse.lsp4jakarta.snippets.JavaSnippetCompletionContext;
 import org.eclipse.lsp4jakarta.snippets.SnippetContextForJava;
 import org.eclipse.lsp4mp.commons.DocumentFormat;
 import org.eclipse.lsp4mp.ls.commons.BadLocationException;
@@ -92,8 +95,8 @@ public class JakartaTextDocumentService implements TextDocumentService {
     @Override
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams position) {
         String uri = position.getTextDocument().getUri();
-        // Async thread to query the JDT LS ext for snippet contexts on project's
-        // classpath
+        TextDocument document = documents.get(uri);
+        // Async thread to query the JDT LS ext for snippet contexts on project's classpath
         CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
             // Get the list of snippet contexts to pass to the JDT LS ext
             List<String> snippetReg = snippetRegistry.getSnippets().stream().map(snippet -> {
@@ -126,25 +129,21 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 return new JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error recovery
             }
         });
-
-        TextDocument document = documents.get(uri);
+        
         try {
             int offset = document.offsetAt(position.getPosition());
             StringBuffer prefix = new StringBuffer();
             Range replaceRange = getReplaceRange(document, offset, prefix);
             if (replaceRange != null) {
                 // Put list of CompletionItems in an Either and wrap as a CompletableFuture
-                return getCursorContext.thenCombineAsync(getSnippetContexts, (javaContext, list) -> {
+            	return getCursorContext.thenCombineAsync(getSnippetContexts, (cursorContext, list) -> {
                     // Given the snippet contexts that are on the project's classpath, return the
                     // corresponding list of CompletionItems
-                    if (javaContext == null) {
-                        LOGGER.severe("No Java cursor context provided, using default values to compute snippets.");
-                        javaContext = new JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error recovery
-                    }
-                    var kind = javaContext.getKind();
+            		var kind = cursorContext.getKind();
+            		list.add(kind.name());
                     return Either.forLeft(
-                            snippetRegistry.getCompletionItem(replaceRange, "\n", true, list, prefix.toString()));
-                });
+                            snippetRegistry.getCompletionItem(replaceRange, "\n", true, list, cursorContext, prefix.toString()));
+            	});
             }
         } catch (BadLocationException e) {
             LOGGER.severe("Failed to get completions: " + e.getMessage());

@@ -28,5 +28,13 @@ public interface ISnippetRegistryLoader {
      * @throws Exception
      */
     void load(SnippetRegistry registry) throws Exception;
-
+    
+	/**
+	 * Returns the language id and null otherwise.
+	 *
+	 * @return the language id and null otherwise.
+	 */
+	default String getLanguageId() {
+		return null;
+	}
 }

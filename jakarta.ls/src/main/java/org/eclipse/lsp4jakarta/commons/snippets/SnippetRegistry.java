@@ -37,7 +37,9 @@ import org.eclipse.lsp4j.MarkupKind;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.snippets.JakartaEESnippetRegistryLoader;
+import org.eclipse.lsp4jakarta.snippets.SnippetContextForJava;
 import org.eclipse.lsp4jakarta.utils.Messages;
 
 import com.google.gson.GsonBuilder;
@@ -177,7 +179,7 @@ public class SnippetRegistry {
      * @return the snippet completion items according to the context filter.
      */
     public List<CompletionItem> getCompletionItem(final Range replaceRange, final String lineDelimiter,
-            boolean canSupportMarkdown, List<String> context, String prefix) {
+            boolean canSupportMarkdown, List<String> context, JavaCursorContextResult cursorContext, String prefix) {
         List<Snippet> snippets = getSnippets();
         Map<String, String> values = new HashMap<String, String>();
         int size = context.size();
@@ -186,29 +188,33 @@ public class SnippetRegistry {
             values.put(CLASS_NAME, context.get(size - 1));
         }
         String filter = (prefix != null) ? prefix.toLowerCase() : null;
-        // TODO Add context based filtering
-        return snippets.stream().map(snippet -> {
-            String label = snippet.getPrefixes().get(0);
-            if (context.get(snippets.indexOf(snippet)) == null
-                    // in Eclipse, the filter is not working properly, have to add additional one
-                    || (filter != null && filterLabel(filter, label.toLowerCase()) != true)) {
-                return null;
-            }
-            CompletionItem item = new CompletionItem();
-            item.setLabel(label);
-//            item.setDetail(snippet.getDescription());
-            item.setDetail(Messages.getMessage(snippet.getDescription()));
-            String insertText = getInsertText(snippet, false, lineDelimiter, values);
-            item.setKind(CompletionItemKind.Snippet);
-            item.setDocumentation(
-                    Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimiter, values)));
-            item.setFilterText(label);
+        return snippets.stream()
+            // filter list based on cursor context
+            .filter(snippet -> 
+            ((SnippetContextForJava) snippet.getContext())
+            .snippetContentAppliesToContext(cursorContext))
+            .map(snippet -> {
+                String label = snippet.getPrefixes().get(0);
+                if (context.get(snippets.indexOf(snippet)) == null
+                        // in Eclipse, the filter is not working properly, have to add additional one
+                        || (filter != null && filterLabel(filter, label.toLowerCase()) != true)) {
+                    return null;
+                }
+                CompletionItem item = new CompletionItem();
+                item.setLabel(label);
+    //            item.setDetail(snippet.getDescription());
+                item.setDetail(Messages.getMessage(snippet.getDescription()));
+                String insertText = getInsertText(snippet, false, lineDelimiter, values);
+                item.setKind(CompletionItemKind.Snippet);
+                item.setDocumentation(
+                        Either.forRight(createDocumentation(snippet, canSupportMarkdown, lineDelimiter, values)));
+                item.setFilterText(label);
 
-            TextEdit textEdit = new TextEdit(replaceRange, insertText);
-            item.setTextEdit(Either.forLeft(textEdit));
-            item.setInsertTextFormat(InsertTextFormat.Snippet);
-            return item;
-        }).filter(completionItems -> completionItems != null).collect(Collectors.toList());
+                TextEdit textEdit = new TextEdit(replaceRange, insertText);
+                item.setTextEdit(Either.forLeft(textEdit));
+                item.setInsertTextFormat(InsertTextFormat.Snippet);
+                return item;
+            }).filter(completionItems -> completionItems != null).collect(Collectors.toList());
     }
     
     /**
