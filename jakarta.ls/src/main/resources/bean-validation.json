@@ -7,7 +7,8 @@
       ],
       "description": "Email address constraint, which validates a well-formed email address",
       "context": {
-        "type": "jakarta.validation.constraints.Email"
+        "type": "jakarta.validation.constraints.Email",
+        "contentType": "field"
       }
     }
   }

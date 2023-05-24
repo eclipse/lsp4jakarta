@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.lsp4jakarta.commons;
+package org.eclipse.lsp4jakarta.commons.snippets;
 
 import java.util.List;
 import java.util.function.Predicate;

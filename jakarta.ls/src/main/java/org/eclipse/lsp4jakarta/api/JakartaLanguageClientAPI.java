@@ -24,6 +24,7 @@ import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 
 /**

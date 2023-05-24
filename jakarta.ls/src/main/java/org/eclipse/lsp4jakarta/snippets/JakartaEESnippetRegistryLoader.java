@@ -11,9 +11,12 @@
 *     IBM Corporation, Ankush Sharma - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.lsp4jakarta.commons;
+package org.eclipse.lsp4jakarta.snippets;
 
 import java.util.logging.Logger;
+
+import org.eclipse.lsp4jakarta.commons.snippets.ISnippetRegistryLoader;
+import org.eclipse.lsp4jakarta.commons.snippets.SnippetRegistry;
 
 /**
  * Loads in JakartaEE Specific Snippets

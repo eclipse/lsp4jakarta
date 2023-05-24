@@ -12,7 +12,7 @@
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
 
-package org.eclipse.lsp4jakarta.commons;
+package org.eclipse.lsp4jakarta.commons.snippets;
 
 /**
  * Loader used to load snippets in a given registry for a language id
@@ -28,5 +28,13 @@ public interface ISnippetRegistryLoader {
      * @throws Exception
      */
     void load(SnippetRegistry registry) throws Exception;
-
+    
+	/**
+	 * Returns the language id and null otherwise.
+	 *
+	 * @return the language id and null otherwise.
+	 */
+	default String getLanguageId() {
+		return null;
+	}
 }

@@ -23,7 +23,8 @@
         ],
         "description": "Initializes a UserTransaction object via injection",
         "context": {
-            "type": "jakarta.transaction.UserTransaction"
+            "type": "jakarta.transaction.UserTransaction",
+            "contentType": "method"
         }
     },
     "Jakarta Transactions - UserTransaction object via JNDI lookup": {
@@ -48,7 +49,8 @@
         ],
         "description": "Initializes a UserTransaction object via JNDI lookup",
         "context": {
-            "type": "jakarta.transaction.UserTransaction"
+            "type": "jakarta.transaction.UserTransaction",
+            "contentType": "method"
         }
     },
     "Jakarta Transactions - @Transactional": {
@@ -60,7 +62,8 @@
         ],
         "description": "Transactional annotation with rollbackOn and dontRollbackOn",
         "context": {
-            "type": "jakarta.transaction.Transactional"
+            "type": "jakarta.transaction.Transactional",
+            "contentType": "method-annotation"
         }
     }
 }
