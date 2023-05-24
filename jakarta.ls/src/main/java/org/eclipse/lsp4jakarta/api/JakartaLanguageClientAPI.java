@@ -50,16 +50,6 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
     default CompletableFuture<List<String>> getContextBasedFilter(JakartaClasspathParams classpathParams) {
         return CompletableFuture.completedFuture(null);
     }
-    
-    @JsonRequest("microprofile/java/javaCursorContext")
-	default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaClasspathParams context) {
-		return CompletableFuture.completedFuture(null);
-	}
-
-    @JsonRequest("jakarta/java/completion")
-    default CompletableFuture<JakartaJavaCompletionResult> getJavaCompletion(JakartaClasspathParams classpathParams) {
-        return CompletableFuture.completedFuture(null);
-    }
 
     @JsonRequest("jakarta/java/cursorcontext")
     default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams context) {
