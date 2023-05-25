@@ -12,6 +12,7 @@
 			<command id="jakarta/java/classpath"/>
 			<command id="jakarta/java/diagnostics"/>
 			<command id="jakarta/java/codeaction"/>
+			<command id="jakarta/java/cursorcontext"/>
 		</delegateCommandHandler>
 	</extension>
 </plugin>

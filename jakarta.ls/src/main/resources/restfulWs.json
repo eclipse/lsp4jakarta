@@ -21,7 +21,8 @@
       ],
       "description": "Resource class with GET resource method",
       "context": {
-        "type": "jakarta.ws.rs.GET"
+        "type": "jakarta.ws.rs.GET",
+        "contentType": "class"
       }
     },
     "Jakarta RESTful Web Services - new GET resource method": {
@@ -35,7 +36,8 @@
       ],
       "description": "GET resource method",
       "context": {
-        "type": "jakarta.ws.rs.GET"
+        "type": "jakarta.ws.rs.GET",
+        "contentType": "method"
       }
     },
     "Jakarta RESTful Web Services - new POST resource method": {
@@ -49,7 +51,8 @@
       ],
       "description": "POST resource method",
       "context": {
-        "type": "jakarta.ws.rs.POST"
+        "type": "jakarta.ws.rs.POST",
+        "contentType": "method"
       }
     },
     "Jakarta RESTful Web Services - new PUT resource method": {
@@ -63,7 +66,8 @@
       ],
       "description": "PUT resource method",
       "context": {
-        "type": "jakarta.ws.rs.PUT"
+        "type": "jakarta.ws.rs.PUT",
+        "contentType": "method"
       }
     },
     "Jakarta RESTful Web Services - new DELETE resource method": {
@@ -77,7 +81,8 @@
       ],
       "description": "DELETE resource method",
       "context": {
-        "type": "jakarta.ws.rs.DELETE"
+        "type": "jakarta.ws.rs.DELETE",
+        "contentType": "method"
       }
     },
     "Jakarta RESTful Web Services - new HEAD resource method": {
@@ -91,7 +96,8 @@
       ],
       "description": "HEAD resource method",
       "context": {
-        "type": "jakarta.ws.rs.HEAD"
+        "type": "jakarta.ws.rs.HEAD",
+        "contentType": "method"
       }
     }
   }

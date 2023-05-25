@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2022 IBM Corporation and others. 
+ * Copyright (c) 2022, 2023 IBM Corporation and others.
  * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,22 +12,29 @@
  *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.core.ls;
 
+import static org.eclipse.lsp4jakarta.jdt.internal.core.ls.ArgumentUtils.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ls.core.internal.IDelegateCommandHandler;
 import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionContext;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextKind;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 
@@ -37,7 +44,8 @@ import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHandler {
 
     private static final String JAVA_CODEACTION_COMMAND_ID = "jakarta/java/codeaction";
-    private static final String JAVA_COMPLETION_COMMAND_ID = "jakarta/java/classpath";
+    private static final String JAVA_CLASSPATH_COMMAND_ID = "jakarta/java/classpath";
+    private static final String JAVA_CURSORCONTEXT_COMMAND_ID = "jakarta/java/cursorcontext";
     private static final String JAVA_DIAGNOSTICS_COMMAND_ID = "jakarta/java/diagnostics";
 
     public JakartaDelegateCommandHandlerForJava() {
@@ -50,8 +58,10 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
         switch (commandId) {
             case JAVA_CODEACTION_COMMAND_ID:
                 return getCodeActionForJava(arguments, commandId, monitor).get();
-            case JAVA_COMPLETION_COMMAND_ID:
+            case JAVA_CLASSPATH_COMMAND_ID:
                 return getContextBasedFilter(arguments, commandId, monitor).get();
+            case JAVA_CURSORCONTEXT_COMMAND_ID:
+                return getJavaCursorContext(arguments, commandId, monitor).get();
             case JAVA_DIAGNOSTICS_COMMAND_ID:
                 return getDiagnosticsForJava(arguments, commandId, monitor).get();
             default:
@@ -67,7 +77,7 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
      * @param monitor
      * @return list of completion items as CompletableFuture<Object>
      */
-    public CompletableFuture<Object> getContextBasedFilter(List<Object> arguments, String commandId,
+    private CompletableFuture<Object> getContextBasedFilter(List<Object> arguments, String commandId,
             IProgressMonitor monitor) {
         Map<String, Object> obj = ArgumentUtils.getFirst(arguments);
         if (obj == null) {
@@ -79,6 +89,63 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
         return CompletableFutures.computeAsync((cancelChecker) -> {
             return JDTServicesManager.getInstance().getExistingContextsFromClassPath(uri, snippetCtx);
         });
+    }
+
+    /**
+     * Return the completion result for the given arguments
+     *
+     * @param arguments file uri and position indicator
+     * @param commandId
+     * @param monitor
+     * @return the completion result for the given arguments
+     * @throws JavaModelException
+     * @throws CoreException
+     */
+    private CompletableFuture<Object> getJavaCursorContext(List<Object> arguments, String commandId,
+            IProgressMonitor monitor) throws JavaModelException, CoreException {
+        final JakartaJavaCompletionParams params = createJakartaJavaCompletionParams(arguments, commandId);
+        final JDTUtils utils = new JDTUtils();
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            JavaCursorContextResult cursorContext;
+            try {
+                cursorContext = JDTServicesManager.getInstance().javaCursorContext(params, utils, monitor);
+            } catch (JavaModelException e) {
+                JavaLanguageServerPlugin
+                        .logException(String.format("Command '%s' unable to form completion context", commandId), e);
+                cursorContext = new JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, "");
+            }
+            return cursorContext;
+        });
+    }
+
+    /**
+     * Create the completion parameters from the given argument map
+     *
+     * @param arguments
+     * @param commandId
+     * @return the completion parameters from the given argument map
+     */
+    private static JakartaJavaCompletionParams createJakartaJavaCompletionParams(List<Object> arguments,
+            String commandId) {
+        Map<String, Object> obj = getFirst(arguments);
+        if (obj == null) {
+            throw new UnsupportedOperationException(String.format(
+                    "Command '%s' must be called with one JakartaJavaCompletionParams argument!", commandId));
+        }
+        String javaFileUri = getString(obj, "uri");
+        if (javaFileUri == null) {
+            throw new UnsupportedOperationException(String.format(
+                    "Command '%s' must be called with required JakartaJavaCompletionParams.uri (java URI)!",
+                    commandId));
+        }
+        Position position = getPosition(obj, "position");
+        if (position == null) {
+            throw new UnsupportedOperationException(String.format(
+                    "Command '%s' must be called with required JakartaJavaCompletionParams.position (completion trigger location)!",
+                    commandId));
+        }
+        JakartaJavaCompletionParams params = new JakartaJavaCompletionParams(javaFileUri, position);
+        return params;
     }
 
     /**
@@ -142,7 +209,6 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
             try {
                 codeActions = JDTServicesManager.getInstance().getCodeAction(params, utils, monitor);
             } catch (JavaModelException e) {
-                // TODO Auto-generated catch block
                 JavaLanguageServerPlugin
                         .logException(String.format("Command '%s' unable to gather code actions", commandId), e);
             }

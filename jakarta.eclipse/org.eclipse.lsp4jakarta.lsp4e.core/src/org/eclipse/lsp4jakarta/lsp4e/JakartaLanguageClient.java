@@ -30,6 +30,9 @@ import org.eclipse.lsp4jakarta.api.JakartaLanguageClientAPI;
 import org.eclipse.lsp4jakarta.commons.JakartaClasspathParams;
 import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextKind;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.jdt.core.JDTServicesManager;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 
@@ -66,6 +69,19 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
         return CompletableFutures.computeAsync((cancelChecker) -> {
             return JDTServicesManager.getInstance().getExistingContextsFromClassPath(classpathParams.getUri(),
                     classpathParams.getSnippetCtx());
+        });
+    }
+
+    @Override
+    public CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams params) {
+        JDTUtils utils = new JDTUtils();
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            try {
+                return JDTServicesManager.getInstance().javaCursorContext(params, utils, monitor);
+            } catch (JavaModelException e) {
+                return new JavaCursorContextResult(JavaCursorContextKind.IN_EMPTY_FILE, "");
+            }
         });
     }
 
