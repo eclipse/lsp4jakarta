@@ -34,9 +34,7 @@ import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 public interface JakartaLanguageClientAPI extends LanguageClient {
 
     @JsonRequest("jakarta/java/diagnostics")
-    default CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaDiagnosticsParams javaParams) {
-        return CompletableFuture.completedFuture(null);
-    }
+    CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaDiagnosticsParams javaParams);
 
     /**
      * @author Ankush Sharma
@@ -47,17 +45,12 @@ public interface JakartaLanguageClientAPI extends LanguageClient {
      *         classpath and null for those that do not
      */
     @JsonRequest("jakarta/java/classpath")
-    default CompletableFuture<List<String>> getContextBasedFilter(JakartaClasspathParams classpathParams) {
-        return CompletableFuture.completedFuture(null);
-    }
+    CompletableFuture<List<String>> getContextBasedFilter(JakartaClasspathParams classpathParams);
 
     @JsonRequest("jakarta/java/cursorcontext")
-    default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams context) {
-        return CompletableFuture.completedFuture(null);
-    }
+    CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams context);
 
     @JsonRequest("jakarta/java/codeaction")
-    default CompletableFuture<List<CodeAction>> getCodeAction(JakartaJavaCodeActionParams params) {
-        return CompletableFuture.completedFuture(null);
-    }
+    CompletableFuture<List<CodeAction>> getCodeAction(JakartaJavaCodeActionParams params);
+
 }

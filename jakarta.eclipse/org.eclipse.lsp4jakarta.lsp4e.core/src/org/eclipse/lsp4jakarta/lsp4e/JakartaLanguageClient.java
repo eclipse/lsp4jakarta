@@ -85,6 +85,7 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
         });
     }
 
+    @Override
     public CompletableFuture<List<CodeAction>> getCodeAction(JakartaJavaCodeActionParams params) {
         JDTUtils utils = new JDTUtils();
 
