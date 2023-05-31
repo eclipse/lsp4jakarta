@@ -139,8 +139,10 @@ public class JakartaTextDocumentService implements TextDocumentService {
             	return getCursorContext.thenCombineAsync(getSnippetContexts, (cursorContext, list) -> {
                     // Given the snippet contexts that are on the project's classpath, return the
                     // corresponding list of CompletionItems
-            		var kind = cursorContext.getKind();
-            		list.add(kind.name());
+                    if (cursorContext == null) {
+                        LOGGER.severe("No Java cursor context provided, using default values to compute snippets.");
+                        cursorContext = new JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error recovery
+                    }
                     return Either.forLeft(
                             snippetRegistry.getCompletionItem(replaceRange, "\n", true, list, cursorContext, prefix.toString()));
             	});
