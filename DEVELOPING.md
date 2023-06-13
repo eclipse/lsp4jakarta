@@ -101,8 +101,10 @@ Snippets use the following format:
       ],
       "description": "<brief description of snippet, should not be longer than 1 sentence>",
       "context": {
-        // snippets will only appear for users if the package specified here is found on the project's class path
-        "type": "<package required for snippet (ie. jakarta.servlet.http.HttpServlet)>"
+        // snippets will only appear for users if the package specified here is found on the
+        // project's class path and the content type is valid in the cursor's context.
+        "type": "<package required for snippet (e.g. jakarta.servlet.http.HttpServlet)>"
+        "contentType": "<descriptor from enum SnippetContentType (e.g. field)>"
       }
     }
 ```
