@@ -148,7 +148,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta Persistence snippets](./jaka
 | persist_context | Entity manager injection and associated persistence context |
 | persist_context_extended | Entity manager injection with extended persistence context |
 | persist_context_extended_unsync | Entity manager injection with extended, unsynchronized persistence context |
-| persist_entity | Generic persistence entity model |
+| persist_entity | Generic persistence entity model. Only available in an empty file. |
 
 Eclipse LSP4Jakarta provides the following [Jakarta Persistence diagnostics](./jakarta.jdt/org.eclipse.lsp4jakarta.jdt.core/src/main/java/org/eclipse/lsp4jakarta/jdt/core/persistence/).
 
@@ -168,7 +168,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta RESTful Web Services snippet
 
 | Snippet prefix | Description |
 | --------- | ------------ |
-| rest_class | Resource class with GET resource method |
+| rest_class | Resource class with GET resource method. Only available in an empty file. |
 | rest_get | GET resource method |
 | rest_post | POST resource method |
 | rest_put | PUT resource method |
@@ -187,7 +187,7 @@ Eclipse LSP4Jakarta provides the following [Jakarta RESTful Web Services diagnos
 
 ### Jakarta Servlet
 
-Eclipse LSP4Jakarta provides the following [Jakarta Servlet snippets](./jakarta.ls/src/main/resources/servlet.json).
+Eclipse LSP4Jakarta provides the following [Jakarta Servlet snippets](./jakarta.ls/src/main/resources/servlet.json). All these snippets are only available in an empty file.
 
 | Snippet prefix | Description |
 | --------- | ------------ |
