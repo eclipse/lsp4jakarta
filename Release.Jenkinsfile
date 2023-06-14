@@ -21,16 +21,10 @@ pipeline {
         withMaven {
           sh "VERSION=${params.VERSION}"
           sh '''
-                cd jakarta.ls
-                ./mvnw versions:set -DnewVersion=$VERSION
-                ./mvnw versions:set-scm-tag -DnewTag=$VERSION
-                ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
-
-                cd ../jakarta.jdt
+                cd jakarta.jdt
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION-SNAPSHOT
-                ./mvnw versions:set -DnewVersion=$VERSION
                 ./mvnw versions:set-scm-tag -DnewTag=$VERSION
-                ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
+                ./mvnw clean verify -B -Peclipse-sign -Dcbi.jarsigner.skip=false
                 cd ..
               '''
         }
