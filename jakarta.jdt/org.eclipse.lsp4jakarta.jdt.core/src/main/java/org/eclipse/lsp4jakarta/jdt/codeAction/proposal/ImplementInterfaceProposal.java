@@ -44,8 +44,6 @@ import org.eclipse.lsp4j.CodeActionKind;
  */
 public class ImplementInterfaceProposal extends ChangeCorrectionProposal {
 
-    private static final String TITLE_MESSAGE = "Let ''{0}'' implement ''{1}''";
-
     private IBinding fBinding;
     private CompilationUnit fAstRoot;
     private String interfaceType;
@@ -59,12 +57,6 @@ public class ImplementInterfaceProposal extends ChangeCorrectionProposal {
         fBinding = binding;
         fAstRoot = astRoot;
         this.interfaceType = interfaceType;
-
-        String[] args = { BasicElementLabels.getJavaElementName(binding.getName()),
-                BasicElementLabels.getJavaElementName(interfaceType) };
-
-        setDisplayName(MessageFormat.format(TITLE_MESSAGE, args));
-
     }
 
     protected ASTRewrite getRewrite() throws CoreException {

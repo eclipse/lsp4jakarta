@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * QuickFix for removing parameter annotations
@@ -64,14 +65,15 @@ public class RemoveParamAnnotationQuickFix extends RemoveModifierConflictQuickFi
                 }
             }
             
-            StringBuilder sb = new StringBuilder("Remove the ");
+            StringBuilder sb = new StringBuilder();
+            // Java annotations in comma delimited list, assume that is ok.
             sb.append("'@").append(annotationsToRemove.get(0)).append("'");
             for (int i = 1; i < annotationsToRemove.size();i++) {
             	sb.append(", '@").append(annotationsToRemove.get(i)).append("'");
             }
-            sb.append(" modifier from parameter '").append(parameter.getName().toString()).append("'");
+            String label = Messages.getMessage("RemoveTheModifierFromParameter", sb.toString(), parameter.getName().toString());
 
-            removeModifier(diagnostic, context, parentMethod, codeActions, parameter, sb.toString(), 
+            removeModifier(diagnostic, context, parentMethod, codeActions, parameter, label, 
             		(String []) annotationsToRemove.toArray(new String[annotationsToRemove.size()]));
         }
 

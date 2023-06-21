@@ -28,6 +28,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.DeleteAnnotationProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * QuickFix for removing annotations. Modified from
@@ -118,16 +119,16 @@ public class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticip
     }
 
     private static String getLabel(String[] annotations) {
-        StringBuilder name = new StringBuilder("Remove ");
+        StringBuilder list = new StringBuilder();
         for (int i = 0; i < annotations.length; i++) {
             String annotation = annotations[i];
             String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
             if (i > 0) {
-                name.append(", ");
+                list.append(", "); // assume comma list is ok: @A, @B, @C
             }
-            name.append("@");
-            name.append(annotationName);
+            list.append("@"); // Java syntax
+            list.append(annotationName);
         }
-        return name.toString();
+        return Messages.getMessage("RemoveItem", list.toString());
     }
 }

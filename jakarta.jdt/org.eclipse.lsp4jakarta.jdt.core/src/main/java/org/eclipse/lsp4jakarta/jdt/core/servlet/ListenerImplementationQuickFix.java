@@ -30,6 +30,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ImplementInterfaceProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * QuickFix for fixing HttpServlet extension error by providing the code actions
@@ -83,13 +84,13 @@ public class ListenerImplementationQuickFix implements IJavaCodeActionParticipan
 
     private CodeAction setUpCodeAction(ITypeBinding parentType, Diagnostic diagnostic, JavaCodeActionContext context,
             String interfaceName, String interfaceType) throws CoreException {
-        final String TITLE_MESSAGE = "Let ''{0}'' implement ''{1}''";
-        String args[] = { BasicElementLabels.getJavaElementName(parentType.getName()),
-                BasicElementLabels.getJavaElementName(interfaceName) };
-        ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(MessageFormat.format(TITLE_MESSAGE, args),
+    	String title = Messages.getMessage("LetCImplementI", 
+    			BasicElementLabels.getJavaElementName(parentType.getName()), 
+    			BasicElementLabels.getJavaElementName(interfaceName));
+        ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(title,
                 context.getCompilationUnit(), parentType, context.getASTRoot(), interfaceType, 0);
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-        codeAction.setTitle(MessageFormat.format(TITLE_MESSAGE, args));
+        codeAction.setTitle(title);
 
         return codeAction;
     }

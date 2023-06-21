@@ -30,6 +30,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ImplementInterfaceProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * QuickFix for fixing HttpServlet extension error by providing the code actions
@@ -51,14 +52,14 @@ public class FilterImplementationQuickFix implements IJavaCodeActionParticipant 
         if (parentType != null) {
             // Create code action
             // interface
-            final String TITLE_MESSAGE = "Let ''{0}'' implement ''{1}''";
-            String args[] = { BasicElementLabels.getJavaElementName(parentType.getName()),
-                    BasicElementLabels.getJavaElementName(ServletConstants.FILTER) };
+        	String title = Messages.getMessage("LetCImplementI", 
+        			BasicElementLabels.getJavaElementName(parentType.getName()), 
+        			BasicElementLabels.getJavaElementName(ServletConstants.FILTER));
             ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(
-                    MessageFormat.format(TITLE_MESSAGE, args), context.getCompilationUnit(), parentType,
+                    title, context.getCompilationUnit(), parentType,
                     context.getASTRoot(), "jakarta.servlet.Filter", 0);
             CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
-            codeAction.setTitle(MessageFormat.format(TITLE_MESSAGE, args));
+            codeAction.setTitle(title);
             codeActions.add(codeAction);
         }
         return codeActions;

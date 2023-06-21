@@ -33,6 +33,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveParamsProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 import org.eclipse.lsp4jakarta.jdt.core.annotations.AnnotationConstants;
 import org.eclipse.lsp4jakarta.jdt.core.beanvalidation.BeanValidationConstants;
 
@@ -50,7 +51,7 @@ public class RemoveMethodParametersQuickFix implements IJavaCodeActionParticipan
         IMethodBinding parentMethod = parentNode.resolveBinding();
         List<CodeAction> codeActions = new ArrayList<>();
         List<SingleVariableDeclaration> parameters = (List<SingleVariableDeclaration>) parentNode.parameters();
-        String name = "Remove all parameters";
+        String name = Messages.getMessage("RemoveAllParameters");
         ChangeCorrectionProposal proposal = new RemoveParamsProposal(name, context.getCompilationUnit(),
                 context.getASTRoot(), parentMethod, 0, parameters, null);
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);

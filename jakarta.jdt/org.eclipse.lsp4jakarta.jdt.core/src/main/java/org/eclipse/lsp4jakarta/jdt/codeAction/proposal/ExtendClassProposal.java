@@ -34,10 +34,9 @@ import org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels;
 import org.eclipse.jdt.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeActionKind;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 public class ExtendClassProposal extends ChangeCorrectionProposal {
-
-    private static final String TITLE_MESSAGE = "Let ''{0}'' extend ''{1}''";
 
     private IBinding fBinding;
     private CompilationUnit fAstRoot;
@@ -52,12 +51,6 @@ public class ExtendClassProposal extends ChangeCorrectionProposal {
         fBinding = binding;
         fAstRoot = astRoot;
         this.interfaceType = interfaceType;
-
-        String[] args = { BasicElementLabels.getJavaElementName(binding.getName()),
-                BasicElementLabels.getJavaElementName(interfaceType) };
-
-        setDisplayName(MessageFormat.format(TITLE_MESSAGE, args));
-
     }
 
     protected ASTRewrite getRewrite() throws CoreException {

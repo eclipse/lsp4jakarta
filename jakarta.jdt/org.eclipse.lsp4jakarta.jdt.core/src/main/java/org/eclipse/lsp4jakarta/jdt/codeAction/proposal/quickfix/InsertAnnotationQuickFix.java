@@ -31,6 +31,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyAnnotationProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * Quickfix for adding new annotations with or without attributes
@@ -122,10 +123,7 @@ public class InsertAnnotationQuickFix implements IJavaCodeActionParticipant {
     }
 
     protected String getLabel(String annotation, String... attributes) {
-        StringBuilder name = new StringBuilder("Insert ");
-        name.append("@");
-        name.append(annotation);
-        return name.toString();
+        return Messages.getMessage("InsertItem", "@" + annotation); // uses Java syntax
     }
 
 }

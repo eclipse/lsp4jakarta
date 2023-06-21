@@ -12,6 +12,8 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
 
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
+
 /**
  * Quickfix for adding attributes to existing annotations
  * 
@@ -29,9 +31,6 @@ public class InsertAnnotationAttributesQuickFix extends InsertAnnotationQuickFix
 
     @Override
     protected String getLabel(String annotation, String... attributes) {
-        String type = "";
-        String name = "Add " + attributes[0] + " to " + annotation;
-        name = name.concat(type);
-        return name;
+    	return Messages.getMessage("AddAtoB", attributes[0], annotation);
     }
 }
