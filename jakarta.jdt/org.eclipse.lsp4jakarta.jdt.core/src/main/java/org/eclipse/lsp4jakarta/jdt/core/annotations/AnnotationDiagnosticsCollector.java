@@ -185,23 +185,24 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
                         if (element instanceof IMethod) {
                             IMethod method = (IMethod) element;
                             if (method.getNumberOfParameters() != 0) {
-                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct",
-                                        "not have any parameters.");
+                                String diagnosticMessage = Messages.getMessage("MethodMustNotHaveParameters", 
+                                		"@PostConstruct");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS, null,
                                         DiagnosticSeverity.Error));
                             }
 
                             if (!method.getReturnType().equals("V")) {
-                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct", "be void.");
+                                String diagnosticMessage = Messages.getMessage("MethodMustBeVoid", 
+                                		"@PostConstruct");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE, null,
                                         DiagnosticSeverity.Error));
                             }
 
                             if (method.getExceptionTypes().length != 0) {
-                                String diagnosticMessage = generateDiagnosticMethod("PostConstruct",
-                                        "not throw checked exceptions.");
+                                String diagnosticMessage = Messages.getMessage("MethodMustNotThrow", 
+                                		"@PostConstruct");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION, null,
                                         DiagnosticSeverity.Warning));
@@ -211,23 +212,24 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
                         if (element instanceof IMethod) {
                             IMethod method = (IMethod) element;
                             if (method.getNumberOfParameters() != 0) {
-                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy",
-                                        "not have any parameters.");
+                                String diagnosticMessage = Messages.getMessage("MethodMustNotHaveParameters",
+                                		"@PreDestroy");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS, null,
                                         DiagnosticSeverity.Error));
                             }
 
                             if (Flags.isStatic(method.getFlags())) {
-                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy", "not be static.");
+                                String diagnosticMessage = Messages.getMessage("MethodMustNotBeStatic",
+                                		"@PreDestroy");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC, method.getElementType(),
                                         DiagnosticSeverity.Error));
                             }
 
                             if (method.getExceptionTypes().length != 0) {
-                                String diagnosticMessage = generateDiagnosticMethod("PreDestroy",
-                                        "not throw checked exceptions.");
+                                String diagnosticMessage = Messages.getMessage("MethodMustNotThrow",
+                                		"@PreDestroy");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION, null,
                                         DiagnosticSeverity.Warning));
@@ -239,11 +241,6 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
                 JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
             }
         }
-    }
-
-    private static String generateDiagnosticMethod(String annotation, String message) {
-        String finalMessage = "A method with the @" + annotation + " annotation must " + message;
-        return finalMessage;
     }
 
     private static boolean isValidAnnotation(String annotationName, String[] validAnnotations) {

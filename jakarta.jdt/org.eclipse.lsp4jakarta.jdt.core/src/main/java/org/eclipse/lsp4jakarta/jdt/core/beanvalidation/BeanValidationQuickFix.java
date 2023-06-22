@@ -29,6 +29,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.DeleteAnnotationProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * Quickfix for fixing {@link BeanValidationConstants#DIAGNOSTIC_CODE_Static} error by either action 
@@ -58,7 +59,7 @@ public class BeanValidationQuickFix implements IJavaCodeActionParticipant {
 
     private CodeAction removeConstraintAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
         String annotationName = diagnostic.getData().toString().replace("\"", "");
-        String name = "Remove constraint annotation " + annotationName + " from element";
+        String name = Messages.getMessage("RemoveConstraintAnnotation", annotationName);
         ChangeCorrectionProposal proposal = new DeleteAnnotationProposal(name, context.getCompilationUnit(),
                 context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotationName);
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
@@ -69,7 +70,7 @@ public class BeanValidationQuickFix implements IJavaCodeActionParticipant {
     }
 
     private CodeAction removeStaticModifier(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType) throws CoreException {
-        String name = "Remove static modifier from element";
+        String name = Messages.getMessage("RemoveStaticModifier");
         ModifyModifiersProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
                 context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), new ArrayList<>(), Arrays.asList("static"));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);

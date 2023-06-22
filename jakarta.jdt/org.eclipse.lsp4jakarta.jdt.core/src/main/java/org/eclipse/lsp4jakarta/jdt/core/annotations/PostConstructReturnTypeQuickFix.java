@@ -28,6 +28,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyReturnTypeProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * Quick fix for AnnotationDiagnosticsCollector that changes the return type of a method to void.
@@ -44,7 +45,7 @@ public class PostConstructReturnTypeQuickFix implements IJavaCodeActionParticipa
         List<CodeAction> codeActions = new ArrayList<>();
         ASTNode node = context.getCoveredNode();
         IBinding parentType = getBinding(node);
-        String name = "Change return type to void";
+        String name = Messages.getMessage("ChangeReturnTypeToVoid");
         ChangeCorrectionProposal proposal = new ModifyReturnTypeProposal(name, context.getCompilationUnit(),
                 context.getASTRoot(), parentType, 0, node.getAST().newPrimitiveType(PrimitiveType.VOID));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
