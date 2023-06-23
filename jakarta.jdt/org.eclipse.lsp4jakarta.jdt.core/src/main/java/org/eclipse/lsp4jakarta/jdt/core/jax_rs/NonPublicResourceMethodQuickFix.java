@@ -28,6 +28,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * Quick fix for ResourceMethodDiagnosticsCollector that uses
@@ -48,7 +49,7 @@ public class NonPublicResourceMethodQuickFix implements IJavaCodeActionParticipa
 
         if (parentMethod != null) {
 
-            final String TITLE_MESSAGE = "Make method public";
+            final String TITLE_MESSAGE = Messages.getMessage("MakeMethodPublic");
 
             ChangeCorrectionProposal proposal = new ModifyModifiersProposal(TITLE_MESSAGE, context.getCompilationUnit(),
                     context.getASTRoot(), parentMethod, 0, null, Arrays.asList("public"));

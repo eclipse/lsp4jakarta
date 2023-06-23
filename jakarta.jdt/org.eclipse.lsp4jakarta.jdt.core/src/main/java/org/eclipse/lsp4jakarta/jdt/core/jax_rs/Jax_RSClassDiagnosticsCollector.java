@@ -28,6 +28,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * Diagnostic collector for root resource classes with multiple constructors
@@ -96,9 +97,9 @@ public class Jax_RSClassDiagnosticsCollector extends AbstractDiagnosticsCollecto
                         }
                         // no public constructor defined
                         if (nonPublicConstructors.size() > 0) {
-                            String diagnosticMessage = isRootResource
-                                    ? "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor"
-                                    : "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor";
+                            String diagnosticMessage = isRootResource ?
+                                    Messages.getMessage("RootResourceClasses") :
+                                    Messages.getMessage("ProviderClasses");
                             for (IMethod constructor : nonPublicConstructors) {
                                 diagnostics.add(createDiagnostic(constructor, unit, diagnosticMessage,
                                         Jax_RSConstants.DIAGNOSTIC_CODE_NO_PUBLIC_CONSTRUCTORS, null,
@@ -113,7 +114,7 @@ public class Jax_RSClassDiagnosticsCollector extends AbstractDiagnosticsCollecto
                             } else if (entry.getValue() < maxParams) {
                                 IMethod method = entry.getKey();
                                 diagnostics.add(createDiagnostic(method, unit,
-                                        "This constructor is unused, as root resource classes will only use the constructor with the most parameters.",
+                                		Messages.getMessage("ConstructorIsUnused"),
                                         Jax_RSConstants.DIAGNOSTIC_CODE_UNUSED_CONSTRUCTOR, null,
                                         DiagnosticSeverity.Warning));
                             }
@@ -121,7 +122,7 @@ public class Jax_RSClassDiagnosticsCollector extends AbstractDiagnosticsCollecto
                         if (equalMaxParamMethods.size() > 1) { // more than one
                             for (IMethod method : equalMaxParamMethods) {
                                 diagnostics.add(createDiagnostic(method, unit,
-                                        "Multiple constructors have the same number of parameters, it might be ambiguous which constructor is used.",
+                                		Messages.getMessage("MultipleConstructorsNumberOfParameters"),
                                         Jax_RSConstants.DIAGNOSTIC_CODE_AMBIGUOUS_CONSTRUCTORS, null,
                                         DiagnosticSeverity.Warning));
                             }

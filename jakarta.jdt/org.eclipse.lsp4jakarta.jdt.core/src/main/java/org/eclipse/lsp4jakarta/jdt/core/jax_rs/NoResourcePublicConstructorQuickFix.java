@@ -34,6 +34,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.AddConstructorProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * Quick fix for NoResourcePublicConstructorQuickFix that uses
@@ -55,7 +56,7 @@ public class NoResourcePublicConstructorQuickFix implements IJavaCodeActionParti
         
         if (parentMethod != null) {
 
-            final String TITLE_MESSAGE = "Make constructor public";
+            final String TITLE_MESSAGE = Messages.getMessage("MakeConstructorPublic");
 
             ChangeCorrectionProposal proposal = new ModifyModifiersProposal(TITLE_MESSAGE, context.getCompilationUnit(),
                     context.getASTRoot(), parentMethod, 0, null, Arrays.asList("public"));
@@ -66,7 +67,7 @@ public class NoResourcePublicConstructorQuickFix implements IJavaCodeActionParti
             codeActions.add(codeAction);
             
             // option for public constructor
-            String name = "Add a no-arg public constructor to this class";
+            String name = Messages.getMessage("NoargPublicConstructor");
             proposal = new AddConstructorProposal(name,
                     context.getCompilationUnit(), context.getASTRoot(), parentType, 0, "public");
             codeAction = context.convertToCodeAction(proposal, diagnostic);
