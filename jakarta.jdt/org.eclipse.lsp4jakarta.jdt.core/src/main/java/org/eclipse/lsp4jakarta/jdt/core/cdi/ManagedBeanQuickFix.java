@@ -26,6 +26,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ReplaceAnnotationProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.*;
 
@@ -67,10 +68,7 @@ public class ManagedBeanQuickFix extends InsertAnnotationMissingQuickFix {
     }
 
     private static String getLabel(String annotation) {
-        StringBuilder name = new StringBuilder("Replace current scope with ");
         String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
-        name.append("@");
-        name.append(annotationName);
-        return name.toString();
+        return Messages.getMessage("ReplaceCurrentScope", "@" + annotationName);
     }
 }
