@@ -73,7 +73,7 @@ public class ResourceMethodDiagnosticsCollector extends AbstractDiagnosticsColle
                         }
                         if (!isValid) {
                             diagnostics.add(createDiagnostic(method, unit,
-                            		Messages.getMessage("OnlyPublicMethods"),
+                                    Messages.getMessage("OnlyPublicMethods"),
                                     Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC, null, DiagnosticSeverity.Error));
                         }
                         if (isResourceMethod) {
@@ -96,7 +96,7 @@ public class ResourceMethodDiagnosticsCollector extends AbstractDiagnosticsColle
                             }
                             if (numEntityParams > 1) {
                                 diagnostics.add(createDiagnostic(method, unit,
-                                		Messages.getMessage("ResourceMethodsEntityParameter"),
+                                        Messages.getMessage("ResourceMethodsEntityParameter"),
                                         Jax_RSConstants.DIAGNOSTIC_CODE_MULTIPLE_ENTITY_PARAMS, null,
                                         DiagnosticSeverity.Error));
                             }

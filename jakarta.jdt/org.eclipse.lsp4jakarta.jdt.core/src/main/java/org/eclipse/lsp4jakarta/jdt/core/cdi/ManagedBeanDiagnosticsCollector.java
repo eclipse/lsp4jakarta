@@ -84,7 +84,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     List<String> diagnosticData = managedBeanAnnotations.stream()
                             .map(annotation -> getSimpleName(annotation)).collect(Collectors.toList());
                     diagnostics.add(createDiagnostic(type, unit,
-                    		Messages.getMessage("ScopeTypeAnnotationsManagedBean"),
+                            Messages.getMessage("ScopeTypeAnnotationsManagedBean"),
                             DIAGNOSTIC_CODE_SCOPEDECL, (JsonArray) (new Gson().toJsonTree(diagnosticData)),
                             DiagnosticSeverity.Error));
                 }
@@ -108,7 +108,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
                             && (fieldScopes.size() != 1 || !fieldScopes.get(0).equals(DEPENDENT_FQ_NAME))) {
                         diagnostics.add(createDiagnostic(field, unit,
-                        		Messages.getMessage("ManagedBeanWithNonStaticPublicField"),
+                                Messages.getMessage("ManagedBeanWithNonStaticPublicField"),
                                 DIAGNOSTIC_CODE, null,
                                 DiagnosticSeverity.Error));
                     }
@@ -154,7 +154,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
 
                         // A single field cannot have the same
                         diagnostics.add(createDiagnostic(field, unit,
-                        		Messages.getMessage("ManagedBeanProducesAndInject"),
+                                Messages.getMessage("ManagedBeanProducesAndInject"),
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT, null, DiagnosticSeverity.Error));
                     }
 
@@ -194,7 +194,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                                 .collect(Collectors.toList()); // convert to simple name
                         diagnosticData.add(PRODUCES);
                         diagnostics.add(createDiagnostic(method, unit,
-                        		Messages.getMessage("ScopeTypeAnnotationsProducerMethod"),
+                                Messages.getMessage("ScopeTypeAnnotationsProducerMethod"),
                                 DIAGNOSTIC_CODE_SCOPEDECL, (JsonArray) (new Gson().toJsonTree(diagnosticData)),
                                 DiagnosticSeverity.Error));
                     }
@@ -213,7 +213,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
 
                         // A single method cannot have the same
                         diagnostics.add(createDiagnostic(method, unit,
-                        		Messages.getMessage("ManagedBeanProducesAndInject"),
+                                Messages.getMessage("ManagedBeanProducesAndInject"),
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT, null, DiagnosticSeverity.Error));
                     }
 
@@ -265,9 +265,9 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     boolean isClassGeneric = type.getTypeParameters().length != 0;
                     boolean isDependent = managedBeanAnnotations.stream()
                             .anyMatch(annotation -> DEPENDENT_FQ_NAME.equals(annotation));
-                	
+                    
                     if (isClassGeneric && !isDependent) {
-                    	diagnostics.add(createDiagnostic(type, unit, Messages.getMessage("ManagedBeanGenericType"),
+                        diagnostics.add(createDiagnostic(type, unit, Messages.getMessage("ManagedBeanGenericType"),
                                 DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                     }
                 }
@@ -325,7 +325,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                         if(numDisposes == 0) continue;
                         if(numDisposes > 1) {
                             diagnostics.add(createDiagnostic(method, unit,
-                            		Messages.getMessage("ManagedBeanDisposeOneParameter"),
+                                    Messages.getMessage("ManagedBeanDisposeOneParameter"),
                                     ManagedBeanConstants.DIAGNOSTIC_CODE_REDUNDANT_DISPOSES, null,
                                     DiagnosticSeverity.Error));
                         }
@@ -373,7 +373,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
 
             if (!invalidAnnotations.isEmpty()) {
                 String label = PRODUCES_FQ_NAME.equals(target) ?
-                		createInvalidProducesLabel(invalidAnnotations) :
+                        createInvalidProducesLabel(invalidAnnotations) :
                         createInvalidInjectLabel(invalidAnnotations);
                 diagnostics.add(createDiagnostic(method, unit, label, diagnosticCode, null, DiagnosticSeverity.Error));
             }

@@ -83,9 +83,9 @@ public class ListenerImplementationQuickFix implements IJavaCodeActionParticipan
 
     private CodeAction setUpCodeAction(ITypeBinding parentType, Diagnostic diagnostic, JavaCodeActionContext context,
             String interfaceName, String interfaceType) throws CoreException {
-    	String title = Messages.getMessage("LetClassImplement", 
-    			BasicElementLabels.getJavaElementName(parentType.getName()), 
-    			BasicElementLabels.getJavaElementName(interfaceName));
+        String title = Messages.getMessage("LetClassImplement", 
+                BasicElementLabels.getJavaElementName(parentType.getName()), 
+                BasicElementLabels.getJavaElementName(interfaceName));
         ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(title,
                 context.getCompilationUnit(), parentType, context.getASTRoot(), interfaceType, 0);
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);

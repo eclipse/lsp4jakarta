@@ -126,8 +126,8 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
 
             if (Flags.isStatic(element.getFlags())) {
                 String source = isMethod ?
-                		Messages.getMessage("ConstraintAnnotationsMethod") :
-                		Messages.getMessage("ConstraintAnnotationsField");
+                        Messages.getMessage("ConstraintAnnotationsMethod") :
+                        Messages.getMessage("ConstraintAnnotationsField");
                 diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
                         source, DIAGNOSTIC_CODE_STATIC,
                         annotationName, DiagnosticSeverity.Error));
@@ -136,8 +136,8 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
 
                 if (matchedAnnotation.equals(ASSERT_FALSE) || matchedAnnotation.equals(ASSERT_TRUE)) {
                     String source = isMethod ? 
-    		        		Messages.getMessage("AnnotationBooleanMethods", "@" + annotationName) :
-    		        		Messages.getMessage("AnnotationBooleanFields", "@" + annotationName);
+                            Messages.getMessage("AnnotationBooleanMethods", "@" + annotationName) :
+                            Messages.getMessage("AnnotationBooleanFields", "@" + annotationName);
                     if (!type.equals(getSignatureFormatOfType(BOOLEAN)) && !type.equals(Signature.SIG_BOOLEAN)) {
                         diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
                                 source, DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
@@ -154,8 +154,8 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
                             && !type.equals(Signature.SIG_SHORT) && !type.equals(Signature.SIG_INT)
                             && !type.equals(Signature.SIG_LONG)) {
                         String source = isMethod ? 
-        		        		Messages.getMessage("AnnotationBigDecimalMethods", "@" + annotationName) :
-        		        		Messages.getMessage("AnnotationBigDecimalFields", "@" + annotationName);
+                                Messages.getMessage("AnnotationBigDecimalMethods", "@" + annotationName) :
+                                Messages.getMessage("AnnotationBigDecimalFields", "@" + annotationName);
                         diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(), source,
                                 DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
                     }
@@ -163,8 +163,8 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
                     if (!type.equals(getSignatureFormatOfType(STRING))
                             && !type.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
                         String source = isMethod ? 
-        		        		Messages.getMessage("AnnotationStringMethods", "@" + annotationName) :
-        		        		Messages.getMessage("AnnotationStringFields", "@" + annotationName);
+                                Messages.getMessage("AnnotationStringMethods", "@" + annotationName) :
+                                Messages.getMessage("AnnotationStringFields", "@" + annotationName);
                         diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
                                 source, DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
                     }
@@ -175,8 +175,8 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
                             SET_OF_DATE_TYPES.toArray(new String[0]));
                     if (dataTypeFQName == null) {
                         String source = isMethod ? 
-        		        		Messages.getMessage("AnnotationDateMethods", "@" + annotationName) :
-        		        		Messages.getMessage("AnnotationDateFields", "@" + annotationName);
+                                Messages.getMessage("AnnotationDateMethods", "@" + annotationName) :
+                                Messages.getMessage("AnnotationDateFields", "@" + annotationName);
                         diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
                                 source, DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
                     }
@@ -190,10 +190,10 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
                             && !type.equals(Signature.SIG_SHORT) && !type.equals(Signature.SIG_INT)
                             && !type.equals(Signature.SIG_LONG)) {
                         String source = isMethod ? 
-        		        		Messages.getMessage("AnnotationMinMaxMethods", "@" + annotationName) :
-        		        		Messages.getMessage("AnnotationMinMaxFields", "@" + annotationName);
+                                Messages.getMessage("AnnotationMinMaxMethods", "@" + annotationName) :
+                                Messages.getMessage("AnnotationMinMaxFields", "@" + annotationName);
                         diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
-                        		source, DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
+                                source, DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
                     }
                 } else if (matchedAnnotation.equals(NEGATIVE) || matchedAnnotation.equals(NEGATIVE_OR_ZERO)
                         || matchedAnnotation.equals(POSITIVE) || matchedAnnotation.equals(POSTIVE_OR_ZERO)) {
@@ -209,8 +209,8 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
                             && !type.equals(Signature.SIG_LONG) && !type.equals(Signature.SIG_FLOAT)
                             && !type.equals(Signature.SIG_DOUBLE)) {
                         String source = isMethod ? 
-        		        		Messages.getMessage("AnnotationPositiveMethods", "@" + annotationName) :
-        		        		Messages.getMessage("AnnotationPositiveFields", "@" + annotationName);
+                                Messages.getMessage("AnnotationPositiveMethods", "@" + annotationName) :
+                                Messages.getMessage("AnnotationPositiveFields", "@" + annotationName);
                         diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
                                 source, DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
                     }
@@ -218,8 +218,8 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
                     if (!type.equals(getSignatureFormatOfType(STRING))
                             && !type.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
                         String source = isMethod ? 
-        		        		Messages.getMessage("AnnotationStringMethods", "@" + annotationName) :
-        		        		Messages.getMessage("AnnotationStringFields", "@" + annotationName);
+                                Messages.getMessage("AnnotationStringMethods", "@" + annotationName) :
+                                Messages.getMessage("AnnotationStringFields", "@" + annotationName);
                         diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
                                 source, DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
                     }
@@ -227,8 +227,8 @@ public class BeanValidationDiagnosticsCollector extends AbstractDiagnosticsColle
                     if (!type.equals(getSignatureFormatOfType(STRING))
                             && !type.equals(getSignatureFormatOfType(CHAR_SEQUENCE))) {
                         String source = isMethod ? 
-        		        		Messages.getMessage("AnnotationStringMethods", "@" + annotationName) :
-        		        		Messages.getMessage("AnnotationStringFields", "@" + annotationName);
+                                Messages.getMessage("AnnotationStringMethods", "@" + annotationName) :
+                                Messages.getMessage("AnnotationStringFields", "@" + annotationName);
                         diagnostics.add(createDiagnostic(element, declaringType.getCompilationUnit(),
                                 source, DIAGNOSTIC_CODE_INVALID_TYPE, annotationName, DiagnosticSeverity.Error));
                     }

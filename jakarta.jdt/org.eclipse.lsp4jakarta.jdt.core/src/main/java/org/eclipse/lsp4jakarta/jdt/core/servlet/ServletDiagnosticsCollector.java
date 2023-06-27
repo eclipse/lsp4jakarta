@@ -79,11 +79,11 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                             int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, ServletConstants.HTTP_SERVLET);
                             if (r == -1) {
                                 diagnostics.add(createDiagnostic(type, unit,
-                                		Messages.getMessage("WebServletMustExtend"),
+                                        Messages.getMessage("WebServletMustExtend"),
                                         ServletConstants.DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                             } else if (r == 0) { // unknown super type
                                 diagnostics.add(createDiagnostic(type, unit,
-                                		Messages.getMessage("WebServletMustExtend"),
+                                        Messages.getMessage("WebServletMustExtend"),
                                         ServletConstants.DIAGNOSTIC_CODE, null, DiagnosticSeverity.Warning));
                             }
                         } catch (CoreException e) {
@@ -106,13 +106,13 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         }
                         if (!isUrlpatternSpecified && !isValueSpecified) {
                             diagnostics.add(createDiagnostic(webServletAnnotation, unit,
-                            		Messages.getMessage("WebServletMustDefine"),
+                                    Messages.getMessage("WebServletMustDefine"),
                                     ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE, null,
                                     DiagnosticSeverity.Error));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostics.add(createDiagnostic(webServletAnnotation, unit,
-                            		Messages.getMessage("WebServletCannotHaveBoth"),
+                                    Messages.getMessage("WebServletCannotHaveBoth"),
                                     ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES, null,
                                     DiagnosticSeverity.Error));
                         }

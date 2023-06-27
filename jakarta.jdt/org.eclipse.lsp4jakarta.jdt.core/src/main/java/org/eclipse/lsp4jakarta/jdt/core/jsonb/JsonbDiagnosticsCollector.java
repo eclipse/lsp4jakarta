@@ -102,7 +102,7 @@ public class JsonbDiagnosticsCollector extends AbstractDiagnosticsCollector {
                 List<String> jsonbAnnotationsForAccessor = getJsonbAnnotationNames(type, accessor);
                 if (hasJsonbAnnotationOtherThanTransient(jsonbAnnotationsForAccessor)) {
                     createJsonbTransientDiagnostic(unit, diagnostics, accessor, jsonbAnnotationsForAccessor,
-                    		JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD);
+                            JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD);
                     hasAccessorConflict = true;
                 }
             }
@@ -111,7 +111,7 @@ public class JsonbDiagnosticsCollector extends AbstractDiagnosticsCollector {
             // accessor has annotations other than JsonbTransient
             if (hasAccessorConflict || hasJsonbAnnotationOtherThanTransient(jsonbAnnotationsForField))
                 createJsonbTransientDiagnostic(unit, diagnostics, field, jsonbAnnotationsForField,
-                		JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD);
+                        JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_FIELD);
         }
     }
 
@@ -135,13 +135,13 @@ public class JsonbDiagnosticsCollector extends AbstractDiagnosticsCollector {
                 // or if @JsonbTransient is not mutually exclusive
                 if (hasFieldConflict || hasJsonbAnnotationOtherThanTransient(jsonbAnnotationsForAccessor))
                     createJsonbTransientDiagnostic(unit, diagnostics, accessor, jsonbAnnotationsForAccessor,
-                    		JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_ACCESSOR);
+                            JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_ACCESSOR);
 
             }
         }
         if (createDiagnosticForField)
             createJsonbTransientDiagnostic(unit, diagnostics, field, jsonbAnnotationsForField,
-            		JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_ACCESSOR);
+                    JsonbConstants.DIAGNOSTIC_CODE_ANNOTATION_TRANSIENT_ACCESSOR);
     }
 
     private boolean createJsonbTransientDiagnostic(ICompilationUnit unit, List<Diagnostic> diagnostics, IMember member,

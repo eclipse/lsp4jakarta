@@ -34,7 +34,6 @@ import org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels;
 import org.eclipse.jdt.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeActionKind;
-import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 public class ExtendClassProposal extends ChangeCorrectionProposal {
 

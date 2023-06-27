@@ -116,8 +116,8 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
         }
     }
 
-	private String getLabel(Diagnostic diagnostic, String... modifier) {
-		String label;
+    private String getLabel(Diagnostic diagnostic, String... modifier) {
+        String label;
         if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.LOCAL_VARIABLE))){
             label = Messages.getMessage("RemoveTheModifierFromThisVariable", modifier[0]);
         } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.FIELD))) {
@@ -130,8 +130,8 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
         } else {
         	label = Messages.getMessage("RemoveTheModifierFromThis", modifier[0], "");
         }
-		return label;
-	}
+        return label;
+    }
 
     /**
      * Removes a set of modifiers from a given ASTNode with a given code action label

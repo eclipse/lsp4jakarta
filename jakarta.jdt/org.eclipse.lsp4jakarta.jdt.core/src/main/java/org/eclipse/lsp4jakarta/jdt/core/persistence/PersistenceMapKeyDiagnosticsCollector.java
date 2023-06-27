@@ -76,7 +76,7 @@ public class PersistenceMapKeyDiagnosticsCollector extends AbstractDiagnosticsCo
                         if (hasMapKeyAnnotation && hasMapKeyClassAnnotation) {
                             // A single field cannot have the same
                             diagnostics.add(createDiagnostic(method, unit,
-                            		Messages.getMessage("MapKeyAnnotationsNotOnSameField"),
+                                    Messages.getMessage("MapKeyAnnotationsNotOnSameField"),
                                     PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION, null,
                                     DiagnosticSeverity.Error));
                         }
@@ -111,7 +111,7 @@ public class PersistenceMapKeyDiagnosticsCollector extends AbstractDiagnosticsCo
                         if (hasMapKeyAnnotation && hasMapKeyClassAnnotation) {
                             // A single field cannot have the same
                             diagnostics.add(createDiagnostic(field, unit,
-                            		Messages.getMessage("MapKeyAnnotationsNotOnSameField"),
+                                    Messages.getMessage("MapKeyAnnotationsNotOnSameField"),
                                     PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION, null,
                                     DiagnosticSeverity.Error));
                         }

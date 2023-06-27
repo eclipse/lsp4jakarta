@@ -114,7 +114,7 @@ public class Jax_RSClassDiagnosticsCollector extends AbstractDiagnosticsCollecto
                             } else if (entry.getValue() < maxParams) {
                                 IMethod method = entry.getKey();
                                 diagnostics.add(createDiagnostic(method, unit,
-                                		Messages.getMessage("ConstructorIsUnused"),
+                                        Messages.getMessage("ConstructorIsUnused"),
                                         Jax_RSConstants.DIAGNOSTIC_CODE_UNUSED_CONSTRUCTOR, null,
                                         DiagnosticSeverity.Warning));
                             }
@@ -122,7 +122,7 @@ public class Jax_RSClassDiagnosticsCollector extends AbstractDiagnosticsCollecto
                         if (equalMaxParamMethods.size() > 1) { // more than one
                             for (IMethod method : equalMaxParamMethods) {
                                 diagnostics.add(createDiagnostic(method, unit,
-                                		Messages.getMessage("MultipleConstructorsNumberOfParameters"),
+                                        Messages.getMessage("MultipleConstructorsNumberOfParameters"),
                                         Jax_RSConstants.DIAGNOSTIC_CODE_AMBIGUOUS_CONSTRUCTORS, null,
                                         DiagnosticSeverity.Warning));
                             }

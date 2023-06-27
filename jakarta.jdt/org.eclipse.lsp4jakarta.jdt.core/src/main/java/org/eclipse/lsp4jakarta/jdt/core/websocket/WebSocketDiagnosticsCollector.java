@@ -154,7 +154,7 @@ public class WebSocketDiagnosticsCollector extends AbstractDiagnosticsCollector 
                             });
                             if (!hasPathParamAnnot) {
                                 diagnostics.add(createDiagnostic(param, unit,
-                                		Messages.getMessage("PathParamsAnnotationMissing"),
+                                        Messages.getMessage("PathParamsAnnotationMissing"),
                                         WebSocketConstants.DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT, null,
                                         DiagnosticSeverity.Error));
                             }
@@ -191,7 +191,7 @@ public class WebSocketDiagnosticsCollector extends AbstractDiagnosticsCollector 
                                 String pathValue = (String) pair.getValue();
                                 if (!endpointPathVars.contains(pathValue)) {
                                     diagnostics.add(createDiagnostic(annotation, unit,
-                                    		Messages.getMessage("PathParamWarning"),
+                                            Messages.getMessage("PathParamWarning"),
                                             WebSocketConstants.PATHPARAM_DIAGNOSTIC_CODE, null,
                                             DiagnosticSeverity.Warning));
                                 }
@@ -242,11 +242,11 @@ public class WebSocketDiagnosticsCollector extends AbstractDiagnosticsCollector 
                                 case TEXT:
                                     if (onMessageTextUsed != null) {
                                         diagnostics.add(createDiagnostic(annotation, unit,
-                                        		Messages.getMessage("OnMessageDuplicateMethod"),
+                                                Messages.getMessage("OnMessageDuplicateMethod"),
                                                 WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
                                                 DiagnosticSeverity.Error));
                                         diagnostics.add(createDiagnostic(onMessageTextUsed, unit,
-                                        		Messages.getMessage("OnMessageDuplicateMethod"),
+                                                Messages.getMessage("OnMessageDuplicateMethod"),
                                                 WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
                                                 DiagnosticSeverity.Error));
                                     }
@@ -255,11 +255,11 @@ public class WebSocketDiagnosticsCollector extends AbstractDiagnosticsCollector 
                                 case BINARY:
                                     if (onMessageBinaryUsed != null) {
                                         diagnostics.add(createDiagnostic(annotation, unit,
-                                        		Messages.getMessage("OnMessageDuplicateMethod"),
+                                                Messages.getMessage("OnMessageDuplicateMethod"),
                                                 WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
                                                 DiagnosticSeverity.Error));
                                         diagnostics.add(createDiagnostic(onMessageBinaryUsed, unit,
-                                        		Messages.getMessage("OnMessageDuplicateMethod"),
+                                                Messages.getMessage("OnMessageDuplicateMethod"),
                                                 WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
                                                 DiagnosticSeverity.Error));
                                     }
@@ -268,11 +268,11 @@ public class WebSocketDiagnosticsCollector extends AbstractDiagnosticsCollector 
                                 case PONG:
                                     if (onMessagePongUsed != null) {
                                         diagnostics.add(createDiagnostic(annotation, unit,
-                                        		Messages.getMessage("OnMessageDuplicateMethod"),
+                                                Messages.getMessage("OnMessageDuplicateMethod"),
                                                 WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
                                                 DiagnosticSeverity.Error));
                                         diagnostics.add(createDiagnostic(onMessagePongUsed, unit,
-                                        		Messages.getMessage("OnMessageDuplicateMethod"),
+                                                Messages.getMessage("OnMessageDuplicateMethod"),
                                                 WebSocketConstants.DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD, null,
                                                 DiagnosticSeverity.Error));
                                     }
@@ -302,21 +302,21 @@ public class WebSocketDiagnosticsCollector extends AbstractDiagnosticsCollector 
                         String path = annotationMemberValuePair.getValue().toString();
                         if (!JDTUtils.hasLeadingSlash(path)) {
                             diagnostics.add(createDiagnostic(annotation, unit,
-                            		Messages.getMessage("ServerEndpointNoSlash"),
+                                    Messages.getMessage("ServerEndpointNoSlash"),
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT, null, DiagnosticSeverity.Error));
                         }
                         if (hasRelativePathURIs(path)) {
                             diagnostics.add(createDiagnostic(annotation, unit,
-                            		Messages.getMessage("ServerEndpointRelative"),
+                                    Messages.getMessage("ServerEndpointRelative"),
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT, null, DiagnosticSeverity.Error));
                         } else if (!JDTUtils.isValidLevel1URI(path)) {
                             diagnostics.add(createDiagnostic(annotation, unit,
-                            		Messages.getMessage("ServerEndpointNotLevel1"),
+                                    Messages.getMessage("ServerEndpointNotLevel1"),
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT, null, DiagnosticSeverity.Error));
                         }
                         if (hasDuplicateURIVariables(path)) {
                             diagnostics.add(createDiagnostic(annotation, unit,
-                            		Messages.getMessage("ServerEndpointDuplicateVar"),
+                                    Messages.getMessage("ServerEndpointDuplicateVar"),
                                     WebSocketConstants.DIAGNOSTIC_SERVER_ENDPOINT, null, DiagnosticSeverity.Error));
                         }
                     }

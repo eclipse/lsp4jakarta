@@ -122,7 +122,7 @@ public class CompleteFilterAnnotationQuickFix extends InsertAnnotationMissingQui
         annotationName = "@" + annotationName;
         if (labelType.equals("Remove")) {
             return Messages.getMessage("RemoveTheAttriubuteFrom", attribute, annotationName);
-    	}
+        }
         return Messages.getMessage("AddTheAttributeTo", attribute, annotationName);
     }
 }

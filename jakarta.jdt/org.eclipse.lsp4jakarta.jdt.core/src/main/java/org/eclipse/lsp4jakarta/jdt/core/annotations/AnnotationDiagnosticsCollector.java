@@ -186,7 +186,7 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
                             IMethod method = (IMethod) element;
                             if (method.getNumberOfParameters() != 0) {
                                 String diagnosticMessage = Messages.getMessage("MethodMustNotHaveParameters", 
-                                		"@PostConstruct");
+                                        "@PostConstruct");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_PARAMS, null,
                                         DiagnosticSeverity.Error));
@@ -194,7 +194,7 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
 
                             if (!method.getReturnType().equals("V")) {
                                 String diagnosticMessage = Messages.getMessage("MethodMustBeVoid", 
-                                		"@PostConstruct");
+                                        "@PostConstruct");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_RETURN_TYPE, null,
                                         DiagnosticSeverity.Error));
@@ -202,7 +202,7 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
 
                             if (method.getExceptionTypes().length != 0) {
                                 String diagnosticMessage = Messages.getMessage("MethodMustNotThrow", 
-                                		"@PostConstruct");
+                                        "@PostConstruct");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_POSTCONSTRUCT_EXCEPTION, null,
                                         DiagnosticSeverity.Warning));
@@ -213,7 +213,7 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
                             IMethod method = (IMethod) element;
                             if (method.getNumberOfParameters() != 0) {
                                 String diagnosticMessage = Messages.getMessage("MethodMustNotHaveParameters",
-                                		"@PreDestroy");
+                                        "@PreDestroy");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_PARAMS, null,
                                         DiagnosticSeverity.Error));
@@ -221,7 +221,7 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
 
                             if (Flags.isStatic(method.getFlags())) {
                                 String diagnosticMessage = Messages.getMessage("MethodMustNotBeStatic",
-                                		"@PreDestroy");
+                                        "@PreDestroy");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_STATIC, method.getElementType(),
                                         DiagnosticSeverity.Error));
@@ -229,7 +229,7 @@ public class AnnotationDiagnosticsCollector extends AbstractDiagnosticsCollector
 
                             if (method.getExceptionTypes().length != 0) {
                                 String diagnosticMessage = Messages.getMessage("MethodMustNotThrow",
-                                		"@PreDestroy");
+                                        "@PreDestroy");
                                 diagnostics.add(createDiagnostic(method, unit, diagnosticMessage,
                                         AnnotationConstants.DIAGNOSTIC_CODE_PREDESTROY_EXCEPTION, null,
                                         DiagnosticSeverity.Warning));

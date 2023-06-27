@@ -129,7 +129,7 @@ public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCo
                             // All Methods of this class should not be final
                             if (isFinal(method.getFlags())) {
                                 diagnostics.add(createDiagnostic(method, unit,
-                                		Messages.getMessage("EntityNoFinalMethods"),
+                                        Messages.getMessage("EntityNoFinalMethods"),
                                         PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS, method.getElementType(),
                                         DiagnosticSeverity.Error));
                             }
@@ -144,7 +144,7 @@ public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCo
                             // If we find a non-static variable that is final, this is a problem
                             if (isFinal(field.getFlags())) {
                                 diagnostics.add(createDiagnostic(field, unit,
-                                		Messages.getMessage("EntityNoFinalVariables"),
+                                        Messages.getMessage("EntityNoFinalVariables"),
                                         PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES, field.getElementType(),
                                         DiagnosticSeverity.Error));
                             }
@@ -157,14 +157,14 @@ public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCo
                         // Create Diagnostics if needed
                         if (!hasPublicOrProtectedNoArgConstructor && hasArgConstructor) {
                             diagnostics.add(createDiagnostic(type, unit,
-                            		Messages.getMessage("EntityNoArgConstructor"),
+                                    Messages.getMessage("EntityNoArgConstructor"),
                                     PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR, null,
                                     DiagnosticSeverity.Error));
                         }
 
                         if (isEntityClassFinal) {
                             diagnostics.add(createDiagnostic(type, unit,
-                            		Messages.getMessage("EntityNoFinalClass"),
+                                    Messages.getMessage("EntityNoFinalClass"),
                                     PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS, type.getElementType(),
                                     DiagnosticSeverity.Error));
                         }

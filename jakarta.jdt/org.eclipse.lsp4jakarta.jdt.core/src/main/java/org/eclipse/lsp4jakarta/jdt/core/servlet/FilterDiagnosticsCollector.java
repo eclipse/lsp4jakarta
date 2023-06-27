@@ -60,7 +60,7 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
                     if (webFilterAnnotation != null && !isFilterImplemented) {
                         diagnostics.add(createDiagnostic(type, unit,
-                        		Messages.getMessage("WebFilterMustImplement"),
+                                Messages.getMessage("WebFilterMustImplement"),
                                 ServletConstants.DIAGNOSTIC_CODE_FILTER, null, DiagnosticSeverity.Error));
                     }
 
@@ -86,13 +86,13 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         }
                         if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
                             diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
-                            		Messages.getMessage("WebFilterMustDefine"),
+                                    Messages.getMessage("WebFilterMustDefine"),
                                     ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE, null,
                                     DiagnosticSeverity.Error));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
-                            		Messages.getMessage("WebFilterCannotHaveBoth"),
+                                    Messages.getMessage("WebFilterCannotHaveBoth"),
                                     ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES, null,
                                     DiagnosticSeverity.Error));
                         }

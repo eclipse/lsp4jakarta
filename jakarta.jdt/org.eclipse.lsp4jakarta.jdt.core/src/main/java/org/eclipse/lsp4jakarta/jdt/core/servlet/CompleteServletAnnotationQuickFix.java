@@ -124,7 +124,7 @@ public class CompleteServletAnnotationQuickFix extends InsertAnnotationMissingQu
         annotationName = "@" + annotationName;
         if (labelType.equals("Remove")) {
             return Messages.getMessage("RemoveTheAttriubuteFrom", attribute, annotationName);
-    	}
+        }
         return Messages.getMessage("AddTheAttributeTo", attribute, annotationName);
     }
 }
