@@ -29,6 +29,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 public class PersistenceMapKeyDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
@@ -75,7 +76,7 @@ public class PersistenceMapKeyDiagnosticsCollector extends AbstractDiagnosticsCo
                         if (hasMapKeyAnnotation && hasMapKeyClassAnnotation) {
                             // A single field cannot have the same
                             diagnostics.add(createDiagnostic(method, unit,
-                                    "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
+                            		Messages.getMessage("MapKeyAnnotationsNotOnSameField"),
                                     PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION, null,
                                     DiagnosticSeverity.Error));
                         }
@@ -110,7 +111,7 @@ public class PersistenceMapKeyDiagnosticsCollector extends AbstractDiagnosticsCo
                         if (hasMapKeyAnnotation && hasMapKeyClassAnnotation) {
                             // A single field cannot have the same
                             diagnostics.add(createDiagnostic(field, unit,
-                                    "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
+                            		Messages.getMessage("MapKeyAnnotationsNotOnSameField"),
                                     PersistenceConstants.DIAGNOSTIC_CODE_INVALID_ANNOTATION, null,
                                     DiagnosticSeverity.Error));
                         }
@@ -127,7 +128,9 @@ public class PersistenceMapKeyDiagnosticsCollector extends AbstractDiagnosticsCo
 
     private void validateMapKeyJoinColumnAnnotations(List<IAnnotation> annotations, IMember element,
             ICompilationUnit unit, List<Diagnostic> diagnostics) {
-        String prefix = (element instanceof IMethod) ? "A method " : "A field ";
+        String message = (element instanceof IMethod) ? 
+                Messages.getMessage("MultipleMapKeyJoinColumnMethod") : 
+                Messages.getMessage("MultipleMapKeyJoinColumnField");
         annotations.forEach(annotation -> {
             boolean allNamesSpecified, allReferencedColumnNameSpecified;
             try {
@@ -137,8 +140,7 @@ public class PersistenceMapKeyDiagnosticsCollector extends AbstractDiagnosticsCo
                 allReferencedColumnNameSpecified = memberValues.stream()
                         .anyMatch((mv) -> mv.getMemberName().equals(PersistenceConstants.REFERENCEDCOLUMNNAME));
                 if (!allNamesSpecified || !allReferencedColumnNameSpecified) {
-                    diagnostics.add(createDiagnostic(element, unit, prefix
-                            + "with multiple @MapKeyJoinColumn annotations must specify both the name and referencedColumnName attributes in the corresponding @MapKeyJoinColumn annotations.",
+                    diagnostics.add(createDiagnostic(element, unit, message,
                             PersistenceConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTES, null, DiagnosticSeverity.Error));
                 }
             } catch (JavaModelException e) {

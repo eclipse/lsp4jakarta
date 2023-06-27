@@ -25,6 +25,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyAnnotationProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 
 /**
@@ -58,7 +59,7 @@ public class PersistenceAnnotationQuickFix extends InsertAnnotationMissingQuickF
         ArrayList<String> attributes = new ArrayList<>();
         attributes.add("name"); 
         attributes.add("referencedColumnName");
-        String name = "Add the missing attributes to the @MapKeyJoinColumn annotation";
+        String name = Messages.getMessage("AddTheMissingAttributes");
         
         ChangeCorrectionProposal proposal = new ModifyAnnotationProposal(name, context.getCompilationUnit(),
                 context.getASTRoot(), parentType, 0, attributes, annotations);
