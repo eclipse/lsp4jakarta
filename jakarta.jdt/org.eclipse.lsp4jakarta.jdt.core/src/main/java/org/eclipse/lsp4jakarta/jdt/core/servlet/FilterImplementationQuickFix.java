@@ -52,7 +52,7 @@ public class FilterImplementationQuickFix implements IJavaCodeActionParticipant 
         if (parentType != null) {
             // Create code action
             // interface
-        	String title = Messages.getMessage("LetCImplementI", 
+        	String title = Messages.getMessage("LetClassImplement", 
         			BasicElementLabels.getJavaElementName(parentType.getName()), 
         			BasicElementLabels.getJavaElementName(ServletConstants.FILTER));
             ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(

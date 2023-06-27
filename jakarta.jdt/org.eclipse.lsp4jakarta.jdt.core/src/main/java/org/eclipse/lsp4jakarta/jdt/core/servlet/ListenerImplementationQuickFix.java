@@ -14,7 +14,6 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +83,7 @@ public class ListenerImplementationQuickFix implements IJavaCodeActionParticipan
 
     private CodeAction setUpCodeAction(ITypeBinding parentType, Diagnostic diagnostic, JavaCodeActionContext context,
             String interfaceName, String interfaceType) throws CoreException {
-    	String title = Messages.getMessage("LetCImplementI", 
+    	String title = Messages.getMessage("LetClassImplement", 
     			BasicElementLabels.getJavaElementName(parentType.getName()), 
     			BasicElementLabels.getJavaElementName(interfaceName));
         ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(title,

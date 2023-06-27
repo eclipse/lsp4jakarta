@@ -24,6 +24,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
@@ -59,7 +60,7 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
                     if (webFilterAnnotation != null && !isFilterImplemented) {
                         diagnostics.add(createDiagnostic(type, unit,
-                                "Annotated classes with @WebFilter must implement the Filter interface.",
+                        		Messages.getMessage("WebFilterMustImplement"),
                                 ServletConstants.DIAGNOSTIC_CODE_FILTER, null, DiagnosticSeverity.Error));
                     }
 
@@ -85,13 +86,13 @@ public class FilterDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         }
                         if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
                             diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
-                                    "The annotation @WebFilter must define the attribute 'urlPatterns', 'servletNames' or 'value'.",
+                            		Messages.getMessage("WebFilterMustDefine"),
                                     ServletConstants.DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE, null,
                                     DiagnosticSeverity.Error));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostics.add(createDiagnostic(webFilterAnnotation, unit,
-                                    "The annotation @WebFilter can not have both 'value' and 'urlPatterns' attributes specified at once.",
+                            		Messages.getMessage("WebFilterCannotHaveBoth"),
                                     ServletConstants.DIAGNOSTIC_CODE_FILTER_DUPLICATE_ATTRIBUTES, null,
                                     DiagnosticSeverity.Error));
                         }

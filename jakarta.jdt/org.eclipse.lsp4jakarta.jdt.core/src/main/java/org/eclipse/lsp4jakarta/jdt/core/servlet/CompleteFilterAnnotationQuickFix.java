@@ -25,6 +25,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyAnnotationProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * QuickFix for fixing {@link ServletConstants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE} error
@@ -117,13 +118,11 @@ public class CompleteFilterAnnotationQuickFix extends InsertAnnotationMissingQui
     }
 
     private static String getLabel(String annotation, String attribute, String labelType) {
-    	StringBuilder name = new StringBuilder("Add the `" + attribute + "` attribute to ");
-        if (labelType.equals("Remove")) {
-            name = new StringBuilder("Remove the `" + attribute + "` attribute from ");
-    	}
         String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
-        name.append("@");
-        name.append(annotationName);
-        return name.toString();
+        annotationName = "@" + annotationName;
+        if (labelType.equals("Remove")) {
+            return Messages.getMessage("RemoveTheAttriubuteFrom", attribute, annotationName);
+    	}
+        return Messages.getMessage("AddTheAttributeTo", attribute, annotationName);
     }
 }

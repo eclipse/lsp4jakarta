@@ -52,7 +52,7 @@ public class HttpServletQuickFix implements IJavaCodeActionParticipant {
         if (parentType != null) {
             // Create code action
             // interface
-        	String title = Messages.getMessage("LetCExtendI", 
+        	String title = Messages.getMessage("LetClassExtend", 
         			BasicElementLabels.getJavaElementName(parentType.getName()), 
         			BasicElementLabels.getJavaElementName(ServletConstants.HTTP_SERVLET));
             ChangeCorrectionProposal proposal = new ExtendClassProposal(title,

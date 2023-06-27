@@ -23,6 +23,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
@@ -63,9 +64,7 @@ public class ListenerDiagnosticsCollector extends AbstractDiagnosticsCollector {
                     boolean isImplemented = doesImplementInterfaces(type, interfaces);
 
                     if (isWebListenerAnnotated && !isImplemented) {
-                        diagnostics.add(createDiagnostic(type, unit,
-                                "Annotated classes with @WebListener must implement one or more of the following interfaces: ServletContextListener, ServletContextAttributeListener,"
-                                        + " ServletRequestListener, ServletRequestAttributeListener, HttpSessionListener, HttpSessionAttributeListener, or HttpSessionIdListener.",
+                        diagnostics.add(createDiagnostic(type, unit, Messages.getMessage("AnnotatedWithWebListenerMustImplement"),
                                 ServletConstants.DIAGNOSTIC_CODE_LISTENER, null, DiagnosticSeverity.Error));
                     }
                 }
