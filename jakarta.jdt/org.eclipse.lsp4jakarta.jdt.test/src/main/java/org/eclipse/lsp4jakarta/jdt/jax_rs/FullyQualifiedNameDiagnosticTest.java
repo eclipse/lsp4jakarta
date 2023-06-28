@@ -30,8 +30,8 @@ public class FullyQualifiedNameDiagnosticTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
        
-        Diagnostic d = d(21, 13, 46, "Resource methods cannot have more than one entity parameter",
-                DiagnosticSeverity.Error, "jakarta-jax_rs", "FullyQualifiedNameDiagnosticTest");
+        Diagnostic d = d(8, 13, 46, "Resource methods cannot have more than one entity parameter",
+                DiagnosticSeverity.Error, "jakarta-jax_rs", "ResourceMethodMultipleEntityParams");
         assertJavaDiagnosticsPresent(diagnosticsParams, utils, d);
 
         }
