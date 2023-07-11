@@ -23,8 +23,6 @@ import org.junit.Test;
 public class JakartaSnippetRegistryTest {
 	
 	SnippetRegistry registry = new SnippetRegistry();
-	
-	
 
 	@Test
 	public void haveJavaSnippets() {
@@ -39,10 +37,7 @@ public class JakartaSnippetRegistryTest {
         Optional<Snippet> beanValidationSnippet = findByPrefix("@Email", registry);
 		assertTrue("Tests has @Email Java snippet", beanValidationSnippet.isPresent());
 		
-		ISnippetContext<?> context = beanValidationSnippet.get().getContext();
-		assertNotNull("@Email snippet has context", context);
-		assertTrue("@Email snippet context is Java context", context instanceof SnippetContextForJava);
-		
+		snippetsContextTest( beanValidationSnippet, "jakarta.validation.constraints.Email", JavaCursorContextKind.BEFORE_METHOD);
 		
 	}
 
@@ -52,23 +47,22 @@ public class JakartaSnippetRegistryTest {
 	 */
 	@Test
 	public void persistenceSnippetsTest() {
-        Optional<Snippet> persistcontextSnippet = findByPrefix("persist_context", registry);
-		assertTrue("Tests has persist_context Java snippet", persistcontextSnippet.isPresent());
+        Optional<Snippet> persistContextSnippet = findByPrefix("persist_context", registry);
+		assertTrue("Tests has persist_context Java snippet", persistContextSnippet.isPresent());
 		
-		Optional<Snippet> persistcontextextendedSnippet = findByPrefix("persist_context_extended", registry);
-		assertTrue("Tests has persist_context_extended Java snippet", persistcontextextendedSnippet.isPresent());
+		Optional<Snippet> persistContextExtendedSnippet = findByPrefix("persist_context_extended", registry);
+		assertTrue("Tests has persist_context_extended Java snippet", persistContextExtendedSnippet.isPresent());
 		
-		Optional<Snippet> persistcontextextendedunsyncSnippet = findByPrefix("persist_context_extended_unsync", registry);
-		assertTrue("Tests has persist_context_extended_unsync Java snippet", persistcontextextendedunsyncSnippet.isPresent());
+		Optional<Snippet> persistContextExtendedunsyncSnippet = findByPrefix("persist_context_extended_unsync", registry);
+		assertTrue("Tests has persist_context_extended_unsync Java snippet", persistContextExtendedunsyncSnippet.isPresent());
 		
-		Optional<Snippet> persistentitySnippet = findByPrefix("persist_entity", registry);
-		assertTrue("Tests has persist_entity Java snippet", persistentitySnippet.isPresent());
+		Optional<Snippet> persistEntitySnippet = findByPrefix("persist_entity", registry);
+		assertTrue("Tests has persist_entity Java snippet", persistEntitySnippet.isPresent());
 		
-		
-		ISnippetContext<?> context = persistcontextSnippet.get().getContext();
-		assertNotNull("persist_context snippet has context", context);
-		assertTrue("persist_context snippet context is Java context", context instanceof SnippetContextForJava);
-		
+		snippetsContextTest(persistContextSnippet, "jakarta.persistence.PersistenceContextType", JavaCursorContextKind.BEFORE_METHOD);
+		snippetsContextTest(persistContextExtendedSnippet, "jakarta.persistence.PersistenceContextType", JavaCursorContextKind.BEFORE_METHOD);
+		snippetsContextTest(persistContextExtendedunsyncSnippet, "jakarta.persistence.PersistenceContextType", JavaCursorContextKind.BEFORE_METHOD);
+		snippetsContextTest(persistEntitySnippet, "jakarta.persistence.Entity", JavaCursorContextKind.IN_EMPTY_FILE);
 		
 	}
 	
@@ -106,32 +100,28 @@ public class JakartaSnippetRegistryTest {
 				
 	}
 	
-	
-	
-	
-	
 	/**
 	 * Jakarta Servlet snippets - servlet_generic, servlet_doget
 	 * servlet_dopost, servlet_webfilter
 	 */
 	@Test
 	public void ServletSnippetsTest() {
-        Optional<Snippet> servletgenericSnippet = findByPrefix("servlet_generic", registry);
-		assertTrue("Tests has servlet_generic Java snippet", servletgenericSnippet.isPresent());
+        Optional<Snippet> servletGenericSnippet = findByPrefix("servlet_generic", registry);
+		assertTrue("Tests has servlet_generic Java snippet", servletGenericSnippet.isPresent());
 		
-		Optional<Snippet> servletdogetSnippet = findByPrefix("servlet_doget", registry);
-		assertTrue("Tests has servlet_doget Java snippet", servletdogetSnippet.isPresent());
+		Optional<Snippet> servletDoGetSnippet = findByPrefix("servlet_doget", registry);
+		assertTrue("Tests has servlet_doget Java snippet", servletDoGetSnippet.isPresent());
 		
-		Optional<Snippet> servletdopostSnippet = findByPrefix("servlet_dopost", registry);
-		assertTrue("Tests has servlet_dopost Java snippet", servletdopostSnippet.isPresent());
+		Optional<Snippet> servletDoPostSnippet = findByPrefix("servlet_dopost", registry);
+		assertTrue("Tests has servlet_dopost Java snippet", servletDoPostSnippet.isPresent());
 		
-		Optional<Snippet> servletwebfilterSnippet = findByPrefix("servlet_webfilter", registry);
-		assertTrue("Tests has servlet_webfilter Java snippet", servletwebfilterSnippet.isPresent());
+		Optional<Snippet> servletWebFilterSnippet = findByPrefix("servlet_webfilter", registry);
+		assertTrue("Tests has servlet_webfilter Java snippet", servletWebFilterSnippet.isPresent());
 		
-		ISnippetContext<?> context = servletgenericSnippet.get().getContext();
-		assertNotNull("servlet_generic snippet has context", context);
-		assertTrue("servlet_generic snippet context is Java context", context instanceof SnippetContextForJava);
-
+		snippetsContextTest(servletGenericSnippet, "jakarta.servlet.GenericServlet", JavaCursorContextKind.IN_EMPTY_FILE);
+		snippetsContextTest(servletDoGetSnippet, "jakarta.servlet.http.HttpServlet", JavaCursorContextKind.IN_EMPTY_FILE);
+		snippetsContextTest(servletDoPostSnippet, "jakarta.servlet.http.HttpServlet", JavaCursorContextKind.IN_EMPTY_FILE);
+		snippetsContextTest(servletWebFilterSnippet, "jakarta.servlet.Filter", JavaCursorContextKind.IN_EMPTY_FILE);
 		
 	}
 	
@@ -142,19 +132,19 @@ public class JakartaSnippetRegistryTest {
 	 */
 	@Test
 	public void TransactionsSnippetsTest() {
-        Optional<Snippet> txuserinjectSnippet = findByPrefix("tx_user_inject", registry);
-		assertTrue("Tests has tx_user_inject Java snippet", txuserinjectSnippet.isPresent());
+        Optional<Snippet> txUserInjectSnippet = findByPrefix("tx_user_inject", registry);
+		assertTrue("Tests has tx_user_inject Java snippet", txUserInjectSnippet.isPresent());
 		
-		Optional<Snippet> txuserjndiSnippet = findByPrefix("tx_user_jndi", registry);
-		assertTrue("Tests has tx_user_jndi Java snippet", txuserjndiSnippet.isPresent());
+		Optional<Snippet> txUserJndiSnippet = findByPrefix("tx_user_jndi", registry);
+		assertTrue("Tests has tx_user_jndi Java snippet", txUserJndiSnippet.isPresent());
 		
-		Optional<Snippet> TransactionalSnippet = findByPrefix("@Transactional", registry);
-		assertTrue("Tests has @Transactional Java snippet", TransactionalSnippet.isPresent());
+		Optional<Snippet> transactionalSnippet = findByPrefix("@Transactional", registry);
+		assertTrue("Tests has @Transactional Java snippet", transactionalSnippet.isPresent());
 		
 		
-		ISnippetContext<?> context = txuserinjectSnippet.get().getContext();
-		assertNotNull("tx_user_inject snippet has context", context);
-		assertTrue("tx_user_inject snippet context is Java context", context instanceof SnippetContextForJava);
+		snippetsContextTest(txUserInjectSnippet, "jakarta.transaction.UserTransaction", JavaCursorContextKind.BEFORE_METHOD);
+		snippetsContextTest(txUserJndiSnippet, "jakarta.transaction.UserTransaction", JavaCursorContextKind.BEFORE_METHOD);
+		//snippetsContextTest(transactionalSnippet, "jakarta.transaction.Transactional", JavaCursorContextKind.BEFORE_METHOD);
 
 		
 	}
@@ -165,6 +155,7 @@ public class JakartaSnippetRegistryTest {
 		return registry.getSnippets().stream().filter(snippet -> snippet.getPrefixes().contains(prefix)).findFirst();
 	}
 	
+	// Verifying the snippet context
 	private void snippetsContextTest(Optional<Snippet> snippet, String contextType, JavaCursorContextKind javaCursorContextKind) {
 		
 		ISnippetContext<?> context = snippet.get().getContext();
