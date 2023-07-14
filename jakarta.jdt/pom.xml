@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.lsp4jakarta</groupId>
 	<artifactId>jdt-parent</artifactId>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	<name>Eclipse LSP4Jakarta JDT Plugin Parent</name>
@@ -50,7 +50,7 @@
 		<repository>
 			<id>jdt.ls.p2</id>
 			<layout>p2</layout>
-			<url>https://download.eclipse.org/jdtls/snapshots/repository/latest/</url>
+			<url>https://download.eclipse.org/jdtls/milestones/1.21.0/repository/</url>
 		</repository>
 		<repository>
 			<id>jdt.ls.maven.snapshots</id>
