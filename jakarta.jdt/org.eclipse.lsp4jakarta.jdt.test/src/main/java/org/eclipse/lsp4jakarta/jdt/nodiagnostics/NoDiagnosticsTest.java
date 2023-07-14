@@ -50,7 +50,7 @@ public class NoDiagnosticsTest extends BaseJakartaTest {
 		JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
 		diagnosticsParams.setUris(Arrays.asList(uri));
 
-		// should be no errors
+		// should be no diagnostics in the file.
 		assertJavaDiagnostics(diagnosticsParams, utils);
 
 	}
