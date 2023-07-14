@@ -173,7 +173,7 @@ public class JakartaSnippetRegistryTest {
 
 	// Verify whether the snippet is present in the registry.
 	private static Optional<Snippet> findByPrefix(String prefix, SnippetRegistry registry) {
-		return registry.getSnippets().stream().filter(snippet -> snippet.getPrefixes().contains(prefix)).findFirst();
+		return registry.getSnippets().stream().filter(snippet -> snippet.getPrefixes().equals(prefix)).findFirst();
 	}
 
 	// Verify whether the snippet context is present in the registry.
