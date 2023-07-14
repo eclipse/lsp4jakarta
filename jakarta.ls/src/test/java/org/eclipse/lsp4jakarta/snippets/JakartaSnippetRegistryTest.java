@@ -181,7 +181,7 @@ public class JakartaSnippetRegistryTest {
 			JavaCursorContextKind javaCursorContextKind) {
 
 		ISnippetContext<?> context = snippet.get().getContext();
-		assertNotNull(snippet.get().getPrefixes() + " snippet has context", context);
+		assertNotNull(snippet.get().getPrefixes() + " snippet context is null", context);
 		assertTrue(snippet.get().getPrefixes() + " snippet context is Java context",
 				context instanceof SnippetContextForJava);
 
