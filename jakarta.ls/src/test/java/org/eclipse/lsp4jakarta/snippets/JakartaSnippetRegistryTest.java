@@ -187,7 +187,7 @@ public class JakartaSnippetRegistryTest {
 
 		ProjectLabelInfoEntry projectInfo = new ProjectLabelInfoEntry("", new ArrayList<>());
 		boolean match = ((SnippetContextForJava) context).isMatch(context(projectInfo, javaCursorContextKind));
-		assertFalse("Project has " + contextType + " type", match);
+		assertFalse("Project should not have " + contextType + " type", match);
 
 		ProjectLabelInfoEntry projectInfo1 = new ProjectLabelInfoEntry("", Arrays.asList(contextType));
 		boolean match1 = ((SnippetContextForJava) context).isMatch(context(projectInfo1, javaCursorContextKind,
