@@ -182,7 +182,7 @@ public class JakartaSnippetRegistryTest {
 
 		ISnippetContext<?> context = snippet.get().getContext();
 		assertNotNull(snippet.get().getPrefixes() + " snippet context is null", context);
-		assertTrue(snippet.get().getPrefixes() + " snippet context is Java context",
+		assertTrue(snippet.get().getPrefixes() + " snippet context is not a Java context",
 				context instanceof SnippetContextForJava);
 
 		ProjectLabelInfoEntry projectInfo = new ProjectLabelInfoEntry("", new ArrayList<>());
