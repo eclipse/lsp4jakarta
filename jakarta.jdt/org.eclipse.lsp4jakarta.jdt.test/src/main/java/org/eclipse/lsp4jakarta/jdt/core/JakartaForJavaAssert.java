@@ -156,32 +156,22 @@ public class JakartaForJavaAssert {
     public static Position p(int line, int character) {
         return new Position(line, character);
     }
-  
-    public static void assertJavaDiagnosticsPresent(JakartaDiagnosticsParams params, JDTUtils utils, Diagnostic... expected)
-            throws JavaModelException {
-        List<PublishDiagnosticsParams> actual = JDTServicesManager.getInstance().getJavaDiagnostics(params);
 
-        assertDiagnostics(true, 
-                actual != null && actual.size() > 0 ? actual.get(0).getDiagnostics() : Collections.emptyList(),
-                expected);
-    }
-    
     public static void assertJavaDiagnostics(JakartaDiagnosticsParams params, JDTUtils utils, Diagnostic... expected)
             throws JavaModelException {
         List<PublishDiagnosticsParams> actual = JDTServicesManager.getInstance().getJavaDiagnostics(params);
 
-        assertDiagnostics(false, 
+        assertDiagnostics(
                 actual != null && actual.size() > 0 ? actual.get(0).getDiagnostics() : Collections.emptyList(),
                 expected);
     }
 
-    public static void assertDiagnostics( boolean checkForDiagnostic, List<Diagnostic> actual, Diagnostic... expected) {
-        assertDiagnostics(actual, Arrays.asList(expected), false, checkForDiagnostic);
+    public static void assertDiagnostics(List<Diagnostic> actual, Diagnostic... expected) {
+        assertDiagnostics(actual, Arrays.asList(expected), false);
     }
 
-    public static void assertDiagnostics(List<Diagnostic> actual, List<Diagnostic> expected, boolean filter, boolean isDiagnosticPresent) {
-       
-    	 /**
+    public static void assertDiagnostics(List<Diagnostic> actual, List<Diagnostic> expected, boolean filter) {
+        /**
          * ordering of diagnostics should not matter when testing for equality, so we
          * sort diagnostics by their range.
          */
@@ -203,7 +193,7 @@ public class JakartaForJavaAssert {
         for (Diagnostic dia : actual) {
             dia.setMessage(replaceNewLineCharacters(dia.getMessage()));
         }
-        
+
         List<Diagnostic> received = actual;
         final boolean filterMessage;
         if (expected != null && !expected.isEmpty()
@@ -222,13 +212,9 @@ public class JakartaForJavaAssert {
                 return simpler;
             }).collect(Collectors.toList());
         }
-        if (isDiagnosticPresent) {
-        	Assert.assertNotEquals("Unexpected diagnostics:\n" + actual, expected, received);
-        } else {
-        	Assert.assertEquals("Unexpected diagnostics:\n" + actual, expected, received);
-        }
+        Assert.assertEquals("Unexpected diagnostics:\n" + actual, expected, received);
     }
-    
+
     public static String fixURI(URI uri) {
         String uriString = uri.toString();
         return uriString.replaceFirst("file:/([^/])", "file:///$1");
