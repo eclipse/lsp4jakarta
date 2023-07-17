@@ -15,7 +15,10 @@ package org.eclipse.lsp4jakarta.jdt.nodiagnostics;
 
 import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
@@ -42,7 +45,7 @@ public class NoDiagnosticsTest extends BaseJakartaTest {
 
 		JDTUtils utils = JDT_UTILS;
 
-		IJavaProject javaProject = loadJavaProject("jakarta-noDiagnostic-sample", "");
+		IJavaProject javaProject = loadJavaProject("demo-servlet-no-diagnostics", "");
 		IFile javaFile = javaProject.getProject()
 				.getFile(new Path(filePath));
 		String uri = javaFile.getLocation().toFile().toURI().toString();
@@ -57,62 +60,29 @@ public class NoDiagnosticsTest extends BaseJakartaTest {
 
 	// list of java files in demo-servlet-no-diagnostics.
 	@Parameters
-	public static String[] projectFileProvider() throws Exception {
+	public static List<String> projectFileProvider() throws Exception {
 
-		String basePath = "src/main/java/io/openliberty/sample/jakarta/";
-		String files[] = { basePath + "annotations/GeneratedAnnotation.java",
-				basePath + "annotations/PostConstructAnnotation.java",
-				basePath + "annotations/PreDestroyAnnotation.java",
-				basePath + "annotations/ResourceAnnotation.java",
+		String packagePath = "src/main/java/io/openliberty/sample/jakarta/";
+		String basePath = System.getProperty("user.dir")
+				+ "/projects/demo-servlet-no-diagnostics/" + packagePath;
 
-				basePath + "beanvalidation/FieldConstraintValidation.java",
-				basePath + "beanvalidation/MethodConstraintValidation.java",
-				basePath + "beanvalidation/ValidConstraints.java",
+		List<String> results = new ArrayList<String>();
+		File[] directories = new File(basePath).listFiles();
+		// If this pathname does not denote a directory, then listFiles() returns null.
 
-				basePath + "cdi/InjectAndDisposesObservesObservesAsync.java",
-				basePath + "cdi/ManagedBean.java",
-				basePath + "cdi/ManagedBeanConstructor.java",
-				basePath + "cdi/MultipleDisposes.java",
-				basePath + "cdi/ProducesAndDisposesObservesObservesAsync.java",
-				basePath + "cdi/ProducesAndInjectTogether.java",
-				basePath + "cdi/ScopeDeclaration.java",
+		for (File directory : directories) {
+			// Check for directory.
+			if (directory.isDirectory()) {
+				File[] files = new File(basePath + "/" + directory.getName() + "/").listFiles();
+				for (File file : files) {
+					if (file.isFile()) {
+						// Add test file path.
+						results.add(packagePath + directory.getName() + "/" + file.getName());
+					}
+				}
+			}
 
-				basePath + "di/Greeting.java",
-				basePath + "di/MultipleConstructorWithInject.java",
-
-				basePath + "jax_rs/MultipleEntityParamsResourceMethod.java",
-				basePath + "jax_rs/NoPublicConstructorClass.java",
-				basePath + "jax_rs/NoPublicConstructorProviderClass.java",
-				basePath + "jax_rs/NotPublicResourceMethod.java",
-				basePath + "jax_rs/RootResourceClassConstructorsDiffLen.java",
-				basePath + "jax_rs/RootResourceClassConstructorsEqualLen.java",
-
-				basePath + "jsonb/ExtraJsonbCreatorAnnotations.java",
-				basePath + "jsonb/JsonbTransientDiagnostic.java",
-
-				basePath + "jsonp/CreatePointerInvalidTarget.java",
-
-				basePath + "persistence/EntityMissingConstructor.java",
-				basePath + "persistence/FinalModifiers.java",
-				basePath + "persistence/MapKeyAndMapKeyClassTogether.java",
-				basePath + "persistence/MultipleMapKeyAnnotations.java",
-
-				basePath + "servlet/DontExtendHttpServlet.java",
-				basePath + "servlet/InvalidWebServlet.java",
-
-				basePath + "websocket/AnnotationTest.java",
-				basePath + "websocket/DuplicateOnMessage.java",
-				basePath + "websocket/InvalidParamType.java",
-				basePath + "websocket/ServerEndpointDuplicateVariableURI.java",
-				basePath + "websocket/ServerEndpointInvalidTemplateURI.java",
-				basePath + "websocket/ServerEndpointNoSlash.java",
-				basePath + "websocket/ServerEndpointRelativePathTest.java",
-
-				basePath + "websockets/PathParamURIWarningTest.java"
-		};
-
-		return files;
-
+		}
+		return results;
 	}
-
 }

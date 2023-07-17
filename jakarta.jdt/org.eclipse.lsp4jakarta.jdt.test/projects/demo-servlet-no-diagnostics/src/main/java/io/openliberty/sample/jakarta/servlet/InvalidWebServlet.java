@@ -1,8 +1,8 @@
 package io.openliberty.sample.jakarta.servlet;
 
-import jakarta.fake.fakeException;
+import jakarta.fake.ServletException;
 import jakarta.fake.annotation.WebServlet;
-import jakarta.fake.http.Httpfake;
+import jakarta.fake.http.HttpServlet;
 import jakarta.fake.http.HttpServletRequest;
 import jakarta.fake.http.HttpServletResponse;
 import java.io.IOException;

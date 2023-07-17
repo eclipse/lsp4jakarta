@@ -2,7 +2,7 @@ package io.openliberty.sample.jakarta.cdi;
 
 import jakarta.fake.context.ApplicationScoped;
 
-import jakarta.enterprise.inject.Disposes;
+import jakarta.fake.inject.Disposes;
 
 @ApplicationScoped
 public class MultipleDisposes {
