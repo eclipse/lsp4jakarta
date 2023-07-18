@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
@@ -62,27 +63,19 @@ public class NoDiagnosticsTest extends BaseJakartaTest {
 	@Parameters
 	public static List<String> projectFileProvider() throws Exception {
 
-		String packagePath = "src/main/java/io/openliberty/sample/jakarta/";
+		String packagePath = "./src/main/java/io/openliberty/sample/jakarta/";
 		String basePath = System.getProperty("user.dir")
-				+ "/projects/demo-servlet-no-diagnostics/" + packagePath;
-
+				+ "/projects/demo-servlet-no-diagnostics/";
+		File dir = new File(basePath + packagePath);
+		String[] extensions = new String[] { "java" };
 		List<String> results = new ArrayList<String>();
-		File[] directories = new File(basePath).listFiles();
-		// If this pathname does not denote a directory, then listFiles() returns null.
 
-		for (File directory : directories) {
-			// Check for directory.
-			if (directory.isDirectory()) {
-				File[] files = new File(basePath + "/" + directory.getName() + "/").listFiles();
-				for (File file : files) {
-					if (file.isFile()) {
-						// Add test file path.
-						results.add(packagePath + directory.getName() + "/" + file.getName());
-					}
-				}
-			}
-
+		List<File> files = (List<File>) FileUtils.listFiles(dir, extensions, true);
+		for (File file : files) {
+			// Get relative path from source folder and add it in the results array.
+			results.add(file.getAbsolutePath().substring(basePath.length()));
 		}
 		return results;
 	}
+
 }
