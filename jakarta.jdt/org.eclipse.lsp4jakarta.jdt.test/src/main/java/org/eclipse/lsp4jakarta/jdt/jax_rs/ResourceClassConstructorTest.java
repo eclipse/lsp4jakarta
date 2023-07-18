@@ -87,11 +87,11 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
 
         // test expected diagnostics
         Diagnostic d1 = d(7, 12, 36,
-                "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
+                "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor.",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
 
         Diagnostic d2 = d(11, 14, 38,
-                "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
+                "Root resource classes are instantiated by the JAX-RS runtime and MUST have a public constructor.",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
@@ -110,11 +110,11 @@ public class ResourceClassConstructorTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         Diagnostic d1 = d(19, 12, 44,
-                "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
+                "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor.",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
 
         Diagnostic d2 = d(23, 14, 46,
-                "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor",
+                "Provider classes are instantiated by the JAX-RS runtime and MUST have a public constructor.",
                 DiagnosticSeverity.Error, "jakarta-jax_rs", "NoPublicConstructors");
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);

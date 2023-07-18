@@ -157,10 +157,10 @@ public class BeanValidationTest extends BaseJakartaTest {
 //                "The @PositiveOrZero annotation can only be used on boolean and Boolean type fields.",
 //                DiagnosticSeverity.Error, "jakarta-bean-validation", "FixTypeOfElement", "PositiveOrZero");
         Diagnostic d19 = d(60, 27, 36,
-                "Constraint annotations are not allowed on static fields",
+                "Constraint annotations are not allowed on static fields.",
                 DiagnosticSeverity.Error, "jakarta-bean-validation", "MakeNotStatic", "AssertTrue");
         Diagnostic d20 = d(63, 27, 36,
-                "Constraint annotations are not allowed on static fields",
+                "Constraint annotations are not allowed on static fields.",
                 DiagnosticSeverity.Error, "jakarta-bean-validation", "MakeNotStatic", "Past");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3, d4, d5, d6, d7, d8,
@@ -205,13 +205,13 @@ public class BeanValidationTest extends BaseJakartaTest {
 
         // Test diagnostics
         Diagnostic d1 = d(20, 26, 38,
-                "Constraint annotations are not allowed on static methods",
+                "Constraint annotations are not allowed on static methods.",
                 DiagnosticSeverity.Error, "jakarta-bean-validation", "MakeNotStatic", "AssertTrue");
         Diagnostic d2 = d(25, 18, 28,
                 "The @AssertTrue annotation can only be used on boolean and Boolean type methods.",
                 DiagnosticSeverity.Error, "jakarta-bean-validation", "FixTypeOfElement", "AssertTrue");
         Diagnostic d3 = d(30, 23, 33,
-                "Constraint annotations are not allowed on static methods",
+                "Constraint annotations are not allowed on static methods.",
                 DiagnosticSeverity.Error, "jakarta-bean-validation", "MakeNotStatic", "AssertFalse");
         
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2, d3);

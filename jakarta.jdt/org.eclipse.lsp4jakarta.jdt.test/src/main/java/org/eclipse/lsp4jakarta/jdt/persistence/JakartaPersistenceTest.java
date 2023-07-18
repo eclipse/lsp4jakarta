@@ -46,11 +46,11 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         Diagnostic d1 = d(16, 32, 42,
-                "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
+                "@MapKeyClass and @MapKey annotations cannot be used on the same field or property.",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveMapKeyorMapKeyClass");
 
         Diagnostic d2 = d(11, 25, 32,
-                "@MapKeyClass and @MapKey annotations cannot be used on the same field or property",
+                "@MapKeyClass and @MapKey annotations cannot be used on the same field or property.",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveMapKeyorMapKeyClass");
 
         assertJavaDiagnostics(diagnosticsParams, utils, d1, d2);
@@ -171,22 +171,22 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 
         // test diagnostics are present
         Diagnostic d1 = d(10, 21, 28,
-                "A class using the @Entity annotation cannot contain any methods that are declared final",
+                "A class using the @Entity annotation cannot contain any methods that are declared final.",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalMethods");
         d1.setData(IJavaElement.METHOD);
 
         Diagnostic d2 = d(7, 14, 15,
-                "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
+                "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final.",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalVariables");
         d2.setData(IJavaElement.FIELD);
 
         Diagnostic d3 = d(8, 17, 18,
-                "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
+                "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final.",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalVariables");
         d3.setData(IJavaElement.FIELD);
 
         Diagnostic d4 = d(8, 30, 31,
-                "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
+                "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final.",
                 DiagnosticSeverity.Error, "jakarta-persistence", "RemoveFinalVariables");
         d4.setData(IJavaElement.FIELD);
 
