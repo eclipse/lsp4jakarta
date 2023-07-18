@@ -14,7 +14,6 @@
 
 package org.eclipse.lsp4jakarta.jdt.core.servlet;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
