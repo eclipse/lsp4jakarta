@@ -64,7 +64,7 @@ public class NoDiagnosticsTest extends BaseJakartaTest {
 	@Parameters
 	public static List<String> projectFileProvider() throws Exception {
 
-		String packagePath = "./src/main/java/io/openliberty/sample/jakarta/";
+		String packagePath = "/src/main/java/io/openliberty/sample/jakarta/";
 		String basePath = System.getProperty("user.dir")
 				+ "/projects/demo-servlet-no-diagnostics/";
 		File dir = new File(basePath + packagePath);
