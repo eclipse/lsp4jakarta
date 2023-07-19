@@ -18,6 +18,7 @@ import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDi
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -70,7 +71,7 @@ public class NoDiagnosticsTest extends BaseJakartaTest {
 		String[] extensions = new String[] { "java" };
 		List<String> results = new ArrayList<String>();
 
-		List<File> files = (List<File>) FileUtils.listFiles(dir, extensions, true);
+		Collection<File> files = FileUtils.listFiles(dir, extensions, true);
 		for (File file : files) {
 			// Get relative path from source folder and add it in the results array.
 			results.add(file.getAbsolutePath().substring(basePath.length()));
