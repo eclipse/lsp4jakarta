@@ -85,9 +85,9 @@
                 <version>3.3.4</version>
                 <configuration>
                     <runtimeArtifact>
-                        <groupId>io.openliberty.beta</groupId>
+                        <groupId>io.openliberty</groupId>
                         <artifactId>openliberty-jakartaee9</artifactId>
-                        <version>21.0.0.2-beta</version>
+                        <version>21.0.0.2</version>
                         <type>zip</type>
                     </runtimeArtifact>
                 </configuration>
