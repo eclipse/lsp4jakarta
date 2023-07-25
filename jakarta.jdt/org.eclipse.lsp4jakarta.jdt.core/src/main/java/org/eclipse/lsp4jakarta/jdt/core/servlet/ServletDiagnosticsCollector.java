@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2022 IBM Corporation, Pengyu Xiong and others.
+* Copyright (c) 2020, 2023 IBM Corporation, Pengyu Xiong and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 import org.eclipse.lsp4jakarta.jdt.core.TypeHierarchyUtils;
 
 /**
@@ -78,11 +79,11 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                             int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, ServletConstants.HTTP_SERVLET);
                             if (r == -1) {
                                 diagnostics.add(createDiagnostic(type, unit,
-                                        "Annotated classes with @WebServlet must extend the HttpServlet class.",
+                                        Messages.getMessage("WebServletMustExtend"),
                                         ServletConstants.DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                             } else if (r == 0) { // unknown super type
                                 diagnostics.add(createDiagnostic(type, unit,
-                                        "Annotated classes with @WebServlet should extend the HttpServlet class.",
+                                        Messages.getMessage("WebServletMustExtend"),
                                         ServletConstants.DIAGNOSTIC_CODE, null, DiagnosticSeverity.Warning));
                             }
                         } catch (CoreException e) {
@@ -105,13 +106,13 @@ public class ServletDiagnosticsCollector extends AbstractDiagnosticsCollector {
                         }
                         if (!isUrlpatternSpecified && !isValueSpecified) {
                             diagnostics.add(createDiagnostic(webServletAnnotation, unit,
-                                    "The @WebServlet annotation must define the attribute 'urlPatterns' or 'value'.",
+                                    Messages.getMessage("WebServletMustDefine"),
                                     ServletConstants.DIAGNOSTIC_CODE_MISSING_ATTRIBUTE, null,
                                     DiagnosticSeverity.Error));
                         }
                         if (isUrlpatternSpecified && isValueSpecified) {
                             diagnostics.add(createDiagnostic(webServletAnnotation, unit,
-                                    "The @WebServlet annotation cannot have both 'value' and 'urlPatterns' attributes specified at once.",
+                                    Messages.getMessage("WebServletCannotHaveBoth"),
                                     ServletConstants.DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES, null,
                                     DiagnosticSeverity.Error));
                         }

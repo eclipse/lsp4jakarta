@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2022 IBM Corporation, Matthew Shocrylas and others.
+ * Copyright (c) 2021, 2023 IBM Corporation, Matthew Shocrylas and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 public class ResourceMethodDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
@@ -72,7 +73,7 @@ public class ResourceMethodDiagnosticsCollector extends AbstractDiagnosticsColle
                         }
                         if (!isValid) {
                             diagnostics.add(createDiagnostic(method, unit,
-                                    "Only public methods can be exposed as resource methods",
+                                    Messages.getMessage("OnlyPublicMethods"),
                                     Jax_RSConstants.DIAGNOSTIC_CODE_NON_PUBLIC, null, DiagnosticSeverity.Error));
                         }
                         if (isResourceMethod) {
@@ -95,7 +96,7 @@ public class ResourceMethodDiagnosticsCollector extends AbstractDiagnosticsColle
                             }
                             if (numEntityParams > 1) {
                                 diagnostics.add(createDiagnostic(method, unit,
-                                        "Resource methods cannot have more than one entity parameter",
+                                        Messages.getMessage("ResourceMethodsEntityParameter"),
                                         Jax_RSConstants.DIAGNOSTIC_CODE_MULTIPLE_ENTITY_PARAMS, null,
                                         DiagnosticSeverity.Error));
                             }

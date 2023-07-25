@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 IBM Corporation and others.
+ * Copyright (c) 2022, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import org.eclipse.lsp4jakarta.jdt.core.ASTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 
 public class JsonpDiagnosticCollector extends AbstractDiagnosticsCollector {
@@ -62,7 +63,7 @@ public class JsonpDiagnosticCollector extends AbstractDiagnosticsCollector {
                 // or a sequence of '/' prefixed tokens, a diagnostic highlighting the invalid argument is created.
                 try {
                     Range range = JDTUtils.toRange(unit, arg.getStartPosition(), arg.getLength());
-                    Diagnostic diagnostic = new Diagnostic(range, JsonpConstants.CREATE_POINTER_ERROR_MESSAGE);
+                    Diagnostic diagnostic = new Diagnostic(range, Messages.getMessage("CreatePointerErrorMessage"));
                     completeDiagnostic(diagnostic, JsonpConstants.DIAGNOSTIC_CODE_CREATE_POINTER);
                     diagnostics.add(diagnostic);
                 } catch (JavaModelException e) {

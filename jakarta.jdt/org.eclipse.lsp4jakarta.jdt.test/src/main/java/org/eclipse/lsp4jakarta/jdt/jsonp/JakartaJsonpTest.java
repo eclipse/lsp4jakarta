@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 IBM Corporation and others.
+ * Copyright (c) 2022, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,15 +40,15 @@ public class JakartaJsonpTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
         
         Diagnostic d1 = d(20, 60, 64, 
-                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String", 
+                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.", 
                 DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
         
         Diagnostic d2 = d(21, 62, 70, 
-                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String", 
+                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.", 
                 DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
         
         Diagnostic d3 = d(22, 60, 80, 
-                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String", 
+                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.", 
                 DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
         
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);

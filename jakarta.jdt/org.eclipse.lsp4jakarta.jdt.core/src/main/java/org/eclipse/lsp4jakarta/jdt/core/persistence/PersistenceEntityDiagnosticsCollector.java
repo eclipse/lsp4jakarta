@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2022 IBM Corporation, Ankush Sharma and others.
+* Copyright (c) 2020, 2023 IBM Corporation, Ankush Sharma and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCollector {
 
@@ -128,7 +129,7 @@ public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCo
                             // All Methods of this class should not be final
                             if (isFinal(method.getFlags())) {
                                 diagnostics.add(createDiagnostic(method, unit,
-                                        "A class using the @Entity annotation cannot contain any methods that are declared final",
+                                        Messages.getMessage("EntityNoFinalMethods"),
                                         PersistenceConstants.DIAGNOSTIC_CODE_FINAL_METHODS, method.getElementType(),
                                         DiagnosticSeverity.Error));
                             }
@@ -143,7 +144,7 @@ public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCo
                             // If we find a non-static variable that is final, this is a problem
                             if (isFinal(field.getFlags())) {
                                 diagnostics.add(createDiagnostic(field, unit,
-                                        "A class using the @Entity annotation cannot contain any persistent instance variables that are declared final",
+                                        Messages.getMessage("EntityNoFinalVariables"),
                                         PersistenceConstants.DIAGNOSTIC_CODE_FINAL_VARIABLES, field.getElementType(),
                                         DiagnosticSeverity.Error));
                             }
@@ -156,14 +157,14 @@ public class PersistenceEntityDiagnosticsCollector extends AbstractDiagnosticsCo
                         // Create Diagnostics if needed
                         if (!hasPublicOrProtectedNoArgConstructor && hasArgConstructor) {
                             diagnostics.add(createDiagnostic(type, unit,
-                                    "A class using the @Entity annotation must contain a public or protected constructor with no arguments.",
+                                    Messages.getMessage("EntityNoArgConstructor"),
                                     PersistenceConstants.DIAGNOSTIC_CODE_MISSING_EMPTY_CONSTRUCTOR, null,
                                     DiagnosticSeverity.Error));
                         }
 
                         if (isEntityClassFinal) {
                             diagnostics.add(createDiagnostic(type, unit,
-                                    "A class using the @Entity annotation must not be final.",
+                                    Messages.getMessage("EntityNoFinalClass"),
                                     PersistenceConstants.DIAGNOSTIC_CODE_FINAL_CLASS, type.getElementType(),
                                     DiagnosticSeverity.Error));
                         }

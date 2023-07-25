@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -13,8 +13,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.codeAction.proposal;
-
-import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
@@ -37,8 +35,6 @@ import org.eclipse.lsp4j.CodeActionKind;
 
 public class ExtendClassProposal extends ChangeCorrectionProposal {
 
-    private static final String TITLE_MESSAGE = "Let ''{0}'' extend ''{1}''";
-
     private IBinding fBinding;
     private CompilationUnit fAstRoot;
     private String interfaceType;
@@ -52,12 +48,6 @@ public class ExtendClassProposal extends ChangeCorrectionProposal {
         fBinding = binding;
         fAstRoot = astRoot;
         this.interfaceType = interfaceType;
-
-        String[] args = { BasicElementLabels.getJavaElementName(binding.getName()),
-                BasicElementLabels.getJavaElementName(interfaceType) };
-
-        setDisplayName(MessageFormat.format(TITLE_MESSAGE, args));
-
     }
 
     protected ASTRewrite getRewrite() throws CoreException {

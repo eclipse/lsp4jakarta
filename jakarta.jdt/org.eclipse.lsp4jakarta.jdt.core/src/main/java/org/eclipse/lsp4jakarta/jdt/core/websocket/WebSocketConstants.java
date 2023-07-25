@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2022 IBM Corporation and others. 
+ * Copyright (c) 2022, 2023 IBM Corporation and others. 
  * 
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v. 2.0 which is available at 
@@ -31,7 +31,6 @@ public class WebSocketConstants {
     public static final String DIAGNOSTIC_ERR_MSG = "Cannot calculate WebSocket diagnostics";
 
     public static final String PATHPARAM_ANNOTATION = "jakarta.websocket.server.PathParam";
-    public static final String PATHPARAM_VALUE_WARN_MSG = "PathParam value does not match specified Endpoint URI";
 
     public static final String PATHPARAM_DIAGNOSTIC_CODE = "ChangePathParamValue";
 
@@ -41,20 +40,14 @@ public class WebSocketConstants {
     public static final String CURLY_BRACE_START = "{";
     public static final String CURLY_BRACE_END = "}";
 
-    public static final String DIAGNOSTIC_PATH_PARAMS_ANNOT_MISSING = "Parameters of type String, any Java primitive type, or boxed version thereof must be annotated with @PathParams.";
     public static final String DIAGNOSTIC_CODE_PATH_PARAMS_ANNOT = "AddPathParamsAnnotation";
     
     /* Diagnostic codes */
     public static final String DIAGNOSTIC_CODE_ON_OPEN_INVALID_PARAMS = "OnOpenChangeInvalidParam";
     public static final String DIAGNOSTIC_CODE_ON_CLOSE_INVALID_PARAMS = "OnCloseChangeInvalidParam";
 
-    public static final String DIAGNOSTIC_ON_MESSAGE_DUPLICATE_METHOD = "Classes annotated with @ServerEndpoint or @ClientEndpoint must have only one @OnMessage annotated method for each of the native WebSocket message formats: text, binary and pong.";
     public static final String DIAGNOSTIC_CODE_ON_MESSAGE_DUPLICATE_METHOD = "OnMessageDuplicateMethod";
 
-    public static final String DIAGNOSTIC_SERVER_ENDPOINT_NO_SLASH = "Server endpoint paths must start with a leading '/'.";
-    public static final String DIAGNOSTIC_SERVER_ENDPOINT_NOT_LEVEL1 = "Server endpoint paths must be a URI-template (level-1) or a partial URI.";
-    public static final String DIAGNOSTIC_SERVER_ENDPOINT_RELATIVE = "Server endpoint paths must not contain the sequences '/../', '/./' or '//'.";
-    public static final String DIAGNOSTIC_SERVER_ENDPOINT_DUPLICATE_VAR = "Server endpoint paths must not use the same variable more than once in a path.";
     public static final String DIAGNOSTIC_SERVER_ENDPOINT = "ChangeInvalidServerEndpoint";
 
     /*
@@ -112,9 +105,6 @@ public class WebSocketConstants {
             Arrays.asList("String", "Boolean", "Integer", "Long", "Double", "Float"));
     public static final Set<String> WRAPPER_OBJS = RAW_WRAPPER_OBJS.stream().map(raw -> "java.lang.".concat(raw))
             .collect(Collectors.toSet());
-
-    // Messages
-    public static final String PARAM_TYPE_DIAG_MSG = "Invalid parameter type. When using %s, parameter must be of type: \n- %s\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof";
 
     // Enums
     public enum MESSAGE_FORMAT {

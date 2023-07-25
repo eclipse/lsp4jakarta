@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2022 IBM Corporation and others.
+* Copyright (c) 2022, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,6 +11,8 @@
 *     Lidia Ataupillco Ramos - initial API and implementation
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix;
+
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * Quickfix for adding attributes to existing annotations
@@ -29,9 +31,6 @@ public class InsertAnnotationAttributesQuickFix extends InsertAnnotationQuickFix
 
     @Override
     protected String getLabel(String annotation, String... attributes) {
-        String type = "";
-        String name = "Add " + attributes[0] + " to " + annotation;
-        name = name.concat(type);
-        return name;
+    	return Messages.getMessage("AddAtoB", attributes[0], annotation);
     }
 }

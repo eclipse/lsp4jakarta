@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2022 IBM Corporation and others.
+ * Copyright (c) 2020, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,10 @@ public class JsonbConstants {
     public static final String JSONB_PREFIX = "Jsonb";
 
     public static final String JSONB_CREATOR = JSONB_PACKAGE + JSONB_PREFIX + "Creator";
-    public static final String ERROR_MESSAGE_JSONB_CREATOR = "Only one constructor or static factory method can be annotated with @JsonbCreator in a given class.";
     public static final int MAX_METHOD_WITH_JSONBCREATOR = 1;
 
     public static final String JSONB_TRANSIENT = JSONB_PREFIX + "Transient";
-    public static final String JSONB_TRANSIENT_FQ_NAME = JSONB_PACKAGE + JSONB_PREFIX + "Transient";
-    public static final String ERROR_MESSAGE_JSONB_TRANSIENT_ON_FIELD = "When a class field is annotated with @JsonbTransient, this field, getter or setter must not be annotated with other JSON Binding annotations.";
-    public static final String ERROR_MESSAGE_JSONB_TRANSIENT_ON_ACCESSOR = "When an accessor is annotated with @JsonbTransient, its field or the accessor must not be annotated with other JSON Binding annotations.";
+    public static final String JSONB_TRANSIENT_FQ_NAME = JSONB_PACKAGE + JSONB_TRANSIENT;
 
     public static final String JSONB_ANNOTATION = JSONB_PACKAGE + JSONB_PREFIX + "Annotation";
     public static final String JSONB_DATE_FORMAT = JSONB_PACKAGE + JSONB_PREFIX + "DateFormat";

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2022 IBM Corporation and others.
+* Copyright (c) 2022, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,12 +89,12 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
 
         // OnOpen Invalid Param Types
         Diagnostic d1 = d(19, 47, 59,
-        "Invalid parameter type. When using @OnOpen, parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
+        "Invalid parameter type. When using @OnOpen, parameter must be of type: \n- jakarta.websocket.EndpointConfig\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnOpenChangeInvalidParam");
 
         // OnClose Invalid Param Type
         Diagnostic d2 = d(24, 73, 85,
-                "Invalid parameter type. When using @OnClose, parameter must be of type: \n- jakarta.websocket.CloseReason\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof",
+                "Invalid parameter type. When using @OnClose, parameter must be of type: \n- jakarta.websocket.CloseReason\n- jakarta.websocket.Session\n- annotated with @PathParams and of type String or any Java primitive type or boxed version thereof.",
                 DiagnosticSeverity.Error, "jakarta-websocket", "OnCloseChangeInvalidParam");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
@@ -110,7 +110,7 @@ public class JakartaWebSocketTest extends BaseJakartaTest {
         JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
-        Diagnostic d = d(22, 59, 77, "PathParam value does not match specified Endpoint URI",
+        Diagnostic d = d(22, 59, 77, "PathParam value does not match specified Endpoint URI.",
                 DiagnosticSeverity.Warning, "jakarta-websocket", "ChangePathParamValue");
 
         assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d);

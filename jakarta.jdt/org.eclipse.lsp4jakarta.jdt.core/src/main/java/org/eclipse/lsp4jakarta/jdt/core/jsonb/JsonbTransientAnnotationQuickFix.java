@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2022 IBM Corporation and others.
+* Copyright (c) 2022, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public class JsonbTransientAnnotationQuickFix extends RemoveMultipleAnnotations 
 
         if (annotations.contains(JsonbConstants.JSONB_TRANSIENT)) {
             // Provide as one option: Remove JsonbTransient
-            annotationsListsToRemove.add(Arrays.asList("jakarta.json.bind.annotation.JsonbTransient"));
+            annotationsListsToRemove.add(Arrays.asList(JsonbConstants.JSONB_TRANSIENT_FQ_NAME));
         }
         
         // Provide as another option: Remove all other JsonbAnnotations

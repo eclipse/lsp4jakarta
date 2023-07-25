@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2021, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyModifiersProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 
 /**
@@ -104,27 +105,32 @@ public class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipan
         // Remove the modifier and the proper import by using JDT Core Manipulation
         // API
         ASTNode coveredNode = context.getCoveredNode().getParent();
-        String type = "";
-        if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.LOCAL_VARIABLE))){
-            type = "variable";
-        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.FIELD))) {
-            type = "field";
-        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.METHOD))) {
-            type = "method";
-        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.CLASS_FILE)) ||
-                diagnostic.getData().toString().equals(String.valueOf(IJavaElement.TYPE))) {
-            type = "class";
-        }
+        String label = getLabel(diagnostic, modifier);
 
-        String name = "Remove the \'" + modifier[0] + "\' modifier from this ";
-        name = name.concat(type);
-        ModifyModifiersProposal proposal = new ModifyModifiersProposal(name, context.getCompilationUnit(), 
+        ModifyModifiersProposal proposal = new ModifyModifiersProposal(label, context.getCompilationUnit(), 
                 context.getASTRoot(), parentType, 0, coveredNode, new ArrayList<>(), Arrays.asList(modifier));
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
 
         if (codeAction != null) {
             codeActions.add(codeAction);
         }
+    }
+
+    private String getLabel(Diagnostic diagnostic, String... modifier) {
+        String label;
+        if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.LOCAL_VARIABLE))){
+            label = Messages.getMessage("RemoveTheModifierFromThisVariable", modifier[0]);
+        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.FIELD))) {
+            label = Messages.getMessage("RemoveTheModifierFromThisField", modifier[0]);
+        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.METHOD))) {
+            label = Messages.getMessage("RemoveTheModifierFromThisMethod", modifier[0]);
+        } else if (diagnostic.getData().toString().equals(String.valueOf(IJavaElement.CLASS_FILE)) ||
+                diagnostic.getData().toString().equals(String.valueOf(IJavaElement.TYPE))) {
+            label = Messages.getMessage("RemoveTheModifierFromThisClass", modifier[0]);
+        } else {
+        	label = Messages.getMessage("RemoveTheModifierFromThis", modifier[0], "");
+        }
+        return label;
     }
 
     /**

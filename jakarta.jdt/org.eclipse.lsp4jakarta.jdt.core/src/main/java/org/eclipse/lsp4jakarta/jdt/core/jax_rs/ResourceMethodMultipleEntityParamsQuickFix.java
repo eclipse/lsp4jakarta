@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 IBM Corporation, Bera Sogut and others.
+ * Copyright (c) 2021, 2023 IBM Corporation, Bera Sogut and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.RemoveParamsProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * Quick fix for the ResourceMethodMultipleEntityParams diagnostic in
@@ -63,8 +64,8 @@ public class ResourceMethodMultipleEntityParamsQuickFix implements IJavaCodeActi
             }
 
             for (SingleVariableDeclaration entityParam : entityParams) {
-                final String TITLE_MESSAGE = "Remove all entity parameters except "
-                        + entityParam.getName().getIdentifier();
+                final String TITLE_MESSAGE = Messages.getMessage("RemoveAllEntityParametersExcept",
+                        entityParam.getName().getIdentifier());
 
                 // Remove all entity parameters except the current chosen one
                 ChangeCorrectionProposal proposal = new RemoveParamsProposal(TITLE_MESSAGE,

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation.
+* Copyright (c) 2021, 2023 IBM Corporation.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.IJavaCodeActionParticipant;
 import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.AddConstructorProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 /**
  * 
@@ -65,7 +66,7 @@ public class ManagedBeanNoArgConstructorQuickFix  implements IJavaCodeActionPart
         List<CodeAction> codeActions = new ArrayList<>();
 
         // option for protected constructor
-        String name = "Add a no-arg protected constructor to this class";
+        String name = Messages.getMessage("AddProtectedConstructor");
         ChangeCorrectionProposal proposal = new AddConstructorProposal(name,
                 context.getCompilationUnit(), context.getASTRoot(), parentType, 0);
         CodeAction codeAction = context.convertToCodeAction(proposal, diagnostic);
@@ -75,7 +76,7 @@ public class ManagedBeanNoArgConstructorQuickFix  implements IJavaCodeActionPart
         }
 
         // option for public constructor
-        name = "Add a no-arg public constructor to this class";
+        name = Messages.getMessage("AddPublicConstructor");
         proposal = new AddConstructorProposal(name,
                 context.getCompilationUnit(), context.getASTRoot(), parentType, 0, "public");
         codeAction = context.convertToCodeAction(proposal, diagnostic);

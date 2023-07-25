@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation and others.
+* Copyright (c) 2021, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import org.eclipse.lsp4jakarta.jdt.codeAction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.ModifyAnnotationProposal;
 import org.eclipse.lsp4jakarta.jdt.codeAction.proposal.quickfix.InsertAnnotationMissingQuickFix;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 
 /**
@@ -58,7 +59,7 @@ public class PersistenceAnnotationQuickFix extends InsertAnnotationMissingQuickF
         ArrayList<String> attributes = new ArrayList<>();
         attributes.add("name"); 
         attributes.add("referencedColumnName");
-        String name = "Add the missing attributes to the @MapKeyJoinColumn annotation";
+        String name = Messages.getMessage("AddTheMissingAttributes");
         
         ChangeCorrectionProposal proposal = new ModifyAnnotationProposal(name, context.getCompilationUnit(),
                 context.getASTRoot(), parentType, 0, attributes, annotations);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2022 IBM Corporation.
+ * Copyright (c) 2021, 2023 IBM Corporation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4jakarta.jdt.core.AbstractDiagnosticsCollector;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.Messages;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -83,7 +84,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     List<String> diagnosticData = managedBeanAnnotations.stream()
                             .map(annotation -> getSimpleName(annotation)).collect(Collectors.toList());
                     diagnostics.add(createDiagnostic(type, unit,
-                            "Scope type annotations must be specified by a managed bean class at most once.",
+                            Messages.getMessage("ScopeTypeAnnotationsManagedBean"),
                             DIAGNOSTIC_CODE_SCOPEDECL, (JsonArray) (new Gson().toJsonTree(diagnosticData)),
                             DiagnosticSeverity.Error));
                 }
@@ -107,8 +108,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
                             && (fieldScopes.size() != 1 || !fieldScopes.get(0).equals(DEPENDENT_FQ_NAME))) {
                         diagnostics.add(createDiagnostic(field, unit,
-                                createAnnotationDiagnostic(DEPENDENT,
-                                        "be the only scope defined by a managed bean with a non-static public field."),
+                                Messages.getMessage("ManagedBeanWithNonStaticPublicField"),
                                 DIAGNOSTIC_CODE, null,
                                 DiagnosticSeverity.Error));
                     }
@@ -135,7 +135,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                                 .collect(Collectors.toList()); // convert to simple name
                         diagnosticData.add(PRODUCES);
                         diagnostics.add(createDiagnostic(field, unit,
-                                "Scope type annotations must be specified by a producer field at most once.",
+                                Messages.getMessage("ScopeTypeAnnotationsProducerField"),
                                 DIAGNOSTIC_CODE_SCOPEDECL, (JsonArray) (new Gson().toJsonTree(diagnosticData)),
                                 DiagnosticSeverity.Error));
                     }
@@ -154,7 +154,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
 
                         // A single field cannot have the same
                         diagnostics.add(createDiagnostic(field, unit,
-                                "The @Produces and @Inject annotations must not be used on the same field or property.",
+                                Messages.getMessage("ManagedBeanProducesAndInject"),
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT, null, DiagnosticSeverity.Error));
                     }
 
@@ -194,7 +194,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                                 .collect(Collectors.toList()); // convert to simple name
                         diagnosticData.add(PRODUCES);
                         diagnostics.add(createDiagnostic(method, unit,
-                                "Scope type annotations must be specified by a producer method at most once.",
+                                Messages.getMessage("ScopeTypeAnnotationsProducerMethod"),
                                 DIAGNOSTIC_CODE_SCOPEDECL, (JsonArray) (new Gson().toJsonTree(diagnosticData)),
                                 DiagnosticSeverity.Error));
                     }
@@ -213,7 +213,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
 
                         // A single method cannot have the same
                         diagnostics.add(createDiagnostic(method, unit,
-                                "The @Produces and @Inject annotations must not be used on the same field or property.",
+                                Messages.getMessage("ManagedBeanProducesAndInject"),
                                 ManagedBeanConstants.DIAGNOSTIC_CODE_PRODUCES_INJECT, null, DiagnosticSeverity.Error));
                     }
 
@@ -253,8 +253,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     // Deliver a diagnostic on all parameterized constructors that they must add an
                     // @Inject annotation
                     for (IMethod m : methodsNeedingDiagnostics) {
-                        diagnostics.add(createDiagnostic(m, unit, createAnnotationDiagnostic(INJECT,
-                                "define a managed bean constructor that takes parameters, or the managed bean must resolve to having a no-arg constructor instead."),
+                        diagnostics.add(createDiagnostic(m, unit, Messages.getMessage("ManagedBeanConstructorWithParameters"),
                                 CONSTRUCTOR_DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                     }
                 }
@@ -266,9 +265,9 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     boolean isClassGeneric = type.getTypeParameters().length != 0;
                     boolean isDependent = managedBeanAnnotations.stream()
                             .anyMatch(annotation -> DEPENDENT_FQ_NAME.equals(annotation));
-                	
+                    
                     if (isClassGeneric && !isDependent) {
-                    	diagnostics.add(createDiagnostic(type, unit, "Managed bean class of generic type must have scope @Dependent",
+                        diagnostics.add(createDiagnostic(type, unit, Messages.getMessage("ManagedBeanGenericType"),
                                 DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                     }
                 }
@@ -326,8 +325,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                         if(numDisposes == 0) continue;
                         if(numDisposes > 1) {
                             diagnostics.add(createDiagnostic(method, unit,
-                                    createAnnotationDiagnostic(DISPOSES,
-                                            "not be defined on more than one parameter of a method."),
+                                    Messages.getMessage("ManagedBeanDisposeOneParameter"),
                                     ManagedBeanConstants.DIAGNOSTIC_CODE_REDUNDANT_DISPOSES, null,
                                     DiagnosticSeverity.Error));
                         }
@@ -374,8 +372,9 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
             }
 
             if (!invalidAnnotations.isEmpty()) {
-                String label = PRODUCES_FQ_NAME.equals(target) ? createInvalidProducesLabel(invalidAnnotations)
-                        : createInvalidInjectLabel(invalidAnnotations);
+                String label = PRODUCES_FQ_NAME.equals(target) ?
+                        createInvalidProducesLabel(invalidAnnotations) :
+                        createInvalidInjectLabel(invalidAnnotations);
                 diagnostics.add(createDiagnostic(method, unit, label, diagnosticCode, null, DiagnosticSeverity.Error));
             }
 
@@ -383,24 +382,14 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
     }
 
     private String createInvalidInjectLabel(Set<String> invalidAnnotations) {
-        String label = "A bean constructor or a method annotated with @Inject cannot have parameter(s) annotated with ";
-        label += String.join(", ", invalidAnnotations);
-        return label;
+        return Messages.getMessage("ManagedBeanInvalidInject", String.join(", ", invalidAnnotations)); // assuming comma delimited list is ok
     }
     
     private String createInvalidProducesLabel(Set<String> invalidAnnotations) {
-        String label = "A producer method cannot have parameter(s) annotated with ";
-        label += String.join(", ", invalidAnnotations);
-        return label;
+        return Messages.getMessage("ManagedBeanInvalidProduces", String.join(", ", invalidAnnotations)); // assuming comma delimited list is ok
     }
     
     private String createInvalidDisposesLabel(Set<String> invalidAnnotations) {
-        String label = "A disposer method cannot have parameter(s) annotated with ";
-        label += String.join(", ", invalidAnnotations);
-        return label;
-    }
-    
-    private String createAnnotationDiagnostic(String annotation, String message) {
-        return "The @" + annotation + " annotation must " + message;
+        return Messages.getMessage("ManagedBeanInvalidDisposer", String.join(", ", invalidAnnotations)); // assuming comma delimited list is ok
     }
 }
