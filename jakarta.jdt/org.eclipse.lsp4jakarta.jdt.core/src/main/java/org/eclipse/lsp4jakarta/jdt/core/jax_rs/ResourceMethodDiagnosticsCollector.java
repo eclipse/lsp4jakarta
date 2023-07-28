@@ -53,17 +53,20 @@ public class ResourceMethodDiagnosticsCollector extends AbstractDiagnosticsColle
                 alltypes = unit.getAllTypes();
                 for (IType type : alltypes) {
                     methods = type.getMethods();
+                    boolean isInterface = type.isInterface();
+
                     for (IMethod method : methods) {
                         IAnnotation[] methodAnnotations = method.getAnnotations();
                         boolean isResourceMethod = false;
                         boolean isValid = true;
                         boolean isPublic = Flags.isPublic(method.getFlags());
+                        boolean usesDfltAccessModifier = Flags.isPackageDefault(method.getFlags());
 
                         for (IAnnotation annotation : methodAnnotations) {
                             String matchedAnnotation = getMatchedJavaElementName(type, annotation.getElementName(),
                                     methodDesignators);
                             if (matchedAnnotation != null) {
-                                if (isValid && !isPublic)
+                                if (isValid && !isPublic && !(usesDfltAccessModifier && isInterface) )
                                     isValid = false;
                                 if (!Jax_RSConstants.PATH_ANNOTATION.equals(matchedAnnotation)) {
                                     isResourceMethod = true;
