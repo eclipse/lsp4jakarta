@@ -9,6 +9,7 @@ pipeline {
   }
   parameters {
       string(name: 'VERSION', defaultValue: '', description: 'Version to Release?')
+      string(name: 'VERSION_SNAPSHOT', defaultValue: '', description: 'Next Development Version?')
   }
   stages {
     stage("Release LSP4Jakarta Language Server"){
@@ -21,10 +22,16 @@ pipeline {
         withMaven {
           sh "VERSION=${params.VERSION}"
           sh '''
-                cd jakarta.jdt
-                ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION-SNAPSHOT
+                cd jakarta.eclipse
+                ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
+                cd ../jakarta.ls
+                ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
                 ./mvnw versions:set-scm-tag -DnewTag=$VERSION
-                ./mvnw clean verify -B -Peclipse-sign -Dcbi.jarsigner.skip=false
+                ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
+                cd ../jakarta.jdt
+                ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
+                ./mvnw versions:set-scm-tag -DnewTag=$VERSION
+                ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
                 cd ..
               '''
         }
@@ -64,7 +71,7 @@ pipeline {
           sh '''
             git config --global user.email "lsp4jakarta-bot@eclipse.org"
             git config --global user.name "LSP4Jakarta GitHub Bot"
-            git add "**/pom.xml" "**/MANIFEST.MF"
+            git add "**/pom.xml" "**/MANIFEST.MF" "**/feature.xml"
             git commit -sm "Release $VERSION"
             git tag $VERSION
             git push origin $VERSION
