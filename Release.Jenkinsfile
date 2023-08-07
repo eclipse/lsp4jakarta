@@ -79,5 +79,39 @@ pipeline {
         }
       }
     }
+
+    stage("Update to next development version"){
+      steps {
+        withMaven {
+          sh "$VERSION_SNAPSHOT=${params.VERSION_SNAPSHOT}"
+          sh '''
+            cd jakarta.eclipse
+            ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION_SNAPSHOT
+            cd ../jakarta.ls
+            ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION_SNAPSHOT
+            ./mvnw versions:set-scm-tag -DnewTag=$VERSION_SNAPSHOT
+            cd ../jakarta.jdt
+            ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION_SNAPSHOT
+            ./mvnw versions:set-scm-tag -DnewTag=$VERSION_SNAPSHOT
+            cd ..
+          '''
+        }
+      }
+    }
+
+    stage('Push next development version') {
+      steps {
+        sshagent(['github-bot-ssh']) {
+          sh "$VERSION_SNAPSHOT=${params.$VERSION_SNAPSHOT}"
+          sh '''
+            git config --global user.email "lsp4jakarta-bot@eclipse.org"
+            git config --global user.name "LSP4Jakarta GitHub Bot"
+            git add "**/pom.xml" "**/MANIFEST.MF" "**/feature.xml"
+            git commit -sm "New Development $VERSION_SNAPSHOT"
+            git push origin
+          '''
+        }
+      }
+    }
   }
 }
