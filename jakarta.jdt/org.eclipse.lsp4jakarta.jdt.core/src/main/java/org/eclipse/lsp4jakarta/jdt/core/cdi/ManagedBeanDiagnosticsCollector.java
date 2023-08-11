@@ -14,14 +14,11 @@
 package org.eclipse.lsp4jakarta.jdt.core.cdi;
 
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.CONSTRUCTOR_DIAGNOSTIC_CODE;
-import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DEPENDENT;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DEPENDENT_FQ_NAME;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DIAGNOSTIC_CODE;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DIAGNOSTIC_CODE_SCOPEDECL;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DIAGNOSTIC_SOURCE;
-import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DISPOSES;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.DISPOSES_FQ_NAME;
-import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.INJECT;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.INJECT_FQ_NAME;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.INVALID_INJECT_PARAMS_FQ;
 import static org.eclipse.lsp4jakarta.jdt.core.cdi.ManagedBeanConstants.OBSERVES_ASYNC_FQ_NAME;
@@ -74,8 +71,8 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
             IType[] types = unit.getAllTypes();
             String[] scopeFQNames = SCOPE_FQ_NAMES.toArray(String[]::new);
             for (IType type : types) {
-                List<String> managedBeanAnnotations = getMatchedJavaElementNames(type, Stream.of(type.getAnnotations())
-                        .map(annotation -> annotation.getElementName()).toArray(String[]::new),
+                List<String> managedBeanAnnotations = getMatchedJavaElementNames(type,
+                        Stream.of(type.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new),
                         scopeFQNames);
                 boolean isManagedBean = managedBeanAnnotations.size() > 0;
 
@@ -93,9 +90,6 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                 IField fields[] = type.getFields();
                 for (IField field : fields) {
                     int fieldFlags = field.getFlags();
-                    String[] annotationNames = Stream.of(field.getAnnotations())
-                            .map(annotation -> annotation.getElementName()).toArray(String[]::new);
-                    List<String> fieldScopes = getMatchedJavaElementNames(type, annotationNames, scopeFQNames);
 
                     /**
                      * If a managed bean has a non-static public field, it must have
@@ -106,11 +100,9 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                      * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#managed_beans
                      */
                     if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
-                            && (fieldScopes.size() != 1 || !fieldScopes.get(0).equals(DEPENDENT_FQ_NAME))) {
+                            && !managedBeanAnnotations.contains(DEPENDENT_FQ_NAME)) {
                         diagnostics.add(createDiagnostic(field, unit,
-                                Messages.getMessage("ManagedBeanWithNonStaticPublicField"),
-                                DIAGNOSTIC_CODE, null,
-                                DiagnosticSeverity.Error));
+                                Messages.getMessage("ManagedBeanWithNonStaticPublicField"), DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                     }
 
                     /**
@@ -122,6 +114,9 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                      * 
                      * Here we only look at the fields.
                      */
+                    String[] annotationNames = Stream.of(field.getAnnotations())
+                            .map(annotation -> annotation.getElementName()).toArray(String[]::new);
+                    List<String> fieldScopes = getMatchedJavaElementNames(type, annotationNames, scopeFQNames);
                     List<String> fieldInjects = getMatchedJavaElementNames(type, annotationNames, injectAnnotations);
                     boolean isProducerField = false, isInjectField = false;
                     for (String annotation : fieldInjects) {
@@ -257,7 +252,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                                 CONSTRUCTOR_DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
                     }
                 }
-                
+
                 /**
                  * If a managed bean class is of generic type, it must be annotated with @Dependent
                  */
@@ -265,7 +260,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                     boolean isClassGeneric = type.getTypeParameters().length != 0;
                     boolean isDependent = managedBeanAnnotations.stream()
                             .anyMatch(annotation -> DEPENDENT_FQ_NAME.equals(annotation));
-                    
+
                     if (isClassGeneric && !isDependent) {
                         diagnostics.add(createDiagnostic(type, unit, Messages.getMessage("ManagedBeanGenericType"),
                                 DIAGNOSTIC_CODE, null, DiagnosticSeverity.Error));
@@ -307,7 +302,7 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                         int numDisposes = 0;
                         Set<String> invalidAnnotations = new TreeSet<>();
                         ILocalVariable[] params = method.getParameters();
-                        
+
                         for (ILocalVariable param : params) {
                             IAnnotation[] annotations = param.getAnnotations();
                             for (IAnnotation annotation : annotations) {
@@ -321,18 +316,20 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
                                 }
                             }
                         }
-                        
-                        if(numDisposes == 0) continue;
-                        if(numDisposes > 1) {
+
+                        if (numDisposes == 0) {
+                            continue;
+                        }
+
+                        if (numDisposes > 1) {
                             diagnostics.add(createDiagnostic(method, unit,
                                     Messages.getMessage("ManagedBeanDisposeOneParameter"),
                                     ManagedBeanConstants.DIAGNOSTIC_CODE_REDUNDANT_DISPOSES, null,
                                     DiagnosticSeverity.Error));
                         }
-                        
-                        if(!invalidAnnotations.isEmpty()) {
-                            diagnostics.add(createDiagnostic(method, unit,
-                                    createInvalidDisposesLabel(invalidAnnotations),
+
+                        if (!invalidAnnotations.isEmpty()) {
+                            diagnostics.add(createDiagnostic(method, unit, createInvalidDisposesLabel(invalidAnnotations),
                                     ManagedBeanConstants.DIAGNOSTIC_CODE_INVALID_DISPOSES_PARAM, null,
                                     DiagnosticSeverity.Error));
                         }
@@ -341,12 +338,12 @@ public class ManagedBeanDiagnosticsCollector extends AbstractDiagnosticsCollecto
             }
 
         } catch (JavaModelException e) {
-        	JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
+            JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
         }
     }
 
-    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String target,
-            String diagnosticCode) throws JavaModelException {
+    private void invalidParamsCheck(ICompilationUnit unit, List<Diagnostic> diagnostics, IType type, String target, String diagnosticCode)
+            throws JavaModelException {
         for (IMethod method : type.getMethods()) {
             IAnnotation targetAnnotation = null;
 
