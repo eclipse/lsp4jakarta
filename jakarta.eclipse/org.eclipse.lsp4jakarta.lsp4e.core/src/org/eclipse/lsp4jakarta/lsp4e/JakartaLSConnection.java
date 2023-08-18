@@ -49,6 +49,12 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
 
         List<String> commands = new ArrayList<>();
         commands.add(computeJavaPath());
+        
+        String debugPortString = System.getProperty(getClass().getName() + ".debugPort");
+        if (debugPortString != null) {
+            commands.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + debugPortString);
+        }
+        
         commands.add("-classpath");
         try {
             commands.add(computeClasspath());
@@ -59,7 +65,7 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
             commands.add("-Duser.language=" + currentLocale.getLanguage());
             commands.add("-Duser.country=" + currentLocale.getCountry());
 
-            commands.add("org.eclipse.lsp4jakarta.JakartaLanguageServerLauncher");
+            commands.add("org.eclipse.lsp4jakarta.ls.JakartaLanguageServerLauncher");
             setCommands(commands);
             setWorkingDirectory(System.getProperty("user.dir"));
         } catch (IOException e) {

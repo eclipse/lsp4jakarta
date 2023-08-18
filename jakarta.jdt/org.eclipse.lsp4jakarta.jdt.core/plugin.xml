@@ -2,6 +2,11 @@
 <?eclipse version="3.4"?>
 <plugin id="org.eclipse.lsp4jakarta.jdt"
 	name="Eclipse Lsp4Jakarta JDT Extension">
+	
+   <extension-point id="projectLabelProviders"
+                name="%projectLabelProviders.name"
+                schema="schema/projectLabelProviders.exsd"/>
+	
 	<requires>
 		<import plugin="org.eclipse.core.runtime" />
 	</requires>
@@ -10,9 +15,19 @@
 	<extension point="org.eclipse.jdt.ls.core.delegateCommandHandler">
 		<delegateCommandHandler class="org.eclipse.lsp4jakarta.jdt.internal.core.ls.JakartaDelegateCommandHandlerForJava">
 			<command id="jakarta/java/classpath"/>
+			<command id="jakarta/java/completion"/>
 			<command id="jakarta/java/diagnostics"/>
 			<command id="jakarta/java/codeaction"/>
 			<command id="jakarta/java/cursorcontext"/>
 		</delegateCommandHandler>
-	</extension>
+	</extension>	
+	<!--
+	<extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants" >
+   	  <completion class="org.eclipse.lsp4jakarta.jdt.internal.core.java.completion.JavaCompletionDefinition" />
+   </extension>
+   -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.projectLabelProviders">
+      <provider class="org.eclipse.lsp4jakarta.jdt.internal.core.providers.JakartaProjectLabelProvider" />
+   </extension>
+   
 </plugin>

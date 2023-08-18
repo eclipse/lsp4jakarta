@@ -32,10 +32,12 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <tycho.version>3.0.3</tycho.version>
-    <maven.compiler.source>17</maven.compiler.source>
+    
+<tycho.version>3.0.3</tycho.version>
+    
+<maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <lsp4j.version>0.17.0</lsp4j.version>
+    <lsp4j.version>0.21.0</lsp4j.version>
     <releases.repo.id>repo.eclipse.org</releases.repo.id>
     <releases.repo.url>https://repo.eclipse.org/content/repositories/lsp4jakarta-releases/</releases.repo.url>
     <snapshots.repo.id>repo.eclipse.org</snapshots.repo.id>
@@ -59,24 +61,15 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.lsp4mp</groupId>
-      <artifactId>org.eclipse.lsp4mp.ls</artifactId>
-      <version>0.5.0</version>
-      <classifier>uber</classifier>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.lsp4j</groupId>
-          <artifactId>org.eclipse.lsp4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.eclipse.lsp4j</groupId>
-          <artifactId>org.eclipse.lsp4j.jsonrpc</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-  </dependencies>
+    <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+<dependency>
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <version>32.1.0-jre</version>
+</dependency>
 
+  </dependencies>
+  <!--
   <repositories>
     <repository>
       <id>lsp4mp-releases</id>
@@ -99,6 +92,7 @@
       </snapshots>
     </repository>
   </repositories>
+-->
 
   <pluginRepositories>
     <pluginRepository>
@@ -133,15 +127,6 @@
         </executions>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-packaging-plugin</artifactId>
-          <version>${tycho.version}</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
   
   <distributionManagement>

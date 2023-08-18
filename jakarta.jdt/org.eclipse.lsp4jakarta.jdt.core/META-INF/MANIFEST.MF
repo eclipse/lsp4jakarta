@@ -27,5 +27,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: 
- org.eclipse.lsp4jakarta.commons, 
- org.eclipse.lsp4jakarta.jdt.core
+ org.eclipse.lsp4jakarta.commons,
+ org.eclipse.lsp4jakarta.jdt.core,
+ org.eclipse.lsp4jakarta.jdt.internal.core.ls
