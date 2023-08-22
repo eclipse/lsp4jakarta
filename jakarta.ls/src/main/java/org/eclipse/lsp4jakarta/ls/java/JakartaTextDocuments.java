@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -246,7 +247,16 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 			params.setUri(documentURI);
 			params.setTypes(getSnippetRegistry().getTypes());
 			final CompletableFuture<ProjectLabelInfoEntry> future = projectInfoProvider.getJavaProjectLabels(params);
-			future.thenApply(entry -> {
+			// >> changed this section starting here
+			ProjectLabelInfoEntry entry = null;
+			try {
+				// get will definitly wait but forced me to re-write the code abit
+				entry = future.get();
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 				if (entry != null) {
 					// project info with labels are get from the JDT LS
 					String newProjectURI = entry.getUri();
@@ -257,12 +267,36 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 					// evict the document cache level.
 					documentCache.remove(documentURI);
 				}
-				return entry;
-			});
 			// cache the future in the document level.
 			documentCache.put(documentURI, future);
 			return future;
-		}
+		} // >> to here from:
+		
+		/*
+		 * 'thenApply(..) does not seem to halt and wait for the async compute happeneing in the 
+		 * LSClient/EclipseIDE to determine a result before the code here races to a point where the 
+		 * lack of a result causes the completion window to not be populated - must figure out why 'thenApply does not wait as I
+		 * believe it should...
+		 * 
+		final CompletableFuture<ProjectLabelInfoEntry> future = projectInfoProvider.getJavaProjectLabels(params);
+		future.thenApply(entry -> {
+			if (entry != null) {
+				// project info with labels are get from the JDT LS
+				String newProjectURI = entry.getUri();
+				// cache the project info in the project cache level.
+				projectCache.put(newProjectURI, future);
+				// update the project URI of the document to link it to a project URI
+				document.setProjectURI(newProjectURI);
+				// evict the document cache level.
+				documentCache.remove(documentURI);
+			}
+			return entry;
+		});
+		// cache the future in the document level.
+		documentCache.put(documentURI, future);
+		return future;
+	}
+	*/
 
 		// Returns the cached project info
 		return projectInfo;

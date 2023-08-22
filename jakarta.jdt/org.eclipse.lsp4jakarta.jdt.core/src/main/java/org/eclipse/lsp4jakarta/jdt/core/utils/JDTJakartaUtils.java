@@ -138,14 +138,16 @@ public class JDTJakartaUtils {
 	}
 
 	/**
-	 * Returns true if <code>javaProject</code> is a MicroProfile project. Returns
+	 * Returns true if <code>javaProject</code> is a Jakarta project. Returns
 	 * false otherwise.
 	 *
 	 * @param javaProject the Java project to check
-	 * @return true only if <code>javaProject</code> is a MicroProfile project.
+	 * @return true only if <code>javaProject</code> is a Jakarta project.
 	 */
 	public static boolean isJakartaProject(IJavaProject javaProject) {
 		
+		// Here we make a determination if we are in a jakarta project - we look for a well known 
+		// jakarta class on the classpath - which it will find if the project has the jakarta EE dependency in it pom
 		try {
 			return javaProject.findType(JakartaConfigConstants.JAKARTA_RS_GET) != null;
 		} catch (JavaModelException e) {
@@ -153,8 +155,6 @@ public class JDTJakartaUtils {
 			return false;
 		}
 		
-		// AJM not sure what to do here for jakarta projects?
-		//return true;
 	}
 
 	/**

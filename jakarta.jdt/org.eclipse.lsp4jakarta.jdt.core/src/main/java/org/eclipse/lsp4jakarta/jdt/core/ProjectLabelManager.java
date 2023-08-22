@@ -130,7 +130,7 @@ public class ProjectLabelManager {
 
 		// Update labels by using the
 		// "org.eclipse.lsp4mp.jdt.core.projectLabelProviders" extension point (ex
-		// : "maven", "gradle", "quarkus", "microprofile").
+		// : "maven", "gradle", "quarkus", "jakarta").
 		List<String> projectLabels = new ArrayList<>();
 		List<ProjectLabelDefinition> definitions = ProjectLabelRegistry.getInstance().getProjectLabelDefinitions();
 		for (ProjectLabelDefinition definition : definitions) {

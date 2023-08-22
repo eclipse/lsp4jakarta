@@ -18,8 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfo;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfoParams;
-import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfo;
-import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfoParams;
 
 /**
  * MicroProfile Java file information provider.
