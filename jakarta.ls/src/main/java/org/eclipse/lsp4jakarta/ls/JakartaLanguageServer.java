@@ -13,7 +13,6 @@
 
 package org.eclipse.lsp4jakarta.ls;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
@@ -57,7 +56,6 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
     	javaDocuments = new JakartaTextDocuments(this, this);
         workspaceService = new JakartaWorkspaceService(this);
         textDocumentService = new JakartaTextDocumentService(this, javaDocuments);
-        System.out.println("AJM: here?");
     }
 
     @Override

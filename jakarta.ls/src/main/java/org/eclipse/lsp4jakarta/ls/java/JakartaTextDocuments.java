@@ -250,7 +250,7 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 			// >> changed this section starting here
 			ProjectLabelInfoEntry entry = null;
 			try {
-				// get will definitly wait but forced me to re-write the code abit
+				// future.get() will definitely wait but forced me to re-write the code abit
 				entry = future.get();
 			} catch (InterruptedException | ExecutionException e) {
 				// TODO Auto-generated catch block
@@ -272,8 +272,8 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 			return future;
 		} // >> to here from:
 		
-		/*
-		 * 'thenApply(..) does not seem to halt and wait for the async compute happeneing in the 
+		/* original code block preserved here -
+		 * 'thenApply(..) does not seem to halt and wait for the async compute happening in the 
 		 * LSClient/EclipseIDE to determine a result before the code here races to a point where the 
 		 * lack of a result causes the completion window to not be populated - must figure out why 'thenApply does not wait as I
 		 * believe it should...
