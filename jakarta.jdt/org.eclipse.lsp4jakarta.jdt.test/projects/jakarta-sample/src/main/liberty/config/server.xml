@@ -1,6 +1,6 @@
 <server description="Sample Liberty server">
     <featureManager>
-        <feature>jakartaee-9.0</feature>
+        <feature>jakartaee-9.1</feature>
     </featureManager>
 
     <webApplication location="${artifactId}.war" contextRoot="/" />
