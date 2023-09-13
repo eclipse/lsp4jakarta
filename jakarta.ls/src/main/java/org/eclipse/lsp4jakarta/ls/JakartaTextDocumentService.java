@@ -17,13 +17,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.CodeActionParams;
-import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
@@ -35,195 +33,246 @@ import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
-import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsSettings;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
-import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments;
-import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments.JakartaTextDocument;
-import org.eclipse.lsp4jakarta.ls.java.JavaTextDocumentSnippetRegistry;
-import org.eclipse.lsp4jakarta.snippets.JavaSnippetCompletionContext;
-import org.eclipse.lsp4jakarta.snippets.SnippetContextForJava;
-import org.eclipse.lsp4jakarta.commons.DocumentFormat;
 import org.eclipse.lsp4jakarta.ls.commons.BadLocationException;
 import org.eclipse.lsp4jakarta.ls.commons.TextDocument;
-import org.eclipse.lsp4jakarta.ls.commons.TextDocuments;
+import org.eclipse.lsp4jakarta.ls.commons.ValidatorDelayer;
+import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments;
+import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments.JakartaTextDocument;
+import org.eclipse.lsp4jakarta.snippets.JavaSnippetCompletionContext;
+import org.eclipse.lsp4jakarta.snippets.SnippetContextForJava;
 
 public class JakartaTextDocumentService implements TextDocumentService {
 
-    private static final Logger LOGGER = Logger.getLogger(JakartaTextDocumentService.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(JakartaTextDocumentService.class.getName());
 
-    private final JakartaLanguageServer jakartaLanguageServer;
+	private final JakartaLanguageServer jakartaLanguageServer;
 
-    // Text document manager that maintains the contexts of the text documents
-    // AJM made this change to allow LS to complete completion
-    private final JakartaTextDocuments documents;
-    
-    public JakartaTextDocumentService(JakartaLanguageServer jls, JakartaTextDocuments jakartaTextDocuments) {
-        this.jakartaLanguageServer = jls;
-        //this.documents = new JakartaTextDocuments(jls, jls);
-        this.documents = jakartaTextDocuments;
-    }
+	// Text document manager that maintains the contexts of the text documents
+	// AJM made this change to allow LS to complete completion
+	private final JakartaTextDocuments documents;
 
-    @Override
-    public void didClose(DidCloseTextDocumentParams params) {
-        documents.onDidCloseTextDocument(params);
-        String uri = params.getTextDocument().getUri();
-        // clear diagnostics
-        jakartaLanguageServer.getLanguageClient()
-                .publishDiagnostics(new PublishDiagnosticsParams(uri, new ArrayList<Diagnostic>()));
-    }
+	private ValidatorDelayer<JakartaTextDocument> validatorDelayer;
 
-    @Override
-    public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams params) {
-    	
-    	JakartaTextDocument document = documents.get(params.getTextDocument().getUri());
-    	
-    	return document.executeIfInJakartaProject((projectInfo, cancelChecker) -> {
-			JakartaJavaCompletionParams javaParams = new JakartaJavaCompletionParams(
-					params.getTextDocument().getUri(), params.getPosition());
-    	
+	public JakartaTextDocumentService(JakartaLanguageServer jls, JakartaTextDocuments jakartaTextDocuments) {
+		this.jakartaLanguageServer = jls;
+		this.documents = jakartaTextDocuments;
+		this.validatorDelayer = new ValidatorDelayer<>((javaTextDocument) -> {
+			triggerValidationFor(javaTextDocument);
+		});
+	}
 
-		// get the completion capabilities from the java language server component
-		CompletableFuture<JakartaJavaCompletionResult> javaParticipantCompletionsFuture = jakartaLanguageServer
-				.getLanguageClient().getJavaCompletion(javaParams);
-		
-		// calculate params for Java snippets
-		Integer completionOffset = null;
-		try {
-			completionOffset = document.offsetAt(params.getPosition());
-		} catch (BadLocationException e) {
-			//LOGGER.log(Level.SEVERE, "Error while getting java snippet completions", e);
-			return null;
-		} 
-		
-		final Integer finalizedCompletionOffset = completionOffset;
-		boolean canSupportMarkdown = true;
-		boolean snippetsSupported = true;
-    	
-		cancelChecker.checkCanceled();
+	@Override
+	public void didClose(DidCloseTextDocumentParams params) {
+		documents.onDidCloseTextDocument(params);
+		String uri = params.getTextDocument().getUri();
+		// clear diagnostics
+		jakartaLanguageServer.getLanguageClient()
+				.publishDiagnostics(new PublishDiagnosticsParams(uri, new ArrayList<Diagnostic>()));
+	}
 
-		return javaParticipantCompletionsFuture.thenApply((completionResult) -> {
-			cancelChecker.checkCanceled();
+	@Override
+	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams params) {
 
-			// We currently do not get any completion items from the JDT Extn layer - the completion
-			// list will be null, so we will new it up here to add the LS based snippets. 
-			// Will we in the future?
-			CompletionList list = completionResult.getCompletionList();
-			if (list == null) {
-				list = new CompletionList();
+		JakartaTextDocument document = documents.get(params.getTextDocument().getUri());
+
+		return document.executeIfInJakartaProject((projectInfo, cancelChecker) -> {
+			JakartaJavaCompletionParams javaParams = new JakartaJavaCompletionParams(params.getTextDocument().getUri(),
+					params.getPosition());
+
+			// get the completion capabilities from the java language server component
+			CompletableFuture<JakartaJavaCompletionResult> javaParticipantCompletionsFuture = jakartaLanguageServer
+					.getLanguageClient().getJavaCompletion(javaParams);
+
+			// calculate params for Java snippets
+			Integer completionOffset = null;
+			try {
+				completionOffset = document.offsetAt(params.getPosition());
+			} catch (BadLocationException e) {
+				// LOGGER.log(Level.SEVERE, "Error while getting java snippet completions", e);
+				return null;
 			}
 
-			// We do get a cursorContext obj back from the JDT Extn layer  - we will need that for snippet selection
-			JavaCursorContextResult cursorContext = completionResult.getCursorContext();
+			final Integer finalizedCompletionOffset = completionOffset;
+			boolean canSupportMarkdown = true;
+			boolean snippetsSupported = true;
 
-			// calculate the snippet completion items based on the cursor context
-			List<CompletionItem> snippetCompletionItems = documents.getSnippetRegistry().getCompletionItems(document, finalizedCompletionOffset,
-					canSupportMarkdown, snippetsSupported, (context, model) -> {
-						if (context != null && context instanceof SnippetContextForJava) {
-							return ((SnippetContextForJava) context)
-									.isMatch(new JavaSnippetCompletionContext(projectInfo, cursorContext));
-						}
-						return true;
-					}, projectInfo);
-			list.getItems().addAll(snippetCompletionItems);
+			cancelChecker.checkCanceled();
 
-			// This reduces the number of completion requests to the server. See:
-			// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion
-			list.setIsIncomplete(false);
-			return Either.forRight(list);
-		});
+			return javaParticipantCompletionsFuture.thenApply((completionResult) -> {
+				cancelChecker.checkCanceled();
 
-	}, Either.forLeft(Collections.emptyList()));
-    	/*
-        String uri = position.getTextDocument().getUri();
-        TextDocument document = documents.get(uri);
-        // Async thread to query the JDT LS ext for snippet contexts on project's classpath
-        CompletableFuture<List<String>> getSnippetContexts = CompletableFuture.supplyAsync(() -> {
-            // Get the list of snippet contexts to pass to the JDT LS ext
-            List<String> snippetReg = snippetRegistry.getSnippets().stream().map(snippet -> {
-                return ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
-            }).collect(Collectors.toList());
-            JakartaClasspathParams filterParams = new JakartaClasspathParams(uri, snippetReg);
-            try {
-                // Pass JakartaClasspathParams to IDE client, to be forwarded to the JDT LS ext
-                // Returns a CompletableFuture List<String> of snippet context that are on the
-                // project's classpath
-                return jakartaLanguageServer.getLanguageClient()
-                        .getContextBasedFilter(filterParams).get();
-            } catch (Exception e) {
-                LOGGER.severe("Return LSP4Jakarta getContextBasedFilter() from client did not succeed: " + e.getMessage());
-                return new ArrayList<String>();
-            }
-        });
+				// We currently do not get any completion items from the JDT Extn layer - the
+				// completion
+				// list will be null, so we will new it up here to add the LS based snippets.
+				// Will we in the future?
+				CompletionList list = completionResult.getCompletionList();
+				if (list == null) {
+					list = new CompletionList();
+				}
 
-        // Async thread to query the JDT LS ext for cursor contexts in Java
-        JakartaJavaCompletionParams javaParams = new JakartaJavaCompletionParams(position.getTextDocument().getUri(), position.getPosition());
-        CompletableFuture<JavaCursorContextResult> getCursorContext = CompletableFuture.supplyAsync(() -> {
-            try {
-                // Pass JakartaJavaCompletionParams to IDE client, to be forwarded to the JDT LS ext
-                // Returns a CompletableFuture JavaCursorContextResult of cursor context in the Java file
-                JavaCursorContextResult res = jakartaLanguageServer.getLanguageClient()
-                        .getJavaCursorContext(javaParams).get();
-                return res;
-            } catch (Exception e) {
-                LOGGER.severe("Return LSP4Jakarta getJavaCursorContext() from client did not succeed: " + e.getMessage());
-                return new JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error recovery
-            }
-        });
-        
-        try {
-            int offset = document.offsetAt(position.getPosition());
-            StringBuffer prefix = new StringBuffer();
-            Range replaceRange = getReplaceRange(document, offset, prefix);
-            if (replaceRange != null) {
-                // Put list of CompletionItems in an Either and wrap as a CompletableFuture
-            	return getCursorContext.thenCombineAsync(getSnippetContexts, (cursorContext, list) -> {
-                    // Given the snippet contexts that are on the project's classpath, return the
-                    // corresponding list of CompletionItems
-                    if (cursorContext == null) {
-                        LOGGER.severe("No Java cursor context provided, using default values to compute snippets.");
-                        cursorContext = new JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error recovery
-                    }
-                    return Either.forLeft(
-                            snippetRegistry.getCompletionItem(replaceRange, "\n", true, list, cursorContext, prefix.toString()));
-            	});
-            }
-        } catch (BadLocationException e) {
-            LOGGER.severe("Failed to get completions: " + e.getMessage());
-        }
-        return CompletableFuture.completedFuture(Either.forLeft(new ArrayList<CompletionItem>()));
-        */
-    }
+				// We do get a cursorContext obj back from the JDT Extn layer - we will need
+				// that for snippet selection
+				JavaCursorContextResult cursorContext = completionResult.getCursorContext();
 
+				// calculate the snippet completion items based on the cursor context
+				List<CompletionItem> snippetCompletionItems = documents.getSnippetRegistry().getCompletionItems(
+						document, finalizedCompletionOffset, canSupportMarkdown, snippetsSupported,
+						(context, model) -> {
+							if (context != null && context instanceof SnippetContextForJava) {
+								return ((SnippetContextForJava) context)
+										.isMatch(new JavaSnippetCompletionContext(projectInfo, cursorContext));
+							}
+							return true;
+						}, projectInfo);
+				list.getItems().addAll(snippetCompletionItems);
 
-    @Override
-    public CompletableFuture<Hover> hover(HoverParams params) {
-        return CompletableFuture.completedFuture(null);
-    }
+				// This reduces the number of completion requests to the server. See:
+				// https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_completion
+				list.setIsIncomplete(false);
+				return Either.forRight(list);
+			});
 
-    @Override
-    public void didOpen(DidOpenTextDocumentParams params) {
-        TextDocument document = documents.onDidOpenTextDocument(params);
-        String uri = document.getUri();
-        //triggerValidationFor(Arrays.asList(uri));
-    }
+		}, Either.forLeft(Collections.emptyList()));
+		/*
+		 * String uri = position.getTextDocument().getUri(); TextDocument document =
+		 * documents.get(uri); // Async thread to query the JDT LS ext for snippet
+		 * contexts on project's classpath CompletableFuture<List<String>>
+		 * getSnippetContexts = CompletableFuture.supplyAsync(() -> { // Get the list of
+		 * snippet contexts to pass to the JDT LS ext List<String> snippetReg =
+		 * snippetRegistry.getSnippets().stream().map(snippet -> { return
+		 * ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
+		 * }).collect(Collectors.toList()); JakartaClasspathParams filterParams = new
+		 * JakartaClasspathParams(uri, snippetReg); try { // Pass JakartaClasspathParams
+		 * to IDE client, to be forwarded to the JDT LS ext // Returns a
+		 * CompletableFuture List<String> of snippet context that are on the //
+		 * project's classpath return jakartaLanguageServer.getLanguageClient()
+		 * .getContextBasedFilter(filterParams).get(); } catch (Exception e) { LOGGER.
+		 * severe("Return LSP4Jakarta getContextBasedFilter() from client did not succeed: "
+		 * + e.getMessage()); return new ArrayList<String>(); } });
+		 * 
+		 * // Async thread to query the JDT LS ext for cursor contexts in Java
+		 * JakartaJavaCompletionParams javaParams = new
+		 * JakartaJavaCompletionParams(position.getTextDocument().getUri(),
+		 * position.getPosition()); CompletableFuture<JavaCursorContextResult>
+		 * getCursorContext = CompletableFuture.supplyAsync(() -> { try { // Pass
+		 * JakartaJavaCompletionParams to IDE client, to be forwarded to the JDT LS ext
+		 * // Returns a CompletableFuture JavaCursorContextResult of cursor context in
+		 * the Java file JavaCursorContextResult res =
+		 * jakartaLanguageServer.getLanguageClient()
+		 * .getJavaCursorContext(javaParams).get(); return res; } catch (Exception e) {
+		 * LOGGER.
+		 * severe("Return LSP4Jakarta getJavaCursorContext() from client did not succeed: "
+		 * + e.getMessage()); return new
+		 * JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error
+		 * recovery } });
+		 * 
+		 * try { int offset = document.offsetAt(position.getPosition()); StringBuffer
+		 * prefix = new StringBuffer(); Range replaceRange = getReplaceRange(document,
+		 * offset, prefix); if (replaceRange != null) { // Put list of CompletionItems
+		 * in an Either and wrap as a CompletableFuture return
+		 * getCursorContext.thenCombineAsync(getSnippetContexts, (cursorContext, list)
+		 * -> { // Given the snippet contexts that are on the project's classpath,
+		 * return the // corresponding list of CompletionItems if (cursorContext ==
+		 * null) { LOGGER.
+		 * severe("No Java cursor context provided, using default values to compute snippets."
+		 * ); cursorContext = new
+		 * JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error
+		 * recovery } return Either.forLeft(
+		 * snippetRegistry.getCompletionItem(replaceRange, "\n", true, list,
+		 * cursorContext, prefix.toString())); }); } } catch (BadLocationException e) {
+		 * LOGGER.severe("Failed to get completions: " + e.getMessage()); } return
+		 * CompletableFuture.completedFuture(Either.forLeft(new
+		 * ArrayList<CompletionItem>()));
+		 */
+	}
 
-    @Override
-    public void didChange(DidChangeTextDocumentParams params) {
-        TextDocument document = documents.onDidChangeTextDocument(params);
-        if (document != null) {
-            String uri = document.getUri();
-            //triggerValidationFor(Arrays.asList(uri));
-        }
-    }
+	@Override
+	public CompletableFuture<Hover> hover(HoverParams params) {
+		return CompletableFuture.completedFuture(null);
+	}
+
+	@Override
+	public void didOpen(DidOpenTextDocumentParams params) {
+		validate(documents.onDidOpenTextDocument(params), false);
+	}
+
+	@Override
+	public void didChange(DidChangeTextDocumentParams params) {
+		validate(documents.onDidChangeTextDocument(params), true);
+	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
-	// validate all opened java files
-        //triggerValidationForAll();
+		// validate all opened java files which belong to a MicroProfile project
+		triggerValidationForAll(null);
 	}
 
+	private void validate(JakartaTextDocument javaTextDocument, boolean delay) {
+		if (delay) {
+			validatorDelayer.validateWithDelay(javaTextDocument);
+		} else {
+			triggerValidationFor(javaTextDocument);
+		}
+	}
+
+	/**
+	 * Validate all opened Java files which belong to a MicroProfile project.
+	 *
+	 * @param projectURIs list of project URIs filter and null otherwise.
+	 */
+	private void triggerValidationForAll(Set<String> projectURIs) {
+		triggerValidationFor(documents.all().stream() //
+				.filter(document -> projectURIs == null || projectURIs.contains(document.getProjectURI())) //
+				.map(TextDocument::getUri) //
+				.collect(Collectors.toList()));
+	}
+
+	/**
+	 * Validate the given opened Java file.
+	 *
+	 * @param document the opened Java file.
+	 */
+	private void triggerValidationFor(JakartaTextDocument document) {
+		document.executeIfInJakartaProject((projectinfo, cancelChecker) -> {
+			String uri = document.getUri();
+			triggerValidationFor(Arrays.asList(uri));
+			return null;
+		}, null, true);
+	}
+
+	/**
+	 * Validate all given Java files uris.
+	 *
+	 * @param uris Java files uris to validate.
+	 */
+	private void triggerValidationFor(List<String> uris) {
+		if (uris.isEmpty()) {
+			return;
+		}
+//		List<String> excludedUnassignedProperties = sharedSettings.getValidationSettings().getUnassigned()
+//				.getExcluded();
+		JakartaJavaDiagnosticsParams javaParams = new JakartaJavaDiagnosticsParams(uris,
+				new JakartaJavaDiagnosticsSettings(null));// (excludedUnassignedProperties));
+//		boolean markdownSupported = sharedSettings.getHoverSettings().isContentFormatSupported(MarkupKind.MARKDOWN);
+//		if (markdownSupported) {
+//			javaParams.setDocumentFormat(DocumentFormat.Markdown);
+//		}
+		jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams) //
+				.thenApply(diagnostics -> {
+					if (diagnostics == null) {
+						return null;
+					}
+					for (PublishDiagnosticsParams diagnostic : diagnostics) {
+						jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
+					}
+					return null;
+				});
+	}
 }

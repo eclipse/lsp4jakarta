@@ -24,8 +24,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
-
+import org.eclipse.lsp4jakarta.jdt.internal.core.java.codeaction.JavaCodeActionDefinition;
 import org.eclipse.lsp4jakarta.jdt.internal.core.java.completion.JavaCompletionDefinition;
+import org.eclipse.lsp4jakarta.jdt.internal.core.java.diagnostics.JavaDiagnosticsDefinition;
 
 /**
  * Registry to hold the extension point
@@ -35,15 +36,20 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.completion.JavaCompletionD
 public class JavaFeaturesRegistry {
 
 	private static final String EXTENSION_JAVA_FEATURE_PARTICIPANTS = "javaFeatureParticipants";
-	
+
+	private static final String CODEACTION_ELT = "codeAction";
 	private static final String COMPLETION_ELT = "completion";
+	private static final String DIAGNOSTICS_ELT = "diagnostics";
 
 	private static final Logger LOGGER = Logger.getLogger(JavaFeaturesRegistry.class.getName());
 
 	private static final JavaFeaturesRegistry INSTANCE = new JavaFeaturesRegistry();
 
-
 	private final List<JavaCompletionDefinition> javaCompletionDefinitions;
+
+	private final List<JavaDiagnosticsDefinition> javaDiagnosticsDefinitions;
+
+	private final List<JavaCodeActionDefinition> javaCodeActionDefinitions;
 
 	private boolean javaFeatureDefinitionsLoaded;
 
@@ -55,6 +61,8 @@ public class JavaFeaturesRegistry {
 		javaFeatureDefinitionsLoaded = false;
 
 		javaCompletionDefinitions = new ArrayList<>();
+		javaDiagnosticsDefinitions = new ArrayList<>();
+		javaCodeActionDefinitions = new ArrayList<>();
 	}
 
 	/**
@@ -80,7 +88,7 @@ public class JavaFeaturesRegistry {
 				EXTENSION_JAVA_FEATURE_PARTICIPANTS);
 		addJavaFeatureDefinition(cf);
 	}
-	
+
 	private void addJavaFeatureDefinition(IConfigurationElement[] cf) {
 		for (IConfigurationElement ce : cf) {
 			try {
@@ -90,9 +98,16 @@ public class JavaFeaturesRegistry {
 			}
 		}
 	}
-	
+
 	private void createAndAddDefinition(IConfigurationElement ce) throws CoreException {
 		switch (ce.getName()) {
+		case CODEACTION_ELT: {
+			JavaCodeActionDefinition definition = new JavaCodeActionDefinition(ce);
+			synchronized (javaCodeActionDefinitions) {
+				javaCodeActionDefinitions.add(definition);
+			}
+			break;
+		}
 		case COMPLETION_ELT: {
 			JavaCompletionDefinition definition = new JavaCompletionDefinition(ce);
 			synchronized (javaCompletionDefinitions) {
@@ -100,8 +115,36 @@ public class JavaFeaturesRegistry {
 			}
 			break;
 		}
+		case DIAGNOSTICS_ELT: {
+			JavaDiagnosticsDefinition definition = new JavaDiagnosticsDefinition(ce);
+			synchronized (javaDiagnosticsDefinitions) {
+				javaDiagnosticsDefinitions.add(definition);
+			}
+			break;
+		}
 		default:
 		}
+	}
+
+	/**
+	 * Returns a list of diagnostics definition.
+	 *
+	 * @return a list of diagnostics definition.
+	 */
+	public List<JavaDiagnosticsDefinition> getJavaDiagnosticsDefinitions() {
+		loadJavaFeatureDefinitions();
+		return javaDiagnosticsDefinitions;
+	}
+
+	/**
+	 * Returns a list of code action definition.
+	 *
+	 * @return a list of code action definition.
+	 */
+	public List<JavaCodeActionDefinition> getJavaCodeActionDefinitions(String codeActionKind) {
+		loadJavaFeatureDefinitions();
+		return javaCodeActionDefinitions.stream().filter(definition -> codeActionKind.startsWith(definition.getKind()))
+				.collect(Collectors.toList());
 	}
 
 }

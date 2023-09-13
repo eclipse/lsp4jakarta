@@ -16,19 +16,12 @@ package org.eclipse.lsp4jakarta.jdt.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.ILocalVariable;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -47,28 +40,28 @@ import org.eclipse.jdt.core.dom.RecordDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.core.manipulation.dom.ASTResolving;
 import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.CodeLens;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
-import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4jakarta.commons.DocumentFormat;
-import org.eclipse.lsp4jakarta.commons.JavaCursorContextKind;
-import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsSettings;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfo;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfoParams;
-import org.eclipse.lsp4jakarta.jdt.internal.core.java.JavaFeaturesRegistry;
-import org.eclipse.lsp4jakarta.jdt.internal.core.java.completion.JavaCompletionDefinition;
-
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextKind;
+import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.jdt.core.java.completion.JavaCompletionContext;
-
+import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.JavaDiagnosticsContext;
 import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
-
+import org.eclipse.lsp4jakarta.jdt.internal.core.java.JavaFeaturesRegistry;
+import org.eclipse.lsp4jakarta.jdt.internal.core.java.codeaction.CodeActionHandler;
+import org.eclipse.lsp4jakarta.jdt.internal.core.java.completion.JavaCompletionDefinition;
+import org.eclipse.lsp4jakarta.jdt.internal.core.java.diagnostics.JavaDiagnosticsDefinition;
 
 /**
  * JDT MicroProfile manager for Java files.
@@ -80,13 +73,16 @@ public class PropertiesManagerForJava {
 
 	private static final PropertiesManagerForJava INSTANCE = new PropertiesManagerForJava();
 
+	private final CodeActionHandler codeActionHandler;
+
 	public static PropertiesManagerForJava getInstance() {
 		return INSTANCE;
 	}
 
 	private PropertiesManagerForJava() {
+		this.codeActionHandler = new CodeActionHandler();
 	}
-	
+
 	/**
 	 * Returns the CompletionItems given the completion item params
 	 *
@@ -134,7 +130,7 @@ public class PropertiesManagerForJava {
 		completionList.setItems(completionItems);
 		return completionList;
 	}
-	
+
 	/**
 	 * Returns the cursor context for the given file and cursor position.
 	 *
@@ -161,7 +157,7 @@ public class PropertiesManagerForJava {
 
 		return new JavaCursorContextResult(kind, prefix);
 	}
-	
+
 	private static JavaCursorContextKind getJavaCursorContextKind(JakartaJavaCompletionParams params,
 			ITypeRoot typeRoot, CompilationUnit ast, IJDTUtils utils, IProgressMonitor monitor)
 			throws JavaModelException {
@@ -261,7 +257,7 @@ public class PropertiesManagerForJava {
 		}
 		return fileContents.substring(i, completionOffset);
 	}
-	
+
 	/**
 	 * Given the uri returns a {@link ITypeRoot}. May return null if it can not
 	 * associate the uri with a Java file or class file.
@@ -287,7 +283,90 @@ public class PropertiesManagerForJava {
 		}
 		return unit != null ? unit : classFile;
 	}
-	
+
+	/**
+	 * Returns the codeAction list according the given codeAction parameters.
+	 *
+	 * @param params  the codeAction parameters
+	 * @param utils   the utilities class
+	 * @param monitor the monitor
+	 * @return the codeAction list according the given codeAction parameters.
+	 * @throws JavaModelException
+	 */
+	public List<? extends CodeAction> codeAction(JakartaJavaCodeActionParams params, IJDTUtils utils,
+			IProgressMonitor monitor) throws JavaModelException {
+		return codeActionHandler.codeAction(params, utils, monitor);
+	}
+
+	/**
+	 * Returns the codeAction list according the given codeAction parameters.
+	 *
+	 * @param unresolved the CodeAction to resolve
+	 * @param utils      the utilities class
+	 * @param monitor    the monitor
+	 * @return the codeAction list according the given codeAction parameters.
+	 * @throws JavaModelException
+	 */
+	public CodeAction resolveCodeAction(CodeAction unresolved, IJDTUtils utils, IProgressMonitor monitor)
+			throws JavaModelException {
+		return codeActionHandler.resolveCodeAction(unresolved, utils, monitor);
+	}
+
+	/**
+	 * Returns diagnostics for the given uris list.
+	 *
+	 * @param params the diagnostics parameters
+	 * @param utils  the utilities class
+	 * @return diagnostics for the given uris list.
+	 * @throws JavaModelException
+	 */
+	public List<PublishDiagnosticsParams> diagnostics(JakartaJavaDiagnosticsParams params, IJDTUtils utils,
+			IProgressMonitor monitor) throws JavaModelException {
+		List<String> uris = params.getUris();
+		if (uris == null) {
+			return Collections.emptyList();
+		}
+		DocumentFormat documentFormat = params.getDocumentFormat();
+		List<PublishDiagnosticsParams> publishDiagnostics = new ArrayList<PublishDiagnosticsParams>();
+		for (String uri : uris) {
+			List<Diagnostic> diagnostics = new ArrayList<>();
+			PublishDiagnosticsParams publishDiagnostic = new PublishDiagnosticsParams(uri, diagnostics);
+			publishDiagnostics.add(publishDiagnostic);
+			collectDiagnostics(uri, utils, documentFormat, params.getSettings(), diagnostics, monitor);
+		}
+		if (monitor.isCanceled()) {
+			return Collections.emptyList();
+		}
+		return publishDiagnostics;
+	}
+
+	private void collectDiagnostics(String uri, IJDTUtils utils, DocumentFormat documentFormat,
+			JakartaJavaDiagnosticsSettings settings, List<Diagnostic> diagnostics, IProgressMonitor monitor) {
+		ITypeRoot typeRoot = resolveTypeRoot(uri, utils, monitor);
+		if (typeRoot == null) {
+			return;
+		}
+
+		// Collect all adapted diagnostics participant
+		JavaDiagnosticsContext context = new JavaDiagnosticsContext(uri, typeRoot, utils, documentFormat, settings);
+		List<JavaDiagnosticsDefinition> definitions = JavaFeaturesRegistry.getInstance().getJavaDiagnosticsDefinitions()
+				.stream().filter(definition -> definition.isAdaptedForDiagnostics(context, monitor))
+				.collect(Collectors.toList());
+		if (definitions.isEmpty()) {
+			return;
+		}
+
+		// Begin, collect, end participants
+		definitions.forEach(definition -> definition.beginDiagnostics(context, monitor));
+		definitions.forEach(definition -> {
+			List<Diagnostic> collectedDiagnostics = definition.collectDiagnostics(context, monitor);
+			if (collectedDiagnostics != null && !collectedDiagnostics.isEmpty()) {
+				diagnostics.addAll(collectedDiagnostics);
+			}
+		});
+		definitions.forEach(definition -> definition.endDiagnostics(context, monitor));
+	}
+
 	/**
 	 * Searches through the AST to figure out the following:
 	 * <ul>
@@ -455,7 +534,7 @@ public class PropertiesManagerForJava {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Returns the Java file information (ex : package name) from the given file URI
 	 * and null otherwise.

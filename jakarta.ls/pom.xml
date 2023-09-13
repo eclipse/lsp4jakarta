@@ -68,6 +68,11 @@
     <version>32.1.0-jre</version>
 </dependency>
 
+  	<dependency>
+  		<groupId>org.eclipse.lsp4jakarta</groupId>
+  		<artifactId>org.eclipse.lsp4jakarta.jdt.core</artifactId>
+  		<version>0.1.2-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
   <!--
   <repositories>

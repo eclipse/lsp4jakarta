@@ -13,7 +13,7 @@
 
 package org.eclipse.lsp4jakarta.lsp4e;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -22,80 +22,108 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4e.LanguageClientImpl;
 import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.CancelChecker;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
-import org.eclipse.lsp4jakarta.ls.api.JakartaLanguageClientAPI;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfo;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfoParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaProjectLabelsParams;
-import org.eclipse.lsp4jakarta.commons.JavaCursorContextKind;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.commons.ProjectLabelInfoEntry;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.ProjectLabelManager;
-import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 import org.eclipse.lsp4jakarta.jdt.core.PropertiesManagerForJava;
+import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
+import org.eclipse.lsp4jakarta.ls.api.JakartaLanguageClientAPI;
 
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
 
-    public JakartaLanguageClient() {
-        // do nothing
-    }
+	public JakartaLanguageClient() {
+		// do nothing
+	}
 
-    private IProgressMonitor getProgressMonitor(CancelChecker cancelChecker) {
-        IProgressMonitor monitor = new NullProgressMonitor() {
-            public boolean isCanceled() {
-                cancelChecker.checkCanceled();
-                return false;
-            };
-        };
-        return monitor;
-    }
+	private IProgressMonitor getProgressMonitor(CancelChecker cancelChecker) {
+		IProgressMonitor monitor = new NullProgressMonitor() {
+			public boolean isCanceled() {
+				cancelChecker.checkCanceled();
+				return false;
+			};
+		};
+		return monitor;
+	}
 
-    
-    @Override
-    public CompletableFuture<JakartaJavaCompletionResult> getJavaCompletion(JakartaJavaCompletionParams javaParams) {
-        return CompletableFutures.computeAsync(cancelChecker -> {
-            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-                CompletionList completionList;
-				try {
-					completionList = PropertiesManagerForJava.getInstance().completion(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
-					JavaCursorContextResult javaCursorContext = PropertiesManagerForJava.getInstance().javaCursorContext(javaParams, JDTUtilsLSImpl.getInstance(), monitor);               
-	                return new JakartaJavaCompletionResult(completionList, javaCursorContext); 
-				} catch (JavaModelException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return null;
-				}
-        });
-    }
+	@Override
+	public CompletableFuture<JakartaJavaCompletionResult> getJavaCompletion(JakartaJavaCompletionParams javaParams) {
+		return CompletableFutures.computeAsync(cancelChecker -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			CompletionList completionList;
+			try {
+				completionList = PropertiesManagerForJava.getInstance().completion(javaParams,
+						JDTUtilsLSImpl.getInstance(), monitor);
+				JavaCursorContextResult javaCursorContext = PropertiesManagerForJava.getInstance()
+						.javaCursorContext(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
+				return new JakartaJavaCompletionResult(completionList, javaCursorContext);
+			} catch (JavaModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+		});
+	}
 
-    @Override
-    public CompletableFuture<List<ProjectLabelInfoEntry>> getAllJavaProjectLabels() {
-        return CompletableFutures.computeAsync((cancelChecker) -> {
-            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-            return ProjectLabelManager.getInstance().getProjectLabelInfo();
-        });
-    }
-    
-    @Override
-    public CompletableFuture<ProjectLabelInfoEntry> getJavaProjectLabels(JakartaJavaProjectLabelsParams javaParams) {
-        return CompletableFutures.computeAsync((cancelChecker) -> {
-            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-            return ProjectLabelManager.getInstance().getProjectLabelInfo(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
-        });
-    }
+	@Override
+	public CompletableFuture<List<ProjectLabelInfoEntry>> getAllJavaProjectLabels() {
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			return ProjectLabelManager.getInstance().getProjectLabelInfo();
+		});
+	}
 
-    @Override
-    public CompletableFuture<JakartaJavaFileInfo> getJavaFileInfo(JakartaJavaFileInfoParams javaParams) {
-        return CompletableFutures.computeAsync(cancelChecker -> {
-            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-            return PropertiesManagerForJava.getInstance().fileInfo(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
-        });
-    }
+	@Override
+	public CompletableFuture<ProjectLabelInfoEntry> getJavaProjectLabels(JakartaJavaProjectLabelsParams javaParams) {
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			return ProjectLabelManager.getInstance().getProjectLabelInfo(javaParams, JDTUtilsLSImpl.getInstance(),
+					monitor);
+		});
+	}
+
+	@Override
+	public CompletableFuture<JakartaJavaFileInfo> getJavaFileInfo(JakartaJavaFileInfoParams javaParams) {
+		return CompletableFutures.computeAsync(cancelChecker -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			return PropertiesManagerForJava.getInstance().fileInfo(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
+		});
+	}
+
+	@Override
+	public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(
+			JakartaJavaDiagnosticsParams javaParams) {
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			try {
+				return PropertiesManagerForJava.getInstance().diagnostics(javaParams, JDTUtilsLSImpl.getInstance(),
+						monitor);
+			} catch (JavaModelException e) {
+				return Collections.emptyList();
+			}
+		});
+	}
+
+	public CompletableFuture<List<CodeAction>> getCodeAction(JakartaJavaCodeActionParams javaParams) {
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			try {
+				return (List<CodeAction>) PropertiesManagerForJava.getInstance().codeAction(javaParams,
+						JDTUtilsLSImpl.getInstance(), monitor);
+			} catch (JavaModelException e) {
+				return Collections.emptyList();
+			}
+		});
+	}
+
 }

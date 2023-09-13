@@ -13,25 +13,22 @@
 
 package org.eclipse.lsp4jakarta.ls.api;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
-import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 
 /**
  * API of the client consuming the Language Server for Jakarta EE. Used to send
  * messages back to the client to ask for information about the Java project.
  */
-public interface JakartaLanguageClientAPI extends LanguageClient, JakartaJavaCompletionProvider, JakartaJavaProjectLabelsProvider, JakartaJavaFileInfoProvider {
+public interface JakartaLanguageClientAPI extends LanguageClient, JakartaJavaCompletionProvider,
+		JakartaJavaProjectLabelsProvider, JakartaJavaFileInfoProvider, JakartaJavaDiagnosticsProvider {
 
-    @JsonRequest("jakarta/java/cursorcontext")
-    default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams context) {
-        return CompletableFuture.completedFuture(null);
-    }
+	@JsonRequest("jakarta/java/cursorcontext")
+	default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams context) {
+		return CompletableFuture.completedFuture(null);
+	}
 }
