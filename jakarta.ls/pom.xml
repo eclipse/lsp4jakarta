@@ -35,6 +35,8 @@
     <tycho.version>3.0.3</tycho.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
+    <dev.build.timestamp>${maven.build.timestamp}</dev.build.timestamp>
     <lsp4j.version>0.17.0</lsp4j.version>
     <releases.repo.id>repo.eclipse.org</releases.repo.id>
     <releases.repo.url>https://repo.eclipse.org/content/repositories/lsp4jakarta-releases/</releases.repo.url>
@@ -108,26 +110,98 @@
   </pluginRepositories>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources/</directory>
+         <filtering>true</filtering>
+         <includes>
+           <include>**/*.properties</include>
+         </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources/</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/*.properties</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.5.0</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>parse-version</id>
+            <goals>
+              <goal>parse-version</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+        <version>4.9.10</version>
+        <executions>
+          <execution>
+            <id>get-the-git-infos</id>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+          <generateGitPropertiesFile>true</generateGitPropertiesFile>
+          <includeOnlyProperties>
+            <includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
+            <includeOnlyProperty>^git.commit.message.short$</includeOnlyProperty>
+            <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+            <includeOnlyProperty>^git.build.version$</includeOnlyProperty>
+          </includeOnlyProperties>
+          <gitDescribe>
+            <skip>true</skip>
+          </gitDescribe>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <id>make-assembly</id>
             <phase>package</phase>
             <goals>
-              <goal>single</goal>
+              <goal>shade</goal>
             </goals>
             <configuration>
-              <archive>
-                <manifest>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/ECLIPSE_.RSA</exclude>
+                    <exclude>META-INF/ECLIPSE_.SF</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <!-- Confusing to carry this forward in uber JAR -->
+                  <artifact>*:org.eclipse.lsp4mp.ls</artifact>
+                  <excludes>
+                    <exclude>version.properties</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>org.eclipse.lsp4jakarta.JakartaLanguageServerLauncher</mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
+                </transformer>
+              </transformers>
             </configuration>
           </execution>
         </executions>
@@ -157,3 +231,4 @@
 		</snapshotRepository>
 	</distributionManagement>
 </project>
+
