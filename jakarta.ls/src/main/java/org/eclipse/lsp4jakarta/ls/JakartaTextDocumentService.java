@@ -22,6 +22,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.CodeActionParams;
+import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
@@ -35,6 +38,7 @@ import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
@@ -191,6 +195,33 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		 * CompletableFuture.completedFuture(Either.forLeft(new
 		 * ArrayList<CompletionItem>()));
 		 */
+	}
+
+	@Override
+	public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
+		// Prepare the JakartaJavaCodeActionParams
+		JakartaJavaCodeActionParams jakartaCodeActionParams = new JakartaJavaCodeActionParams();
+		jakartaCodeActionParams.setTextDocument(params.getTextDocument());
+		jakartaCodeActionParams.setRange(params.getRange());
+		jakartaCodeActionParams.setContext(params.getContext());
+
+		// Pass the JakartaJavaCodeActionParams to IDE client, to be forwarded to the
+		// JDT LS ext
+		// Async thread to get the list of code actions from the JDT LS ext
+		return jakartaLanguageServer.getLanguageClient().getJavaCodeAction(jakartaCodeActionParams) //
+				.thenApply(codeActions -> {
+					// Return the corresponding list of CodeActions, put in an Either and wrap as a
+					// CompletableFuture
+					return codeActions.stream().map(ca -> {
+						Either<Command, CodeAction> e = Either.forRight(ca);
+						return e;
+					}).collect(Collectors.toList());
+				});
+	}
+
+	@Override
+	public CompletableFuture<CodeAction> resolveCodeAction(CodeAction unresolved) {
+		return jakartaLanguageServer.getLanguageClient().resolveCodeAction(unresolved);
 	}
 
 	@Override

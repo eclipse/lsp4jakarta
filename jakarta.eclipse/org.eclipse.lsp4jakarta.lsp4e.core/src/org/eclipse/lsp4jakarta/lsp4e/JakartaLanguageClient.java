@@ -114,7 +114,8 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 		});
 	}
 
-	public CompletableFuture<List<CodeAction>> getCodeAction(JakartaJavaCodeActionParams javaParams) {
+	@Override
+	public CompletableFuture<List<CodeAction>> getJavaCodeAction(JakartaJavaCodeActionParams javaParams) {
 		return CompletableFutures.computeAsync((cancelChecker) -> {
 			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
 			try {
@@ -122,6 +123,19 @@ public class JakartaLanguageClient extends LanguageClientImpl implements Jakarta
 						JDTUtilsLSImpl.getInstance(), monitor);
 			} catch (JavaModelException e) {
 				return Collections.emptyList();
+			}
+		});
+	}
+
+	@Override
+	public CompletableFuture<CodeAction> resolveCodeAction(CodeAction unresolved) {
+		return CompletableFutures.computeAsync((cancelChecker) -> {
+			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+			try {
+				return (CodeAction) PropertiesManagerForJava.getInstance().resolveCodeAction(unresolved,
+						JDTUtilsLSImpl.getInstance(), monitor);
+			} catch (JavaModelException e) {
+				return null;
 			}
 		});
 	}

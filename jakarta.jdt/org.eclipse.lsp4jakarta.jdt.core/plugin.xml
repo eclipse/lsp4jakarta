@@ -6,7 +6,9 @@
    <extension-point id="projectLabelProviders"
                 name="%projectLabelProviders.name"
                 schema="schema/projectLabelProviders.exsd"/>
-	
+   <extension-point id="javaFeatureParticipants"
+					name="%javaFeatureParticipants.name"
+					schema="schema/javaFeatureParticipants.exsd" />
 	<requires>
 		<import plugin="org.eclipse.core.runtime" />
 	</requires>
@@ -15,15 +17,239 @@
 	<extension point="org.eclipse.jdt.ls.core.delegateCommandHandler">
 		<delegateCommandHandler class="org.eclipse.lsp4jakarta.jdt.internal.core.ls.JakartaDelegateCommandHandlerForJava">
 			<command id="jakarta/java/completion"/>
+		    <command id="jakarta/java/codeAction"/>
+            <command id="jakarta/java/codeActionResolve"/>
+            <command id="jakarta/java/diagnostics"/>
 		</delegateCommandHandler>
 	</extension>	
-	<!--
-	<extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants" >
-   	  <completion class="org.eclipse.lsp4jakarta.jdt.internal.core.java.completion.JavaCompletionDefinition" />
-   </extension>
-   -->
+
    <extension point="org.eclipse.lsp4jakarta.jdt.core.projectLabelProviders">
       <provider class="org.eclipse.lsp4jakarta.jdt.internal.core.providers.JakartaProjectLabelProvider" />
    </extension>
    
+   <!-- JAXRS -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.jaxrs.ResourceMethodDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-jaxrs#ResourceMethodMultipleEntityParams"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.jaxrs.RemoveMethodEntityParamsWithExclusionQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-jaxrs#NonPublicResourceMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.jaxrs.UpdateMethodAccessToPublicQuickFix" />
+      
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.jaxrs.ClassConstructorDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-jaxrs#NoPublicConstructors"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.jaxrs.UpdateContructorAccessToPublicQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-jaxrs#NoPublicConstructors"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.jaxrs.InsertDefaultPublicConstructorQuickFix" />
+   </extension>
+   
+   <!-- Annotations -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.annotations.AnnotationDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#MissingResourceNameAttribute"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.InsertNameAttributeToResourceAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#MissingResourceTypeAttribute"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.InsertTypeAttributeToResourceAnnotation" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#PostConstructReturnType"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.PostConstructReturnTypeQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#PostConstructParams"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemovePostConstructAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#PostConstructParams"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemoveAllMethodParametersQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#PreDestroyStatic"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemovePreDestroyAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#PreDestroyStatic"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemoveStaticModifierQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#PreDestroyParams"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemovePreDestroyAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#PreDestroyParams"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemoveAllMethodParametersQuickFix" />
+   </extension>
+   
+   <!-- Bean Validation -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.BeanValidationDiagnosticsParticipant" />
+            <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidConstrainAnnotationOnStaticMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidConstrainAnnotationOnStaticMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveStaticModifierQuickFix" />
+      
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonBooleanMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonBooleanMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveStaticModifierQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonBigDecimalCharByteShortIntLongMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonBigDecimalCharByteShortIntLongMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveStaticModifierQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonDateTimeMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonDateTimeMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveStaticModifierQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonMinMaxMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonMinMaxMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveStaticModifierQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonPositiveMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonPositiveMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveStaticModifierQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonStringMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-bean-validation#InvalidAnnotationOnNonStringMethodOrField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveStaticModifierQuickFix" />
+   </extension>
+   
+   <!-- Dependecy injection -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.di.DependencyInjectionDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnFinalField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveInjectAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnFinalField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveFinalModifierQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnFinalMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveInjectAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnFinalMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveFinalModifierQuickFix" />                  
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnAbstractMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveInjectAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnAbstractMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveAbstractModifierQuickFix" />                  
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnStaticMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveInjectAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnStaticMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveStaticModifierQuickFix" />                  
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnGenericMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveInjectAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-di#InvalidInjectAnnotationOnMultipleConstructors"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.di.RemoveInjectAnnotationQuickFix" />
+   </extension>
+   
+   <!-- JSON-B -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.jsonb.JsonbDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-jsonb#InvalidNumerOfJsonbCreatorAnnotationsInClass"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.jsonb.RemoveJsonbCreatorAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-jsonb#InvalidJSonBindindAnnotationWithJsonbTransientOnField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.jsonb.RemoveJsonbTransientAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-jsonb#InvalidJSonBindindAnnotationWithJsonbTransientOnField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.jsonb.RemoveAllButJsonbTransientAnnotationQuickFix" />                  
+   </extension>  
+   
+   <!-- JSON-P -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.jsonp.JsonpDiagnosticParticipant" />
+   </extension>  
+   
+   <!-- Persistence -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.persistence.PersistenceEntityDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidFinalMethodInEntityAnnotatedClass"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.RemoveFinalModifierQuickFix" />
+       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidPersistentFieldInEntityAnnotatedClass"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.RemoveFinalModifierQuickFix" />
+       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidFinalModifierOnEntityAnnotatedClass"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.RemoveFinalModifierQuickFix" />  
+       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidConstructorInEntityAnnotatedClass"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.InsertDefaultProtectedConstructorQuickFix" />
+       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidConstructorInEntityAnnotatedClass"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.InsertDefaultPublicConstructorQuickFix" />
+
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.persistence.PersistenceMapKeyDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidMapKeyAnnotationsOnSameMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.RemoveMapKeyAnnotationsQuickFix" />          
+       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidMapKeyAnnotationsOnSameField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.RemoveMapKeyAnnotationsQuickFix" />
+       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidMethodWithMultipleMPJCAnnotations"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.InserMapKeyJoinColumAnnotationAttributesQuickFix" />                  
+       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-persistence#InvalidFieldWithMultipleMPJCAnnotations"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.persistence.InserMapKeyJoinColumAnnotationAttributesQuickFix" />          
+   </extension>
+   
+   <!-- WebSocket -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.websocket.WebSocketDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-websocket#PathParamsMissingFromParam"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.websocket.AddPathParamAnnotationQuickFix" />
+   </extension>
+
+   <!-- Servlet -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.servlet.FilterDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-servlet#WebFilterAnnotationAttributeConflict"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.CompleteFilterAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-servlet#ClassWebFilterAnnotatedNoFilterInterfaceImpl"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.FilterImplementationQuickFix" />      
+
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.servlet.ListenerDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-servlet#WebFilterAnnotatedClassReqIfaceNoImpl"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.ListenerImplementationQuickFix" />     
+
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.servlet.ServletDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-servlet#WebServletAnnotationMissingAttributes"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.CompleteServletAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-servlet#WebServletAnnotationAttributeConflict"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.CompleteServletAnnotationQuickFix" />  
+
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-servlet#WebServletAnnotatedClassDoesNotExtendHttpServlet"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.HttpServletQuickFix" />  
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-servlet#WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.HttpServletQuickFix" />                            
+   </extension>
 </plugin>

@@ -185,5 +185,6 @@
 	<modules>
 		<module>org.eclipse.lsp4jakarta.jdt.core</module>
 		<module>org.eclipse.lsp4jakarta.jdt.site</module>
+		<module>org.eclipse.lsp4jakarta.jdt.test</module>
 	</modules>
 </project>

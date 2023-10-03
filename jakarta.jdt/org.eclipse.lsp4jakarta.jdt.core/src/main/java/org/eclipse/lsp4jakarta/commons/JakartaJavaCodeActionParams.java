@@ -19,7 +19,7 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 
 /**
- * MicroProfile Java codeAction parameters.
+ * Jakarta Java codeAction parameters.
  *
  * @author Angelo ZERR
  *

@@ -29,4 +29,5 @@ Bundle-ClassPath: .
 Export-Package: 
  org.eclipse.lsp4jakarta.commons,
  org.eclipse.lsp4jakarta.jdt.core,
+ org.eclipse.lsp4jakarta.jdt.core.utils,
  org.eclipse.lsp4jakarta.jdt.internal.core.ls

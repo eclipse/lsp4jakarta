@@ -25,7 +25,8 @@ import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
  * messages back to the client to ask for information about the Java project.
  */
 public interface JakartaLanguageClientAPI extends LanguageClient, JakartaJavaCompletionProvider,
-		JakartaJavaProjectLabelsProvider, JakartaJavaFileInfoProvider, JakartaJavaDiagnosticsProvider {
+		JakartaJavaProjectLabelsProvider, JakartaJavaFileInfoProvider, JakartaJavaDiagnosticsProvider,
+		JakartaJavaCodeActionProvider, JakartaJavaCodeActionResolveProvider {
 
 	@JsonRequest("jakarta/java/cursorcontext")
 	default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams context) {

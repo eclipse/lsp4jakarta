@@ -21,7 +21,7 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 
 /**
- * MicroProfile Java code action provider.
+ * Jakarta Java code action provider.
  *
  * @author Angelo ZERR
  *

@@ -19,7 +19,44 @@ package org.eclipse.lsp4jakarta.commons.codeaction;
 public enum JakartaCodeActionId implements ICodeActionId {
 	IgnoreUnknownProperty,
 	// JAXRS
-	NonPublicResourceMethod, MakeConstructorPublic, NoargPublicConstructor, RemoveAllEntityParametersExcept;
+	jaxrsInsertPublicCtrtToClass,
+	MakeConstructorPublic,
+	MakeMethodPublic,
+	RemoveAllEntityParametersExcept,
+	// Annotations
+	ChangeReturnTypeToVoid,
+	InsertResourceAnnotationTypeAttribute,
+	InsertResourceAnnotationNameAttribute,
+	RemoveAllParameters,
+	RemoveAnnotationPreDestroy,
+	RemoveAnnotationPostConstruct,
+	AnnotationRemoveStaticModifier,
+	// Bean validation
+	RemoveConstraintAnnotation,
+	BBRemoveStaticModifier,
+	// Dependency injection
+	DIRemoveInjectAnnotation,
+	DIRemoveFinalModifier,
+	DIRemoveAbstractModifier,
+	DIRemoveStaticModifier,
+	// JSON-B
+	JSONBRemoveJsonbCreatorAnnotation,
+	JSONBRemoveJsonbTransientAnnotation,
+	JSONBRemoveAllButJsonbTransientAnnotation,
+	// Persistence
+	PersistenceRemoveFinalModifier,
+	PersistenceRemoveMapKeyAnnotation,
+	PersistenceInsertAttributesToMKJCAnnotation,
+	PersistenceInsertPublicCtrtToClass,
+	PersistenceInsertProtectedCtrtToClass,
+	// WebSockets
+	WBInsertPathParamAnnotationWithValueAttrib,
+	// Servlet
+	ServletCompleteWebFilterAnnotation,
+	ServletCompleteServletAnnotation,
+	ServletFilterImplementation,
+	ServletExtendClass,
+	ServletListenerImplementation;
 
 	@Override
 	public String getId() {
