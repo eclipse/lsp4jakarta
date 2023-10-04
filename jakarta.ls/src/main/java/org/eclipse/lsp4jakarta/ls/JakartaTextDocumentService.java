@@ -59,7 +59,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
 	private final JakartaLanguageServer jakartaLanguageServer;
 
 	// Text document manager that maintains the contexts of the text documents
-	// AJM made this change to allow LS to complete completion
 	private final JakartaTextDocuments documents;
 
 	private ValidatorDelayer<JakartaTextDocument> validatorDelayer;
@@ -144,57 +143,6 @@ public class JakartaTextDocumentService implements TextDocumentService {
 			});
 
 		}, Either.forLeft(Collections.emptyList()));
-		/*
-		 * String uri = position.getTextDocument().getUri(); TextDocument document =
-		 * documents.get(uri); // Async thread to query the JDT LS ext for snippet
-		 * contexts on project's classpath CompletableFuture<List<String>>
-		 * getSnippetContexts = CompletableFuture.supplyAsync(() -> { // Get the list of
-		 * snippet contexts to pass to the JDT LS ext List<String> snippetReg =
-		 * snippetRegistry.getSnippets().stream().map(snippet -> { return
-		 * ((SnippetContextForJava) snippet.getContext()).getTypes().get(0);
-		 * }).collect(Collectors.toList()); JakartaClasspathParams filterParams = new
-		 * JakartaClasspathParams(uri, snippetReg); try { // Pass JakartaClasspathParams
-		 * to IDE client, to be forwarded to the JDT LS ext // Returns a
-		 * CompletableFuture List<String> of snippet context that are on the //
-		 * project's classpath return jakartaLanguageServer.getLanguageClient()
-		 * .getContextBasedFilter(filterParams).get(); } catch (Exception e) { LOGGER.
-		 * severe("Return LSP4Jakarta getContextBasedFilter() from client did not succeed: "
-		 * + e.getMessage()); return new ArrayList<String>(); } });
-		 * 
-		 * // Async thread to query the JDT LS ext for cursor contexts in Java
-		 * JakartaJavaCompletionParams javaParams = new
-		 * JakartaJavaCompletionParams(position.getTextDocument().getUri(),
-		 * position.getPosition()); CompletableFuture<JavaCursorContextResult>
-		 * getCursorContext = CompletableFuture.supplyAsync(() -> { try { // Pass
-		 * JakartaJavaCompletionParams to IDE client, to be forwarded to the JDT LS ext
-		 * // Returns a CompletableFuture JavaCursorContextResult of cursor context in
-		 * the Java file JavaCursorContextResult res =
-		 * jakartaLanguageServer.getLanguageClient()
-		 * .getJavaCursorContext(javaParams).get(); return res; } catch (Exception e) {
-		 * LOGGER.
-		 * severe("Return LSP4Jakarta getJavaCursorContext() from client did not succeed: "
-		 * + e.getMessage()); return new
-		 * JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error
-		 * recovery } });
-		 * 
-		 * try { int offset = document.offsetAt(position.getPosition()); StringBuffer
-		 * prefix = new StringBuffer(); Range replaceRange = getReplaceRange(document,
-		 * offset, prefix); if (replaceRange != null) { // Put list of CompletionItems
-		 * in an Either and wrap as a CompletableFuture return
-		 * getCursorContext.thenCombineAsync(getSnippetContexts, (cursorContext, list)
-		 * -> { // Given the snippet contexts that are on the project's classpath,
-		 * return the // corresponding list of CompletionItems if (cursorContext ==
-		 * null) { LOGGER.
-		 * severe("No Java cursor context provided, using default values to compute snippets."
-		 * ); cursorContext = new
-		 * JavaCursorContextResult(JavaCursorContextKind.BEFORE_CLASS, ""); // error
-		 * recovery } return Either.forLeft(
-		 * snippetRegistry.getCompletionItem(replaceRange, "\n", true, list,
-		 * cursorContext, prefix.toString())); }); } } catch (BadLocationException e) {
-		 * LOGGER.severe("Failed to get completions: " + e.getMessage()); } return
-		 * CompletableFuture.completedFuture(Either.forLeft(new
-		 * ArrayList<CompletionItem>()));
-		 */
 	}
 
 	@Override
@@ -287,14 +235,10 @@ public class JakartaTextDocumentService implements TextDocumentService {
 		if (uris.isEmpty()) {
 			return;
 		}
-//		List<String> excludedUnassignedProperties = sharedSettings.getValidationSettings().getUnassigned()
-//				.getExcluded();
+
 		JakartaJavaDiagnosticsParams javaParams = new JakartaJavaDiagnosticsParams(uris,
 				new JakartaJavaDiagnosticsSettings(null));// (excludedUnassignedProperties));
-//		boolean markdownSupported = sharedSettings.getHoverSettings().isContentFormatSupported(MarkupKind.MARKDOWN);
-//		if (markdownSupported) {
-//			javaParams.setDocumentFormat(DocumentFormat.Markdown);
-//		}
+
 		jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams) //
 				.thenApply(diagnostics -> {
 					if (diagnostics == null) {
@@ -306,4 +250,12 @@ public class JakartaTextDocumentService implements TextDocumentService {
 					return null;
 				});
 	}
+	
+    protected void cleanDiagnostics() {
+        // clear existing diagnostics
+        documents.all().forEach(doc -> {
+            jakartaLanguageServer.getLanguageClient()
+                    .publishDiagnostics(new PublishDiagnosticsParams(doc.getUri(), new ArrayList<Diagnostic>()));
+        });
+    }
 }

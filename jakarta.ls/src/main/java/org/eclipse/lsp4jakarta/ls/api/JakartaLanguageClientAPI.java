@@ -28,8 +28,4 @@ public interface JakartaLanguageClientAPI extends LanguageClient, JakartaJavaCom
 		JakartaJavaProjectLabelsProvider, JakartaJavaFileInfoProvider, JakartaJavaDiagnosticsProvider,
 		JakartaJavaCodeActionProvider, JakartaJavaCodeActionResolveProvider {
 
-	@JsonRequest("jakarta/java/cursorcontext")
-	default CompletableFuture<JavaCursorContextResult> getJavaCursorContext(JakartaJavaCompletionParams context) {
-		return CompletableFuture.completedFuture(null);
-	}
 }

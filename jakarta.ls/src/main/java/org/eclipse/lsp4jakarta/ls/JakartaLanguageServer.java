@@ -84,8 +84,7 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
     public CompletableFuture<Object> shutdown() {
         // when shutting down LS, TextDocumentService.didClose() may not be called
         // properly, need to clear existing diagnostics
-    	//commenting out the following line until we get back to diagnostics etc int eh new JakartaLS
-        //((JakartaTextDocumentService) textDocumentService).cleanDiagnostics();
+        ((JakartaTextDocumentService) textDocumentService).cleanDiagnostics();
         return CompletableFutures.computeAsync(cc -> new Object());
     }
 

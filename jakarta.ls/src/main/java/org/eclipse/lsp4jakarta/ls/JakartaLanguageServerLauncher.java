@@ -31,7 +31,6 @@ import org.eclipse.lsp4jakarta.ls.commons.ParentProcessWatcher;
 public class JakartaLanguageServerLauncher {
     public static void main(String[] args) {
         JakartaLanguageServer server = new JakartaLanguageServer();
-        System.out.println("AJM: server newed up here?");
 
         Function<MessageConsumer, MessageConsumer> wrapper;
         wrapper = it -> it;

@@ -270,7 +270,7 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 			// cache the future in the document level.
 			documentCache.put(documentURI, future);
 			return future;
-		} // >> to here from:
+		} // >> to here from this original code:
 		
 		/* original code block preserved here -
 		 * 'thenApply(..) does not seem to halt and wait for the async compute happening in the 
