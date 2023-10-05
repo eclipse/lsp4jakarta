@@ -46,7 +46,7 @@ public abstract class InsertAnnotationMissingQuickFix implements IJavaCodeAction
 
 	private static final Logger LOGGER = Logger.getLogger(InsertAnnotationMissingQuickFix.class.getName());
 
-	private static final String ANNOTATION_KEY = "annotation";
+	protected static final String ANNOTATION_KEY = "annotation";
 
 	private final String[] annotations;
 

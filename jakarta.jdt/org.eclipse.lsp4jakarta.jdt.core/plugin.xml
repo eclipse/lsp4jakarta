@@ -252,4 +252,51 @@
                   targetDiagnostic="jakarta-servlet#WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet"
                   class="org.eclipse.lsp4jakarta.jdt.internal.servlet.HttpServletQuickFix" />                            
    </extension>
+   
+   <!-- CDI -->
+   <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
+      <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ManagedBeanDiagnosticsParticipant" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidNumberOfScopedAnnotationsByManagedBean"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ScopeDeclarationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidNumberOfScopeAnnotationsByProducerField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ScopeDeclarationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidNumberOfScopeAnnotationsByProducerMethod"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ScopeDeclarationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidManagedBeanWithNonStaticPublicField"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ManagedBeanQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidGenericManagedBeanClassWithNoDependentScope"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ManagedBeanQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidFieldWithProducesAndInjectAnnotations"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveProducesAndInjectAnnotationsQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidMethodWithProducesAndInjectAnnotations"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveProducesAndInjectAnnotationsQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidManagedBeanWithInvalidConstructor"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ManagedBeanConstructorQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidManagedBeanWithInvalidConstructor"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.InsertDefaultProtectedConstructorToMBeanQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidManagedBeanWithInvalidConstructor"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.InsertDefaultPublicConstructorToMBeanQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidInjectAnnotatedMethodParamAnnotation"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidInjectParamAnnotationQuickFix" />    
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidInjectAnnotatedMethodParamAnnotation"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInjectAnnotationQuickFix" />   
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidProducerMethodParamAnnotation"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidInjectParamAnnotationQuickFix" />     
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidProducerMethodParamAnnotation"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveProduceAnnotationQuickFix" />
+   </extension>
 </plugin>

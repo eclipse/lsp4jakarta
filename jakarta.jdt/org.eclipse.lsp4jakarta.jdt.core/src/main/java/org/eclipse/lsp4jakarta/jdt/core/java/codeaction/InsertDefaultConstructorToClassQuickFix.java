@@ -109,7 +109,7 @@ public abstract class InsertDefaultConstructorToClassQuickFix implements IJavaCo
 	 * 
 	 * @return The code action label.
 	 */
-	private static String getLabel(String am) {
+	protected String getLabel(String am) {
 		return MessageFormat.format(CODE_ACTION_LABEL, am);
 	}
 
@@ -121,7 +121,7 @@ public abstract class InsertDefaultConstructorToClassQuickFix implements IJavaCo
 	 * @return The named entity associated to the given node.
 	 */
 	@SuppressWarnings("restriction")
-	protected static IBinding getBinding(ASTNode node) {
+	protected IBinding getBinding(ASTNode node) {
 		if (node.getParent() instanceof VariableDeclarationFragment) {
 			return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
 		}

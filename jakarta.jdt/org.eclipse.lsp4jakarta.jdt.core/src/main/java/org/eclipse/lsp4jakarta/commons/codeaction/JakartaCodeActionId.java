@@ -56,7 +56,17 @@ public enum JakartaCodeActionId implements ICodeActionId {
 	ServletCompleteServletAnnotation,
 	ServletFilterImplementation,
 	ServletExtendClass,
-	ServletListenerImplementation;
+	ServletListenerImplementation,
+	// CDI
+	CDIRemoveProducesAndInjectAnnotations,
+	CDIInsertInjectAnnotation,
+	CDIInsertProtectedCtrtToClass,
+	CDIInsertPublicCtrtToClass,
+	CDIRemoveInvalidInjectAnnotations,
+	CDIRemoveProducesAnnotation,
+	CDIRemoveInjectAnnotation,
+	CDIRemoveScopeDeclarationAnnotationsButOne,
+	CDIReplaceScopeAnnotations;
 
 	@Override
 	public String getId() {

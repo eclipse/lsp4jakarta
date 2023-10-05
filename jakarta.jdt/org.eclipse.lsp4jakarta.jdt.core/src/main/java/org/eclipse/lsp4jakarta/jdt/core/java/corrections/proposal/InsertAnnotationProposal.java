@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
@@ -63,7 +64,7 @@ public class InsertAnnotationProposal extends ASTRewriteCorrectionProposal {
 		if (isField) {
 			declNode = declNode.getParent();
 		}
-		if (declNode instanceof TypeDeclaration || isField) {
+		if (declNode instanceof TypeDeclaration || declNode instanceof MethodDeclaration || isField) {
 			AST ast = declNode.getAST();
 			ASTRewrite rewrite = ASTRewrite.create(ast);
 
@@ -72,9 +73,13 @@ public class InsertAnnotationProposal extends ASTRewriteCorrectionProposal {
 			for (String annotation : annotations) {
 				Annotation marker = ast.newMarkerAnnotation();
 				marker.setTypeName(ast.newName(imports.addImport(annotation, importRewriteContext))); // $NON-NLS-1$
-				rewrite.getListRewrite(declNode,
-						isField ? FieldDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY)
-						.insertFirst(marker, null);
+				if (isField) {
+					rewrite.getListRewrite(declNode, FieldDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
+				} else if (declNode instanceof MethodDeclaration) {
+					rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
+				} else if (declNode instanceof TypeDeclaration) {
+					rewrite.getListRewrite(declNode, TypeDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
+				}
 			}
 
 			return rewrite;

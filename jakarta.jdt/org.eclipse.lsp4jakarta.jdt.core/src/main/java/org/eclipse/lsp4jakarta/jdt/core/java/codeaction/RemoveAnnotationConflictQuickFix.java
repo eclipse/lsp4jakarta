@@ -160,6 +160,13 @@ public abstract class RemoveAnnotationConflictQuickFix implements IJavaCodeActio
 		codeActions.add(codeAction);
 	}
 
+	/**
+	 * Returns the named entity associated to the given node.
+	 * 
+	 * @param node The AST Node
+	 * 
+	 * @return The named entity associated to the given node.
+	 */
 	@SuppressWarnings("restriction")
 	protected IBinding getBinding(ASTNode node) {
 		if (node.getParent() instanceof VariableDeclarationFragment) {
@@ -178,7 +185,7 @@ public abstract class RemoveAnnotationConflictQuickFix implements IJavaCodeActio
 	 * @param annotations The annotations to remove.
 	 * @return The label associated with the input annotations.
 	 */
-	private static String getLabel(String[] annotations) {
+	protected String getLabel(String[] annotations) {
 		StringBuilder name = new StringBuilder("Remove ");
 		for (int i = 0; i < annotations.length; i++) {
 			String annotation = annotations[i];

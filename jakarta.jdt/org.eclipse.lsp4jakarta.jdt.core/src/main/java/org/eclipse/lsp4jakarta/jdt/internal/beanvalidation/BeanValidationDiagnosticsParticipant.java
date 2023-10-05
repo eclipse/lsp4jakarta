@@ -89,38 +89,40 @@ public class BeanValidationDiagnosticsParticipant implements IJavaDiagnosticsPar
 		ICompilationUnit unit = utils.resolveCompilationUnit(uri);
 		List<Diagnostic> diagnostics = new ArrayList<>();
 
-		if (unit != null) {
-			IType[] alltypes;
-			IField[] allFields;
-			IAnnotation[] annotations;
-			IMethod[] allMethods;
+		if (unit == null) {
+			return diagnostics;
+		}
 
-			alltypes = unit.getAllTypes();
-			for (IType type : alltypes) {
-				allFields = type.getFields();
-				for (IField field : allFields) {
-					annotations = field.getAnnotations();
-					for (IAnnotation annotation : annotations) {
-						String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
-								annotation.getElementName(),
-								SET_OF_ANNOTATIONS.toArray(new String[0]));
-						if (matchedAnnotation != null) {
-							Range range = PositionUtils.toNameRange(field, context.getUtils());
-							validAnnotation(context, uri, field, range, annotation, matchedAnnotation, diagnostics);
-						}
+		IType[] alltypes;
+		IField[] allFields;
+		IAnnotation[] annotations;
+		IMethod[] allMethods;
+
+		alltypes = unit.getAllTypes();
+		for (IType type : alltypes) {
+			allFields = type.getFields();
+			for (IField field : allFields) {
+				annotations = field.getAnnotations();
+				for (IAnnotation annotation : annotations) {
+					String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
+							annotation.getElementName(),
+							SET_OF_ANNOTATIONS.toArray(new String[0]));
+					if (matchedAnnotation != null) {
+						Range range = PositionUtils.toNameRange(field, context.getUtils());
+						validAnnotation(context, uri, field, range, annotation, matchedAnnotation, diagnostics);
 					}
 				}
-				allMethods = type.getMethods();
-				for (IMethod method : allMethods) {
-					annotations = method.getAnnotations();
-					for (IAnnotation annotation : annotations) {
-						String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
-								annotation.getElementName(),
-								SET_OF_ANNOTATIONS.toArray(new String[0]));
-						if (matchedAnnotation != null) {
-							Range range = PositionUtils.toNameRange(method, context.getUtils());
-							validAnnotation(context, uri, method, range, annotation, matchedAnnotation, diagnostics);
-						}
+			}
+			allMethods = type.getMethods();
+			for (IMethod method : allMethods) {
+				annotations = method.getAnnotations();
+				for (IAnnotation annotation : annotations) {
+					String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
+							annotation.getElementName(),
+							SET_OF_ANNOTATIONS.toArray(new String[0]));
+					if (matchedAnnotation != null) {
+						Range range = PositionUtils.toNameRange(method, context.getUtils());
+						validAnnotation(context, uri, method, range, annotation, matchedAnnotation, diagnostics);
 					}
 				}
 			}

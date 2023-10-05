@@ -44,8 +44,6 @@ public abstract class RemoveModifierConflictQuickFix implements IJavaCodeActionP
 
 	public static final String MODIFIERS_KEY = "modifiers";
 
-	public static final String DIAGNOSTIC_DATA = "diagnostic.data";
-
 	private static final String CODE_ACTION_LABEL = "Remove the ''{0}'' modifier";
 
 	/**
@@ -94,7 +92,7 @@ public abstract class RemoveModifierConflictQuickFix implements IJavaCodeActionP
 		ASTNode node = context.getCoveredNode();
 		IBinding parentType = getBinding(node);
 		if (parentType != null) {
-			createCodeActions(diagnostic, context, parentType, codeActions);
+			createCodeActions(diagnostic, context, codeActions);
 		}
 
 		return codeActions;
@@ -130,18 +128,17 @@ public abstract class RemoveModifierConflictQuickFix implements IJavaCodeActionP
 	 * @param diagnostic  The code diagnostic associated with the action to be
 	 *                    created.
 	 * @param context     The context.
-	 * @param parentType  The parent type.
 	 * @param codeActions The list of code action to update.
 	 * 
 	 * @throws CoreException
 	 */
-	protected void createCodeActions(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
+	protected void createCodeActions(Diagnostic diagnostic, JavaCodeActionContext context,
 			List<CodeAction> codeActions) throws CoreException {
 		if (generateOnlyOneCodeAction) {
-			createCodeAction(diagnostic, context, parentType, codeActions, modifiers);
+			createCodeAction(diagnostic, context, codeActions, modifiers);
 		} else {
 			for (String modifier : modifiers) {
-				createCodeAction(diagnostic, context, parentType, codeActions, modifier);
+				createCodeAction(diagnostic, context, codeActions, modifier);
 			}
 		}
 	}
@@ -152,14 +149,13 @@ public abstract class RemoveModifierConflictQuickFix implements IJavaCodeActionP
 	 * @param diagnostic  The code diagnostic associated with the action to be
 	 *                    created.
 	 * @param context     The context.
-	 * @param parentType  The parent type.
 	 * @param codeActions The list of code actions.
 	 * @param modifiers   The modifiers to remove.
 	 * 
 	 * 
 	 * @throws CoreException
 	 */
-	protected void createCodeAction(Diagnostic diagnostic, JavaCodeActionContext context, IBinding parentType,
+	protected void createCodeAction(Diagnostic diagnostic, JavaCodeActionContext context,
 			List<CodeAction> codeActions, String... modifiers) throws CoreException {
 		String label = getLabel(modifiers);
 		ExtendedCodeAction codeAction = new ExtendedCodeAction(label);
@@ -181,10 +177,17 @@ public abstract class RemoveModifierConflictQuickFix implements IJavaCodeActionP
 	 * @param modifier The modifier to remove.
 	 * @return The label associated with the input modifier.
 	 */
-	private String getLabel(String... modifier) {
+	protected String getLabel(String... modifier) {
 		return MessageFormat.format(CODE_ACTION_LABEL, modifier[0]);
 	}
 
+	/**
+	 * Returns the named entity associated to the given node.
+	 * 
+	 * @param node The AST Node
+	 * 
+	 * @return The named entity associated to the given node.
+	 */
 	@SuppressWarnings("restriction")
 	protected IBinding getBinding(ASTNode node) {
 		if (node.getParent() instanceof VariableDeclarationFragment) {
