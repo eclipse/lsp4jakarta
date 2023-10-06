@@ -123,6 +123,21 @@ public class ArgumentUtils {
         return new CodeActionContext(diagnostics, only);
     }
     
+	/**
+	 * Returns the child if it exists and is an object, and null otherwise
+	 *
+	 * @param obj the object to get the child of
+	 * @param key the key of the child
+	 * @return the child if it exists and is an object, and null otherwise
+	 */
+	public static Map<String, Object> getObject(Map<String, Object> obj, String key) {
+		Object child = obj.get(key);
+		if (child != null && child instanceof Map<?, ?>) {
+			return (Map<String, Object>) child;
+		}
+		return null;
+	}
+	
     public static JsonObject getObjectAsJson(Map<String, Object> obj, String key) {
         Object child = obj.get(key);
         if (child != null && child instanceof Map<?, ?>) {
