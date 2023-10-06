@@ -62,6 +62,15 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	public JakartaDelegateCommandHandlerForJava() {
 	}
 
+	/**
+	 * Return the result for the given commandId
+	 *
+	 * @param commandId String name of command message
+	 * @param arguments request data from the Jakarta LS
+	 * @param monitor
+	 * @return the resulting response object for the given commandId based on the data in argument map
+	 * @throws Exception
+	 */
 	@Override
 	public Object executeCommand(String commandId, List<Object> arguments, IProgressMonitor monitor) throws Exception {
 		JavaLanguageServerPlugin
@@ -70,7 +79,7 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 			case JAVA_CODEACTION_COMMAND_ID:
                 return getCodeActionForJava(arguments, commandId, monitor);
 			case JAVA_CODEACTION_RESOLVE_COMMAND_ID:
-                return getCodeActionForJava(arguments, commandId, monitor);
+                return resolveCodeActionForJava(arguments, commandId, monitor);
 			case JAVA_COMPLETION_COMMAND_ID:
 				return getCompletionForJava(arguments, commandId, monitor);
 			case JAVA_DIAGNOSTICS_COMMAND_ID:
@@ -83,8 +92,8 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	/**
 	 * Return the completion result for the given arguments
 	 *
-	 * @param arguments
-	 * @param commandId
+	 * @param arguments Map of completion request data from Jakarta LS
+	 * @param commandId String name of command message
 	 * @param monitor
 	 * @return the completion result for the given arguments
 	 * @throws JavaModelException
@@ -103,9 +112,9 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	/**
 	 * Create the completion parameters from the given argument map
 	 *
-	 * @param arguments
-	 * @param commandId
-	 * @return the completion parameters from the given argument map
+	 * @param arguments Map of completion data from Jakarta LS
+	 * @param commandId String name of command message
+	 * @return the completion results parameter object based on the given argument map
 	 */
 	private static JakartaJavaCompletionParams createJakartaJavaCompletionParams(List<Object> arguments,
 			String commandId) {
@@ -133,8 +142,8 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	/**
 	 * Returns the code action for the given Java file.
 	 *
-	 * @param arguments
-	 * @param commandId
+	 * @param arguments Map of CodeAction data from Jakarta LS
+	 * @param commandId String name of command message
 	 * @param monitor
 	 * @return the code action for the given Java file.
 	 * @throws CoreException
@@ -151,8 +160,8 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	/**
 	 * Create java code action parameter from the given arguments map.
 	 *
-	 * @param arguments
-	 * @param commandId
+	 * @param arguments Map of code action data from Jakarta LS
+	 * @param commandId String name of command message
 	 *
 	 * @return java code action parameter
 	 */
@@ -184,6 +193,16 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 		return params;
 	}
 
+	/**
+	 * Return the resolveCodeAction result for the given arguments
+	 *
+	 * @param arguments Map of code action data from Jakarta LS
+	 * @param commandId String name of command message
+	 * @param monitor
+	 * @return the resolved CodeAction result for the given map of arguments
+	 * @throws JavaModelException
+	 * @throws CoreException
+	 */
 	private static CodeAction resolveCodeActionForJava(List<Object> arguments, String commandId,
 			IProgressMonitor monitor) throws JavaModelException, CoreException {
 		// Create java code action parameter
@@ -193,6 +212,14 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 				monitor);
 	}
 
+	/**
+	 * Create java resolve code action parameter from the given arguments map.
+	 *
+	 * @param arguments Map of code action data from Jakarta LS
+	 * @param commandId String name of command message
+	 *
+	 * @return java resolved code action parameter
+	 */
 	private static CodeAction createJakartaJavaCodeActionResolveParams(List<Object> arguments, String commandId) {
 		Map<String, Object> obj = getFirst(arguments);
 		if (obj == null) {
@@ -215,13 +242,12 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 
 	
     /**
-     * Returns the publish diagnostics list for a given java file URIs.
+     * Returns the publish diagnostics list for a given java file URIs in arguments map
      *
-     * @param arguments JakartaDiagnosticsParams @see
-     *                  org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams
+     * @param arguments map of code action data from Jakarta LS
      * @param monitor
      * @return list of diagnostics as
-     *         CompletableFuture<List<PublishDiagnosticsParams>>
+     *         List<PublishDiagnosticsParams>>
      */
 	private static List<PublishDiagnosticsParams> getDiagnosticsForJava(List<Object> arguments, String commandId,
 			IProgressMonitor monitor) throws JavaModelException {
@@ -234,8 +260,9 @@ public class JakartaDelegateCommandHandlerForJava implements IDelegateCommandHan
 	/**
 	 * Returns the java diagnostics parameters from the given arguments map.
 	 *
-	 * @param arguments
-	 * @param commandId
+	 * @param arguments JakartaJavaDiagnosticsParams @see
+     *                  org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams
+	 * @param commandId String name of command message
 	 *
 	 * @return the java diagnostics parameters
 	 */
