@@ -52,6 +52,8 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.FakeJavaProject;
  */
 public class JDTUtilsLSImpl implements IJDTUtils {
 
+	private static final int COMPILATION_UNIT_UPDATE_TIMEOUT = 3000;
+	
 	private static final IJDTUtils INSTANCE = new JDTUtilsLSImpl();
 
 	public static IJDTUtils getInstance() {
@@ -68,7 +70,16 @@ public class JDTUtilsLSImpl implements IJDTUtils {
 
 	@Override
 	public ICompilationUnit resolveCompilationUnit(String uriString) {
-		return JDTUtils.resolveCompilationUnit(uriString);
+		ICompilationUnit unit = JDTUtils.resolveCompilationUnit(uriString);
+		try {
+            // Give underlying resource time to catch up
+            // (timeout at COMPILATION_UNIT_UPDATE_TIMEOUT milliseconds).
+            long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
+            while (!unit.isConsistent() && System.currentTimeMillis() < endTime) {
+            }
+        } catch (JavaModelException e) {
+        }
+		return unit;
 	}
 
 	@Override
