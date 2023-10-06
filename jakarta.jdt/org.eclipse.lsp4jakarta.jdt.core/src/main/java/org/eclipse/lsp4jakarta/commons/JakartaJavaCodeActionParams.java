@@ -20,7 +20,10 @@ import org.eclipse.lsp4j.TextDocumentIdentifier;
 
 /**
  * Jakarta Java codeAction parameters.
- *
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaCodeActionParams.java
+ * 
  * @author Angelo ZERR
  *
  */
@@ -68,5 +71,4 @@ public class JakartaJavaCodeActionParams extends CodeActionParams {
 	public void setResolveSupported(boolean resolveSupported) {
 		this.resolveSupported = resolveSupported;
 	}
-
 }

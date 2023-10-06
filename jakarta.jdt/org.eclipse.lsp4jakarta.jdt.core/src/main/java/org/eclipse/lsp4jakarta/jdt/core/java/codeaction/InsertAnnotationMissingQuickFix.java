@@ -38,6 +38,9 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.InsertAnnotati
 
 /**
  * QuickFix for inserting annotations.
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/InsertAnnotationMissingQuickFix.java
  *
  * @author Angelo ZERR
  *

@@ -16,7 +16,7 @@ package org.eclipse.lsp4jakarta.commons;
 import java.util.List;
 
 /**
- * MicroProfile Java Project labels
+ * Jakarta Java Project labels
  *
  * @author Angelo ZERR
  *

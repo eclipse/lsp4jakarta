@@ -20,7 +20,10 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfo;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfoParams;
 
 /**
- * MicroProfile Java file information provider.
+ * Jakarta Java file information provider.
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/api/MicroProfileJavaFileInfoProvider.java
  *
  * @author Angelo ZERR
  *

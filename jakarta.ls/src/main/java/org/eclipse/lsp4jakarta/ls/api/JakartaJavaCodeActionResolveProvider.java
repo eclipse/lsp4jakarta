@@ -1,13 +1,14 @@
 /*******************************************************************************
-* Copyright (c) 2022 Red Hat Inc. and others.
-* All rights reserved. This program and the accompanying materials
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v20.html
+* Copyright (c) 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
 *
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     Red Hat Inc. - initial API and implementation
+*     IBM Corporation - initial API and implementation
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.ls.api;
 
@@ -17,10 +18,7 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 
 /**
- * Represents a provider that can resolve workspace edits for an unresolved code
- * action.
- *
- * @author datho7561
+ * Jakarta code action resolution (workspace edit) provider.
  */
 public interface JakartaJavaCodeActionResolveProvider {
 

@@ -64,7 +64,9 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.completion.JavaCompletionD
 import org.eclipse.lsp4jakarta.jdt.internal.core.java.diagnostics.JavaDiagnosticsDefinition;
 
 /**
- * JDT MicroProfile manager for Java files.
+ * JDT Jakarta manager for Java files.
+ * 
+ * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/PropertiesManagerForJava.java
  *
  * @author Angelo ZERR
  *

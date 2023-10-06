@@ -14,7 +14,6 @@
 package org.eclipse.lsp4jakarta.jdt.core.utils;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.IClassFile;
@@ -30,9 +29,11 @@ import org.eclipse.lsp4jakarta.commons.DocumentFormat;
 
 /**
  * JDT LS utils provides some helpful utilities. To avoid having a strong
- * dependencies to JDT-LS, we use this API. This API gives the capability to
- * consume MicroProfile manager without having JDT LS.
- *
+ * dependencies to JDT-LS, we use this API.
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/IJDTUtils.java
+ * 
  * @author Angelo ZERR
  *
  */
@@ -86,8 +87,6 @@ public interface IJDTUtils {
 	void waitForLifecycleJobs(IProgressMonitor monitor);
 
 	int toOffset(IBuffer buffer, int line, int column);
-
-	void discoverSource(IClassFile classFile, IProgressMonitor monitor) throws CoreException;
 
 	Location toLocation(IJavaElement element) throws JavaModelException;
 

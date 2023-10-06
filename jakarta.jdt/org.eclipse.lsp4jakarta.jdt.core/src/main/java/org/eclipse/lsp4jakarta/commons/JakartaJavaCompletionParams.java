@@ -14,11 +14,10 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.commons;
 
-
 import org.eclipse.lsp4j.Position;
 
 /**
- * Parameters that are passed on completion trigger for MicroProfile projects in Java files
+ * Parameters that are passed on completion trigger for Java projects.
  *
  * @author datho7561
  */

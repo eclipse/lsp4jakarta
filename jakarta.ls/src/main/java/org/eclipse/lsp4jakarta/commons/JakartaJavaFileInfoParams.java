@@ -14,7 +14,10 @@
 package org.eclipse.lsp4jakarta.commons;
 
 /**
- * MicroProfile Java file information parameters.
+ * Jakarta Java file information parameters.
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaFileInfoParams.java
  *
  * @author Angelo ZERR
  *

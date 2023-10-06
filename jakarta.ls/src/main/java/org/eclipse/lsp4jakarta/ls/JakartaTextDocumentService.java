@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2022 IBM Corporation and others.
+* Copyright (c) 2020, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -190,7 +190,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
-		// validate all opened java files which belong to a MicroProfile project
+		// validate all opened java files which belong to a Jakarta project
 		triggerValidationForAll(null);
 	}
 
@@ -203,7 +203,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
 	}
 
 	/**
-	 * Validate all opened Java files which belong to a MicroProfile project.
+	 * Validate all opened Java files which belong to a Jakarta project.
 	 *
 	 * @param projectURIs list of project URIs filter and null otherwise.
 	 */
@@ -239,13 +239,13 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
 		JakartaJavaDiagnosticsParams javaParams = new JakartaJavaDiagnosticsParams(uris,
 				new JakartaJavaDiagnosticsSettings(null));
-		
-        // TODO?: Use settings to see if markdown is  - for now default to setting it
-        // boolean markdownSupported =
-        // sharedSettings.getHoverSettings().isContentFormatSupported(MarkupKind.MARKDOWN);
-        // if (markdownSupported) {
-        // javaParams.setDocumentFormat(DocumentFormat.Markdown);
-        // }
+
+		// TODO?: Use settings to see if markdown is - for now default to setting it
+		// boolean markdownSupported =
+		// sharedSettings.getHoverSettings().isContentFormatSupported(MarkupKind.MARKDOWN);
+		// if (markdownSupported) {
+		// javaParams.setDocumentFormat(DocumentFormat.Markdown);
+		// }
 		javaParams.setDocumentFormat(DocumentFormat.Markdown);
 
 		jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams) //
@@ -259,12 +259,12 @@ public class JakartaTextDocumentService implements TextDocumentService {
 					return null;
 				});
 	}
-	
-    protected void cleanDiagnostics() {
-        // clear existing diagnostics
-        documents.all().forEach(doc -> {
-            jakartaLanguageServer.getLanguageClient()
-                    .publishDiagnostics(new PublishDiagnosticsParams(doc.getUri(), new ArrayList<Diagnostic>()));
-        });
-    }
+
+	protected void cleanDiagnostics() {
+		// clear existing diagnostics
+		documents.all().forEach(doc -> {
+			jakartaLanguageServer.getLanguageClient()
+					.publishDiagnostics(new PublishDiagnosticsParams(doc.getUri(), new ArrayList<Diagnostic>()));
+		});
+	}
 }

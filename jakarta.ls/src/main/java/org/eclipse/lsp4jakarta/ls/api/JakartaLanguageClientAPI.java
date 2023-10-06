@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2022 IBM Corporation and others.
+* Copyright (c) 2020, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,12 +13,7 @@
 
 package org.eclipse.lsp4jakarta.ls.api;
 
-import java.util.concurrent.CompletableFuture;
-
-import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.services.LanguageClient;
-import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
-import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 
 /**
  * API of the client consuming the Language Server for Jakarta EE. Used to send
@@ -27,5 +22,4 @@ import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 public interface JakartaLanguageClientAPI extends LanguageClient, JakartaJavaCompletionProvider,
 		JakartaJavaProjectLabelsProvider, JakartaJavaFileInfoProvider, JakartaJavaDiagnosticsProvider,
 		JakartaJavaCodeActionProvider, JakartaJavaCodeActionResolveProvider {
-
 }

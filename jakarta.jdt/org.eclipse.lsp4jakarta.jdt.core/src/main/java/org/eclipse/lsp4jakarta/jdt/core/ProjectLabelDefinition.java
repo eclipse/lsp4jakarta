@@ -23,7 +23,8 @@ import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Wrapper class around <code>IProjectLabelProvider</code>
- *
+ * 
+ * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/ProjectLabelDefinition.java
  */
 public class ProjectLabelDefinition {
 	private static final Logger LOGGER = Logger.getLogger(ProjectLabelDefinition.class.getName());
@@ -34,8 +35,9 @@ public class ProjectLabelDefinition {
 	}
 
 	/**
-	 * Returns a list of project labels ("maven", "microprofile", etc.) for the
+	 * Returns a list of project labels ("maven", "jakarta", etc.) for the
 	 * given <code>project</code>
+	 * 
 	 * @param project the Java project
 	 * @return a list of project labels for the given <code>project</code>
 	 */

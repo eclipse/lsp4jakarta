@@ -16,7 +16,6 @@ package org.eclipse.lsp4jakarta.ls.java;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -32,8 +31,6 @@ import org.eclipse.lsp4j.jsonrpc.CompletableFutures.FutureCancelChecker;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfo;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfoParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaProjectLabelsParams;
-//import org.eclipse.lsp4mp.commons.MicroProfilePropertiesChangeEvent;
-//import org.eclipse.lsp4mp.commons.MicroProfilePropertiesScope;
 import org.eclipse.lsp4jakarta.commons.ProjectLabelInfoEntry;
 import org.eclipse.lsp4jakarta.ls.api.JakartaJavaFileInfoProvider;
 import org.eclipse.lsp4jakarta.ls.api.JakartaJavaProjectLabelsProvider;
@@ -43,6 +40,9 @@ import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments.JakartaTextDocument;
 
 /**
  * Java Text documents registry which manages opened Java file.
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/java/JavaTextDocuments.java
  *
  * @author Angelo ZERR
  *
@@ -122,14 +122,14 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 		}
 
 		/**
-		 * Execute the given code only if the Java file belongs to a MicroProfile
+		 * Execute the given code only if the Java file belongs to a Jakarta project
 		 * without waiting for the load of project information.
 		 *
 		 * @param <T>          the type to return.
 		 * @param code         the code to execute.
 		 * @param defaultValue the default value to return if the Java file doesn't
-		 *                     belong to a MicroProfile project.
-		 * @return the given code only if the Java file belongs to a MicroProfile
+		 *                     belong to a Jakarta project.
+		 * @return the given code only if the Java file belongs to a Jakarta
 		 *         project without waiting for the load of project information.
 		 */
 		public <T> CompletableFuture<T> executeIfInJakartaProject(
@@ -144,11 +144,11 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 		 * @param <T>                       the type to return.
 		 * @param code                      the code to execute.
 		 * @param defaultValue              the default value to return if the Java file
-		 *                                  doesn't belong to a MicroProfile project.
+		 *                                  doesn't belong to a Jakarta project.
 		 * @param waitForLoadingProjectInfo true if code to apply must be done when
 		 *                                  project information is loaded and false
 		 *                                  otherwise.
-		 * @return the given code only if the Java file belongs to a MicroProfile
+		 * @return the given code only if the Java file belongs to a Jakarta
 		 *         project.
 		 */
 		public <T> CompletableFuture<T> executeIfInJakartaProject(
@@ -184,10 +184,10 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 		}
 
 		/**
-		 * Returns true if the Java file belongs to a MicroProfile project and false
+		 * Returns true if the Java file belongs to a Jakarta project and false
 		 * otherwise.
 		 *
-		 * @return true if the Java file belongs to a MicroProfile project and false
+		 * @return true if the Java file belongs to a Jakarta project and false
 		 *         otherwise.
 		 */
 		public boolean isInJakartaProject() {
@@ -212,11 +212,11 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 	}
 
 	/**
-	 * Returns as promise the MicroProfile project information for the given java
+	 * Returns as promise the Jakarta project information for the given java
 	 * file document.
 	 *
 	 * @param document the java file document.
-	 * @return as promise the MicroProfile project information for the given java
+	 * @return as promise the Jakarta project information for the given java
 	 *         file document.
 	 */
 	private CompletableFuture<ProjectLabelInfoEntry> getProjectInfo(JakartaTextDocument document) {
@@ -256,30 +256,7 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-				if (entry != null) {
-					// project info with labels are get from the JDT LS
-					String newProjectURI = entry.getUri();
-					// cache the project info in the project cache level.
-					projectCache.put(newProjectURI, future);
-					// update the project URI of the document to link it to a project URI
-					document.setProjectURI(newProjectURI);
-					// evict the document cache level.
-					documentCache.remove(documentURI);
-				}
-			// cache the future in the document level.
-			documentCache.put(documentURI, future);
-			return future;
-		} // >> to here from this original code:
-		
-		/* original code block preserved here -
-		 * 'thenApply(..) does not seem to halt and wait for the async compute happening in the 
-		 * LSClient/EclipseIDE to determine a result before the code here races to a point where the 
-		 * lack of a result causes the completion window to not be populated - must figure out why 'thenApply does not wait as I
-		 * believe it should...
-		 * 
-		final CompletableFuture<ProjectLabelInfoEntry> future = projectInfoProvider.getJavaProjectLabels(params);
-		future.thenApply(entry -> {
+
 			if (entry != null) {
 				// project info with labels are get from the JDT LS
 				String newProjectURI = entry.getUri();
@@ -290,13 +267,41 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 				// evict the document cache level.
 				documentCache.remove(documentURI);
 			}
-			return entry;
-		});
-		// cache the future in the document level.
-		documentCache.put(documentURI, future);
-		return future;
-	}
-	*/
+			// cache the future in the document level.
+			documentCache.put(documentURI, future);
+			return future;
+		} // >> to here from this original code:
+
+		/*
+		 * original code block preserved here -
+		 * 'thenApply(..) does not seem to halt and wait for the async compute happening
+		 * in the
+		 * LSClient/EclipseIDE to determine a result before the code here races to a
+		 * point where the
+		 * lack of a result causes the completion window to not be populated - must
+		 * figure out why 'thenApply does not wait as I
+		 * believe it should...
+		 * 
+		 * final CompletableFuture<ProjectLabelInfoEntry> future =
+		 * projectInfoProvider.getJavaProjectLabels(params);
+		 * future.thenApply(entry -> {
+		 * if (entry != null) {
+		 * // project info with labels are get from the JDT LS
+		 * String newProjectURI = entry.getUri();
+		 * // cache the project info in the project cache level.
+		 * projectCache.put(newProjectURI, future);
+		 * // update the project URI of the document to link it to a project URI
+		 * document.setProjectURI(newProjectURI);
+		 * // evict the document cache level.
+		 * documentCache.remove(documentURI);
+		 * }
+		 * return entry;
+		 * });
+		 * // cache the future in the document level.
+		 * documentCache.put(documentURI, future);
+		 * return future;
+		 * }
+		 */
 
 		// Returns the cached project info
 		return projectInfo;
@@ -344,26 +349,6 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
 							.collect(Collectors.toList());
 				});
 	}
-
-	/*
-	public boolean propertiesChanged(MicroProfilePropertiesChangeEvent event) {
-		List<MicroProfilePropertiesScope> scopes = event.getType();
-		boolean changedOnlyInSources = MicroProfilePropertiesScope.isOnlySources(scopes);
-		if (!changedOnlyInSources && event.getProjectURIs() != null) {
-			// evict the project cache level with the given project uris.
-			classpathChanged(event.getProjectURIs());
-			return true;
-		}
-		return false;
-	}
-*/
-	/*
-	private void classpathChanged(Set<String> projectURIs) {
-		// Some dependencies have changed, evict the project cache level.
-		projectURIs.forEach(projectCache::remove);
-	}
-	
-*/	
 
 	/**
 	 * Returns true if the given project information has the "jakarta" label

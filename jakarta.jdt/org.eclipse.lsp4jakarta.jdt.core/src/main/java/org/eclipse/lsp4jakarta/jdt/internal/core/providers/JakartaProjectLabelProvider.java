@@ -22,8 +22,9 @@ import org.eclipse.lsp4jakarta.jdt.core.IProjectLabelProvider;
 import org.eclipse.lsp4jakarta.jdt.core.utils.JDTJakartaUtils;;
 
 /**
- * Provides a MicroProfile-specific label to a project if the project is a
- * MicroProfile project
+ * Provides a Jakarta-specific label to a project if the project is a Jakarta project.
+ * 
+ * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/providers/MicroProfileProjectLabelProvider.java
  *
  * @author Angelo ZERR
  *
@@ -36,7 +37,8 @@ public class JakartaProjectLabelProvider implements IProjectLabelProvider {
 	public List<String> getProjectLabels(IJavaProject project) throws JavaModelException {
 		if (JDTJakartaUtils.isJakartaProject(project)) {
 			return Collections.singletonList(JAKARTA_LABEL);
-		};
+		}
+
 		return Collections.emptyList();
 	}
 }

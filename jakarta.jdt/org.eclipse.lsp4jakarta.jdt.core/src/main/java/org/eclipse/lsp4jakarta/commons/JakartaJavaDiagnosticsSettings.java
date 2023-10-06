@@ -17,25 +17,30 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents settings used by the MicroProfile JDT component while validating Java class files
+ * Represents settings used by the Jakarta JDT component while validating Java
+ * class files.
+ * 
+ * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaDiagnosticsSettings.java
  */
 public class JakartaJavaDiagnosticsSettings {
 
-    public JakartaJavaDiagnosticsSettings(List<String> patterns) {
-        this.patterns = patterns;
-    }
+	public JakartaJavaDiagnosticsSettings(List<String> patterns) {
+		this.patterns = patterns;
+	}
 
-    private List<String> patterns;
+	private List<String> patterns;
 
-    /**
-     * Returns a list of patterns representing the properties to ignore validation when adding diagnostics for properties without
-     * values.
-     *
-     * @return a list of patterns representing the properties to ignore validation when adding diagnostics for properties without
-     * values.
-     */
-    public List<String> getPatterns() {
-        return patterns == null ? Collections.emptyList() : this.patterns;
-    }
+	/**
+	 * Returns a list of patterns representing the properties to ignore validation
+	 * when adding diagnostics for properties without
+	 * values.
+	 *
+	 * @return a list of patterns representing the properties to ignore validation
+	 *         when adding diagnostics for properties without
+	 *         values.
+	 */
+	public List<String> getPatterns() {
+		return patterns == null ? Collections.emptyList() : this.patterns;
+	}
 
 }

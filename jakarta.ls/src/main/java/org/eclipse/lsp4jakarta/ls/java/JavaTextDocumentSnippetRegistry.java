@@ -36,6 +36,9 @@ import org.eclipse.lsp4jakarta.snippets.SnippetContextForJava;
  * order to manage the case if packagename is empty (don't generate package) or
  * not.
  *
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/java/JavaTextDocumentSnippetRegistry.java
+ *
  * @author Angelo ZERR
  *
  */
@@ -113,13 +116,13 @@ public class JavaTextDocumentSnippetRegistry extends TextDocumentSnippetRegistry
 		}
 		String firstLine = body.get(0);
 		if (firstLine.contains("${") && firstLine.contains(PACKAGENAME_KEY)) {
-			// Transform this 3 body lines:
+			// Transform these 3 body lines:
 			// "package ${1:packagename};",
 			// "",
-			// "import org.eclipse.microprofile.health.HealthCheck;",
+			// "import jakarta.ws.rs.HEAD;",
 
 			// to one line:
-			// ${packagename}import org.eclipse.microprofile.health.HealthCheck;
+			// ${packagename}import jakarta.ws.rs.HEAD;
 
 			if (body.size() >= 2 && StringUtils.isEmpty(body.get(1))) {
 				// Remove the line ""
@@ -127,12 +130,12 @@ public class JavaTextDocumentSnippetRegistry extends TextDocumentSnippetRegistry
 			}
 			String line = "";
 			if (body.size() >= 2) {
-				// Remove the line "import org.eclipse.microprofile.health.HealthCheck;"
+				// Remove the line "import jakarta.ws.rs.HEAD;"
 				line = body.get(1);
 				body.remove(1);
 			}
 			// Update the line 0 to ${packagename}import
-			// org.eclipse.microprofile.health.HealthCheck;
+			// jakarta.ws.rs.HEAD;
 			body.set(0, "${" + PACKAGENAME_KEY + "}" + line);
 		}
 	}

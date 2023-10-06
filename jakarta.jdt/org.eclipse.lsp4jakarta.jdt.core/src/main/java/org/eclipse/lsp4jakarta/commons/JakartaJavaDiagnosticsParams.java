@@ -16,73 +16,75 @@ package org.eclipse.lsp4jakarta.commons;
 import java.util.List;
 
 /**
- * MicroProfile Java diagnostics parameters.
+ * Jakarta Java diagnostics parameters.
+ * 
+ * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaDiagnosticsParams.java
  *
  * @author Angelo ZERR
  */
 public class JakartaJavaDiagnosticsParams {
 
-    private List<String> uris;
+	private List<String> uris;
 
-    private DocumentFormat documentFormat;
+	private DocumentFormat documentFormat;
 
-    private JakartaJavaDiagnosticsSettings settings;
+	private JakartaJavaDiagnosticsSettings settings;
 
-    public JakartaJavaDiagnosticsParams() {
-        this(null);
-    }
+	public JakartaJavaDiagnosticsParams() {
+		this(null);
+	}
 
-    public JakartaJavaDiagnosticsParams(List<String> uris) {
-        this(uris, null);
-    }
+	public JakartaJavaDiagnosticsParams(List<String> uris) {
+		this(uris, null);
+	}
 
-    public JakartaJavaDiagnosticsParams(List<String> uris, JakartaJavaDiagnosticsSettings settings) {
-        setUris(uris);
-        this.settings = settings;
-    }
+	public JakartaJavaDiagnosticsParams(List<String> uris, JakartaJavaDiagnosticsSettings settings) {
+		setUris(uris);
+		this.settings = settings;
+	}
 
-    /**
-     * Returns the java file uris list.
-     *
-     * @return the java file uris list.
-     */
-    public List<String> getUris() {
-        return uris;
-    }
+	/**
+	 * Returns the java file uris list.
+	 *
+	 * @return the java file uris list.
+	 */
+	public List<String> getUris() {
+		return uris;
+	}
 
-    /**
-     * Set the java file uris list.
-     *
-     * @param uris the java file uris list.
-     */
-    public void setUris(List<String> uris) {
-        this.uris = uris;
-    }
+	/**
+	 * Set the java file uris list.
+	 *
+	 * @param uris the java file uris list.
+	 */
+	public void setUris(List<String> uris) {
+		this.uris = uris;
+	}
 
-    public DocumentFormat getDocumentFormat() {
-        return documentFormat;
-    }
+	public DocumentFormat getDocumentFormat() {
+		return documentFormat;
+	}
 
-    public void setDocumentFormat(DocumentFormat documentFormat) {
-        this.documentFormat = documentFormat;
-    }
+	public void setDocumentFormat(DocumentFormat documentFormat) {
+		this.documentFormat = documentFormat;
+	}
 
-    /**
-     * Returns the diagnostics settings.
-     *
-     * @return the diagnostics settings
-     */
-    public JakartaJavaDiagnosticsSettings getSettings() {
-        return this.settings;
-    }
+	/**
+	 * Returns the diagnostics settings.
+	 *
+	 * @return the diagnostics settings
+	 */
+	public JakartaJavaDiagnosticsSettings getSettings() {
+		return this.settings;
+	}
 
-    /**
-     * Sets the diagnostics settings.
-     *
-     * @param settings the new value for the diagnostics settings
-     */
-    public void setSettings(JakartaJavaDiagnosticsSettings settings) {
-        this.settings = settings;
-    }
+	/**
+	 * Sets the diagnostics settings.
+	 *
+	 * @param settings the new value for the diagnostics settings
+	 */
+	public void setSettings(JakartaJavaDiagnosticsSettings settings) {
+		this.settings = settings;
+	}
 
 }

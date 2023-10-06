@@ -44,6 +44,9 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.corrections.DiagnosticsHel
 
 /**
  * Code action handler.
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/java/codeaction/CodeActionHandler.java
  *
  * @author Angelo ZERR
  *

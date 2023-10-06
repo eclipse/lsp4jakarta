@@ -16,7 +16,10 @@ package org.eclipse.lsp4jakarta.commons;
 import java.util.List;
 
 /**
- * MicroProfile Java Project labels
+ * Jakarta Java Project labels
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaProjectLabelsParams.java
  *
  * @author Angelo ZERR
  *

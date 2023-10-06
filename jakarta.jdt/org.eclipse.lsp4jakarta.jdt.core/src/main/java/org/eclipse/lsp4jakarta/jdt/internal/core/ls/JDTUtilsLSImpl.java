@@ -14,11 +14,9 @@
 package org.eclipse.lsp4jakarta.jdt.internal.core.ls;
 
 import java.io.Reader;
-import java.util.Optional;
 import java.util.Scanner;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.Job;
@@ -26,7 +24,6 @@ import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.ITypeRoot;
@@ -37,15 +34,16 @@ import org.eclipse.jdt.ls.core.internal.ResourceUtils;
 import org.eclipse.jdt.ls.core.internal.handlers.DocumentLifeCycleHandler;
 import org.eclipse.jdt.ls.core.internal.handlers.JsonRpcHelpers;
 import org.eclipse.jdt.ls.core.internal.javadoc.JavadocContentAccess;
-import org.eclipse.jdt.ls.core.internal.managers.IBuildSupport;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.commons.DocumentFormat;
 import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
-import org.eclipse.lsp4jakarta.jdt.internal.core.FakeJavaProject;
 
 /**
  * {@link IJDTUtils} implementation with JDT S {@link JDTUtils}.
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/ls/JDTUtilsLSImpl.java
  *
  * @author Angelo ZERR
  *
@@ -53,7 +51,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.FakeJavaProject;
 public class JDTUtilsLSImpl implements IJDTUtils {
 
 	private static final int COMPILATION_UNIT_UPDATE_TIMEOUT = 3000;
-	
+
 	private static final IJDTUtils INSTANCE = new JDTUtilsLSImpl();
 
 	public static IJDTUtils getInstance() {
@@ -72,13 +70,13 @@ public class JDTUtilsLSImpl implements IJDTUtils {
 	public ICompilationUnit resolveCompilationUnit(String uriString) {
 		ICompilationUnit unit = JDTUtils.resolveCompilationUnit(uriString);
 		try {
-            // Give underlying resource time to catch up
-            // (timeout at COMPILATION_UNIT_UPDATE_TIMEOUT milliseconds).
-            long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
-            while (!unit.isConsistent() && System.currentTimeMillis() < endTime) {
-            }
-        } catch (JavaModelException e) {
-        }
+			// Give underlying resource time to catch up
+			// (timeout at COMPILATION_UNIT_UPDATE_TIMEOUT milliseconds).
+			long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
+			while (!unit.isConsistent() && System.currentTimeMillis() < endTime) {
+			}
+		} catch (JavaModelException e) {
+		}
 		return unit;
 	}
 
@@ -126,17 +124,6 @@ public class JDTUtilsLSImpl implements IJDTUtils {
 	@Override
 	public Location toLocation(IJavaElement element) throws JavaModelException {
 		return JDTUtils.toLocation(element);
-	}
-
-	@Override
-	public void discoverSource(IClassFile classFile, IProgressMonitor progress) throws CoreException {
-		IJavaProject javaProject = FakeJavaProject.getRealJavaProject(classFile.getJavaProject());
-		// Try to download source if required
-		Optional<IBuildSupport> bs = JavaLanguageServerPlugin.getProjectsManager()
-				.getBuildSupport(javaProject.getProject());
-		if (bs.isPresent()) {
-			bs.get().discoverSource(classFile, progress);
-		}
 	}
 
 	@Override
