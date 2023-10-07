@@ -1,3 +1,15 @@
+/*******************************************************************************
+* Copyright (c) 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.cdi;
 
 import java.util.ArrayList;
@@ -31,15 +43,21 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ModifyModifier
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * QuickFix for deleting any of @Disposes, @Observes and @ObservesAsync
- * annotation for parameters
+ * Removes any of @Disposes, @Observes and @ObservesAsync
+ * annotation from the declaring element.
  */
 public abstract class RemoveMethodParamAnnotationQuickFix implements IJavaCodeActionParticipant {
+
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(RemoveMethodParamAnnotationQuickFix.class.getName());
 
+	/** Map key to retrieve a list of annotations. */
 	protected static final String ANNOTATIONS_KEY = "annotations";
+
+	/** Map key to retrieve parameter names. */
 	protected static final String PARAMETER_NAME_KEY = "parameter.name";
 
+	/** Annotations to remove. */
 	String[] annotations;
 
 	public RemoveMethodParamAnnotationQuickFix(String... annotations) {

@@ -17,9 +17,13 @@ import org.eclipse.lsp4jakarta.commons.codeaction.JakartaCodeActionId;
 import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.InsertAnnotationAttributesQuickFix;
 
 /**
- * Inserts the name attribute to the @Resource annotation.
+ * Inserts the name attribute to the @Resource annotation to the active element.
  */
 public class InsertNameAttributeToResourceAnnotationQuickFix extends InsertAnnotationAttributesQuickFix {
+
+	/**
+	 * Constructor.
+	 */
 	public InsertNameAttributeToResourceAnnotationQuickFix() {
 		super("jakarta.annotation.Resource", "name");
 	}

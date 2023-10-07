@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Context and Dependency Injection (CDI) diagnostic constants.
+ */
 public class Constants {
 	/* Annotation Constants */
 	public static final String PRODUCES = "Produces";

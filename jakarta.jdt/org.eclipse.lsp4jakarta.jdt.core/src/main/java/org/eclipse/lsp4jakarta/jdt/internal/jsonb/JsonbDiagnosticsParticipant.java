@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2023 IBM Corporation, Matheus Cruz and others.
+* Copyright (c) 2020, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,10 +43,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
 /**
- * This class contains logic for Jsonb diagnostics:
- * 1) Multiple JsonbCreator annotations on constructors will cause a diagnostic.
- * 2) JsonbTransient not being a mutually exclusive Jsonb annotation will cause
- * a diagnostic.
+ * JSON-B diagnostic participant that manages the use of @JsonbTransient,
+ * and @JsonbCreator annotations.
  */
 public class JsonbDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 

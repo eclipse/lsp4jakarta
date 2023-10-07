@@ -1,17 +1,15 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2023 Red Hat Inc. and others.
+* Copyright (c) 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
-* http://www.eclipse.org/legal/epl-2.0, or the Apache License, Version 2.0
-* which is available at https://www.apache.org/licenses/LICENSE-2.0.
+* http://www.eclipse.org/legal/epl-2.0.
 *
-* SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
+* SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     Red Hat Inc. - initial API and implementation
+*     IBM Corporation - initial API and implementation
 *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.jdt.internal.servlet;
 
 import java.util.ArrayList;
@@ -35,23 +33,29 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.IJavaCodeActionParticipa
 import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.JavaCodeActionResolveContext;
 import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ChangeCorrectionProposal;
-import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ExtendClassProposal;
+import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ImplementInterfaceProposal;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * HTTP servlet quick fix.
+ * Inserts the implements clause for the active class to implement the Filter
+ * interface.
  */
-public class HttpServletQuickFix implements IJavaCodeActionParticipant {
-	private static final Logger LOGGER = Logger.getLogger(HttpServletQuickFix.class.getName());
+public class InsertImplementsClauseToImplFilterQuickFix implements IJavaCodeActionParticipant {
+
+	/** Logger object to record events for this class. */
+	private static final Logger LOGGER = Logger.getLogger(InsertImplementsClauseToImplFilterQuickFix.class.getName());
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getParticipantId() {
-		return HttpServletQuickFix.class.getName();
+		return InsertImplementsClauseToImplFilterQuickFix.class.getName();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
 			IProgressMonitor monitor) throws CoreException {
@@ -59,15 +63,14 @@ public class HttpServletQuickFix implements IJavaCodeActionParticipant {
 		ITypeBinding parentType = Bindings.getBindingOfParentType(node);
 		List<CodeAction> codeActions = new ArrayList<>();
 		if (parentType != null) {
-			ExtendedCodeAction codeAction = new ExtendedCodeAction(
-					getLabel(Constants.HTTP_SERVLET, parentType.getName()));
+			ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel(Constants.FILTER, parentType.getName()));
 			codeAction.setRelevance(0);
 			codeAction.setKind(CodeActionKind.QuickFix);
 			codeAction.setDiagnostics(Arrays.asList(diagnostic));
 			codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
 					context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(),
 					context.getParams().isCommandConfigurationUpdateSupported(),
-					JakartaCodeActionId.ServletExtendClass));
+					JakartaCodeActionId.ServletFilterImplementation));
 			codeActions.add(codeAction);
 		}
 
@@ -82,14 +85,15 @@ public class HttpServletQuickFix implements IJavaCodeActionParticipant {
 		CodeAction toResolve = context.getUnresolved();
 		ASTNode node = context.getCoveredNode();
 		ITypeBinding parentType = Bindings.getBindingOfParentType(node);
-		String label = getLabel(Constants.HTTP_SERVLET, parentType.getName());
-		ChangeCorrectionProposal proposal = new ExtendClassProposal(label,
-				context.getCompilationUnit(), parentType, context.getASTRoot(),
-				"jakarta.servlet.http.HttpServlet", 0);
+		String label = getLabel(Constants.FILTER, parentType.getName());
+
+		ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(label,
+				context.getCompilationUnit(), parentType,
+				context.getASTRoot(), "jakarta.servlet.Filter", 0);
 		try {
 			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
 		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to make a constructor public.",
+			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to implement Filter.",
 					e);
 		}
 
@@ -106,7 +110,7 @@ public class HttpServletQuickFix implements IJavaCodeActionParticipant {
 	 */
 	@SuppressWarnings("restriction")
 	private String getLabel(String interfaceName, String interfaceType) {
-		return Messages.getMessage("LetClassExtend",
+		return Messages.getMessage("LetClassImplement",
 				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels.getJavaElementName(interfaceType),
 				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels
 						.getJavaElementName(interfaceName));

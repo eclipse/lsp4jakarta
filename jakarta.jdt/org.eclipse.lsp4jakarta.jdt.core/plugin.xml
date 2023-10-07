@@ -57,7 +57,7 @@
                   class="org.eclipse.lsp4jakarta.jdt.internal.annotations.InsertTypeAttributeToResourceAnnotation" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-annotations#PostConstructReturnType"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.PostConstructReturnTypeQuickFix" />
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.ModifyConstructReturnTypeQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-annotations#PostConstructParams"
                   class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemovePostConstructAnnotationQuickFix" />
@@ -219,7 +219,7 @@
       <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.websocket.WebSocketDiagnosticsParticipant" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-websocket#PathParamsMissingFromParam"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.websocket.AddPathParamAnnotationQuickFix" />
+                  class="org.eclipse.lsp4jakarta.jdt.internal.websocket.InsertPathParamAnnotationQuickFix" />
    </extension>
 
    <!-- Servlet -->
@@ -230,12 +230,12 @@
                   class="org.eclipse.lsp4jakarta.jdt.internal.servlet.CompleteFilterAnnotationQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-servlet#ClassWebFilterAnnotatedNoFilterInterfaceImpl"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.FilterImplementationQuickFix" />      
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.InsertImplementsClauseToImplFilterQuickFix" />      
 
       <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.servlet.ListenerDiagnosticsParticipant" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-servlet#WebFilterAnnotatedClassReqIfaceNoImpl"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.ListenerImplementationQuickFix" />     
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.InsertImplementsClauseToImplListenerQuickFix" />     
 
       <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.servlet.ServletDiagnosticsParticipant" />
       <codeAction kind="quickfix"
@@ -247,10 +247,10 @@
 
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-servlet#WebServletAnnotatedClassDoesNotExtendHttpServlet"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.HttpServletQuickFix" />  
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.InsertExtendsClauseToExtendHttpServletQuickFix" />  
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-servlet#WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.HttpServletQuickFix" />                            
+                  class="org.eclipse.lsp4jakarta.jdt.internal.servlet.InsertExtendsClauseToExtendHttpServletQuickFix" />                            
    </extension>
    
    <!-- CDI -->
@@ -258,13 +258,13 @@
       <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ManagedBeanDiagnosticsParticipant" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidNumberOfScopedAnnotationsByManagedBean"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ScopeDeclarationQuickFix" />
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveScopeDeclarationAnnotationsQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidNumberOfScopeAnnotationsByProducerField"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ScopeDeclarationQuickFix" />
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveScopeDeclarationAnnotationsQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidNumberOfScopeAnnotationsByProducerMethod"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ScopeDeclarationQuickFix" />
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveScopeDeclarationAnnotationsQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidManagedBeanWithNonStaticPublicField"
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ManagedBeanQuickFix" />
@@ -279,7 +279,7 @@
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveProducesAndInjectAnnotationsQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidManagedBeanWithInvalidConstructor"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.ManagedBeanConstructorQuickFix" />
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.InsertInjectAnnotationQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidManagedBeanWithInvalidConstructor"
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.InsertDefaultProtectedConstructorToMBeanQuickFix" />

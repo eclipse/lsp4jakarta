@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.core.IAnnotatable;
 import org.eclipse.jdt.core.IType;
 
+/**
+ * CDI Utilities.
+ */
 public class Utils {
 	/**
 	 * Detects if a class is a managed bean by looking for a bean defining

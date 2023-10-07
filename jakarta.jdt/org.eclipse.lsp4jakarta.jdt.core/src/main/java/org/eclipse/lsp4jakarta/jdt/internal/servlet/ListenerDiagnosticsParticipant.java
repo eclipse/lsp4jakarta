@@ -32,8 +32,14 @@ import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
+/**
+ * Servlet and HTTP session listener diagnostic participant.
+ */
 public class ListenerDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
 			throws CoreException {
@@ -78,8 +84,7 @@ public class ListenerDiagnosticsParticipant implements IJavaDiagnosticsParticipa
 						ErrorCode.WebFilterAnnotatedClassReqIfaceNoImpl, DiagnosticSeverity.Error));
 			}
 		}
+
 		return diagnostics;
-
 	}
-
 }

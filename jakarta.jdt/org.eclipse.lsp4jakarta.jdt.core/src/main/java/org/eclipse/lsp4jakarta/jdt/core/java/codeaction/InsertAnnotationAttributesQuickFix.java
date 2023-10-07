@@ -1,3 +1,15 @@
+/*******************************************************************************
+* Copyright (c) 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.core.java.codeaction;
 
 import java.text.MessageFormat;
@@ -25,7 +37,10 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ModifyAnnotati
  * Inserts the specified set of attributes the the specified annotation.
  */
 public abstract class InsertAnnotationAttributesQuickFix implements IJavaCodeActionParticipant {
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(InsertAnnotationAttributesQuickFix.class.getName());
+
+	/** Code action label template. */
 	private static final String CODE_ACTION_LABEL = "Insert ''{0}'' attribute{1} to @{2}";
 
 	/** The annotation to which attributes are added. */

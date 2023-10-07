@@ -3,15 +3,13 @@
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
-* http://www.eclipse.org/legal/epl-2.0, or the Apache License, Version 2.0
-* which is available at https://www.apache.org/licenses/LICENSE-2.0.
+* http://www.eclipse.org/legal/epl-2.0.
 *
-* SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
+* SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     IBM Corporation - initial API and implementation
+*     IBM Corporation - initial implementation
 *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.jdt.internal.servlet;
 
 import java.util.ArrayList;
@@ -31,25 +29,10 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ModifyAnnotati
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * QuickFix for fixing
- * {@link Constants#DIAGNOSTIC_CODE_MISSING_ATTRIBUTE} error and
- * {@link Constants#DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES} error by
- * providing several code actions:
- *
- * {@link Constants#DIAGNOSTIC_CODE_MISSING_ATTRIBUTE}
- * <ul>
- * <li>Add the `value` attribute to the `@WebServlet` annotation
- * <li>Add the `urlPatterns` attribute to the `@WebServlet` annotation
- * </ul>
- *
- * {@link Constants#DIAGNOSTIC_CODE_DUPLICATE_ATTRIBUTES}
- * <ul>
- * <li>Remove the `value` attribute to the `@WebServlet` annotation
- * <li>Remove the `urlPatterns` attribute to the `@WebServlet` annotation
- * </ul>
+ * Adds/Removes missing/duplicate attributes (value/urlPatters) to/from
+ * a @WebServlet annotation.
  *
  * @author Kathryn Kodama
- *
  */
 public class CompleteServletAnnotationQuickFix extends InsertAnnotationMissingQuickFix {
 

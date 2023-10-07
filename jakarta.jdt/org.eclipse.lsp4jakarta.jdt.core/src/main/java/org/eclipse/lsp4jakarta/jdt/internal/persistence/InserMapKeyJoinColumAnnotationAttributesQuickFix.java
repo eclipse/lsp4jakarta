@@ -1,14 +1,31 @@
+/*******************************************************************************
+* Copyright (c) 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.persistence;
-
-import java.text.MessageFormat;
 
 import org.eclipse.lsp4jakarta.commons.codeaction.ICodeActionId;
 import org.eclipse.lsp4jakarta.commons.codeaction.JakartaCodeActionId;
 import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.InsertAnnotationAttributesQuickFix;
+import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
+/**
+ * Inserts the @MapKeyJoinColumn along with its name and referencedColumnName
+ * attributes if missing.
+ */
 public class InserMapKeyJoinColumAnnotationAttributesQuickFix extends InsertAnnotationAttributesQuickFix {
-	private static final String CODE_ACTION_LABEL = "Insert the missing attributes to the @{0} annotation";
 
+	/**
+	 * Constructor.
+	 */
 	public InserMapKeyJoinColumAnnotationAttributesQuickFix() {
 		super("jakarta.persistence.MapKeyJoinColumn", "name", "referencedColumnName");
 	}
@@ -34,8 +51,6 @@ public class InserMapKeyJoinColumAnnotationAttributesQuickFix extends InsertAnno
 	 */
 	@Override
 	protected String getLabel(String annotation, String[] attributes) {
-		String[] parts = annotation.split("\\.");
-		String AnnotationName = (parts.length > 1) ? parts[parts.length - 1] : annotation;
-		return MessageFormat.format(CODE_ACTION_LABEL, AnnotationName);
+		return Messages.getMessage("InsertTheMissingAttributes");
 	}
 }

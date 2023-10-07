@@ -1,18 +1,17 @@
-/******************************************************************************* 
- * Copyright (c) 2022, 2023 IBM Corporation and others. 
- * 
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v. 2.0 which is available at 
- * http://www.eclipse.org/legal/epl-2.0. 
- * 
- * SPDX-License-Identifier: EPL-2.0 
- * 
- * Contributors: 
- *     Giancarlo Pernudi Segura - initial API and implementation
- *     Lidia Ataupillco Ramos
- *     Aviral Saxena
- *******************************************************************************/
-
+/*******************************************************************************
+* Copyright (c) 2022, 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     Giancarlo Pernudi Segura - initial API and implementation
+*     Lidia Ataupillco Ramos
+*     Aviral Saxena
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.websocket;
 
 import java.util.ArrayList;
@@ -48,8 +47,14 @@ import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
+/**
+ * WebSocket Diagnostic participant.
+ */
 public class WebSocketDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
 			throws CoreException {

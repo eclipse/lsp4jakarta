@@ -1,3 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2023 IBM Corporation and others.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.servlet;
 
 import java.util.ArrayList;
@@ -26,9 +38,20 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ChangeCorrecti
 import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ImplementInterfaceProposal;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
-public class ListenerImplementationQuickFix implements IJavaCodeActionParticipant {
-	private static final Logger LOGGER = Logger.getLogger(ListenerImplementationQuickFix.class.getName());
+/**
+ * Inserts the implements clause to the active class to implement the HTTP
+ * session and servlet listener interfaces.
+ */
+public class InsertImplementsClauseToImplListenerQuickFix implements IJavaCodeActionParticipant {
+
+	/** Logger object to record events for this class. */
+	private static final Logger LOGGER = Logger
+			.getLogger(InsertImplementsClauseToImplListenerQuickFix.class.getName());
+
+	/** Map key to retrieve an interface type */
 	private static final String INTERFACE_TYPE_KEY = "interface.type";
+
+	/** Map key to retrieve an interface name */
 	private static final String INTERFACE_NAME_KEY = "interface.name";
 
 	/**
@@ -36,7 +59,7 @@ public class ListenerImplementationQuickFix implements IJavaCodeActionParticipan
 	 */
 	@Override
 	public String getParticipantId() {
-		return ListenerImplementationQuickFix.class.getName();
+		return InsertImplementsClauseToImplListenerQuickFix.class.getName();
 	}
 
 	/**
@@ -92,7 +115,7 @@ public class ListenerImplementationQuickFix implements IJavaCodeActionParticipan
 		try {
 			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
 		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to implement Filter.",
+			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to add the implements clause to a class.",
 					e);
 		}
 
@@ -129,15 +152,15 @@ public class ListenerImplementationQuickFix implements IJavaCodeActionParticipan
 	/**
 	 * Returns the code action label.
 	 * 
+	 * @param classTypeName The class type element name.
 	 * @param interfaceName The interface name.
-	 * @param interfaceType The type interface type.
 	 * 
 	 * @return The code action label.
 	 */
 	@SuppressWarnings("restriction")
-	private String getLabel(String interfaceName, String interfaceType) {
+	private String getLabel(String classTypeName, String interfaceName) {
 		return Messages.getMessage("LetClassImplement",
-				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels.getJavaElementName(interfaceType),
+				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels.getJavaElementName(classTypeName),
 				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels
 						.getJavaElementName(interfaceName));
 	}

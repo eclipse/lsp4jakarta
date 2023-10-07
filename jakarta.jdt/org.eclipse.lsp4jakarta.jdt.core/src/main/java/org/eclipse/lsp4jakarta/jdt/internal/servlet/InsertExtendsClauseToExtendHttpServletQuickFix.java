@@ -1,3 +1,15 @@
+/*******************************************************************************
+* Copyright (c) 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.servlet;
 
 import java.util.ArrayList;
@@ -21,21 +33,25 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.IJavaCodeActionParticipa
 import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.JavaCodeActionContext;
 import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.JavaCodeActionResolveContext;
 import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ChangeCorrectionProposal;
-import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ImplementInterfaceProposal;
+import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ExtendClassProposal;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * Inserts Filter implementation.
+ * Inserts the extends clause for the active class to extend the HTTPServlet
+ * class.
  */
-public class FilterImplementationQuickFix implements IJavaCodeActionParticipant {
-	private static final Logger LOGGER = Logger.getLogger(FilterImplementationQuickFix.class.getName());
+public class InsertExtendsClauseToExtendHttpServletQuickFix implements IJavaCodeActionParticipant {
+
+	/** Logger object to record events for this class. */
+	private static final Logger LOGGER = Logger
+			.getLogger(InsertExtendsClauseToExtendHttpServletQuickFix.class.getName());
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getParticipantId() {
-		return FilterImplementationQuickFix.class.getName();
+		return InsertExtendsClauseToExtendHttpServletQuickFix.class.getName();
 	}
 
 	/**
@@ -48,14 +64,15 @@ public class FilterImplementationQuickFix implements IJavaCodeActionParticipant 
 		ITypeBinding parentType = Bindings.getBindingOfParentType(node);
 		List<CodeAction> codeActions = new ArrayList<>();
 		if (parentType != null) {
-			ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel(Constants.FILTER, parentType.getName()));
+			ExtendedCodeAction codeAction = new ExtendedCodeAction(
+					getLabel(Constants.HTTP_SERVLET, parentType.getName()));
 			codeAction.setRelevance(0);
 			codeAction.setKind(CodeActionKind.QuickFix);
 			codeAction.setDiagnostics(Arrays.asList(diagnostic));
 			codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
 					context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(),
 					context.getParams().isCommandConfigurationUpdateSupported(),
-					JakartaCodeActionId.ServletFilterImplementation));
+					JakartaCodeActionId.ServletExtendClass));
 			codeActions.add(codeAction);
 		}
 
@@ -70,15 +87,14 @@ public class FilterImplementationQuickFix implements IJavaCodeActionParticipant 
 		CodeAction toResolve = context.getUnresolved();
 		ASTNode node = context.getCoveredNode();
 		ITypeBinding parentType = Bindings.getBindingOfParentType(node);
-		String label = getLabel(Constants.FILTER, parentType.getName());
-
-		ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(label,
-				context.getCompilationUnit(), parentType,
-				context.getASTRoot(), "jakarta.servlet.Filter", 0);
+		String label = getLabel(Constants.HTTP_SERVLET, parentType.getName());
+		ChangeCorrectionProposal proposal = new ExtendClassProposal(label,
+				context.getCompilationUnit(), parentType, context.getASTRoot(),
+				"jakarta.servlet.http.HttpServlet", 0);
 		try {
 			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
 		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to implement Filter.",
+			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to insert the extends clause to a classs.",
 					e);
 		}
 
@@ -89,14 +105,14 @@ public class FilterImplementationQuickFix implements IJavaCodeActionParticipant 
 	 * Returns the code action label.
 	 * 
 	 * @param interfaceName The interface name.
-	 * @param interfaceType The type interface type.
+	 * @param classTypeName The class type element name.
 	 * 
 	 * @return The code action label.
 	 */
 	@SuppressWarnings("restriction")
-	private String getLabel(String interfaceName, String interfaceType) {
-		return Messages.getMessage("LetClassImplement",
-				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels.getJavaElementName(interfaceType),
+	private String getLabel(String interfaceName, String classTypeName) {
+		return Messages.getMessage("LetClassExtend",
+				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels.getJavaElementName(classTypeName),
 				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels
 						.getJavaElementName(interfaceName));
 	}

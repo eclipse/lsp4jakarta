@@ -22,14 +22,14 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.internal.core.manipulation.dom.ASTResolving;
 import org.eclipse.lsp4j.CodeActionKind;
-import org.eclipse.lsp4jakarta.jdt.internal.annotations.PostConstructReturnTypeQuickFix;
+import org.eclipse.lsp4jakarta.jdt.internal.annotations.ModifyConstructReturnTypeQuickFix;
 
 /**
  * Code action proposal for changing the return type of a method.
  * 
  * @author Yijia Jing
  * @see CodeActionHandler
- * @see PostConstructReturnTypeQuickFix
+ * @see ModifyConstructReturnTypeQuickFix
  *
  */
 public class ModifyReturnTypeProposal extends ASTRewriteCorrectionProposal {

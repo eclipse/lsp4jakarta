@@ -42,11 +42,20 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ChangeCorrecti
 import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ReplaceAnnotationProposal;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
+/**
+ * Removes scope related annotations from the declaring element.
+ */
 public class ManagedBeanQuickFix extends InsertAnnotationMissingQuickFix {
+
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(ManagedBeanQuickFix.class.getName());
 
+	/** Annotation names to remove. */
 	private static final String[] REMOVE_ANNOTATION_NAMES = new ArrayList<>(SCOPES).toArray(new String[SCOPES.size()]);
 
+	/**
+	 * Constructor.
+	 */
 	public ManagedBeanQuickFix() {
 		super("jakarta.enterprise.context.Dependent");
 	}

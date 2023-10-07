@@ -10,7 +10,6 @@
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.jdt.internal.beanvalidation;
 
 import java.util.ArrayList;
@@ -45,8 +44,10 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
  */
 public class RemoveDynamicConstraintAnnotationQuickFix implements IJavaCodeActionParticipant {
 
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(RemoveDynamicConstraintAnnotationQuickFix.class.getName());
 
+	/** Annotation name map key */
 	public static final String ANNOTATION_NAME_KEY = "annotation.name";
 
 	/**
@@ -105,7 +106,7 @@ public class RemoveDynamicConstraintAnnotationQuickFix implements IJavaCodeActio
 		try {
 			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
 		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to resolve code action to remove a constraint constructor",
+			LOGGER.log(Level.SEVERE, "Unable to resolve code action to remove a constraint annotation",
 					e);
 		}
 

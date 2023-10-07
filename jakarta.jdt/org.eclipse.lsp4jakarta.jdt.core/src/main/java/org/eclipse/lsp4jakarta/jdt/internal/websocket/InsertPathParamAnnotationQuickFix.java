@@ -1,3 +1,15 @@
+/*******************************************************************************
+* Copyright (c) 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.websocket;
 
 import java.text.MessageFormat;
@@ -11,13 +23,13 @@ import org.eclipse.lsp4jakarta.commons.codeaction.JakartaCodeActionId;
 import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.InsertAnnotationAttributesQuickFix;
 
 /**
- * Adds the @PathParam annotation with a default value attribute to a method
+ * Inserts the @PathParam annotation with a default value attribute to a method
  * parameter.
  */
-public class AddPathParamAnnotationQuickFix extends InsertAnnotationAttributesQuickFix {
+public class InsertPathParamAnnotationQuickFix extends InsertAnnotationAttributesQuickFix {
 	private static final String CODE_ACTION_LABEL = "Insert @{0}";
 
-	public AddPathParamAnnotationQuickFix() {
+	public InsertPathParamAnnotationQuickFix() {
 		super("jakarta.websocket.server.PathParam", "value");
 	}
 
@@ -26,7 +38,7 @@ public class AddPathParamAnnotationQuickFix extends InsertAnnotationAttributesQu
 	 */
 	@Override
 	public String getParticipantId() {
-		return AddPathParamAnnotationQuickFix.class.getName();
+		return InsertPathParamAnnotationQuickFix.class.getName();
 	}
 
 	/**

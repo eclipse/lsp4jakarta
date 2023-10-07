@@ -31,27 +31,10 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ModifyAnnotati
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * QuickFix for fixing
- * {@link Constants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE} error
- * and {@link Constants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE} error
- * by providing several code actions:
- *
- *
- * {@link Constants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE}
- * <ul>
- * <li>Add the `value` attribute to the `@WebFilter` annotation
- * <li>Add the `urlPatterns` attribute to the `@WebFilter` annotation
- * <li>Add the `servletNames` attribute to the `@WebFilter` annotation
- * </ul>
- *
- * {@link Constants#DIAGNOSTIC_CODE_FILTER_MISSING_ATTRIBUTE}
- * <ul>
- * <li>Remove the `value` attribute from the `@WebFilter` annotation
- * <li>Remove the `urlPatterns` attribute from the `@WebFilter` annotation
- * </ul>
+ * Adds/Removes missing/duplicate attributes (value/urlPatters/etc) to/from
+ * a @WebFilter annotation.
  *
  * @author Kathryn Kodama
- *
  */
 public class CompleteFilterAnnotationQuickFix extends InsertAnnotationMissingQuickFix {
 

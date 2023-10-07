@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2022 IBM Corporation, Pengyu Xiong and others.
+* Copyright (c) 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,9 +10,11 @@
 * Contributors:
 *     IBM Corporation, Pengyu Xiong - initial API and implementation
 *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.jdt.internal.servlet;
 
+/**
+ * Servlet constants.
+ */
 public class Constants {
 
 	/* @WEBListener */

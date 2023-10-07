@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2023 IBM Corporation, Pengyu Xiong and others.
+ * Copyright (c) 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,21 +36,15 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
 /**
- * 
- * jararta.annotation Diagnostics
- * 
- * <li>Diagnostic 1: Class annotated with @WebServlet does not extend the
- * HttpServlet class.</li>
- * <li>Diagnostic 2: @WebServlet missing 'urlPatterns' and 'value' attribute
- * (one must be specified).</li>
- * <li>Diagnostic 3: @WebServlet has both 'urlPatterns' and 'value' attributes
- * specified.</li>
+ * Servlet diagnostic participant.
  *
  * @see https://jakarta.ee/specifications/servlet/5.0/jakarta-servlet-spec-5.0.html#webservlet
- *
  */
 public class ServletDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
 			throws CoreException {

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021, 2023 IBM Corporation and others.
+* Copyright (c) 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -8,7 +8,7 @@
 * SPDX-License-Identifier: EPL-2.0
 *
 * Contributors:
-*     IBM Corporation - initial API and implementation
+*     IBM Corporation - initial implementation
 *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.internal.annotations;
@@ -40,12 +40,11 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.RemoveParamsPr
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * Quickfix for removing all parameters from a method
- * 
- * @author Zijian Pei
- *
+ * Removes all the parameters from the active method.
  */
 public class RemoveAllMethodParametersQuickFix implements IJavaCodeActionParticipant {
+
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(RemoveAllMethodParametersQuickFix.class.getName());
 
 	/**
@@ -97,9 +96,9 @@ public class RemoveAllMethodParametersQuickFix implements IJavaCodeActionPartici
 	}
 
 	/**
-	 * Returns the label to be used for this code action.
-	 * 
-	 * @return The label to be used for this code action.
+	 * Returns the code action label.
+	 *
+	 * @return The code action label.
 	 */
 	public String getLabel() {
 		return Messages.getMessage("RemoveAllParameters");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 IBM Corporation, Matthew Shocrylas and others.
+* Copyright (c) 2021, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,24 +122,25 @@ public class ModifyModifiersProposal extends ASTRewriteCorrectionProposal {
 		List<ASTNode> modifiers = new ArrayList();
 
 		switch (declNode.getNodeType()) {
-		case ASTNode.METHOD_DECLARATION:
-			modifiersList = rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY);
-			modifiers = (List<ASTNode>) declNode.getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
-			break;
-		case ASTNode.FIELD_DECLARATION:
-			modifiersList = rewrite.getListRewrite(declNode, FieldDeclaration.MODIFIERS2_PROPERTY);
-			modifiers = (List<ASTNode>) declNode.getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
-			break;
-		case ASTNode.TYPE_DECLARATION:
-			modifiersList = rewrite.getListRewrite(declNode, TypeDeclaration.MODIFIERS2_PROPERTY);
-			modifiers = (List<ASTNode>) declNode.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
-			break;
-		case ASTNode.SINGLE_VARIABLE_DECLARATION:
-			modifiersList = rewrite.getListRewrite(declNode, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
-			modifiers = (List<ASTNode>) declNode.getStructuralProperty(SingleVariableDeclaration.MODIFIERS2_PROPERTY);
-			break;
-		default:
-			modifiersList = null;
+			case ASTNode.METHOD_DECLARATION:
+				modifiersList = rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY);
+				modifiers = (List<ASTNode>) declNode.getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
+				break;
+			case ASTNode.FIELD_DECLARATION:
+				modifiersList = rewrite.getListRewrite(declNode, FieldDeclaration.MODIFIERS2_PROPERTY);
+				modifiers = (List<ASTNode>) declNode.getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
+				break;
+			case ASTNode.TYPE_DECLARATION:
+				modifiersList = rewrite.getListRewrite(declNode, TypeDeclaration.MODIFIERS2_PROPERTY);
+				modifiers = (List<ASTNode>) declNode.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
+				break;
+			case ASTNode.SINGLE_VARIABLE_DECLARATION:
+				modifiersList = rewrite.getListRewrite(declNode, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+				modifiers = (List<ASTNode>) declNode
+						.getStructuralProperty(SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+				break;
+			default:
+				modifiersList = null;
 		}
 
 		for (ASTNode modifier : modifiers) {

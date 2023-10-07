@@ -10,11 +10,10 @@
  * Contributors:
  *     Yijia Jing
  *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.jdt.internal.jsonp;
 
 /**
- * JSON-P diagnostic constants.
+ * JSON Processing (JSON-P) diagnostic constants.
  */
 public class Constants {
 

@@ -33,8 +33,14 @@ import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
+/**
+ * @WebFilter annotation diagnostic participant.
+ */
 public class FilterDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
 			throws CoreException {
@@ -108,6 +114,7 @@ public class FilterDiagnosticsParticipant implements IJavaDiagnosticsParticipant
 				}
 			}
 		}
+
 		return diagnostics;
 	}
 }

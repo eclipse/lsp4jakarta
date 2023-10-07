@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Red Hat Inc. and others.
+* Copyright (c) 2020, 2023 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,9 +22,11 @@ import org.eclipse.lsp4jakarta.jdt.core.IProjectLabelProvider;
 import org.eclipse.lsp4jakarta.jdt.core.utils.JDTJakartaUtils;;
 
 /**
- * Provides a Jakarta-specific label to a project if the project is a Jakarta project.
+ * Provides a Jakarta-specific label to a project if the project is a Jakarta
+ * project.
  * 
- * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/providers/MicroProfileProjectLabelProvider.java
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/providers/MicroProfileProjectLabelProvider.java
  *
  * @author Angelo ZERR
  *

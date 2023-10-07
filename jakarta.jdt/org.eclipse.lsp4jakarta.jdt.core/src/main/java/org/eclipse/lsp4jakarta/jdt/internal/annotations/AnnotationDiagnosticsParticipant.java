@@ -10,7 +10,6 @@
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.jdt.internal.annotations;
 
 import java.util.ArrayList;
@@ -45,25 +44,16 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
 /**
  * 
- * jararta.annotation Diagnostics
- * 
- * <li>Diagnostic 1: @Generated 'date' attribute does not follow ISO 8601.</li>
- * <li>Diagnostic 2: @Resource 'name' attribute missing (when annotation is used
- * on a class).</li>
- * <li>Diagnostic 3: @Resource 'type' attribute missing (when annotation is used
- * on a class).</li>
- * <li>Diagnostic 4: @PostConstruct method has parameters.</li>
- * <li>Diagnostic 5: @PostConstruct method is not void.</li>
- * <li>Diagnostic 6: @PostConstruct method throws checked exception(s).</li>
- * <li>Diagnostic 7: @PreDestroy method has parameters.</li>
- * <li>Diagnostic 8: @PreDestroy method is static.</li>
- * <li>Diagnostic 9: @PreDestroy method throws checked exception(s).</li>
+ * Annotations diagnostic participant that manages the use of annotations.
  * 
  * @see https://jakarta.ee/specifications/annotations/2.0/annotations-spec-2.0.html#annotations
  *
  */
 public class AnnotationDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
 			throws CoreException {
@@ -263,6 +253,14 @@ public class AnnotationDiagnosticsParticipant implements IJavaDiagnosticsPartici
 		return diagnostics;
 	}
 
+	/**
+	 * Returns true if the input annotation is valid. False, otherwise.
+	 * 
+	 * @param annotationName   The annotation to validate.
+	 * @param validAnnotations The list of valid annotations.
+	 * 
+	 * @return True if the input annotation is valid. False, otherwise.
+	 */
 	private static boolean isValidAnnotation(String annotationName, String[] validAnnotations) {
 		for (String fqName : validAnnotations) {
 			if (fqName.endsWith(annotationName)) {

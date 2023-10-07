@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2019 Red Hat Inc. and others.
+* Copyright (c) 2019, 2023 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,14 +32,16 @@ import org.eclipse.lsp4jakarta.commons.ClasspathKind;
 /**
  * JDT Jakarta utilities.
  * 
- * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTMicroProfileUtils.java
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/utils/JDTMicroProfileUtils.java
  *
  * @author Angelo ZERR
  */
 public class JDTJakartaUtils {
-
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(JDTJakartaUtils.class.getName());
 
+	/** Jakarta project indicator. */
 	public static final String JAKARTA_RS_GET = "jakarta.ws.rs.GET";
 
 	/**

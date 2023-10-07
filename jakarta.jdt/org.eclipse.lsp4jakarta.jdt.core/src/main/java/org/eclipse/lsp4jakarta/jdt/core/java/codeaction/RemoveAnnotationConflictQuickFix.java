@@ -38,13 +38,21 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.RemoveAnnotati
  * Removes annotations.
  */
 public abstract class RemoveAnnotationConflictQuickFix implements IJavaCodeActionParticipant {
+
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(RemoveAnnotationConflictQuickFix.class.getName());
 
+	/** Annotations to be removed. */
 	private final String[] annotations;
 
+	/**
+	 * Indicator to generate a single action for a list of annotations or one for
+	 * each annotation in the list.
+	 */
 	protected final boolean generateOnlyOneCodeAction;
 
-	public static final String ANNOTATION_KEY = "annotation";
+	/** Map key to retrieve a list of annotations. */
+	public static final String ANNOTATIONS_KEY = "annotations";
 
 	/**
 	 * Constructor.
@@ -93,7 +101,7 @@ public abstract class RemoveAnnotationConflictQuickFix implements IJavaCodeActio
 		ASTNode node = context.getCoveredNode();
 		IBinding parentType = getBinding(node);
 		CodeActionResolveData data = (CodeActionResolveData) toResolve.getData();
-		List<String> annotationToRemoveList = (List<String>) data.getExtendedDataEntry(ANNOTATION_KEY);
+		List<String> annotationToRemoveList = (List<String>) data.getExtendedDataEntry(ANNOTATIONS_KEY);
 		String[] annotationToRemove = annotationToRemoveList.toArray(String[]::new);
 		String label = getLabel(annotationToRemove);
 		ChangeCorrectionProposal proposal = new RemoveAnnotationProposal(label, context.getCompilationUnit(),
@@ -152,7 +160,7 @@ public abstract class RemoveAnnotationConflictQuickFix implements IJavaCodeActio
 		codeAction.setKind(CodeActionKind.QuickFix);
 		codeAction.setDiagnostics(Arrays.asList(diagnostic));
 		Map<String, Object> extendedData = new HashMap<String, Object>();
-		extendedData.put(ANNOTATION_KEY, Arrays.asList(annotations));
+		extendedData.put(ANNOTATIONS_KEY, Arrays.asList(annotations));
 		codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
 				context.getParams().getRange(), extendedData, context.getParams().isResourceOperationSupported(),
 				context.getParams().isCommandConfigurationUpdateSupported(), getCodeActionId()));

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2023 IBM Corporation, Reza Akhavan and others.
+* Copyright (c) 2020, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,6 @@ import static org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.Constants.BYTE
 import static org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.Constants.CHAR_SEQUENCE;
 import static org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.Constants.DECIMAL_MAX;
 import static org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.Constants.DECIMAL_MIN;
-import static org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.Constants.DIAGNOSTIC_SOURCE;
 import static org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.Constants.DIGITS;
 import static org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.Constants.DOUBLE;
 import static org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.Constants.EMAIL;
@@ -71,16 +70,15 @@ import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
+/**
+ * Bean validation diagnostics participant that manages the use of validation
+ * element constraints.
+ */
 public class BeanValidationDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
-	public BeanValidationDiagnosticsParticipant() {
-		super();
-	}
-
-	protected String getDiagnosticSource() {
-		return DIAGNOSTIC_SOURCE;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
 			throws CoreException {
@@ -280,7 +278,7 @@ public class BeanValidationDiagnosticsParticipant implements IJavaDiagnosticsPar
 		}
 	}
 
-	/*
+	/**
 	 * Refer to Class signature documentation for the formating
 	 * https://www.ibm.com/support/knowledgecenter/sl/SS5JSH_9.5.0/org.eclipse.jdt.
 	 * doc.isv/reference/api/org/eclipse/jdt/core/Signature.html

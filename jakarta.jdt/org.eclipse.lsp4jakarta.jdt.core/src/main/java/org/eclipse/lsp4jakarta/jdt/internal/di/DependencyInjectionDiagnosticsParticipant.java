@@ -42,20 +42,14 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
 /**
- * 
- * jararta.annotation Diagnostics
- * 
- * <li>Diagnostic 1: @Inject fields cannot be final.</li>
- * <li>Diagnostic 2: @Inject methods cannot be final.</li>
- * <li>Diagnostic 3: @Inject methods cannot be abstract.</li>
- * <li>Diagnostic 4: @Inject methods cannot be static.</li>
- * <li>Diagnostic 5: @Inject methods cannot be generic.</li>
- * 
- * @see https://jakarta.ee/specifications/dependency-injection/2.0/jakarta-injection-spec-2.0.html
- *
+ * Dependency injection diagnostics participant that manages the use of
+ * the @Inject annotation.
  */
 public class DependencyInjectionDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
 			throws CoreException {

@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2023 IBM Corporation, Matthew Shocrylas and others.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v. 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0.
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     IBM Corporation, Matthew Shocrylas - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2021, 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation, Matthew Shocrylas - initial API and implementation
+*******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.internal.jaxrs;
 
@@ -36,10 +36,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * Diagnostic collector for root resource classes with multiple constructors
- * 
- * @author Matthew Shocrylas
- *
+ * JAX-RS diagnostic participant that manages the use of constructors.
  */
 public class ClassConstructorDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
@@ -65,7 +62,8 @@ public class ClassConstructorDiagnosticsParticipant implements IJavaDiagnosticsP
 				IAnnotation[] annotationList = type.getAnnotations();
 
 				for (IAnnotation annotation : annotationList) {
-					String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type, annotation.getElementName(),
+					String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
+							annotation.getElementName(),
 							Constants.SET_OF_JAXRS_ANNOTATIONS1);
 					if (matchedAnnotation != null) {
 						if (Constants.PATH_ANNOTATION.equals(matchedAnnotation)) {

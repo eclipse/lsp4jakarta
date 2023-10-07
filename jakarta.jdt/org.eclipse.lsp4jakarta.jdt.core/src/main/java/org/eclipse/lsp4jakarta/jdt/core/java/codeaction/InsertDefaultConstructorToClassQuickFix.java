@@ -21,10 +21,13 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.AddConstructor
 import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ChangeCorrectionProposal;
 
 /**
- * Inserts default constructor to the currently active class.
+ * Inserts default constructor to the active class.
  */
 public abstract class InsertDefaultConstructorToClassQuickFix implements IJavaCodeActionParticipant {
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(InsertDefaultConstructorToClassQuickFix.class.getName());
+
+	/** Code action label template. */
 	private static final String CODE_ACTION_LABEL = "Add a default ''{0}'' constructor to this class";
 
 	/**

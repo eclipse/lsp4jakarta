@@ -8,7 +8,8 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     Hani Damlaj, Jianing Xu
+ *     Hani Damlaj
+ *     Jianing Xu
  *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.internal.cdi;
@@ -44,6 +45,9 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
+/**
+ * CDI diagnostics participant that manages the use of a managed bean.
+ */
 public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
 	@Override

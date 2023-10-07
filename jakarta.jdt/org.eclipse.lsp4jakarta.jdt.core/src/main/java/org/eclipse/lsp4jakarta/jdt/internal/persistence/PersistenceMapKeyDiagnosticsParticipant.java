@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2023 IBM Corporation, Ankush Sharma and others.
+* Copyright (c) 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,7 +10,6 @@
 * Contributors:
 *     IBM Corporation, Ankush Sharma - initial API and implementation
 *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.jdt.internal.persistence;
 
 import java.util.ArrayList;
@@ -39,6 +38,10 @@ import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
+/**
+ * Persistence diagnostic participant that manages the use
+ * of @MapKeyClass, @MapKey, and @MapKeyJoinColumn annotations.
+ */
 public class PersistenceMapKeyDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
 	/**

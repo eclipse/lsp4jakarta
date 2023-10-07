@@ -24,12 +24,21 @@ import org.eclipse.jdt.core.JavaModelException;
 /**
  * Wrapper class around <code>IProjectLabelProvider</code>
  * 
- * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/ProjectLabelDefinition.java
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/ProjectLabelDefinition.java
  */
 public class ProjectLabelDefinition {
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(ProjectLabelDefinition.class.getName());
+
+	/** Project label provider instance. */
 	private final IProjectLabelProvider projectLabelProvider;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param projectLabelProvider the project label provider instance.
+	 */
 	public ProjectLabelDefinition(IProjectLabelProvider projectLabelProvider) {
 		this.projectLabelProvider = projectLabelProvider;
 	}

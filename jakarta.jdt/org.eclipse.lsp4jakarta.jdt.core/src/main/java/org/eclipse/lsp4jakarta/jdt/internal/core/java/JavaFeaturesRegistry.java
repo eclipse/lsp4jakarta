@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020 Red Hat Inc. and others.
+* Copyright (c) 2020, 2023 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,9 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.diagnostics.JavaDiagnostic
 /**
  * Registry to hold the extension point
  * "org.eclipse.lsp4mp.jdt.core.javaFeaturesParticipants".
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/java/JavaFeaturesRegistry.java
  *
  */
 public class JavaFeaturesRegistry {
@@ -101,28 +104,28 @@ public class JavaFeaturesRegistry {
 
 	private void createAndAddDefinition(IConfigurationElement ce) throws CoreException {
 		switch (ce.getName()) {
-		case CODEACTION_ELT: {
-			JavaCodeActionDefinition definition = new JavaCodeActionDefinition(ce);
-			synchronized (javaCodeActionDefinitions) {
-				javaCodeActionDefinitions.add(definition);
+			case CODEACTION_ELT: {
+				JavaCodeActionDefinition definition = new JavaCodeActionDefinition(ce);
+				synchronized (javaCodeActionDefinitions) {
+					javaCodeActionDefinitions.add(definition);
+				}
+				break;
 			}
-			break;
-		}
-		case COMPLETION_ELT: {
-			JavaCompletionDefinition definition = new JavaCompletionDefinition(ce);
-			synchronized (javaCompletionDefinitions) {
-				javaCompletionDefinitions.add(definition);
+			case COMPLETION_ELT: {
+				JavaCompletionDefinition definition = new JavaCompletionDefinition(ce);
+				synchronized (javaCompletionDefinitions) {
+					javaCompletionDefinitions.add(definition);
+				}
+				break;
 			}
-			break;
-		}
-		case DIAGNOSTICS_ELT: {
-			JavaDiagnosticsDefinition definition = new JavaDiagnosticsDefinition(ce);
-			synchronized (javaDiagnosticsDefinitions) {
-				javaDiagnosticsDefinitions.add(definition);
+			case DIAGNOSTICS_ELT: {
+				JavaDiagnosticsDefinition definition = new JavaDiagnosticsDefinition(ce);
+				synchronized (javaDiagnosticsDefinitions) {
+					javaDiagnosticsDefinitions.add(definition);
+				}
+				break;
 			}
-			break;
-		}
-		default:
+			default:
 		}
 	}
 

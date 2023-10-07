@@ -1,17 +1,17 @@
-/******************************************************************************* 
- * Copyright (c) 2022, 2023 IBM Corporation and others. 
- * 
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v. 2.0 which is available at 
- * http://www.eclipse.org/legal/epl-2.0. 
- * 
- * SPDX-License-Identifier: EPL-2.0 
- * 
- * Contributors: 
- *     Giancarlo Pernudi Segura - initial API and implementation
- *     Lidia Ataupillco Ramos
- *     Aviral Saxena
- *******************************************************************************/
+/*******************************************************************************
+* Copyright (c) 2022, 2023 IBM Corporation and others. 
+* 
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v. 2.0 which is available at 
+* http://www.eclipse.org/legal/epl-2.0. 
+* 
+* SPDX-License-Identifier: EPL-2.0 
+* 
+* Contributors: 
+*     Giancarlo Pernudi Segura - initial API and implementation
+*     Lidia Ataupillco Ramos
+*     Aviral Saxena
+*******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.internal.websocket;
 
@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.DiagnosticSeverity;
 
+/**
+ * WebSocket diagnostic and code action constants.
+ */
 public class Constants {
 	public static final String DIAGNOSTIC_SOURCE = "jakarta-websocket";
 

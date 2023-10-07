@@ -14,6 +14,9 @@ package org.eclipse.lsp4jakarta.jdt.internal.jsonb;
 
 import java.util.List;
 
+/**
+ * JSON Binding (JSON-B) constants.
+ */
 public class Constants {
 
 	/* Source */

@@ -42,6 +42,10 @@ import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
+/**
+ * Persistence diagnostic participant that manages the use of @Entity
+ * annotations.
+ */
 public class PersistenceEntityDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 Red Hat Inc. and others.
+* Copyright (c) 2021, 2023 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.lsp4j.CompletionItem;
@@ -28,6 +27,9 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.AbstractJavaFeatureDefinit
 
 /**
  * Wrap the completion participant in try/catch
+ * 
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/java/completion/JavaCompletionDefinition.java
  *
  * @author datho7561
  */
@@ -53,7 +55,8 @@ public class JavaCompletionDefinition extends AbstractJavaFeatureDefinition<IJav
 	}
 
 	@Override
-	public List<? extends CompletionItem> collectCompletionItems(JavaCompletionContext context, IProgressMonitor monitor) {
+	public List<? extends CompletionItem> collectCompletionItems(JavaCompletionContext context,
+			IProgressMonitor monitor) {
 		try {
 			List<? extends CompletionItem> completionItems = getParticipant().collectCompletionItems(context, monitor);
 			return completionItems != null ? completionItems : Collections.emptyList();

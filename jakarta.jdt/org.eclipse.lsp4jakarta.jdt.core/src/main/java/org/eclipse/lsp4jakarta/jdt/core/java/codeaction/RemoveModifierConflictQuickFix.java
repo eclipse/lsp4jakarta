@@ -36,14 +36,17 @@ import org.eclipse.lsp4jakarta.commons.codeaction.ICodeActionId;
 import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ModifyModifiersProposal;
 
 /**
- * Removes modifiers.
+ * Removes modifiers from the declaring element.
  */
 public abstract class RemoveModifierConflictQuickFix implements IJavaCodeActionParticipant {
 
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger.getLogger(RemoveAnnotationConflictQuickFix.class.getName());
 
+	/** Map key to retrieve a list of modifiers. */
 	public static final String MODIFIERS_KEY = "modifiers";
 
+	/** Code action label template. */
 	private static final String CODE_ACTION_LABEL = "Remove the ''{0}'' modifier";
 
 	/**

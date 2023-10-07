@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2022, 2023 IBM Corporation and others.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v. 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0.
- *
- * SPDX-License-Identifier: EPL-2.0
- *
- * Contributors:
- *     Yijia Jing
- *******************************************************************************/
+* Copyright (c) 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.annotations;
 
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.PrimitiveType;
-import org.eclipse.jdt.internal.corext.dom.Bindings;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionKind;
 import org.eclipse.lsp4j.Diagnostic;
@@ -40,21 +39,24 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ModifyReturnTy
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * Quick fix for AnnotationDiagnosticsCollector that changes the return type of
- * a method to void.
- * Uses ModifyReturnTypeProposal.
- * 
- * @author Yijia Jing
- *
+ * Modifies the return type of the active element.
  */
-public class PostConstructReturnTypeQuickFix implements IJavaCodeActionParticipant {
-	private static final Logger LOGGER = Logger.getLogger(PostConstructReturnTypeQuickFix.class.getName());
+public class ModifyConstructReturnTypeQuickFix implements IJavaCodeActionParticipant {
 
+	/** Logger object to record events for this class. */
+	private static final Logger LOGGER = Logger.getLogger(ModifyConstructReturnTypeQuickFix.class.getName());
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getParticipantId() {
-		return PostConstructReturnTypeQuickFix.class.getName();
+		return ModifyConstructReturnTypeQuickFix.class.getName();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
 			IProgressMonitor monitor) throws CoreException {
@@ -72,6 +74,9 @@ public class PostConstructReturnTypeQuickFix implements IJavaCodeActionParticipa
 		return codeActions;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
 		CodeAction toResolve = context.getUnresolved();
@@ -84,19 +89,32 @@ public class PostConstructReturnTypeQuickFix implements IJavaCodeActionParticipa
 		try {
 			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
 		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to create workspace edit for code action for constructor actions", e);
+			LOGGER.log(Level.SEVERE, "Unable to create workspace edit to change a method's retrun type", e);
 		}
 
 		return toResolve;
 	}
 
+	/**
+	 * Returns the named entity associated to the given node.
+	 * 
+	 * @param node The AST Node
+	 * 
+	 * @return The named entity associated to the given node.
+	 */
+	@SuppressWarnings("restriction")
 	protected IBinding getBinding(ASTNode node) {
 		if (node.getParent() instanceof MethodDeclaration) {
 			return ((MethodDeclaration) node.getParent()).resolveBinding();
 		}
-		return Bindings.getBindingOfParentType(node);
+		return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
 	}
 
+	/**
+	 * Returns the code action label.
+	 *
+	 * @return The code action label.
+	 */
 	private String getLabel() {
 		return Messages.getMessage("ChangeReturnTypeToVoid");
 	}

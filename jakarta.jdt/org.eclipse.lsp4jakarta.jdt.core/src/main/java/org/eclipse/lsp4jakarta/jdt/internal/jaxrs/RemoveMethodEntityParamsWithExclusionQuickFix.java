@@ -1,3 +1,15 @@
+/*******************************************************************************
+* Copyright (c) 2023 IBM Corporation and others.
+*
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v. 2.0 which is available at
+* http://www.eclipse.org/legal/epl-2.0.
+*
+* SPDX-License-Identifier: EPL-2.0
+*
+* Contributors:
+*     IBM Corporation - initial implementation
+*******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.jaxrs;
 
 import java.util.ArrayList;
@@ -34,11 +46,15 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
  * Removes a resource method's entity parameters with the exception of the
- * currently selected code action representing the parameter to keep.
+ * currently selected element representing the parameter to keep.
  */
 public class RemoveMethodEntityParamsWithExclusionQuickFix implements IJavaCodeActionParticipant {
+
+	/** Logger object to record events for this class. */
 	private static final Logger LOGGER = Logger
 			.getLogger(RemoveMethodEntityParamsWithExclusionQuickFix.class.getName());
+
+	/** Map key to retrieve an entity parameter name. */
 	public static final String ENTITY_PARAM_NAME_TO_KEEP_ID_KEY = "entity.param.to.keep.identifier";
 
 	/**

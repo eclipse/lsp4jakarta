@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2023 IBM Corporation, Matthew Shocrylas and others.
+* Copyright (c) 2021, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -8,7 +8,8 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     IBM Corporation, Matthew Shocrylas - initial API and implementation, Bera Sogut
+ *     IBM Corporation, Matthew Shocrylas - initial API and implementation
+ *     Bera Sogut
  *******************************************************************************/
 
 package org.eclipse.lsp4jakarta.jdt.internal.jaxrs;
@@ -35,6 +36,9 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.PositionUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
+/**
+ * JAX-RS diagnostic participant that manages the use of resource methods.
+ */
 public class ResourceMethodDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
 	@Override
