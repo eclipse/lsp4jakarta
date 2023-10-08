@@ -11,7 +11,6 @@
  *     Hani Damlaj
  *     Jianing Xu
  *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.jdt.internal.cdi;
 
 import java.util.ArrayList;
@@ -43,7 +42,6 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 
 /**
  * CDI diagnostics participant that manages the use of a managed bean.
@@ -66,8 +64,8 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 		String[] scopeFQNames = Constants.SCOPE_FQ_NAMES.toArray(String[]::new);
 		for (IType type : types) {
 			List<String> managedBeanAnnotations = DiagnosticUtils.getMatchedJavaElementNames(type,
-					Stream.of(type.getAnnotations())
-							.map(annotation -> annotation.getElementName()).toArray(String[]::new),
+					Stream.of(type.getAnnotations()).map(annotation -> annotation.getElementName())
+							.toArray(String[]::new),
 					scopeFQNames);
 			boolean isManagedBean = managedBeanAnnotations.size() > 0;
 
@@ -79,7 +77,7 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 				Range range = PositionUtils.toNameRange(type, context.getUtils());
 				diagnostics.add(context.createDiagnostic(uri,
 						Messages.getMessage("ScopeTypeAnnotationsManagedBean"), range,
-						Constants.DIAGNOSTIC_SOURCE, (JsonArray) (new Gson().toJsonTree(diagnosticData)),
+						Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
 						ErrorCode.InvalidNumberOfScopedAnnotationsByManagedBean, DiagnosticSeverity.Error));
 			}
 
@@ -92,16 +90,14 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 				List<String> fieldScopes = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
 						scopeFQNames);
 
-				/**
-				 * If a managed bean has a non-static public field, it must have
-				 * scope @Dependent. If a managed bean with a non-static public field declares
-				 * any scope other than @Dependent, the container automatically detects the
-				 * problem and treats it as a definition error.
-				 * 
-				 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#managed_beans
-				 */
-				if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
-						&& (fieldScopes.size() != 1 || !fieldScopes.get(0).equals(Constants.DEPENDENT_FQ_NAME))) {
+				// If a managed bean has a non-static public field, it must have
+				// scope @Dependent. If a managed bean with a non-static public field declares
+				// any scope other than @Dependent, the container automatically detects the
+				// problem and treats it as a definition error.
+				//
+				// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#managed_beans
+				if (isManagedBean	&& Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
+					&& (fieldScopes.size() != 1 || !fieldScopes.get(0).equals(Constants.DEPENDENT_FQ_NAME))) {
 					Range range = PositionUtils.toNameRange(field, context.getUtils());
 					diagnostics.add(context.createDiagnostic(uri,
 							Messages.getMessage("ManagedBeanWithNonStaticPublicField"), range,
@@ -109,15 +105,13 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 							ErrorCode.InvalidManagedBeanWithNonStaticPublicField, DiagnosticSeverity.Error));
 				}
 
-				/**
-				 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
-				 * A bean class or producer method or field may specify at most one scope type
-				 * annotation. If a bean class or producer method or field specifies multiple
-				 * scope type annotations, the container automatically detects the problem and
-				 * treats it as a definition error.
-				 * 
-				 * Here we only look at the fields.
-				 */
+				// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
+				// A bean class or producer method or field may specify at most one scope type
+				// annotation. If a bean class or producer method or field specifies multiple
+				// scope type annotations, the container automatically detects the problem and
+				// treats it as a definition error.
+				//
+				// Here we only look at the fields.
 				List<String> fieldInjects = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
 						injectAnnotations);
 				boolean isProducerField = false, isInjectField = false;
@@ -129,33 +123,34 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 				}
 				if (isProducerField && fieldScopes.size() > 1) {
 					List<String> diagnosticData = fieldScopes.stream()
-							.map(annotation -> DiagnosticUtils.getSimpleName(annotation))
-							.collect(Collectors.toList()); // convert to simple name
+							.map(annotation -> DiagnosticUtils.getSimpleName(annotation)).collect(Collectors.toList()); // convert
+																														// to
+																														// simple
+																														// name
 					diagnosticData.add(Constants.PRODUCES);
 					Range range = PositionUtils.toNameRange(field, context.getUtils());
 					diagnostics.add(context.createDiagnostic(uri,
 							Messages.getMessage("ScopeTypeAnnotationsProducerField"), range,
-							Constants.DIAGNOSTIC_SOURCE, (JsonArray) (new Gson().toJsonTree(diagnosticData)),
+							Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
 							ErrorCode.InvalidNumberOfScopeAnnotationsByProducerField, DiagnosticSeverity.Error));
 				}
 
 				if (isProducerField && isInjectField) {
-					/*
-					 * ========= Produces and Inject Annotations Checks =========
-					 * 
-					 * go through each field and method to make sure @Produces and @Inject are not
-					 * used together
-					 * 
-					 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					 * declaring_producer_field
-					 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					 * declaring_producer_method
-					 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					 * declaring_injected_field
-					 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					 * declaring_initializer
-					 */
 
+					// Produces and Inject Annotations Checks:
+					//
+					// go through each field and method to make sure @Produces and @Inject are not
+					// used together
+					//
+					// see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+					// declaring_producer_field
+					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+					// declaring_producer_method
+					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+					// declaring_injected_field
+					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+					// declaring_initializer
+					//
 					// A single field cannot have the same
 					Range range = PositionUtils.toNameRange(field, context.getUtils());
 					diagnostics.add(context.createDiagnostic(uri,
@@ -174,15 +169,13 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 				if (DiagnosticUtils.isConstructorMethod(method))
 					constructorMethods.add(method);
 
-				/**
-				 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
-				 * A bean class or producer method or field may specify at most one scope type
-				 * annotation. If a bean class or producer method or field specifies multiple
-				 * scope type annotations, the container automatically detects the problem and
-				 * treats it as a definition error.
-				 * 
-				 * Here we only look at the methods.
-				 */
+				// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
+				// A bean class or producer method or field may specify at most one scope type
+				// annotation. If a bean class or producer method or field specifies multiple
+				// scope type annotations, the container automatically detects the problem and
+				// treats it as a definition error.
+				//
+				// Here we only look at the methods.
 				String[] annotationNames = Stream.of(method.getAnnotations())
 						.map(annotation -> annotation.getElementName()).toArray(String[]::new);
 				List<String> methodScopes = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
@@ -199,33 +192,34 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 
 				if (isProducerMethod && methodScopes.size() > 1) {
 					List<String> diagnosticData = methodScopes.stream()
-							.map(annotation -> DiagnosticUtils.getSimpleName(annotation))
-							.collect(Collectors.toList()); // convert to simple name
+							.map(annotation -> DiagnosticUtils.getSimpleName(annotation)).collect(Collectors.toList()); // convert
+																														// to
+																														// simple
+																														// name
 					diagnosticData.add(Constants.PRODUCES);
 					Range range = PositionUtils.toNameRange(method, context.getUtils());
 					diagnostics.add(context.createDiagnostic(uri,
 							Messages.getMessage("ScopeTypeAnnotationsProducerMethod"), range,
-							Constants.DIAGNOSTIC_SOURCE, (JsonArray) (new Gson().toJsonTree(diagnosticData)),
+							Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
 							ErrorCode.InvalidNumberOfScopeAnnotationsByProducerMethod, DiagnosticSeverity.Error));
 				}
 
 				if (isProducerMethod && isInjectMethod) {
-					/*
-					 * ========= Produces and Inject Annotations Checks =========
-					 * 
-					 * go through each field and method to make sure @Produces and @Inject are not
-					 * used together
-					 * 
-					 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					 * declaring_producer_field
-					 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					 * declaring_producer_method
-					 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					 * declaring_injected_field
-					 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					 * declaring_initializer
-					 */
 
+					// Produces and Inject Annotations Checks:
+					//
+					// go through each field and method to make sure @Produces and @Inject are not
+					// used together
+					//
+					// see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+					// declaring_producer_field
+					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+					// declaring_producer_method
+					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+					// declaring_injected_field
+					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+					// declaring_initializer
+					//
 					// A single method cannot have the same
 					Range range = PositionUtils.toNameRange(method, context.getUtils());
 					diagnostics.add(context.createDiagnostic(uri,
@@ -237,11 +231,9 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 			}
 
 			if (isManagedBean && constructorMethods.size() > 0) {
-				/**
-				 * If the managed bean does not have a constructor that takes no parameters, it
-				 * must have a constructor annotated @Inject. No additional special annotations
-				 * are required.
-				 */
+				// If the managed bean does not have a constructor that takes no parameters,
+				// it must have a constructor annotated @Inject. No additional special
+				// annotations are required.
 
 				// If there are no constructor methods, there is an implicit empty constructor
 				// generated by the compiler.
@@ -279,10 +271,8 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 				}
 			}
 
-			/**
-			 * If a managed bean class is of generic type, it must be annotated
-			 * with @Dependent
-			 */
+			// If a managed bean class is of generic type, it must be annotated
+			// with @Dependent
 			if (isManagedBean) {
 				boolean isClassGeneric = type.getTypeParameters().length != 0;
 				boolean isDependent = managedBeanAnnotations.stream()
@@ -297,39 +287,31 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 				}
 			}
 
-			/*
-			 * ========= Inject and Disposes, Observes, ObservesAsync Annotations
-			 * Checks=========
-			 */
-			/*
-			 * go through each method to make sure @Inject
-			 * and @Disposes, @Observes, @ObservesAsync are not used together
-			 * 
-			 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-			 * declaring_bean_constructor
-			 * https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-			 * declaring_initializer
-			 * 
-			 */
+			// Inject and Disposes, Observes, ObservesAsync Annotations:
+			//
+			// go through each method to make sure @Inject
+			// and @Disposes, @Observes, @ObservesAsync are not used together
+			//
+			// see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+			// declaring_bean_constructor
+			// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+			// declaring_initializer
+
 			invalidParamsCheck(context, uri, unit, diagnostics, type, Constants.INJECT_FQ_NAME);
 
 			if (isManagedBean) {
-				/*
-				 * ========= Produces and Disposes, Observes, ObservesAsync Annotations
-				 * Checks=========
-				 */
-				/*
-				 * go through each method to make sure @Produces
-				 * and @Disposes, @Observes, @ObservesAsync are not used together
-				 * 
-				 * see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-				 * declaring_producer_method
-				 * 
-				 * note:
-				 * we need to check for bean defining annotations first to make sure the managed
-				 * bean is discovered.
-				 * 
-				 */
+
+				// Produces and Disposes, Observes, ObservesAsync Annotations:
+				//
+				// go through each method to make sure @Produces
+				// and @Disposes, @Observes, @ObservesAsync are not used together
+				//
+				// see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+				// declaring_producer_method
+				//
+				// note:
+				// we need to check for bean defining annotations first to make sure the
+				// managed bean is discovered.
 				invalidParamsCheck(context, uri, unit, diagnostics, type, Constants.PRODUCES_FQ_NAME);
 
 				for (IMethod method : methods) {
@@ -346,7 +328,7 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 							if (Constants.DISPOSES_FQ_NAME.equals(matchedAnnotation)) {
 								numDisposes++;
 							} else if (Constants.OBSERVES_FQ_NAME.equals(matchedAnnotation)
-									|| Constants.OBSERVES_ASYNC_FQ_NAME.equals(matchedAnnotation)) {
+										|| Constants.OBSERVES_ASYNC_FQ_NAME.equals(matchedAnnotation)) {
 								invalidAnnotations.add("@" + annotation.getElementName());
 							}
 						}
@@ -395,8 +377,8 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 			ILocalVariable[] params = method.getParameters();
 			for (ILocalVariable param : params) {
 				List<String> paramScopes = DiagnosticUtils.getMatchedJavaElementNames(type,
-						Stream.of(param.getAnnotations())
-								.map(annotation -> annotation.getElementName()).toArray(String[]::new),
+						Stream.of(param.getAnnotations()).map(annotation -> annotation.getElementName())
+								.toArray(String[]::new),
 						Constants.INVALID_INJECT_PARAMS_FQ);
 				for (String annotation : paramScopes) {
 					invalidAnnotations.add("@" + DiagnosticUtils.getSimpleName(annotation));

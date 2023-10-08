@@ -1,42 +1,41 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.eclipse.lsp4jakarta</groupId>
-		<artifactId>jdt-parent</artifactId>
-		<version>0.2.0-SNAPSHOT</version>
-	</parent>
-	<artifactId>org.eclipse.lsp4jakarta.jdt.core</artifactId>
-	<packaging>eclipse-plugin</packaging>
-
-	<name>Eclipse LSP4Jakarta JDT Plugin</name>
-	<description>Eclipse LSP4Jakarta JDT Plugin</description>
-
-	<organization>
-		<name>Eclipse LSP4Jakarta</name>
-		<url>https://github.com/eclipse/lsp4jakarta</url>
-	</organization>
-
-	<licenses>
-		<license>
-			<name>EPL-2.0</name>
-			<url>https://www.eclipse.org/legal/epl-2.0/</url>
-			<comments>Eclipse Public License 2.0</comments>
-		</license>
-	</licenses>
-	
-	<dependencies>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.9.0</version>
-		</dependency>
-	</dependencies>
-	
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
-	</build>
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.eclipse.lsp4jakarta</groupId>
+        <artifactId>jdt-parent</artifactId>
+        <version>0.2.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>org.eclipse.lsp4jakarta.jdt.core</artifactId>
+    <packaging>eclipse-plugin</packaging>
+    <name>Eclipse LSP4Jakarta JDT Plugin</name>
+    <description>Eclipse LSP4Jakarta JDT Plugin</description>
+    <organization>
+        <name>Eclipse LSP4Jakarta</name>
+        <url>https://github.com/eclipse/lsp4jakarta</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>EPL-2.0</name>
+            <url>https://www.eclipse.org/legal/epl-2.0/</url>
+            <comments>Eclipse Public License 2.0</comments>
+        </license>
+    </licenses>
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
 </project>
