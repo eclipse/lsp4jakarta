@@ -48,13 +48,13 @@ public class JakartaJavaProjectDelegateCommandHandler extends AbstractJakartaDel
         Map<String, Object> obj = getFirst(arguments);
         if (obj == null) {
             throw new UnsupportedOperationException(String.format(
-                                                                  "Command '%s' must be called with one MicroProfileJavaProjectLabelsParams argument!", commandId));
+                                                                  "Command '%s' must be called with one JakartaJavaProjectLabelsParams argument!", commandId));
         }
         // Get project name from the java file URI
         String javaFileUri = getString(obj, "uri");
         if (javaFileUri == null) {
             throw new UnsupportedOperationException(String.format(
-                                                                  "Command '%s' must be called with required MicroProfileJavaProjectLabelsParams.uri (java file URI)!",
+                                                                  "Command '%s' must be called with required JakartaJavaProjectLabelsParams.uri (java file URI)!",
                                                                   commandId));
         }
         List<String> types = getStringList(obj, "types");
