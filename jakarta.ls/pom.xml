@@ -88,7 +88,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.eclipse.lsp4jakarta.JakartaLanguageServerLauncher</mainClass>
+                                    <mainClass>org.eclipse.lsp4jakarta.ls.JakartaLanguageServerLauncher</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
