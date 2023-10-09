@@ -38,57 +38,55 @@ import org.junit.Test;
 
 public class JakartaServletTest extends BaseJakartaTest {
 
-	protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
-	@Test
-	@Ignore // getAllSuperTypes() returns nothing for tests. See #232
-	public void ExtendWebServlet() throws Exception {
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/DontExtendHttpServlet.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    @Ignore // getAllSuperTypes() returns nothing for tests. See #232
+    public void ExtendWebServlet() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/DontExtendHttpServlet.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		// expected
-		Diagnostic d = d(5, 13, 34, "Annotated classes with @WebServlet must extend the HttpServlet class.",
-				DiagnosticSeverity.Warning, "jakarta-servlet",
-				"WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet");
+        // expected
+        Diagnostic d = d(5, 13, 34, "Annotated classes with @WebServlet must extend the HttpServlet class.",
+                         DiagnosticSeverity.Warning, "jakarta-servlet",
+                         "WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet");
 
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
 
-		// test associated quick-fix code action
-		JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-		TextEdit te = te(5, 34, 5, 34, " extends HttpServlet");
-		CodeAction ca = ca(uri, "Let 'DontExtendHttpServlet' extend 'HttpServlet'", d, te);
-		assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca);
-	}
+        // test associated quick-fix code action
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
+        TextEdit te = te(5, 34, 5, 34, " extends HttpServlet");
+        CodeAction ca = ca(uri, "Let 'DontExtendHttpServlet' extend 'HttpServlet'", d, te);
+        assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca);
+    }
 
-	@Test
-	@Ignore // getAllSuperTypes() returns nothing for tests. See #232
-	public void CompleteWebServletAnnotation() throws Exception {
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/InvalidWebServlet.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    @Ignore // getAllSuperTypes() returns nothing for tests. See #232
+    public void CompleteWebServletAnnotation() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/servlet/InvalidWebServlet.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		Diagnostic d = d(9, 0, 13,
-				"The @WebServlet annotation must define the attribute 'urlPatterns' or 'value'.",
-				DiagnosticSeverity.Error, "jakarta-servlet", "WebServletAnnotationMissingAttributes");
+        Diagnostic d = d(9, 0, 13,
+                         "The @WebServlet annotation must define the attribute 'urlPatterns' or 'value'.",
+                         DiagnosticSeverity.Error, "jakarta-servlet", "WebServletAnnotationMissingAttributes");
 
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
 
-		JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-		TextEdit te1 = te(9, 0, 10, 0, "@WebServlet(value = \"\")\n");
-		CodeAction ca1 = ca(uri, "Add the `value` attribute to @WebServlet", d, te1);
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
+        TextEdit te1 = te(9, 0, 10, 0, "@WebServlet(value = \"\")\n");
+        CodeAction ca1 = ca(uri, "Add the `value` attribute to @WebServlet", d, te1);
 
-		TextEdit te2 = te(9, 0, 10, 0, "@WebServlet(urlPatterns = \"\")\n");
-		CodeAction ca2 = ca(uri, "Add the `urlPatterns` attribute to @WebServlet", d, te2);
-		assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca1, ca2);
-	}
+        TextEdit te2 = te(9, 0, 10, 0, "@WebServlet(urlPatterns = \"\")\n");
+        CodeAction ca2 = ca(uri, "Add the `urlPatterns` attribute to @WebServlet", d, te2);
+        assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca1, ca2);
+    }
 
 }

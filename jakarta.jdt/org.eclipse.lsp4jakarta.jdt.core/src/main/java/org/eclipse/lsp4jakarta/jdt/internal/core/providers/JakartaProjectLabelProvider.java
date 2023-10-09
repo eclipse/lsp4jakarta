@@ -24,7 +24,7 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.JDTJakartaUtils;;
 /**
  * Provides a Jakarta-specific label to a project if the project is a Jakarta
  * project.
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/providers/MicroProfileProjectLabelProvider.java
  *
@@ -33,14 +33,14 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.JDTJakartaUtils;;
  */
 public class JakartaProjectLabelProvider implements IProjectLabelProvider {
 
-	public static String JAKARTA_LABEL = "jakarta";
+    public static String JAKARTA_LABEL = "jakarta";
 
-	@Override
-	public List<String> getProjectLabels(IJavaProject project) throws JavaModelException {
-		if (JDTJakartaUtils.isJakartaProject(project)) {
-			return Collections.singletonList(JAKARTA_LABEL);
-		}
+    @Override
+    public List<String> getProjectLabels(IJavaProject project) throws JavaModelException {
+        if (JDTJakartaUtils.isJakartaProject(project)) {
+            return Collections.singletonList(JAKARTA_LABEL);
+        }
 
-		return Collections.emptyList();
-	}
+        return Collections.emptyList();
+    }
 }

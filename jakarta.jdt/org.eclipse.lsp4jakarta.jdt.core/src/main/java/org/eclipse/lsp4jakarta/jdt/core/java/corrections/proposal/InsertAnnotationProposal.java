@@ -34,83 +34,83 @@ import org.eclipse.lsp4j.CodeActionKind;
 
 public class InsertAnnotationProposal extends ASTRewriteCorrectionProposal {
 
-	private final CompilationUnit fInvocationNode;
-	private final IBinding fBinding;
+    private final CompilationUnit fInvocationNode;
+    private final IBinding fBinding;
 
-	private final String[] annotations;
+    private final String[] annotations;
 
-	public InsertAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-			IBinding binding, int relevance, String... annotations) {
-		super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-		fInvocationNode = invocationNode;
-		fBinding = binding;
-		this.annotations = annotations;
-	}
+    public InsertAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+                                    IBinding binding, int relevance, String... annotations) {
+        super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
+        fInvocationNode = invocationNode;
+        fBinding = binding;
+        this.annotations = annotations;
+    }
 
-	@Override
-	protected ASTRewrite getRewrite() throws CoreException {
-		ASTNode declNode = null;
-		ASTNode boundNode = fInvocationNode.findDeclaringNode(fBinding);
-		CompilationUnit newRoot = fInvocationNode;
-		if (boundNode != null) {
-			declNode = boundNode; // is same CU
-		} else {
-			newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
-			declNode = newRoot.findDeclaringNode(fBinding.getKey());
-		}
-		ImportRewrite imports = createImportRewrite(newRoot);
+    @Override
+    protected ASTRewrite getRewrite() throws CoreException {
+        ASTNode declNode = null;
+        ASTNode boundNode = fInvocationNode.findDeclaringNode(fBinding);
+        CompilationUnit newRoot = fInvocationNode;
+        if (boundNode != null) {
+            declNode = boundNode; // is same CU
+        } else {
+            newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
+            declNode = newRoot.findDeclaringNode(fBinding.getKey());
+        }
+        ImportRewrite imports = createImportRewrite(newRoot);
 
-		boolean isField = declNode instanceof VariableDeclarationFragment;
-		if (isField) {
-			declNode = declNode.getParent();
-		}
-		if (declNode instanceof TypeDeclaration || declNode instanceof MethodDeclaration || isField) {
-			AST ast = declNode.getAST();
-			ASTRewrite rewrite = ASTRewrite.create(ast);
+        boolean isField = declNode instanceof VariableDeclarationFragment;
+        if (isField) {
+            declNode = declNode.getParent();
+        }
+        if (declNode instanceof TypeDeclaration || declNode instanceof MethodDeclaration || isField) {
+            AST ast = declNode.getAST();
+            ASTRewrite rewrite = ASTRewrite.create(ast);
 
-			ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
+            ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
 
-			for (String annotation : annotations) {
-				Annotation marker = ast.newMarkerAnnotation();
-				marker.setTypeName(ast.newName(imports.addImport(annotation, importRewriteContext))); // $NON-NLS-1$
-				if (isField) {
-					rewrite.getListRewrite(declNode, FieldDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
-				} else if (declNode instanceof MethodDeclaration) {
-					rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
-				} else if (declNode instanceof TypeDeclaration) {
-					rewrite.getListRewrite(declNode, TypeDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
-				}
-			}
+            for (String annotation : annotations) {
+                Annotation marker = ast.newMarkerAnnotation();
+                marker.setTypeName(ast.newName(imports.addImport(annotation, importRewriteContext))); // $NON-NLS-1$
+                if (isField) {
+                    rewrite.getListRewrite(declNode, FieldDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
+                } else if (declNode instanceof MethodDeclaration) {
+                    rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
+                } else if (declNode instanceof TypeDeclaration) {
+                    rewrite.getListRewrite(declNode, TypeDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
+                }
+            }
 
-			return rewrite;
-		}
-		return null;
-	}
+            return rewrite;
+        }
+        return null;
+    }
 
-	/**
-	 * Returns the Compilation Unit node
-	 *
-	 * @return the invocation node for the Compilation Unit
-	 */
-	protected CompilationUnit getInvocationNode() {
-		return this.fInvocationNode;
-	}
+    /**
+     * Returns the Compilation Unit node
+     *
+     * @return the invocation node for the Compilation Unit
+     */
+    protected CompilationUnit getInvocationNode() {
+        return this.fInvocationNode;
+    }
 
-	/**
-	 * Returns the Binding object associated with the new annotation change
-	 *
-	 * @return the binding object
-	 */
-	protected IBinding getBinding() {
-		return this.fBinding;
-	}
+    /**
+     * Returns the Binding object associated with the new annotation change
+     *
+     * @return the binding object
+     */
+    protected IBinding getBinding() {
+        return this.fBinding;
+    }
 
-	/**
-	 * Returns the annotations list
-	 *
-	 * @return the list of new annotations to add
-	 */
-	protected String[] getAnnotations() {
-		return this.annotations;
-	}
+    /**
+     * Returns the annotations list
+     *
+     * @return the list of new annotations to add
+     */
+    protected String[] getAnnotations() {
+        return this.annotations;
+    }
 }

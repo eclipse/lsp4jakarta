@@ -21,26 +21,26 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.InsertAnnotationAttribut
  */
 public class InsertTypeAttributeToResourceAnnotation extends InsertAnnotationAttributesQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public InsertTypeAttributeToResourceAnnotation() {
-		super("jakarta.annotation.Resource", "type");
-	}
+    /**
+     * Constructor.
+     */
+    public InsertTypeAttributeToResourceAnnotation() {
+        super("jakarta.annotation.Resource", "type");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return InsertTypeAttributeToResourceAnnotation.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return InsertTypeAttributeToResourceAnnotation.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.InsertResourceAnnotationTypeAttribute;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.InsertResourceAnnotationTypeAttribute;
+    }
 }

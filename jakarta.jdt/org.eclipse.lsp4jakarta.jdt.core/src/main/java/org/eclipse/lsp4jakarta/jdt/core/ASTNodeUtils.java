@@ -20,19 +20,18 @@ import org.eclipse.jdt.core.dom.ASTNode;
  */
 public class ASTNodeUtils {
 
-	private ASTNodeUtils() {
-	}
+    private ASTNodeUtils() {}
 
-	/**
-	 * Returns true if the given <code>ASTNode</code> represents an annotation, and false otherwise.
-	 *
-	 * @param node the ast node to check, assumed to be non-null
-	 * @return true if the given <code>ASTNode</code> represents an annotation, and false otherwise
-	 */
-	public static boolean isAnnotation(ASTNode node) {
-		int nodeType = node.getNodeType();
-		return nodeType == ASTNode.MARKER_ANNOTATION || nodeType == ASTNode.SINGLE_MEMBER_ANNOTATION
-				|| nodeType == ASTNode.NORMAL_ANNOTATION;
-	}
+    /**
+     * Returns true if the given <code>ASTNode</code> represents an annotation, and false otherwise.
+     *
+     * @param node the ast node to check, assumed to be non-null
+     * @return true if the given <code>ASTNode</code> represents an annotation, and false otherwise
+     */
+    public static boolean isAnnotation(ASTNode node) {
+        int nodeType = node.getNodeType();
+        return nodeType == ASTNode.MARKER_ANNOTATION || nodeType == ASTNode.SINGLE_MEMBER_ANNOTATION
+               || nodeType == ASTNode.NORMAL_ANNOTATION;
+    }
 
 }

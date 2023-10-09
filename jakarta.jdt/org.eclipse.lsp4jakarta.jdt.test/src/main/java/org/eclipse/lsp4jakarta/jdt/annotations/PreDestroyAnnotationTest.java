@@ -37,45 +37,44 @@ import org.junit.Test;
 
 public class PreDestroyAnnotationTest extends BaseJakartaTest {
 
-	protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
-	@Test
-	public void GeneratedAnnotation() throws Exception {
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path("src/main/java/io/openliberty/sample/jakarta/annotations/PreDestroyAnnotation.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    public void GeneratedAnnotation() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/annotations/PreDestroyAnnotation.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		// expected annotations
+        // expected annotations
 
-		Diagnostic d1 = d(20, 16, 28, "A method with the @PreDestroy annotation must not have any parameters.",
-				DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyParams");
+        Diagnostic d1 = d(20, 16, 28, "A method with the @PreDestroy annotation must not have any parameters.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyParams");
 
-		Diagnostic d2 = d(26, 20, 31, "A method with the @PreDestroy annotation must not be static.",
-				DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyStatic");
+        Diagnostic d2 = d(26, 20, 31, "A method with the @PreDestroy annotation must not be static.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyStatic");
 
-		Diagnostic d3 = d(31, 13, 25, "A method with the @PreDestroy annotation must not throw checked exceptions.",
-				DiagnosticSeverity.Warning, "jakarta-annotations", "PreDestroyException");
+        Diagnostic d3 = d(31, 13, 25, "A method with the @PreDestroy annotation must not throw checked exceptions.",
+                          DiagnosticSeverity.Warning, "jakarta-annotations", "PreDestroyException");
 
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d2, d1, d3);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d2, d1, d3);
 
-		JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
-		TextEdit te = te(19, 1, 20, 1, "");
-		TextEdit te1 = te(20, 29, 20, 40, "");
-		CodeAction ca = ca(uri, "Remove @PreDestroy", d1, te);
-		CodeAction ca1 = ca(uri, "Remove all parameters", d1, te1);
-		assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca, ca1);
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
+        TextEdit te = te(19, 1, 20, 1, "");
+        TextEdit te1 = te(20, 29, 20, 40, "");
+        CodeAction ca = ca(uri, "Remove @PreDestroy", d1, te);
+        CodeAction ca1 = ca(uri, "Remove all parameters", d1, te1);
+        assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca, ca1);
 
-		JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
-		TextEdit te2 = te(25, 1, 26, 1, "");
-		TextEdit te3 = te(26, 7, 26, 14, "");
-		CodeAction ca2 = ca(uri, "Remove @PreDestroy", d2, te2);
-		CodeAction ca3 = ca(uri, "Remove the 'static' modifier", d2, te3);
-		assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca2, ca3);
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
+        TextEdit te2 = te(25, 1, 26, 1, "");
+        TextEdit te3 = te(26, 7, 26, 14, "");
+        CodeAction ca2 = ca(uri, "Remove @PreDestroy", d2, te2);
+        CodeAction ca3 = ca(uri, "Remove the 'static' modifier", d2, te3);
+        assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca2, ca3);
 
-	}
+    }
 
 }

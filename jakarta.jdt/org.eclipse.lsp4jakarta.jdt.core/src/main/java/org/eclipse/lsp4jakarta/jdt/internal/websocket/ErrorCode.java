@@ -18,21 +18,21 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * WebSocket error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	InvalidOnOpenParams,
-	InvalidOnCloseParams,
-	PathParamsMissingFromParam,
-	PathParamDoesNotMatchEndpointURI,
-	OnMessageDuplicateMethod,
-	InvalidEndpointPathWithNoStartingSlash,
-	InvalidEndpointPathWithRelativePaths,
-	InvalidEndpointPathNotTempleateOrPartialURI,
-	InvalidEndpointPathDuplicateVariable;
+    InvalidOnOpenParams,
+    InvalidOnCloseParams,
+    PathParamsMissingFromParam,
+    PathParamDoesNotMatchEndpointURI,
+    OnMessageDuplicateMethod,
+    InvalidEndpointPathWithNoStartingSlash,
+    InvalidEndpointPathWithRelativePaths,
+    InvalidEndpointPathNotTempleateOrPartialURI,
+    InvalidEndpointPathDuplicateVariable;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 }

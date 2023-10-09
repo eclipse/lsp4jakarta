@@ -20,26 +20,26 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.RemoveAnnotationConflict
  */
 public class RemoveJsonbCreatorAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public RemoveJsonbCreatorAnnotationQuickFix() {
-		super("jakarta.json.bind.annotation.JsonbCreator");
-	}
+    /**
+     * Constructor.
+     */
+    public RemoveJsonbCreatorAnnotationQuickFix() {
+        super("jakarta.json.bind.annotation.JsonbCreator");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveJsonbCreatorAnnotationQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveJsonbCreatorAnnotationQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JakartaCodeActionId getCodeActionId() {
-		return JakartaCodeActionId.JSONBRemoveJsonbCreatorAnnotation;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JakartaCodeActionId getCodeActionId() {
+        return JakartaCodeActionId.JSONBRemoveJsonbCreatorAnnotation;
+    }
 }

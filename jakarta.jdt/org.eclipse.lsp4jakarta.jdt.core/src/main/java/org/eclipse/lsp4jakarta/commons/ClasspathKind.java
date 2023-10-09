@@ -27,23 +27,23 @@ package org.eclipse.lsp4jakarta.commons;
  */
 public enum ClasspathKind {
 
-	NONE(1), SRC(2), TEST(3);
+    NONE(1), SRC(2), TEST(3);
 
-	private final int value;
+    private final int value;
 
-	ClasspathKind(int value) {
-		this.value = value;
-	}
+    ClasspathKind(int value) {
+        this.value = value;
+    }
 
-	public int getValue() {
-		return value;
-	}
+    public int getValue() {
+        return value;
+    }
 
-	public static ClasspathKind forValue(int value) {
-		ClasspathKind[] allValues = ClasspathKind.values();
-		if (value < 1 || value > allValues.length)
-			throw new IllegalArgumentException("Illegal enum value: " + value);
-		return allValues[value - 1];
-	}
+    public static ClasspathKind forValue(int value) {
+        ClasspathKind[] allValues = ClasspathKind.values();
+        if (value < 1 || value > allValues.length)
+            throw new IllegalArgumentException("Illegal enum value: " + value);
+        return allValues[value - 1];
+    }
 
 }

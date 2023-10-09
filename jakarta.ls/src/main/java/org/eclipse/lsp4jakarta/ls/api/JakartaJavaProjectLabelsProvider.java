@@ -24,9 +24,9 @@ import org.eclipse.lsp4jakarta.commons.ProjectLabelInfoEntry;
  */
 public interface JakartaJavaProjectLabelsProvider {
 
-	@JsonRequest("jakarta/java/projectLabels")
-	CompletableFuture<ProjectLabelInfoEntry> getJavaProjectLabels(JakartaJavaProjectLabelsParams params);
+    @JsonRequest("jakarta/java/projectLabels")
+    CompletableFuture<ProjectLabelInfoEntry> getJavaProjectLabels(JakartaJavaProjectLabelsParams params);
 
-	@JsonRequest("jakarta/java/workspaceLabels")
-	CompletableFuture<List<ProjectLabelInfoEntry>> getAllJavaProjectLabels();
+    @JsonRequest("jakarta/java/workspaceLabels")
+    CompletableFuture<List<ProjectLabelInfoEntry>> getAllJavaProjectLabels();
 }

@@ -21,21 +21,21 @@ import org.eclipse.core.runtime.IConfigurationElement;
  */
 public abstract class AbstractJavaFeatureDefinition<T> {
 
-	private static final String CLASS_ATTR = "class";
+    private static final String CLASS_ATTR = "class";
 
-	private final IConfigurationElement element;
+    private final IConfigurationElement element;
 
-	private T participant;
+    private T participant;
 
-	public AbstractJavaFeatureDefinition(IConfigurationElement element) {
-		this.element = element;
-	}
+    public AbstractJavaFeatureDefinition(IConfigurationElement element) {
+        this.element = element;
+    }
 
-	protected T getParticipant() throws CoreException {
-		if (participant == null) {
-			participant = (T) element.createExecutableExtension(CLASS_ATTR);
-		}
-		return participant;
-	}
+    protected T getParticipant() throws CoreException {
+        if (participant == null) {
+            participant = (T) element.createExecutableExtension(CLASS_ATTR);
+        }
+        return participant;
+    }
 
 }

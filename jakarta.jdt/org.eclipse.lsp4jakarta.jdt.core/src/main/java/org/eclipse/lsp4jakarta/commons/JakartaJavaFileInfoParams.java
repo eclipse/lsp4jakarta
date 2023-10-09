@@ -21,24 +21,24 @@ package org.eclipse.lsp4jakarta.commons;
  */
 public class JakartaJavaFileInfoParams {
 
-	private String uri;
+    private String uri;
 
-	/**
-	 * Returns the Java file uri.
-	 *
-	 * @return the Java file uri
-	 */
-	public String getUri() {
-		return uri;
-	}
+    /**
+     * Returns the Java file uri.
+     *
+     * @return the Java file uri
+     */
+    public String getUri() {
+        return uri;
+    }
 
-	/**
-	 * Set the Java file uri.
-	 *
-	 * @param uri the Java file uri.
-	 */
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
+    /**
+     * Set the Java file uri.
+     *
+     * @param uri the Java file uri.
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 
 }

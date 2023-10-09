@@ -42,78 +42,75 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
  */
 public class JsonpDiagnosticParticipant implements IJavaDiagnosticsParticipant {
 
-	@Override
-	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
-			throws CoreException {
-		String uri = context.getUri();
-		IJDTUtils utils = JDTUtilsLSImpl.getInstance();
-		ICompilationUnit unit = utils.resolveCompilationUnit(uri);
-		List<Diagnostic> diagnostics = new ArrayList<>();
+    @Override
+    public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) throws CoreException {
+        String uri = context.getUri();
+        IJDTUtils utils = JDTUtilsLSImpl.getInstance();
+        ICompilationUnit unit = utils.resolveCompilationUnit(uri);
+        List<Diagnostic> diagnostics = new ArrayList<>();
 
-		if (unit == null) {
-			return diagnostics;
-		}
+        if (unit == null) {
+            return diagnostics;
+        }
 
-		List<MethodInvocation> allMethodInvocations = ASTUtils.getMethodInvocations(unit);
-		List<MethodInvocation> createPointerInvocations = allMethodInvocations.stream()
-				.filter(mi -> {
-					try {
-						return isMatchedJsonCreatePointer(unit, mi);
-					} catch (JavaModelException e) {
-						return false;
-					}
-				}).collect(Collectors.toList());
-		for (MethodInvocation m : createPointerInvocations) {
-			Expression arg = (Expression) m.arguments().get(0);
-			if (isInvalidArgument(arg)) {
-				// If the argument supplied to a createPointer invocation is a String literal
-				// and is neither an empty String
-				// or a sequence of '/' prefixed tokens, a diagnostic highlighting the invalid
-				// argument is created.
-				try {
-					String msg = Messages.getMessage("CreatePointerErrorMessage");
-					Range range = JDTUtils.toRange(unit, arg.getStartPosition(), arg.getLength());
-					diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
-							ErrorCode.InvalidJsonCreatePointerTarget, DiagnosticSeverity.Error));
-				} catch (JavaModelException e) {
-					JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
-				}
-			}
-		}
+        List<MethodInvocation> allMethodInvocations = ASTUtils.getMethodInvocations(unit);
+        List<MethodInvocation> createPointerInvocations = allMethodInvocations.stream().filter(mi -> {
+            try {
+                return isMatchedJsonCreatePointer(unit, mi);
+            } catch (JavaModelException e) {
+                return false;
+            }
+        }).collect(Collectors.toList());
+        for (MethodInvocation m : createPointerInvocations) {
+            Expression arg = (Expression) m.arguments().get(0);
+            if (isInvalidArgument(arg)) {
+                // If the argument supplied to a createPointer invocation is a String literal
+                // and is neither an empty String
+                // or a sequence of '/' prefixed tokens, a diagnostic highlighting the invalid
+                // argument is created.
+                try {
+                    String msg = Messages.getMessage("CreatePointerErrorMessage");
+                    Range range = JDTUtils.toRange(unit, arg.getStartPosition(), arg.getLength());
+                    diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                             ErrorCode.InvalidJsonCreatePointerTarget, DiagnosticSeverity.Error));
+                } catch (JavaModelException e) {
+                    JakartaCorePlugin.logException("Cannot calculate diagnostics", e);
+                }
+            }
+        }
 
-		return diagnostics;
-	}
+        return diagnostics;
+    }
 
-	private boolean isInvalidArgument(Expression arg) {
-		if (arg instanceof StringLiteral) {
-			String argValue = ((StringLiteral) arg).getLiteralValue();
-			if (!(argValue.isEmpty() || argValue.matches("^(\\/[^\\/]+)+$"))) {
-				return true;
-			}
-		}
+    private boolean isInvalidArgument(Expression arg) {
+        if (arg instanceof StringLiteral) {
+            String argValue = ((StringLiteral) arg).getLiteralValue();
+            if (!(argValue.isEmpty() || argValue.matches("^(\\/[^\\/]+)+$"))) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	private boolean isMatchedJsonCreatePointer(ICompilationUnit unit, MethodInvocation mi)
-			throws JavaModelException {
-		if (mi.arguments().size() == 1 && Constants.CREATE_POINTER.equals(mi.getName().getIdentifier())
-				&& mi.getExpression() != null) {
-			Expression ex = mi.getExpression();
-			String qualifier = ex.toString();
-			if (Constants.JSON_FQ_NAME.endsWith(qualifier)) {
-				// For performance reason, we check if the import of Java element name is
-				// declared
-				if (DiagnosticUtils.isImportedJavaElement(unit, Constants.JSON_FQ_NAME) == true)
-					return true;
-				// only check fully qualified java element
-				if (Constants.JSON_FQ_NAME.equals(qualifier)) {
-					ITypeBinding itb = ex.resolveTypeBinding();
-					return itb != null && qualifier.equals(itb.getQualifiedName());
-				}
-			}
-		}
+    private boolean isMatchedJsonCreatePointer(ICompilationUnit unit, MethodInvocation mi) throws JavaModelException {
+        if (mi.arguments().size() == 1 && Constants.CREATE_POINTER.equals(mi.getName().getIdentifier())
+            && mi.getExpression() != null) {
+            Expression ex = mi.getExpression();
+            String qualifier = ex.toString();
+            if (Constants.JSON_FQ_NAME.endsWith(qualifier)) {
+                // For performance reason, we check if the import of Java element name is
+                // declared
+                if (DiagnosticUtils.isImportedJavaElement(unit, Constants.JSON_FQ_NAME) == true)
+                    return true;
+                // only check fully qualified java element
+                if (Constants.JSON_FQ_NAME.equals(qualifier)) {
+                    ITypeBinding itb = ex.resolveTypeBinding();
+                    return itb != null && qualifier.equals(itb.getQualifiedName());
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

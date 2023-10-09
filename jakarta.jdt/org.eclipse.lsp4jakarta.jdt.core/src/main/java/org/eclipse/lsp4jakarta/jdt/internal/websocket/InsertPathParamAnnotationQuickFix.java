@@ -27,52 +27,52 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.InsertAnnotationAttribut
  * parameter.
  */
 public class InsertPathParamAnnotationQuickFix extends InsertAnnotationAttributesQuickFix {
-	private static final String CODE_ACTION_LABEL = "Insert @{0}";
+    private static final String CODE_ACTION_LABEL = "Insert @{0}";
 
-	public InsertPathParamAnnotationQuickFix() {
-		super("jakarta.websocket.server.PathParam", "value");
-	}
+    public InsertPathParamAnnotationQuickFix() {
+        super("jakarta.websocket.server.PathParam", "value");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return InsertPathParamAnnotationQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return InsertPathParamAnnotationQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.WBInsertPathParamAnnotationWithValueAttrib;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.WBInsertPathParamAnnotationWithValueAttrib;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getLabel(String annotation, String[] attributes) {
-		String[] parts = annotation.split("\\.");
-		String AnnotationName = (parts.length > 1) ? parts[parts.length - 1] : annotation;
-		return MessageFormat.format(CODE_ACTION_LABEL, AnnotationName);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getLabel(String annotation, String[] attributes) {
+        String[] parts = annotation.split("\\.");
+        String AnnotationName = (parts.length > 1) ? parts[parts.length - 1] : annotation;
+        return MessageFormat.format(CODE_ACTION_LABEL, AnnotationName);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("restriction")
-	@Override
-	protected IBinding getBinding(ASTNode node) {
-		// handle annotation insertions for a single variable declaration
-		if (node.getParent() instanceof SingleVariableDeclaration) {
-			return ((SingleVariableDeclaration) node.getParent()).resolveBinding();
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("restriction")
+    @Override
+    protected IBinding getBinding(ASTNode node) {
+        // handle annotation insertions for a single variable declaration
+        if (node.getParent() instanceof SingleVariableDeclaration) {
+            return ((SingleVariableDeclaration) node.getParent()).resolveBinding();
+        }
 
-		if (node.getParent() instanceof VariableDeclarationFragment) {
-			return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
-		}
-		return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
-	}
+        if (node.getParent() instanceof VariableDeclarationFragment) {
+            return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        }
+        return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
+    }
 }

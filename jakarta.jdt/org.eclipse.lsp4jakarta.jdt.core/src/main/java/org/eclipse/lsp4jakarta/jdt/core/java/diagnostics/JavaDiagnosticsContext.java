@@ -32,61 +32,61 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  */
 public class JavaDiagnosticsContext extends AbtractJavaContext {
 
-	private final DocumentFormat documentFormat;
+    private final DocumentFormat documentFormat;
 
-	private final JakartaJavaDiagnosticsSettings settings;
+    private final JakartaJavaDiagnosticsSettings settings;
 
-	public JavaDiagnosticsContext(String uri, ITypeRoot typeRoot, IJDTUtils utils, DocumentFormat documentFormat,
-			JakartaJavaDiagnosticsSettings settings) {
-		super(uri, typeRoot, utils);
-		this.documentFormat = documentFormat;
-		if (settings == null) {
-			this.settings = new JakartaJavaDiagnosticsSettings(Collections.emptyList());
-		} else {
-			this.settings = settings;
-		}
-	}
+    public JavaDiagnosticsContext(String uri, ITypeRoot typeRoot, IJDTUtils utils, DocumentFormat documentFormat,
+                                  JakartaJavaDiagnosticsSettings settings) {
+        super(uri, typeRoot, utils);
+        this.documentFormat = documentFormat;
+        if (settings == null) {
+            this.settings = new JakartaJavaDiagnosticsSettings(Collections.emptyList());
+        } else {
+            this.settings = settings;
+        }
+    }
 
-	public DocumentFormat getDocumentFormat() {
-		return documentFormat;
-	}
+    public DocumentFormat getDocumentFormat() {
+        return documentFormat;
+    }
 
-	/**
-	 * Returns the JakartaJavaDiagnosticsSettings.
-	 *
-	 * Should not be null.
-	 *
-	 * @return the JakartaJavaDiagnosticsSettings
-	 */
-	public JakartaJavaDiagnosticsSettings getSettings() {
-		return this.settings;
-	}
+    /**
+     * Returns the JakartaJavaDiagnosticsSettings.
+     *
+     * Should not be null.
+     *
+     * @return the JakartaJavaDiagnosticsSettings
+     */
+    public JakartaJavaDiagnosticsSettings getSettings() {
+        return this.settings;
+    }
 
-	public Diagnostic createDiagnostic(String uri, String message, Range range, String source, IJavaErrorCode code) {
-		return createDiagnostic(uri, message, range, source, code, DiagnosticSeverity.Warning);
-	}
+    public Diagnostic createDiagnostic(String uri, String message, Range range, String source, IJavaErrorCode code) {
+        return createDiagnostic(uri, message, range, source, code, DiagnosticSeverity.Warning);
+    }
 
-	public Diagnostic createDiagnostic(String uri, String message, Range range, String source, IJavaErrorCode code,
-			DiagnosticSeverity severity) {
-		return createDiagnostic(uri, message, range, source, null, code, severity);
+    public Diagnostic createDiagnostic(String uri, String message, Range range, String source, IJavaErrorCode code,
+                                       DiagnosticSeverity severity) {
+        return createDiagnostic(uri, message, range, source, null, code, severity);
 
-	}
+    }
 
-	public Diagnostic createDiagnostic(String uri, String message, Range range, String source, Object data,
-			IJavaErrorCode code,
-			DiagnosticSeverity severity) {
-		Diagnostic diagnostic = new Diagnostic();
-		diagnostic.setSource(source);
-		diagnostic.setMessage(message);
-		diagnostic.setSeverity(severity);
-		diagnostic.setRange(range);
-		if (code != null) {
-			diagnostic.setCode(code.getCode());
-		}
-		if (data != null) {
-			diagnostic.setData(data);
-		}
-		return diagnostic;
-	}
+    public Diagnostic createDiagnostic(String uri, String message, Range range, String source, Object data,
+                                       IJavaErrorCode code,
+                                       DiagnosticSeverity severity) {
+        Diagnostic diagnostic = new Diagnostic();
+        diagnostic.setSource(source);
+        diagnostic.setMessage(message);
+        diagnostic.setSeverity(severity);
+        diagnostic.setRange(range);
+        if (code != null) {
+            diagnostic.setCode(code.getCode());
+        }
+        if (data != null) {
+            diagnostic.setData(data);
+        }
+        return diagnostic;
+    }
 
 }

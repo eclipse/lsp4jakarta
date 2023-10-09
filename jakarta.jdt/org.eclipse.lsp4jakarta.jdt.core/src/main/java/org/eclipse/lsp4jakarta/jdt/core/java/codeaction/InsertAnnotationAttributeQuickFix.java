@@ -40,59 +40,56 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.InsertAnnotati
  */
 public abstract class InsertAnnotationAttributeQuickFix implements IJavaCodeActionParticipant {
 
-	private static final Logger LOGGER = Logger.getLogger(InsertAnnotationAttributeQuickFix.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(InsertAnnotationAttributeQuickFix.class.getName());
 
-	private static final String CODE_ACTION_LABEL = "Insert ''{0}'' attribute";
+    private static final String CODE_ACTION_LABEL = "Insert ''{0}'' attribute";
 
-	private final String attributeName;
+    private final String attributeName;
 
-	/**
-	 * Constructor for inserting attribute annotation quick fix.
-	 *
-	 * @param attribute name list of annotation to insert.
-	 */
-	public InsertAnnotationAttributeQuickFix(String attributeName) {
-		this.attributeName = attributeName;
-	}
+    /**
+     * Constructor for inserting attribute annotation quick fix.
+     *
+     * @param attribute name list of annotation to insert.
+     */
+    public InsertAnnotationAttributeQuickFix(String attributeName) {
+        this.attributeName = attributeName;
+    }
 
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel(attributeName));
-		codeAction.setRelevance(0);
-		codeAction.setKind(CodeActionKind.QuickFix);
-		codeAction.setDiagnostics(Arrays.asList(diagnostic));
-		codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
-				context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(),
-				context.getParams().isCommandConfigurationUpdateSupported(), getCodeActionId()));
-		return Collections.singletonList(codeAction);
-	}
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel(attributeName));
+        codeAction.setRelevance(0);
+        codeAction.setKind(CodeActionKind.QuickFix);
+        codeAction.setDiagnostics(Arrays.asList(diagnostic));
+        codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(), context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(), context.getParams().isCommandConfigurationUpdateSupported(), getCodeActionId()));
+        return Collections.singletonList(codeAction);
+    }
 
-	@Override
-	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
-		CodeAction toResolve = context.getUnresolved();
-		ASTNode selectedNode = context.getCoveringNode();
-		Annotation annotation = (Annotation) selectedNode.getParent().getParent();
-		String name = getLabel(attributeName);
-		ChangeCorrectionProposal proposal = new InsertAnnotationAttributeProposal(name, context.getCompilationUnit(),
-				annotation, 0, attributeName);
-		try {
-			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
-		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit for inserting an attribute value", e);
-		}
-		return toResolve;
-	}
+    @Override
+    public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
+        CodeAction toResolve = context.getUnresolved();
+        ASTNode selectedNode = context.getCoveringNode();
+        Annotation annotation = (Annotation) selectedNode.getParent().getParent();
+        String name = getLabel(attributeName);
+        ChangeCorrectionProposal proposal = new InsertAnnotationAttributeProposal(name, context.getCompilationUnit(), annotation, 0, attributeName);
+        try {
+            toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
+        } catch (CoreException e) {
+            LOGGER.log(Level.SEVERE, "Unable to resolve code action edit for inserting an attribute value", e);
+        }
+        return toResolve;
+    }
 
-	/**
-	 * Returns the id for this code action.
-	 *
-	 * @return the id for this code action
-	 */
-	protected abstract ICodeActionId getCodeActionId();
+    /**
+     * Returns the id for this code action.
+     *
+     * @return the id for this code action
+     */
+    protected abstract ICodeActionId getCodeActionId();
 
-	private static String getLabel(String memberName) {
-		return MessageFormat.format(CODE_ACTION_LABEL, memberName);
-	}
+    private static String getLabel(String memberName) {
+        return MessageFormat.format(CODE_ACTION_LABEL, memberName);
+    }
 
 }

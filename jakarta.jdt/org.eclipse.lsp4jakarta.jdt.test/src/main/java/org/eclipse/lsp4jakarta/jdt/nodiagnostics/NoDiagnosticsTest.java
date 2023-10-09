@@ -38,44 +38,43 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class NoDiagnosticsTest extends BaseJakartaTest {
 
-	@Parameter
-	public String filePath;
+    @Parameter
+    public String filePath;
 
-	protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
-	@Test
-	public void checkForNoDiagnostics() throws Exception {
-		IJavaProject javaProject = loadJavaProject("demo-servlet-no-diagnostics", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path(filePath));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    public void checkForNoDiagnostics() throws Exception {
+        IJavaProject javaProject = loadJavaProject("demo-servlet-no-diagnostics", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path(filePath));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		// should be no diagnostics in the file.
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS);
+        // should be no diagnostics in the file.
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS);
 
-	}
+    }
 
-	// list of java files in demo-servlet-no-diagnostics.
-	@Parameters
-	public static List<String> projectFileProvider() throws Exception {
+    // list of java files in demo-servlet-no-diagnostics.
+    @Parameters
+    public static List<String> projectFileProvider() throws Exception {
 
-		String packagePath = "/src/main/java/io/openliberty/sample/jakarta/";
-		String basePath = System.getProperty("user.dir")
-				+ "/projects/demo-servlet-no-diagnostics/";
-		File dir = new File(basePath + packagePath);
-		String[] extensions = new String[] { "java" };
-		List<String> results = new ArrayList<String>();
+        String packagePath = "/src/main/java/io/openliberty/sample/jakarta/";
+        String basePath = System.getProperty("user.dir")
+                          + "/projects/demo-servlet-no-diagnostics/";
+        File dir = new File(basePath + packagePath);
+        String[] extensions = new String[] { "java" };
+        List<String> results = new ArrayList<String>();
 
-		Collection<File> files = FileUtils.listFiles(dir, extensions, true);
-		for (File file : files) {
-			// Get relative path from source folder and add it in the results array.
-			results.add(file.getAbsolutePath().substring(basePath.length()));
-		}
+        Collection<File> files = FileUtils.listFiles(dir, extensions, true);
+        for (File file : files) {
+            // Get relative path from source folder and add it in the results array.
+            results.add(file.getAbsolutePath().substring(basePath.length()));
+        }
 
-		return results;
-	}
+        return results;
+    }
 
 }

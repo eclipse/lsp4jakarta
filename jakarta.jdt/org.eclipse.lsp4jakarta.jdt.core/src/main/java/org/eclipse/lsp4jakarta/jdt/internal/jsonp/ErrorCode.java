@@ -18,13 +18,13 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * JSON Processing (JSON-P) error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	InvalidJsonCreatePointerTarget;
+    InvalidJsonCreatePointerTarget;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 }

@@ -23,49 +23,49 @@ import java.util.List;
  */
 public class JakartaJavaProjectLabelsParams {
 
-	private String uri;
+    private String uri;
 
-	private List<String> types;
+    private List<String> types;
 
-	/**
-	 * Returns the Java file uri.
-	 *
-	 * @return the Java file uri
-	 */
-	public String getUri() {
-		return uri;
-	}
+    /**
+     * Returns the Java file uri.
+     *
+     * @return the Java file uri
+     */
+    public String getUri() {
+        return uri;
+    }
 
-	/**
-	 * Set the Java file uri.
-	 *
-	 * @param uri the Java file uri.
-	 */
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
+    /**
+     * Set the Java file uri.
+     *
+     * @param uri the Java file uri.
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 
-	/**
-	 * Returns the Java types list to check.
-	 *
-	 * <p>
-	 * If the owner Java project of the Java file URI contains some type in the
-	 * classpath, it will return the type as label in
-	 * {@link ProjectLabelInfoEntry#getLabels()}
-	 * </p>
-	 *
-	 * @return the Java types list to check
-	 */
-	public List<String> getTypes() {
-		return types;
-	}
+    /**
+     * Returns the Java types list to check.
+     *
+     * <p>
+     * If the owner Java project of the Java file URI contains some type in the
+     * classpath, it will return the type as label in
+     * {@link ProjectLabelInfoEntry#getLabels()}
+     * </p>
+     *
+     * @return the Java types list to check
+     */
+    public List<String> getTypes() {
+        return types;
+    }
 
-	/**
-	 * Set the Java types list to check.
-	 *
-	 * @param types the Java types list to check.
-	 */
-	public void setTypes(List<String> types) {
-		this.types = types;
-	}
+    /**
+     * Set the Java types list to check.
+     *
+     * @param types the Java types list to check.
+     */
+    public void setTypes(List<String> types) {
+        this.types = types;
+    }
 }

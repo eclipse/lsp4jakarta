@@ -21,5 +21,5 @@ package org.eclipse.lsp4jakarta.jdt.core.java.diagnostics;
  */
 public interface IJavaErrorCode {
 
-	String getCode();
+    String getCode();
 }

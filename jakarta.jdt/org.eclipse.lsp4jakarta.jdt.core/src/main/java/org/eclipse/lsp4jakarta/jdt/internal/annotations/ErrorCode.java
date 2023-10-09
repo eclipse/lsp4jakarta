@@ -18,21 +18,21 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * Annotations error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	InvalidDateFormat,
-	MissingResourceNameAttribute,
-	MissingResourceTypeAttribute,
-	PostConstructParams,
-	PostConstructReturnType,
-	PostConstructException,
-	PreDestroyParams,
-	PreDestroyStatic,
-	PreDestroyException;
+    InvalidDateFormat,
+    MissingResourceNameAttribute,
+    MissingResourceTypeAttribute,
+    PostConstructParams,
+    PostConstructReturnType,
+    PostConstructException,
+    PreDestroyParams,
+    PreDestroyStatic,
+    PreDestroyException;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 }

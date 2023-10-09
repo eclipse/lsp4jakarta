@@ -29,6 +29,7 @@ import com.google.gson.TypeAdapter;
 
 /**
  * Reused from https://github.com/eclipse/lsp4mp/blob/master/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/commons/snippets/SnippetDeserializer.java
+ *
  * @author Ankush Sharma, credit to Angelo ZERR
  *
  */
@@ -46,8 +47,7 @@ class SnippetDeserializer implements JsonDeserializer<Snippet> {
     }
 
     @Override
-    public Snippet deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
+    public Snippet deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         Snippet snippet = new Snippet();
         JsonObject snippetObj = json.getAsJsonObject();
 

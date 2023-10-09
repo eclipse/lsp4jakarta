@@ -37,42 +37,42 @@ import org.junit.Test;
 
 public class PostConstructAnnotationTest extends BaseJakartaTest {
 
-	protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
-	@Test
-	public void GeneratedAnnotation() throws Exception {
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject().getFile(
-				new Path("src/main/java/io/openliberty/sample/jakarta/annotations/PostConstructAnnotation.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    public void GeneratedAnnotation() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/annotations/PostConstructAnnotation.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		// expected Diagnostics
+        // expected Diagnostics
 
-		Diagnostic d1 = d(15, 19, 31, "A method with the @PostConstruct annotation must be void.",
-				DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructReturnType");
+        Diagnostic d1 = d(15, 19, 31, "A method with the @PostConstruct annotation must be void.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructReturnType");
 
-		Diagnostic d2 = d(20, 16, 28, "A method with the @PostConstruct annotation must not have any parameters.",
-				DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructParams");
+        Diagnostic d2 = d(20, 16, 28, "A method with the @PostConstruct annotation must not have any parameters.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructParams");
 
-		Diagnostic d3 = d(25, 16, 28, "A method with the @PostConstruct annotation must not throw checked exceptions.",
-				DiagnosticSeverity.Warning, "jakarta-annotations", "PostConstructException");
+        Diagnostic d3 = d(25, 16, 28, "A method with the @PostConstruct annotation must not throw checked exceptions.",
+                          DiagnosticSeverity.Warning, "jakarta-annotations", "PostConstructException");
 
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2, d3);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2, d3);
 
-		JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
-		TextEdit te1 = te(19, 4, 20, 4, "");
-		TextEdit te2 = te(20, 29, 20, 40, "");
-		CodeAction ca1 = ca(uri, "Remove @PostConstruct", d2, te1);
-		CodeAction ca2 = ca(uri, "Remove all parameters", d2, te2);
-		assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca1, ca2);
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
+        TextEdit te1 = te(19, 4, 20, 4, "");
+        TextEdit te2 = te(20, 29, 20, 40, "");
+        CodeAction ca1 = ca(uri, "Remove @PostConstruct", d2, te1);
+        CodeAction ca2 = ca(uri, "Remove all parameters", d2, te2);
+        assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca1, ca2);
 
-		JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d1);
-		TextEdit te3 = te(15, 11, 15, 18, "void");
-		CodeAction ca3 = ca(uri, "Change return type to void", d1, te3);
-		assertJavaCodeAction(codeActionParams2, IJDT_UTILS, ca3);
-	}
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d1);
+        TextEdit te3 = te(15, 11, 15, 18, "void");
+        CodeAction ca3 = ca(uri, "Change return type to void", d1, te3);
+        assertJavaCodeAction(codeActionParams2, IJDT_UTILS, ca3);
+    }
 
 }

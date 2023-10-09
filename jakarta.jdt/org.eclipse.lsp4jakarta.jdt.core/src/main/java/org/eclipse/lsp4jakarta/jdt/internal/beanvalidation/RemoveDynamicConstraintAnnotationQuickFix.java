@@ -44,99 +44,94 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
  */
 public class RemoveDynamicConstraintAnnotationQuickFix implements IJavaCodeActionParticipant {
 
-	/** Logger object to record events for this class. */
-	private static final Logger LOGGER = Logger.getLogger(RemoveDynamicConstraintAnnotationQuickFix.class.getName());
+    /** Logger object to record events for this class. */
+    private static final Logger LOGGER = Logger.getLogger(RemoveDynamicConstraintAnnotationQuickFix.class.getName());
 
-	/** Annotation name map key */
-	public static final String ANNOTATION_NAME_KEY = "annotation.name";
+    /** Annotation name map key */
+    public static final String ANNOTATION_NAME_KEY = "annotation.name";
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveDynamicConstraintAnnotationQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveDynamicConstraintAnnotationQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		String annotationName = diagnostic.getData().toString().replace("\"", "");
-		String label = getLabel(annotationName);
-		ASTNode node = context.getCoveredNode();
-		IBinding parentType = getBinding(node);
-		List<CodeAction> codeActions = new ArrayList<>();
-		if (parentType != null) {
-			ExtendedCodeAction codeAction = new ExtendedCodeAction(label);
-			codeAction.setRelevance(0);
-			codeAction.setKind(CodeActionKind.QuickFix);
-			codeAction.setDiagnostics(Arrays.asList(diagnostic));
-			Map<String, Object> extendedData = new HashMap<String, Object>();
-			extendedData.put(ANNOTATION_NAME_KEY, annotationName);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        String annotationName = diagnostic.getData().toString().replace("\"", "");
+        String label = getLabel(annotationName);
+        ASTNode node = context.getCoveredNode();
+        IBinding parentType = getBinding(node);
+        List<CodeAction> codeActions = new ArrayList<>();
+        if (parentType != null) {
+            ExtendedCodeAction codeAction = new ExtendedCodeAction(label);
+            codeAction.setRelevance(0);
+            codeAction.setKind(CodeActionKind.QuickFix);
+            codeAction.setDiagnostics(Arrays.asList(diagnostic));
+            Map<String, Object> extendedData = new HashMap<String, Object>();
+            extendedData.put(ANNOTATION_NAME_KEY, annotationName);
 
-			codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
-					context.getParams().getRange(), extendedData, context.getParams().isResourceOperationSupported(),
-					context.getParams().isCommandConfigurationUpdateSupported(),
-					JakartaCodeActionId.RemoveConstraintAnnotation));
-			codeActions.add(codeAction);
-		}
+            codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(), context.getParams().getRange(), extendedData, context.getParams().isResourceOperationSupported(), context.getParams().isCommandConfigurationUpdateSupported(), JakartaCodeActionId.RemoveConstraintAnnotation));
+            codeActions.add(codeAction);
+        }
 
-		return codeActions;
+        return codeActions;
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
-		CodeAction toResolve = context.getUnresolved();
-		ASTNode node = context.getCoveredNode();
-		IBinding parentType = getBinding(node);
-		CodeActionResolveData data = (CodeActionResolveData) toResolve.getData();
-		String annotationName = (String) data
-				.getExtendedDataEntry(ANNOTATION_NAME_KEY);
-		String label = getLabel(annotationName);
-		ChangeCorrectionProposal proposal = new RemoveAnnotationProposal(label, context.getCompilationUnit(),
-				context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotationName);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
+        CodeAction toResolve = context.getUnresolved();
+        ASTNode node = context.getCoveredNode();
+        IBinding parentType = getBinding(node);
+        CodeActionResolveData data = (CodeActionResolveData) toResolve.getData();
+        String annotationName = (String) data.getExtendedDataEntry(ANNOTATION_NAME_KEY);
+        String label = getLabel(annotationName);
+        ChangeCorrectionProposal proposal = new RemoveAnnotationProposal(label, context.getCompilationUnit(), context.getASTRoot(), parentType, 0, context.getCoveredNode().getParent(), annotationName);
 
-		try {
-			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
-		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to resolve code action to remove a constraint annotation",
-					e);
-		}
+        try {
+            toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
+        } catch (CoreException e) {
+            LOGGER.log(Level.SEVERE, "Unable to resolve code action to remove a constraint annotation",
+                       e);
+        }
 
-		return toResolve;
-	}
+        return toResolve;
+    }
 
-	/**
-	 * Returns the code action label.
-	 * 
-	 * @Paran annotationName The annotation name.
-	 * 
-	 * @return The code action label.
-	 */
-	private static String getLabel(String annotationName) {
-		return Messages.getMessage("RemoveConstraintAnnotation", annotationName);
-	}
+    /**
+     * Returns the code action label.
+     *
+     * @Paran annotationName The annotation name.
+     *
+     * @return The code action label.
+     */
+    private static String getLabel(String annotationName) {
+        return Messages.getMessage("RemoveConstraintAnnotation", annotationName);
+    }
 
-	/**
-	 * Returns the named entity associated to the given node.
-	 * 
-	 * @param node The AST Node
-	 * 
-	 * @return The named entity associated to the given node.
-	 */
-	@SuppressWarnings("restriction")
-	protected static IBinding getBinding(ASTNode node) {
-		if (node.getParent() instanceof VariableDeclarationFragment) {
-			return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
-		}
+    /**
+     * Returns the named entity associated to the given node.
+     *
+     * @param node The AST Node
+     *
+     * @return The named entity associated to the given node.
+     */
+    @SuppressWarnings("restriction")
+    protected static IBinding getBinding(ASTNode node) {
+        if (node.getParent() instanceof VariableDeclarationFragment) {
+            return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        }
 
-		return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
-	}
+        return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
+    }
 }

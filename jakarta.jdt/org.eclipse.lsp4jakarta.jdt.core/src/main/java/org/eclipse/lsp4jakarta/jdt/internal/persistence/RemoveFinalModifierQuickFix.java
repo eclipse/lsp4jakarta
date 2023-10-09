@@ -21,26 +21,26 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.RemoveModifierConflictQu
  */
 public class RemoveFinalModifierQuickFix extends RemoveModifierConflictQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public RemoveFinalModifierQuickFix() {
-		super("final");
-	}
+    /**
+     * Constructor.
+     */
+    public RemoveFinalModifierQuickFix() {
+        super("final");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveFinalModifierQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveFinalModifierQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.PersistenceRemoveFinalModifier;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.PersistenceRemoveFinalModifier;
+    }
 }

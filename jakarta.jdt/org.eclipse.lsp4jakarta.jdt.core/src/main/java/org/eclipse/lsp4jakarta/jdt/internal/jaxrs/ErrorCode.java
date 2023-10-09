@@ -18,18 +18,18 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * JAX-RS error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	NonPublicResourceMethod,
-	ResourceMethodMultipleEntityParams,
-	UnusedConstructor,
-	AmbiguousConstructors,
-	NoPublicConstructors;
+    NonPublicResourceMethod,
+    ResourceMethodMultipleEntityParams,
+    UnusedConstructor,
+    AmbiguousConstructors,
+    NoPublicConstructors;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 
 }

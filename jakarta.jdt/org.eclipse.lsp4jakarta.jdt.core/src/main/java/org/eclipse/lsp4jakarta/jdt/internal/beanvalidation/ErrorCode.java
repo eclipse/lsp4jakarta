@@ -18,20 +18,20 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * Bean validation error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	InvalidConstrainAnnotationOnStaticMethodOrField,
-	InvalidAnnotationOnNonBooleanMethodOrField,
-	InvalidAnnotationOnNonBigDecimalCharByteShortIntLongMethodOrField,
-	InvalidAnnotationOnNonDateTimeMethodOrField,
-	InvalidAnnotationOnNonMinMaxMethodOrField,
-	InvalidAnnotationOnNonPositiveMethodOrField,
-	InvalidAnnotationOnNonStringMethodOrField;
+    InvalidConstrainAnnotationOnStaticMethodOrField,
+    InvalidAnnotationOnNonBooleanMethodOrField,
+    InvalidAnnotationOnNonBigDecimalCharByteShortIntLongMethodOrField,
+    InvalidAnnotationOnNonDateTimeMethodOrField,
+    InvalidAnnotationOnNonMinMaxMethodOrField,
+    InvalidAnnotationOnNonPositiveMethodOrField,
+    InvalidAnnotationOnNonStringMethodOrField;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 
 }

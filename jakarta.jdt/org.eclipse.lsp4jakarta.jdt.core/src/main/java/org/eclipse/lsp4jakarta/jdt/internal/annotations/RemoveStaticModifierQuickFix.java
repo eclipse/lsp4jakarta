@@ -20,26 +20,26 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.RemoveModifierConflictQu
  */
 public class RemoveStaticModifierQuickFix extends RemoveModifierConflictQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public RemoveStaticModifierQuickFix() {
-		super("static");
-	}
+    /**
+     * Constructor.
+     */
+    public RemoveStaticModifierQuickFix() {
+        super("static");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveStaticModifierQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveStaticModifierQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JakartaCodeActionId getCodeActionId() {
-		return JakartaCodeActionId.AnnotationRemoveStaticModifier;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JakartaCodeActionId getCodeActionId() {
+        return JakartaCodeActionId.AnnotationRemoveStaticModifier;
+    }
 }

@@ -35,42 +35,41 @@ import com.google.gson.JsonArray;
  */
 public class RemoveAllButJsonbTransientAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveAllButJsonbTransientAnnotationQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveAllButJsonbTransientAnnotationQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JakartaCodeActionId getCodeActionId() {
-		return JakartaCodeActionId.JSONBRemoveAllButJsonbTransientAnnotation;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JakartaCodeActionId getCodeActionId() {
+        return JakartaCodeActionId.JSONBRemoveAllButJsonbTransientAnnotation;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		List<CodeAction> codeActions = new ArrayList<>();
-		ASTNode node = context.getCoveredNode();
-		IBinding parentType = getBinding(node);
-		if (parentType != null) {
-			JsonArray diagnosticData = (JsonArray) diagnostic.getData();
-			List<String> annotations = IntStream.range(0, diagnosticData.size())
-					.mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
+        ASTNode node = context.getCoveredNode();
+        IBinding parentType = getBinding(node);
+        if (parentType != null) {
+            JsonArray diagnosticData = (JsonArray) diagnostic.getData();
+            List<String> annotations = IntStream.range(0, diagnosticData.size()).mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
 
-			annotations.remove(Constants.JSONB_TRANSIENT);
-			if (annotations.size() > 0) {
-				createCodeAction(diagnostic, context, parentType, codeActions, annotations.toArray(new String[0]));
-			}
-		}
+            annotations.remove(Constants.JSONB_TRANSIENT);
+            if (annotations.size() > 0) {
+                createCodeAction(diagnostic, context, parentType, codeActions, annotations.toArray(new String[0]));
+            }
+        }
 
-		return codeActions;
-	}
+        return codeActions;
+    }
 }

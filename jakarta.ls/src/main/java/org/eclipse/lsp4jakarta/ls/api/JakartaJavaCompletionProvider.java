@@ -23,7 +23,7 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
  */
 public interface JakartaJavaCompletionProvider {
 
-	@JsonRequest("jakarta/java/completion")
-	CompletableFuture<JakartaJavaCompletionResult> getJavaCompletion(JakartaJavaCompletionParams javaParams);
+    @JsonRequest("jakarta/java/completion")
+    CompletableFuture<JakartaJavaCompletionResult> getJavaCompletion(JakartaJavaCompletionParams javaParams);
 
 }

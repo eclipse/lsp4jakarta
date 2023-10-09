@@ -20,102 +20,102 @@ import java.util.function.BiPredicate;
 
 /**
  * Snippet description (like vscode snippet).
- * 
+ *
  * @author Angelo ZERR
  *
  */
 public class Snippet {
 
-	private String label;
+    private String label;
 
-	private List<String> prefixes;
+    private List<String> prefixes;
 
-	private String suffix;
+    private String suffix;
 
-	private List<String> body;
+    private List<String> body;
 
-	private String description;
+    private String description;
 
-	private String scope;
+    private String scope;
 
-	private String sortText;
+    private String sortText;
 
-	private ISnippetContext<?> context;
+    private ISnippetContext<?> context;
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-	public List<String> getPrefixes() {
-		return prefixes;
-	}
+    public List<String> getPrefixes() {
+        return prefixes;
+    }
 
-	public void setPrefixes(List<String> prefixes) {
-		this.prefixes = prefixes;
-	}
+    public void setPrefixes(List<String> prefixes) {
+        this.prefixes = prefixes;
+    }
 
-	public String getSuffix() {
-		return suffix;
-	}
+    public String getSuffix() {
+        return suffix;
+    }
 
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
 
-	public List<String> getBody() {
-		return body;
-	}
+    public List<String> getBody() {
+        return body;
+    }
 
-	public void setBody(List<String> body) {
-		this.body = body;
-	}
+    public void setBody(List<String> body) {
+        this.body = body;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getScope() {
-		return scope;
-	}
+    public String getScope() {
+        return scope;
+    }
 
-	public void setScope(String scope) {
-		this.scope = scope;
-	}
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
 
-	public String getSortText() {
-		return sortText;
-	}
+    public String getSortText() {
+        return sortText;
+    }
 
-	public void setSortText(String sortText) {
-		this.sortText = sortText;
-	}
+    public void setSortText(String sortText) {
+        this.sortText = sortText;
+    }
 
-	public ISnippetContext<?> getContext() {
-		return context;
-	}
+    public ISnippetContext<?> getContext() {
+        return context;
+    }
 
-	public void setContext(ISnippetContext<?> context) {
-		this.context = context;
-	}
+    public void setContext(ISnippetContext<?> context) {
+        this.context = context;
+    }
 
-	public boolean hasContext() {
-		return getContext() != null;
-	}
+    public boolean hasContext() {
+        return getContext() != null;
+    }
 
-	public boolean match(BiPredicate<ISnippetContext<?>, Map<String, String>> contextFilter,
-			Map<String, String> model) {
-		if (!hasContext()) {
-			return true;
-		}
-		return contextFilter.test(getContext(), model);
-	}
+    public boolean match(BiPredicate<ISnippetContext<?>, Map<String, String>> contextFilter,
+                         Map<String, String> model) {
+        if (!hasContext()) {
+            return true;
+        }
+        return contextFilter.test(getContext(), model);
+    }
 
 }

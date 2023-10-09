@@ -17,11 +17,11 @@ package org.eclipse.lsp4jakarta.jdt.internal.jsonp;
  */
 public class Constants {
 
-	/* Source */
-	public static final String DIAGNOSTIC_SOURCE = "jakarta-jsonp";
+    /* Source */
+    public static final String DIAGNOSTIC_SOURCE = "jakarta-jsonp";
 
-	/* Constants */
-	public static final String CREATE_POINTER = "createPointer";
-	public static final String JSON_FQ_NAME = "jakarta.json.Json";
-	public static final String DIAGNOSTIC_CODE_CREATE_POINTER = "InvalidCreatePointerArg";
+    /* Constants */
+    public static final String CREATE_POINTER = "createPointer";
+    public static final String JSON_FQ_NAME = "jakarta.json.Json";
+    public static final String DIAGNOSTIC_CODE_CREATE_POINTER = "InvalidCreatePointerArg";
 }

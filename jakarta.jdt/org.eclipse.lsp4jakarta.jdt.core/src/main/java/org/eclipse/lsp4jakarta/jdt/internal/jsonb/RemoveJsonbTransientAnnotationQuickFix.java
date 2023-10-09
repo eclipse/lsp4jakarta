@@ -34,41 +34,40 @@ import com.google.gson.JsonArray;
  */
 public class RemoveJsonbTransientAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveJsonbTransientAnnotationQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveJsonbTransientAnnotationQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JakartaCodeActionId getCodeActionId() {
-		return JakartaCodeActionId.JSONBRemoveJsonbTransientAnnotation;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JakartaCodeActionId getCodeActionId() {
+        return JakartaCodeActionId.JSONBRemoveJsonbTransientAnnotation;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		List<CodeAction> codeActions = new ArrayList<>();
-		ASTNode node = context.getCoveredNode();
-		IBinding parentType = getBinding(node);
-		if (parentType != null) {
-			JsonArray diagnosticData = (JsonArray) diagnostic.getData();
-			List<String> annotations = IntStream.range(0, diagnosticData.size())
-					.mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
-			if (annotations.contains(Constants.JSONB_TRANSIENT)) {
-				createCodeAction(diagnostic, context, parentType, codeActions,
-						"jakarta.json.bind.annotation.JsonbTransient");
-			}
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
+        ASTNode node = context.getCoveredNode();
+        IBinding parentType = getBinding(node);
+        if (parentType != null) {
+            JsonArray diagnosticData = (JsonArray) diagnostic.getData();
+            List<String> annotations = IntStream.range(0, diagnosticData.size()).mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
+            if (annotations.contains(Constants.JSONB_TRANSIENT)) {
+                createCodeAction(diagnostic, context, parentType, codeActions,
+                                 "jakarta.json.bind.annotation.JsonbTransient");
+            }
+        }
 
-		return codeActions;
-	}
+        return codeActions;
+    }
 }

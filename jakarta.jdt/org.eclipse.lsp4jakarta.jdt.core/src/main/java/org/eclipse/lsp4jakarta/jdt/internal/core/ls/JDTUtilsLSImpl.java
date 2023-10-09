@@ -41,7 +41,7 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
 
 /**
  * {@link IJDTUtils} implementation with JDT S {@link JDTUtils}.
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/ls/JDTUtilsLSImpl.java
  *
@@ -50,94 +50,92 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  */
 public class JDTUtilsLSImpl implements IJDTUtils {
 
-	private static final int COMPILATION_UNIT_UPDATE_TIMEOUT = 3000;
+    private static final int COMPILATION_UNIT_UPDATE_TIMEOUT = 3000;
 
-	private static final IJDTUtils INSTANCE = new JDTUtilsLSImpl();
+    private static final IJDTUtils INSTANCE = new JDTUtilsLSImpl();
 
-	public static IJDTUtils getInstance() {
-		return INSTANCE;
-	}
+    public static IJDTUtils getInstance() {
+        return INSTANCE;
+    }
 
-	private JDTUtilsLSImpl() {
-	}
+    private JDTUtilsLSImpl() {}
 
-	@Override
-	public IFile findFile(String uriString) {
-		return JDTUtils.findFile(uriString);
-	}
+    @Override
+    public IFile findFile(String uriString) {
+        return JDTUtils.findFile(uriString);
+    }
 
-	@Override
-	public ICompilationUnit resolveCompilationUnit(String uriString) {
-		ICompilationUnit unit = JDTUtils.resolveCompilationUnit(uriString);
-		try {
-			// Give underlying resource time to catch up
-			// (timeout at COMPILATION_UNIT_UPDATE_TIMEOUT milliseconds).
-			long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
-			while (!unit.isConsistent() && System.currentTimeMillis() < endTime) {
-			}
-		} catch (JavaModelException e) {
-		}
-		return unit;
-	}
+    @Override
+    public ICompilationUnit resolveCompilationUnit(String uriString) {
+        ICompilationUnit unit = JDTUtils.resolveCompilationUnit(uriString);
+        try {
+            // Give underlying resource time to catch up
+            // (timeout at COMPILATION_UNIT_UPDATE_TIMEOUT milliseconds).
+            long endTime = System.currentTimeMillis() + COMPILATION_UNIT_UPDATE_TIMEOUT;
+            while (!unit.isConsistent() && System.currentTimeMillis() < endTime) {
+            }
+        } catch (JavaModelException e) {
+        }
+        return unit;
+    }
 
-	@Override
-	public IClassFile resolveClassFile(String uriString) {
-		return JDTUtils.resolveClassFile(uriString);
-	}
+    @Override
+    public IClassFile resolveClassFile(String uriString) {
+        return JDTUtils.resolveClassFile(uriString);
+    }
 
-	@Override
-	public boolean isHiddenGeneratedElement(IJavaElement element) {
-		return JDTUtils.isHiddenGeneratedElement(element);
-	}
+    @Override
+    public boolean isHiddenGeneratedElement(IJavaElement element) {
+        return JDTUtils.isHiddenGeneratedElement(element);
+    }
 
-	@Override
-	public Range toRange(IOpenable openable, int offset, int length) throws JavaModelException {
-		return JDTUtils.toRange(openable, offset, length);
-	}
+    @Override
+    public Range toRange(IOpenable openable, int offset, int length) throws JavaModelException {
+        return JDTUtils.toRange(openable, offset, length);
+    }
 
-	@Override
-	public String toClientUri(String uri) {
-		return ResourceUtils.toClientUri(uri);
-	}
+    @Override
+    public String toClientUri(String uri) {
+        return ResourceUtils.toClientUri(uri);
+    }
 
-	@Override
-	public String toUri(ITypeRoot typeRoot) {
-		return JDTUtils.toUri(typeRoot);
-	}
+    @Override
+    public String toUri(ITypeRoot typeRoot) {
+        return JDTUtils.toUri(typeRoot);
+    }
 
-	@Override
-	public void waitForLifecycleJobs(IProgressMonitor monitor) {
-		try {
-			Job.getJobManager().join(DocumentLifeCycleHandler.DOCUMENT_LIFE_CYCLE_JOBS, monitor);
-		} catch (OperationCanceledException ignorable) {
-			// No need to pollute logs when query is cancelled
-		} catch (Exception e) {
-			JavaLanguageServerPlugin.logException(e.getMessage(), e);
-		}
-	}
+    @Override
+    public void waitForLifecycleJobs(IProgressMonitor monitor) {
+        try {
+            Job.getJobManager().join(DocumentLifeCycleHandler.DOCUMENT_LIFE_CYCLE_JOBS, monitor);
+        } catch (OperationCanceledException ignorable) {
+            // No need to pollute logs when query is cancelled
+        } catch (Exception e) {
+            JavaLanguageServerPlugin.logException(e.getMessage(), e);
+        }
+    }
 
-	@Override
-	public int toOffset(IBuffer buffer, int line, int column) {
-		return JsonRpcHelpers.toOffset(buffer, line, column);
-	}
+    @Override
+    public int toOffset(IBuffer buffer, int line, int column) {
+        return JsonRpcHelpers.toOffset(buffer, line, column);
+    }
 
-	@Override
-	public Location toLocation(IJavaElement element) throws JavaModelException {
-		return JDTUtils.toLocation(element);
-	}
+    @Override
+    public Location toLocation(IJavaElement element) throws JavaModelException {
+        return JDTUtils.toLocation(element);
+    }
 
-	@Override
-	public String getJavadoc(IMember member, DocumentFormat documentFormat) throws JavaModelException {
-		boolean markdown = DocumentFormat.Markdown.equals(documentFormat);
-		Reader reader = markdown ? JavadocContentAccess.getMarkdownContentReader(member)
-				: JavadocContentAccess.getPlainTextContentReader(member);
-		return reader != null ? toString(reader) : null;
-	}
+    @Override
+    public String getJavadoc(IMember member, DocumentFormat documentFormat) throws JavaModelException {
+        boolean markdown = DocumentFormat.Markdown.equals(documentFormat);
+        Reader reader = markdown ? JavadocContentAccess.getMarkdownContentReader(member) : JavadocContentAccess.getPlainTextContentReader(member);
+        return reader != null ? toString(reader) : null;
+    }
 
-	private static String toString(Reader reader) {
-		try (Scanner s = new java.util.Scanner(reader)) {
-			s.useDelimiter("\\A");
-			return s.hasNext() ? s.next() : "";
-		}
-	}
+    private static String toString(Reader reader) {
+        try (Scanner s = new java.util.Scanner(reader)) {
+            s.useDelimiter("\\A");
+            return s.hasNext() ? s.next() : "";
+        }
+    }
 }

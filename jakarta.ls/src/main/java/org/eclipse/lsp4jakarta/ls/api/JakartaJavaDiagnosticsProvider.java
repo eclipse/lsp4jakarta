@@ -24,6 +24,6 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
  */
 public interface JakartaJavaDiagnosticsProvider {
 
-	@JsonRequest("jakarta/java/diagnostics")
-	CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaJavaDiagnosticsParams javaParams);
+    @JsonRequest("jakarta/java/diagnostics")
+    CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(JakartaJavaDiagnosticsParams javaParams);
 }

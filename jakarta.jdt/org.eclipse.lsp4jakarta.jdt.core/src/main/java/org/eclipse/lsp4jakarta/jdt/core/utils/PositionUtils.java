@@ -31,75 +31,73 @@ import org.eclipse.lsp4j.Range;
  */
 public class PositionUtils {
 
-	/**
-	 * Returns the LSP range for the given field name.
-	 *
-	 * @param field the java field.
-	 * @param utils the JDT utilities.
-	 * @return the LSP range for the given field name.
-	 * @throws JavaModelException
-	 */
-	public static Range toNameRange(IField field, IJDTUtils utils) throws JavaModelException {
-		IOpenable openable = field.getCompilationUnit();
-		ISourceRange sourceRange = field.getNameRange();
-		return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
-	}
+    /**
+     * Returns the LSP range for the given field name.
+     *
+     * @param field the java field.
+     * @param utils the JDT utilities.
+     * @return the LSP range for the given field name.
+     * @throws JavaModelException
+     */
+    public static Range toNameRange(IField field, IJDTUtils utils) throws JavaModelException {
+        IOpenable openable = field.getCompilationUnit();
+        ISourceRange sourceRange = field.getNameRange();
+        return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
+    }
 
-	/**
-	 * Returns the LSP range for the given type name.
-	 *
-	 * @param type  the java type.
-	 * @param utils the JDT utilities.
-	 * @return the LSP range for the given type name.
-	 * @throws JavaModelException
-	 */
-	public static Range toNameRange(IType type, IJDTUtils utils) throws JavaModelException {
-		IOpenable openable = type.getCompilationUnit();
-		ISourceRange sourceRange = type.getNameRange();
-		return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
-	}
+    /**
+     * Returns the LSP range for the given type name.
+     *
+     * @param type the java type.
+     * @param utils the JDT utilities.
+     * @return the LSP range for the given type name.
+     * @throws JavaModelException
+     */
+    public static Range toNameRange(IType type, IJDTUtils utils) throws JavaModelException {
+        IOpenable openable = type.getCompilationUnit();
+        ISourceRange sourceRange = type.getNameRange();
+        return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
+    }
 
-	/**
-	 * Returns the LSP range for the given method name.
-	 *
-	 * @param method the java type.
-	 * @param utils  the JDT utilities.
-	 * @return the LSP range for the given method name.
-	 * @throws JavaModelException
-	 */
-	public static Range toNameRange(IMethod method, IJDTUtils utils) throws JavaModelException {
-		IOpenable openable = method.getCompilationUnit();
-		ISourceRange sourceRange = method.getNameRange();
-		return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
-	}
+    /**
+     * Returns the LSP range for the given method name.
+     *
+     * @param method the java type.
+     * @param utils the JDT utilities.
+     * @return the LSP range for the given method name.
+     * @throws JavaModelException
+     */
+    public static Range toNameRange(IMethod method, IJDTUtils utils) throws JavaModelException {
+        IOpenable openable = method.getCompilationUnit();
+        ISourceRange sourceRange = method.getNameRange();
+        return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
+    }
 
-	/**
-	 * Returns the LSP range for the given annotation.
-	 *
-	 * @param annotation the java type.
-	 * @param utils      the JDT utilities.
-	 * @return the LSP range for the given annotation.
-	 * @throws JavaModelException
-	 */
-	public static Range toNameRange(IAnnotation annotation, IJDTUtils utils)
-			throws JavaModelException {
-		IOpenable openable = annotation.getOpenable();
-		ISourceRange sourceRange = annotation.getSourceRange();
-		return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
-	}
+    /**
+     * Returns the LSP range for the given annotation.
+     *
+     * @param annotation the java type.
+     * @param utils the JDT utilities.
+     * @return the LSP range for the given annotation.
+     * @throws JavaModelException
+     */
+    public static Range toNameRange(IAnnotation annotation, IJDTUtils utils) throws JavaModelException {
+        IOpenable openable = annotation.getOpenable();
+        ISourceRange sourceRange = annotation.getSourceRange();
+        return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
+    }
 
-	/**
-	 * Returns the LSP range for the given Local variable.
-	 *
-	 * @param localVariable the java type.
-	 * @param utils         the JDT utilities.
-	 * @return the LSP range for the given annotation.
-	 * @throws JavaModelException
-	 */
-	public static Range toNameRange(ILocalVariable localVariable, IJDTUtils utils)
-			throws JavaModelException {
-		IOpenable openable = localVariable.getOpenable();
-		ISourceRange sourceRange = localVariable.getNameRange();
-		return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
-	}
+    /**
+     * Returns the LSP range for the given Local variable.
+     *
+     * @param localVariable the java type.
+     * @param utils the JDT utilities.
+     * @return the LSP range for the given annotation.
+     * @throws JavaModelException
+     */
+    public static Range toNameRange(ILocalVariable localVariable, IJDTUtils utils) throws JavaModelException {
+        IOpenable openable = localVariable.getOpenable();
+        ISourceRange sourceRange = localVariable.getNameRange();
+        return utils.toRange(openable, sourceRange.getOffset(), sourceRange.getLength());
+    }
 }

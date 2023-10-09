@@ -20,16 +20,16 @@ import com.google.gson.annotations.SerializedName;
  */
 public enum SnippetContentType {
 
-	@SerializedName("class")
-	CLASS, //
+    @SerializedName("class")
+    CLASS, //
 
-	@SerializedName("method")
-	METHOD, //
+    @SerializedName("method")
+    METHOD, //
 
-	@SerializedName("field")
-	FIELD, //
+    @SerializedName("field")
+    FIELD, //
 
-	@SerializedName("method-annotation")
-	METHOD_ANNOTATION;
+    @SerializedName("method-annotation")
+    METHOD_ANNOTATION;
 
 }

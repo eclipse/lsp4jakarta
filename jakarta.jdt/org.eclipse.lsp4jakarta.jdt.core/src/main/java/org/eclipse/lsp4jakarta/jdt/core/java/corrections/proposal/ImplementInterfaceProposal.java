@@ -38,65 +38,65 @@ import org.eclipse.lsp4j.CodeActionKind;
 
 public class ImplementInterfaceProposal extends ASTRewriteCorrectionProposal {
 
-	private static final String TITLE_MESSAGE = "Let ''{0}'' implement ''{1}''";
+    private static final String TITLE_MESSAGE = "Let ''{0}'' implement ''{1}''";
 
-	private IBinding fBinding;
-	private CompilationUnit fAstRoot;
-	private String interfaceType;
+    private IBinding fBinding;
+    private CompilationUnit fAstRoot;
+    private String interfaceType;
 
-	public ImplementInterfaceProposal(String name, ICompilationUnit targetCU, ITypeBinding binding,
-			CompilationUnit astRoot,
-			String interfaceType, int relevance) {
-		super(name, CodeActionKind.QuickFix, targetCU, null, relevance); // $NON-NLS-1$
+    public ImplementInterfaceProposal(String name, ICompilationUnit targetCU, ITypeBinding binding,
+                                      CompilationUnit astRoot,
+                                      String interfaceType, int relevance) {
+        super(name, CodeActionKind.QuickFix, targetCU, null, relevance); // $NON-NLS-1$
 
-		Assert.isTrue(binding != null && Bindings.isDeclarationBinding(binding));
+        Assert.isTrue(binding != null && Bindings.isDeclarationBinding(binding));
 
-		fBinding = binding;
-		fAstRoot = astRoot;
-		this.interfaceType = interfaceType;
-	}
+        fBinding = binding;
+        fAstRoot = astRoot;
+        this.interfaceType = interfaceType;
+    }
 
-	public ImplementInterfaceProposal(ICompilationUnit targetCU, ITypeBinding binding, CompilationUnit astRoot,
-			String interfaceType, int relevance) {
-		super("", CodeActionKind.QuickFix, targetCU, null, relevance); //$NON-NLS-1$
+    public ImplementInterfaceProposal(ICompilationUnit targetCU, ITypeBinding binding, CompilationUnit astRoot,
+                                      String interfaceType, int relevance) {
+        super("", CodeActionKind.QuickFix, targetCU, null, relevance); //$NON-NLS-1$
 
-		Assert.isTrue(binding != null && Bindings.isDeclarationBinding(binding));
+        Assert.isTrue(binding != null && Bindings.isDeclarationBinding(binding));
 
-		fBinding = binding;
-		fAstRoot = astRoot;
-		this.interfaceType = interfaceType;
+        fBinding = binding;
+        fAstRoot = astRoot;
+        this.interfaceType = interfaceType;
 
-		String[] args = { BasicElementLabels.getJavaElementName(binding.getName()),
-				BasicElementLabels.getJavaElementName(interfaceType) };
-		setDisplayName(MessageFormat.format(TITLE_MESSAGE, args));
-	}
+        String[] args = { BasicElementLabels.getJavaElementName(binding.getName()),
+                          BasicElementLabels.getJavaElementName(interfaceType) };
+        setDisplayName(MessageFormat.format(TITLE_MESSAGE, args));
+    }
 
-	@Override
-	protected ASTRewrite getRewrite() throws CoreException {
-		ASTNode boundNode = fAstRoot.findDeclaringNode(fBinding);
-		ASTNode declNode = null;
-		CompilationUnit newRoot = fAstRoot;
-		if (boundNode != null) {
-			declNode = boundNode; // is same CU
-		} else {
-			newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
-			declNode = newRoot.findDeclaringNode(fBinding.getKey());
-		}
-		ImportRewrite imports = createImportRewrite(newRoot);
+    @Override
+    protected ASTRewrite getRewrite() throws CoreException {
+        ASTNode boundNode = fAstRoot.findDeclaringNode(fBinding);
+        ASTNode declNode = null;
+        CompilationUnit newRoot = fAstRoot;
+        if (boundNode != null) {
+            declNode = boundNode; // is same CU
+        } else {
+            newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
+            declNode = newRoot.findDeclaringNode(fBinding.getKey());
+        }
+        ImportRewrite imports = createImportRewrite(newRoot);
 
-		if (declNode instanceof TypeDeclaration) {
-			AST ast = declNode.getAST();
+        if (declNode instanceof TypeDeclaration) {
+            AST ast = declNode.getAST();
 
-			ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
-			String name = imports.addImport(interfaceType, importRewriteContext);
-			Type newInterface = ast.newSimpleType(ast.newName(name));
+            ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
+            String name = imports.addImport(interfaceType, importRewriteContext);
+            Type newInterface = ast.newSimpleType(ast.newName(name));
 
-			ASTRewrite rewrite = ASTRewrite.create(ast);
-			ListRewrite listRewrite = rewrite.getListRewrite(declNode, TypeDeclaration.SUPER_INTERFACE_TYPES_PROPERTY);
-			listRewrite.insertLast(newInterface, null);
-			return rewrite;
-		}
-		return null;
-	}
+            ASTRewrite rewrite = ASTRewrite.create(ast);
+            ListRewrite listRewrite = rewrite.getListRewrite(declNode, TypeDeclaration.SUPER_INTERFACE_TYPES_PROPERTY);
+            listRewrite.insertLast(newInterface, null);
+            return rewrite;
+        }
+        return null;
+    }
 
 }

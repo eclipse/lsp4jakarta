@@ -42,90 +42,89 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
  */
 public class ServletDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
-			throws CoreException {
-		String uri = context.getUri();
-		IJDTUtils utils = JDTUtilsLSImpl.getInstance();
-		ICompilationUnit unit = utils.resolveCompilationUnit(uri);
-		List<Diagnostic> diagnostics = new ArrayList<>();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) throws CoreException {
+        String uri = context.getUri();
+        IJDTUtils utils = JDTUtilsLSImpl.getInstance();
+        ICompilationUnit unit = utils.resolveCompilationUnit(uri);
+        List<Diagnostic> diagnostics = new ArrayList<>();
 
-		if (unit == null) {
-			return diagnostics;
-		}
-		IType[] alltypes;
-		IAnnotation[] allAnnotations;
+        if (unit == null) {
+            return diagnostics;
+        }
+        IType[] alltypes;
+        IAnnotation[] allAnnotations;
 
-		alltypes = unit.getAllTypes();
-		for (IType type : alltypes) {
-			allAnnotations = type.getAnnotations();
+        alltypes = unit.getAllTypes();
+        for (IType type : alltypes) {
+            allAnnotations = type.getAnnotations();
 
-			IAnnotation webServletAnnotation = null;
-			for (IAnnotation annotation : allAnnotations) {
-				if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(),
-						Constants.WEB_SERVLET_FQ_NAME)) {
-					webServletAnnotation = annotation;
-					break; // get the first one, the annotation is not repeatable
-				}
-			}
+            IAnnotation webServletAnnotation = null;
+            for (IAnnotation annotation : allAnnotations) {
+                if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(),
+                                                         Constants.WEB_SERVLET_FQ_NAME)) {
+                    webServletAnnotation = annotation;
+                    break; // get the first one, the annotation is not repeatable
+                }
+            }
 
-			if (webServletAnnotation != null) {
-				// check if the class extends HttpServlet
-				try {
-					int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, Constants.HTTP_SERVLET);
-					if (r == -1) {
-						Range range = PositionUtils.toNameRange(type, context.getUtils());
-						diagnostics.add(context.createDiagnostic(uri,
-								Messages.getMessage("WebServletMustExtend"), range,
-								Constants.DIAGNOSTIC_SOURCE, null,
-								ErrorCode.WebServletAnnotatedClassDoesNotExtendHttpServlet, DiagnosticSeverity.Error));
-					} else if (r == 0) { // unknown super type
-						Range range = PositionUtils.toNameRange(type, context.getUtils());
-						diagnostics.add(context.createDiagnostic(uri,
-								Messages.getMessage("WebServletMustExtend"), range,
-								Constants.DIAGNOSTIC_SOURCE, null,
-								ErrorCode.WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet,
-								DiagnosticSeverity.Warning));
-					}
-				} catch (CoreException e) {
-					JakartaCorePlugin.logException("Cannot check type hierarchy", e);
-				}
+            if (webServletAnnotation != null) {
+                // check if the class extends HttpServlet
+                try {
+                    int r = TypeHierarchyUtils.doesITypeHaveSuperType(type, Constants.HTTP_SERVLET);
+                    if (r == -1) {
+                        Range range = PositionUtils.toNameRange(type, context.getUtils());
+                        diagnostics.add(context.createDiagnostic(uri,
+                                                                 Messages.getMessage("WebServletMustExtend"), range,
+                                                                 Constants.DIAGNOSTIC_SOURCE, null,
+                                                                 ErrorCode.WebServletAnnotatedClassDoesNotExtendHttpServlet, DiagnosticSeverity.Error));
+                    } else if (r == 0) { // unknown super type
+                        Range range = PositionUtils.toNameRange(type, context.getUtils());
+                        diagnostics.add(context.createDiagnostic(uri,
+                                                                 Messages.getMessage("WebServletMustExtend"), range,
+                                                                 Constants.DIAGNOSTIC_SOURCE, null,
+                                                                 ErrorCode.WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet,
+                                                                 DiagnosticSeverity.Warning));
+                    }
+                } catch (CoreException e) {
+                    JakartaCorePlugin.logException("Cannot check type hierarchy", e);
+                }
 
-				/* URL pattern diagnostic check */
-				IMemberValuePair[] memberValues = webServletAnnotation.getMemberValuePairs();
+                /* URL pattern diagnostic check */
+                IMemberValuePair[] memberValues = webServletAnnotation.getMemberValuePairs();
 
-				boolean isUrlpatternSpecified = false;
-				boolean isValueSpecified = false;
-				for (IMemberValuePair mv : memberValues) {
-					if (mv.getMemberName().equals(Constants.URL_PATTERNS)) {
-						isUrlpatternSpecified = true;
-						continue;
-					}
-					if (mv.getMemberName().equals(Constants.VALUE)) {
-						isValueSpecified = true;
-					}
-				}
-				if (!isUrlpatternSpecified && !isValueSpecified) {
-					Range range = PositionUtils.toNameRange(webServletAnnotation, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("WebServletMustDefine"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.WebServletAnnotationMissingAttributes, DiagnosticSeverity.Error));
-				}
-				if (isUrlpatternSpecified && isValueSpecified) {
-					Range range = PositionUtils.toNameRange(webServletAnnotation, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("WebServletCannotHaveBoth"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.WebServletAnnotationAttributeConflict, DiagnosticSeverity.Error));
-				}
-			}
-		}
+                boolean isUrlpatternSpecified = false;
+                boolean isValueSpecified = false;
+                for (IMemberValuePair mv : memberValues) {
+                    if (mv.getMemberName().equals(Constants.URL_PATTERNS)) {
+                        isUrlpatternSpecified = true;
+                        continue;
+                    }
+                    if (mv.getMemberName().equals(Constants.VALUE)) {
+                        isValueSpecified = true;
+                    }
+                }
+                if (!isUrlpatternSpecified && !isValueSpecified) {
+                    Range range = PositionUtils.toNameRange(webServletAnnotation, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("WebServletMustDefine"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.WebServletAnnotationMissingAttributes, DiagnosticSeverity.Error));
+                }
+                if (isUrlpatternSpecified && isValueSpecified) {
+                    Range range = PositionUtils.toNameRange(webServletAnnotation, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("WebServletCannotHaveBoth"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.WebServletAnnotationAttributeConflict, DiagnosticSeverity.Error));
+                }
+            }
+        }
 
-		return diagnostics;
-	}
+        return diagnostics;
+    }
 
 }

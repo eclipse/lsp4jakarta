@@ -47,105 +47,104 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
  */
 public class DependencyInjectionDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
-			throws CoreException {
-		String uri = context.getUri();
-		IJDTUtils utils = JDTUtilsLSImpl.getInstance();
-		ICompilationUnit unit = utils.resolveCompilationUnit(uri);
-		List<Diagnostic> diagnostics = new ArrayList<>();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) throws CoreException {
+        String uri = context.getUri();
+        IJDTUtils utils = JDTUtilsLSImpl.getInstance();
+        ICompilationUnit unit = utils.resolveCompilationUnit(uri);
+        List<Diagnostic> diagnostics = new ArrayList<>();
 
-		if (unit == null) {
-			return diagnostics;
-		}
+        if (unit == null) {
+            return diagnostics;
+        }
 
-		IType[] alltypes;
+        IType[] alltypes;
 
-		alltypes = unit.getAllTypes();
-		for (IType type : alltypes) {
-			IField[] allFields = type.getFields();
-			for (IField field : allFields) {
-				if (Flags.isFinal(field.getFlags())
-						&& containsAnnotation(type, field.getAnnotations(), INJECT_FQ_NAME)) {
-					String msg = Messages.getMessage("InjectNoFinalField");
-					Range range = PositionUtils.toNameRange(field,
-							context.getUtils());
-					diagnostics.add(
-							context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
-									ErrorCode.InvalidInjectAnnotationOnFinalField,
-									DiagnosticSeverity.Error));
-				}
-			}
+        alltypes = unit.getAllTypes();
+        for (IType type : alltypes) {
+            IField[] allFields = type.getFields();
+            for (IField field : allFields) {
+                if (Flags.isFinal(field.getFlags())
+                    && containsAnnotation(type, field.getAnnotations(), INJECT_FQ_NAME)) {
+                    String msg = Messages.getMessage("InjectNoFinalField");
+                    Range range = PositionUtils.toNameRange(field,
+                                                            context.getUtils());
+                    diagnostics.add(
+                                    context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                             ErrorCode.InvalidInjectAnnotationOnFinalField,
+                                                             DiagnosticSeverity.Error));
+                }
+            }
 
-			List<IMethod> injectedConstructors = new ArrayList<IMethod>();
-			IMethod[] allMethods = type.getMethods();
-			for (IMethod method : allMethods) {
-				int methodFlag = method.getFlags();
-				boolean isFinal = Flags.isFinal(methodFlag);
-				boolean isAbstract = Flags.isAbstract(methodFlag);
-				boolean isStatic = Flags.isStatic(methodFlag);
-				boolean isGeneric = method.getTypeParameters().length != 0;
-				Range range = PositionUtils.toNameRange(method,
-						context.getUtils());
-				if (containsAnnotation(type, method.getAnnotations(), INJECT_FQ_NAME)) {
-					if (DiagnosticUtils.isConstructorMethod(method))
-						injectedConstructors.add(method);
-					if (isFinal) {
-						String msg = Messages.getMessage("InjectNoFinalMethod");
+            List<IMethod> injectedConstructors = new ArrayList<IMethod>();
+            IMethod[] allMethods = type.getMethods();
+            for (IMethod method : allMethods) {
+                int methodFlag = method.getFlags();
+                boolean isFinal = Flags.isFinal(methodFlag);
+                boolean isAbstract = Flags.isAbstract(methodFlag);
+                boolean isStatic = Flags.isStatic(methodFlag);
+                boolean isGeneric = method.getTypeParameters().length != 0;
+                Range range = PositionUtils.toNameRange(method,
+                                                        context.getUtils());
+                if (containsAnnotation(type, method.getAnnotations(), INJECT_FQ_NAME)) {
+                    if (DiagnosticUtils.isConstructorMethod(method))
+                        injectedConstructors.add(method);
+                    if (isFinal) {
+                        String msg = Messages.getMessage("InjectNoFinalMethod");
 
-						diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
-								ErrorCode.InvalidInjectAnnotationOnFinalMethod,
-								DiagnosticSeverity.Error));
-					}
-					if (isAbstract) {
-						String msg = Messages.getMessage("InjectNoAbstractMethod");
-						diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
-								ErrorCode.InvalidInjectAnnotationOnAbstractMethod,
-								DiagnosticSeverity.Error));
-					}
-					if (isStatic) {
-						String msg = Messages.getMessage("InjectNoStaticMethod");
-						diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
-								ErrorCode.InvalidInjectAnnotationOnStaticMethod,
-								DiagnosticSeverity.Error));
-					}
+                        diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                                 ErrorCode.InvalidInjectAnnotationOnFinalMethod,
+                                                                 DiagnosticSeverity.Error));
+                    }
+                    if (isAbstract) {
+                        String msg = Messages.getMessage("InjectNoAbstractMethod");
+                        diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                                 ErrorCode.InvalidInjectAnnotationOnAbstractMethod,
+                                                                 DiagnosticSeverity.Error));
+                    }
+                    if (isStatic) {
+                        String msg = Messages.getMessage("InjectNoStaticMethod");
+                        diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                                 ErrorCode.InvalidInjectAnnotationOnStaticMethod,
+                                                                 DiagnosticSeverity.Error));
+                    }
 
-					if (isGeneric) {
-						String msg = Messages.getMessage("InjectNoGenericMethod");
-						diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
-								ErrorCode.InvalidInjectAnnotationOnGenericMethod,
-								DiagnosticSeverity.Error));
-					}
-				}
-			}
+                    if (isGeneric) {
+                        String msg = Messages.getMessage("InjectNoGenericMethod");
+                        diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                                 ErrorCode.InvalidInjectAnnotationOnGenericMethod,
+                                                                 DiagnosticSeverity.Error));
+                    }
+                }
+            }
 
-			// if more than one 'inject' constructor, add diagnostic to all constructors
-			if (injectedConstructors.size() > 1) {
-				String msg = Messages.getMessage("InjectMoreThanOneConstructor");
-				for (IMethod method : injectedConstructors) {
-					Range range = PositionUtils.toNameRange(method,
-							context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
-							ErrorCode.InvalidInjectAnnotationOnMultipleConstructors,
-							DiagnosticSeverity.Error));
-				}
-			}
-		}
+            // if more than one 'inject' constructor, add diagnostic to all constructors
+            if (injectedConstructors.size() > 1) {
+                String msg = Messages.getMessage("InjectMoreThanOneConstructor");
+                for (IMethod method : injectedConstructors) {
+                    Range range = PositionUtils.toNameRange(method,
+                                                            context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                             ErrorCode.InvalidInjectAnnotationOnMultipleConstructors,
+                                                             DiagnosticSeverity.Error));
+                }
+            }
+        }
 
-		return diagnostics;
-	}
+        return diagnostics;
+    }
 
-	private boolean containsAnnotation(IType type, IAnnotation[] annotations, String annotationFQName) {
-		return Stream.of(annotations).anyMatch(annotation -> {
-			try {
-				return DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(), annotationFQName);
-			} catch (JavaModelException e) {
-				JakartaCorePlugin.logException("Cannot validate annotations", e);
-				return false;
-			}
-		});
-	}
+    private boolean containsAnnotation(IType type, IAnnotation[] annotations, String annotationFQName) {
+        return Stream.of(annotations).anyMatch(annotation -> {
+            try {
+                return DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(), annotationFQName);
+            } catch (JavaModelException e) {
+                JakartaCorePlugin.logException("Cannot validate annotations", e);
+                return false;
+            }
+        });
+    }
 }

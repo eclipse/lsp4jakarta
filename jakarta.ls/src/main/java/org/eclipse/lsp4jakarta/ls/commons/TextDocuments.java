@@ -29,100 +29,100 @@ import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments.JakartaTextDocument;
  */
 public class TextDocuments<T extends TextDocument> {
 
-	private final Map<String, T> documents;
+    private final Map<String, T> documents;
 
-	private boolean incremental = true; // default on
+    private boolean incremental = true; // default on
 
-	public TextDocuments() {
-		documents = new HashMap<>();
-	}
+    public TextDocuments() {
+        documents = new HashMap<>();
+    }
 
-	/**
-	 * Set the incremental support.
-	 *
-	 * @param incremental
-	 */
-	public void setIncremental(boolean incremental) {
-		this.incremental = incremental;
-		synchronized (documents) {
-			documents.values().forEach(document -> document.setIncremental(incremental));
-		}
-	}
+    /**
+     * Set the incremental support.
+     *
+     * @param incremental
+     */
+    public void setIncremental(boolean incremental) {
+        this.incremental = incremental;
+        synchronized (documents) {
+            documents.values().forEach(document -> document.setIncremental(incremental));
+        }
+    }
 
-	/**
-	 * Returns true if text document is managed in incremental mode and false
-	 * otherwise.
-	 *
-	 * @return true if text document is managed in incremental mode and false
-	 *         otherwise.
-	 */
-	public boolean isIncremental() {
-		return incremental;
-	}
+    /**
+     * Returns true if text document is managed in incremental mode and false
+     * otherwise.
+     *
+     * @return true if text document is managed in incremental mode and false
+     *         otherwise.
+     */
+    public boolean isIncremental() {
+        return incremental;
+    }
 
-	/**
-	 * Returns the document for the given URI. Returns undefined if the document is
-	 * not mananged by this instance.
-	 *
-	 * @param uri The text document's URI to retrieve.
-	 * @return the text document or `undefined`.
-	 */
-	public T get(String uri) {
-		synchronized (documents) {
-			return documents.get(uri);
-		}
-	}
+    /**
+     * Returns the document for the given URI. Returns undefined if the document is
+     * not mananged by this instance.
+     *
+     * @param uri The text document's URI to retrieve.
+     * @return the text document or `undefined`.
+     */
+    public T get(String uri) {
+        synchronized (documents) {
+            return documents.get(uri);
+        }
+    }
 
-	public T createDocument(TextDocumentItem document) {
-		TextDocument doc = new TextDocument(document);
-		doc.setIncremental(isIncremental());
-		return (T) doc;
-	}
+    public T createDocument(TextDocumentItem document) {
+        TextDocument doc = new TextDocument(document);
+        doc.setIncremental(isIncremental());
+        return (T) doc;
+    }
 
-	public T onDidChangeTextDocument(DidChangeTextDocumentParams params) {
-		synchronized (documents) {
-			T document = getDocument(params.getTextDocument());
-			if (document != null) {
-				document.setVersion(params.getTextDocument().getVersion());
-				document.update(params.getContentChanges());
-				return document;
-			}
-		}
-		return null;
-	}
+    public T onDidChangeTextDocument(DidChangeTextDocumentParams params) {
+        synchronized (documents) {
+            T document = getDocument(params.getTextDocument());
+            if (document != null) {
+                document.setVersion(params.getTextDocument().getVersion());
+                document.update(params.getContentChanges());
+                return document;
+            }
+        }
+        return null;
+    }
 
-	public T onDidOpenTextDocument(DidOpenTextDocumentParams params) {
-		TextDocumentItem item = params.getTextDocument();
-		synchronized (documents) {
-			T document = createDocument(item);
-			documents.put(document.getUri(), document);
-			return document;
-		}
-	}
+    public T onDidOpenTextDocument(DidOpenTextDocumentParams params) {
+        TextDocumentItem item = params.getTextDocument();
+        synchronized (documents) {
+            T document = createDocument(item);
+            documents.put(document.getUri(), document);
+            return document;
+        }
+    }
 
-	public T onDidCloseTextDocument(DidCloseTextDocumentParams params) {
-		synchronized (documents) {
-			T document = getDocument(params.getTextDocument());
-			if (document != null) {
-				documents.remove(params.getTextDocument().getUri());
-			}
-			return document;
-		}
-	}
+    public T onDidCloseTextDocument(DidCloseTextDocumentParams params) {
+        synchronized (documents) {
+            T document = getDocument(params.getTextDocument());
+            if (document != null) {
+                documents.remove(params.getTextDocument().getUri());
+            }
+            return document;
+        }
+    }
 
-	private T getDocument(TextDocumentIdentifier identifier) {
-		return documents.get(identifier.getUri());
-	}
+    private T getDocument(TextDocumentIdentifier identifier) {
+        return documents.get(identifier.getUri());
+    }
 
-	/**
-	 * Returns the all opened documents.
-	 *
-	 * @return the all opened documents.
-	 */
-	public Collection<T> all() {
-		synchronized (documents) {
-			return documents.values();
-		}
-	}
+    /**
+     * Returns the all opened documents.
+     *
+     * @return the all opened documents.
+     */
+    public Collection<T> all() {
+        synchronized (documents) {
+            return documents.values();
+        }
+    }
 
 }

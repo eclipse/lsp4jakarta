@@ -38,42 +38,41 @@ import org.junit.Test;
 
 public class MultipleConstructorInjectTest extends BaseJakartaTest {
 
-	protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
-	@Test
-	public void multipleInject() throws Exception {
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path("src/main/java/io/openliberty/sample/jakarta/di/MultipleConstructorWithInject.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    public void multipleInject() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/di/MultipleConstructorWithInject.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		// test expected diagnostic
-		Diagnostic d1 = d(22, 11, 40,
-				"The @Inject annotation must not define more than one constructor.",
-				DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
+        // test expected diagnostic
+        Diagnostic d1 = d(22, 11, 40,
+                          "The @Inject annotation must not define more than one constructor.",
+                          DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
 
-		Diagnostic d2 = d(26, 11, 40,
-				"The @Inject annotation must not define more than one constructor.",
-				DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
+        Diagnostic d2 = d(26, 11, 40,
+                          "The @Inject annotation must not define more than one constructor.",
+                          DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
 
-		Diagnostic d3 = d(31, 14, 43,
-				"The @Inject annotation must not define more than one constructor.",
-				DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
+        Diagnostic d3 = d(31, 14, 43,
+                          "The @Inject annotation must not define more than one constructor.",
+                          DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
 
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2, d3);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2, d3);
 
-		// test expected quick-fix
-		JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
-		TextEdit te = te(21, 4, 22, 4, "");
-		CodeAction ca = ca(uri, "Remove @Inject", d1, te);
-		assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca);
+        // test expected quick-fix
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
+        TextEdit te = te(21, 4, 22, 4, "");
+        CodeAction ca = ca(uri, "Remove @Inject", d1, te);
+        assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca);
 
-		JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d3);
-		TextEdit te2 = te(30, 4, 31, 4, "");
-		CodeAction ca2 = ca(uri, "Remove @Inject", d3, te2);
-		assertJavaCodeAction(codeActionParams2, IJDT_UTILS, ca2);
-	}
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d3);
+        TextEdit te2 = te(30, 4, 31, 4, "");
+        CodeAction ca2 = ca(uri, "Remove @Inject", d3, te2);
+        assertJavaCodeAction(codeActionParams2, IJDT_UTILS, ca2);
+    }
 }

@@ -16,25 +16,26 @@ package org.eclipse.lsp4jakarta.ls.commons.snippets;
 
 /**
  * Loader used to load snippets in a given registry for a language id
- * Modified from https://github.com/eclipse/lsp4mp/blob/master/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/commons/snippets/ISnippetRegistryLoader.java
- * 
+ * Modified from
+ * https://github.com/eclipse/lsp4mp/blob/master/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/ls/commons/snippets/ISnippetRegistryLoader.java
+ *
  * @author Ankush Sharma, credit to Angelo ZERR
  */
 public interface ISnippetRegistryLoader {
     /**
      * Register a given snippet in the register
-     * 
+     *
      * @param registry <SnippetRegistry>
      * @throws Exception
      */
     void load(SnippetRegistry registry) throws Exception;
-    
-	/**
-	 * Returns the language id and null otherwise.
-	 *
-	 * @return the language id and null otherwise.
-	 */
-	default String getLanguageId() {
-		return null;
-	}
+
+    /**
+     * Returns the language id and null otherwise.
+     *
+     * @return the language id and null otherwise.
+     */
+    default String getLanguageId() {
+        return null;
+    }
 }

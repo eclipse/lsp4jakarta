@@ -23,34 +23,34 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
  */
 public class InserMapKeyJoinColumAnnotationAttributesQuickFix extends InsertAnnotationAttributesQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public InserMapKeyJoinColumAnnotationAttributesQuickFix() {
-		super("jakarta.persistence.MapKeyJoinColumn", "name", "referencedColumnName");
-	}
+    /**
+     * Constructor.
+     */
+    public InserMapKeyJoinColumAnnotationAttributesQuickFix() {
+        super("jakarta.persistence.MapKeyJoinColumn", "name", "referencedColumnName");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return InserMapKeyJoinColumAnnotationAttributesQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return InserMapKeyJoinColumAnnotationAttributesQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.PersistenceInsertAttributesToMKJCAnnotation;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.PersistenceInsertAttributesToMKJCAnnotation;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getLabel(String annotation, String[] attributes) {
-		return Messages.getMessage("InsertTheMissingAttributes");
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected String getLabel(String annotation, String[] attributes) {
+        return Messages.getMessage("InsertTheMissingAttributes");
+    }
 }

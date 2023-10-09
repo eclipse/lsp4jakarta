@@ -20,7 +20,7 @@ import org.eclipse.lsp4jakarta.ls.commons.snippets.SnippetRegistry;
 
 /**
  * Loads in JakartaEE Specific Snippets
- * 
+ *
  * @author Ankush Sharma
  */
 public class JakartaEESnippetRegistryLoader implements ISnippetRegistryLoader {
@@ -30,26 +30,26 @@ public class JakartaEESnippetRegistryLoader implements ISnippetRegistryLoader {
     public void load(SnippetRegistry registry) throws Exception {
         LOGGER.info("Loading snippets into registry...");
         registry.registerSnippets(
-                JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("restfulWs.json"),
-                SnippetContextForJava.TYPE_ADAPTER);
+                                  JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("restfulWs.json"),
+                                  SnippetContextForJava.TYPE_ADAPTER);
         registry.registerSnippets(
-                JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("servlet.json"),
-                SnippetContextForJava.TYPE_ADAPTER);
+                                  JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("servlet.json"),
+                                  SnippetContextForJava.TYPE_ADAPTER);
         registry.registerSnippets(
-                JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("persistence.json"),
-                SnippetContextForJava.TYPE_ADAPTER);
+                                  JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("persistence.json"),
+                                  SnippetContextForJava.TYPE_ADAPTER);
         registry.registerSnippets(
-                JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("bean-validation.json"),
-                SnippetContextForJava.TYPE_ADAPTER);
+                                  JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("bean-validation.json"),
+                                  SnippetContextForJava.TYPE_ADAPTER);
         registry.registerSnippets(
-                JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("transactions.json"),
-                SnippetContextForJava.TYPE_ADAPTER);
+                                  JakartaEESnippetRegistryLoader.class.getClassLoader().getResourceAsStream("transactions.json"),
+                                  SnippetContextForJava.TYPE_ADAPTER);
 
     }
-    
-	@Override
-	public String getLanguageId() {
-		return LanguageId.java.name();
-	}
+
+    @Override
+    public String getLanguageId() {
+        return LanguageId.java.name();
+    }
 
 }

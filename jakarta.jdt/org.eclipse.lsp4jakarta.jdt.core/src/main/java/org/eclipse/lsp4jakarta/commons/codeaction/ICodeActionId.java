@@ -18,11 +18,11 @@ package org.eclipse.lsp4jakarta.commons.codeaction;
  */
 public interface ICodeActionId {
 
-	/**
-	 * Returns the id of this code action as a string.
-	 *
-	 * @return the id of this code action as a string
-	 */
-	String getId();
+    /**
+     * Returns the id of this code action as a string.
+     *
+     * @return the id of this code action as a string
+     */
+    String getId();
 
 }

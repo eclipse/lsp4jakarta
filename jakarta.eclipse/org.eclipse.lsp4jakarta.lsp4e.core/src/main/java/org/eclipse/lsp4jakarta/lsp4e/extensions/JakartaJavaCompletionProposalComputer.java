@@ -38,15 +38,14 @@ public class JakartaJavaCompletionProposalComputer implements IJavaCompletionPro
     }
 
     @Override
-    public void sessionStarted() {
-    }
+    public void sessionStarted() {}
 
     @Override
     public List<ICompletionProposal> computeCompletionProposals(ContentAssistInvocationContext context,
-            IProgressMonitor monitor) {
+                                                                IProgressMonitor monitor) {
         CompletableFuture<ICompletionProposal[]> future = CompletableFuture.supplyAsync(() -> {
             return lsContentAssistProcessor.computeCompletionProposals(context.getViewer(),
-                    context.getInvocationOffset());
+                                                                       context.getInvocationOffset());
         });
         try {
             return Arrays.asList(future.get(TIMEOUT_LENGTH, TIMEOUT_UNIT));
@@ -58,9 +57,8 @@ public class JakartaJavaCompletionProposalComputer implements IJavaCompletionPro
 
     @Override
     public List<IContextInformation> computeContextInformation(ContentAssistInvocationContext context,
-            IProgressMonitor monitor) {
-        IContextInformation[] contextInformation = lsContentAssistProcessor
-                .computeContextInformation(context.getViewer(), context.getInvocationOffset());
+                                                               IProgressMonitor monitor) {
+        IContextInformation[] contextInformation = lsContentAssistProcessor.computeContextInformation(context.getViewer(), context.getInvocationOffset());
         return Arrays.asList(contextInformation);
     }
 

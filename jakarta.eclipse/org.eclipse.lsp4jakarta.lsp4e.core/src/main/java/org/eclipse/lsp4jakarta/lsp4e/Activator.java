@@ -29,14 +29,13 @@ public class Activator extends AbstractUIPlugin {
 
     // The shared instance
     private static Activator plugin;
- 
+
     public boolean started;
 
     /**
      * The constructor
      */
-    public Activator() {
-    }
+    public Activator() {}
 
     @Override
     public void start(BundleContext context) throws Exception {

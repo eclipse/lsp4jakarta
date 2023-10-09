@@ -48,370 +48,361 @@ import com.google.gson.Gson;
  */
 public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
-	@Override
-	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
-			throws CoreException {
-		IJDTUtils utils = JDTUtilsLSImpl.getInstance();
-		String uri = context.getUri();
-		ICompilationUnit unit = utils.resolveCompilationUnit(uri);
-		List<Diagnostic> diagnostics = new ArrayList<>();
+    @Override
+    public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) throws CoreException {
+        IJDTUtils utils = JDTUtilsLSImpl.getInstance();
+        String uri = context.getUri();
+        ICompilationUnit unit = utils.resolveCompilationUnit(uri);
+        List<Diagnostic> diagnostics = new ArrayList<>();
 
-		if (unit == null) {
-			return diagnostics;
-		}
+        if (unit == null) {
+            return diagnostics;
+        }
 
-		IType[] types = unit.getAllTypes();
-		String[] scopeFQNames = Constants.SCOPE_FQ_NAMES.toArray(String[]::new);
-		for (IType type : types) {
-			List<String> managedBeanAnnotations = DiagnosticUtils.getMatchedJavaElementNames(type,
-					Stream.of(type.getAnnotations()).map(annotation -> annotation.getElementName())
-							.toArray(String[]::new),
-					scopeFQNames);
-			boolean isManagedBean = managedBeanAnnotations.size() > 0;
+        IType[] types = unit.getAllTypes();
+        String[] scopeFQNames = Constants.SCOPE_FQ_NAMES.toArray(String[]::new);
+        for (IType type : types) {
+            List<String> managedBeanAnnotations = DiagnosticUtils.getMatchedJavaElementNames(type,
+                                                                                             Stream.of(type.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new),
+                                                                                             scopeFQNames);
+            boolean isManagedBean = managedBeanAnnotations.size() > 0;
 
-			if (managedBeanAnnotations.size() > 1) {
-				// convert to simple name
-				List<String> diagnosticData = managedBeanAnnotations.stream()
-						.map(annotation -> DiagnosticUtils.getSimpleName(annotation)).collect(Collectors.toList());
+            if (managedBeanAnnotations.size() > 1) {
+                // convert to simple name
+                List<String> diagnosticData = managedBeanAnnotations.stream().map(annotation -> DiagnosticUtils.getSimpleName(annotation)).collect(Collectors.toList());
 
-				Range range = PositionUtils.toNameRange(type, context.getUtils());
-				diagnostics.add(context.createDiagnostic(uri,
-						Messages.getMessage("ScopeTypeAnnotationsManagedBean"), range,
-						Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
-						ErrorCode.InvalidNumberOfScopedAnnotationsByManagedBean, DiagnosticSeverity.Error));
-			}
+                Range range = PositionUtils.toNameRange(type, context.getUtils());
+                diagnostics.add(context.createDiagnostic(uri,
+                                                         Messages.getMessage("ScopeTypeAnnotationsManagedBean"), range,
+                                                         Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
+                                                         ErrorCode.InvalidNumberOfScopedAnnotationsByManagedBean, DiagnosticSeverity.Error));
+            }
 
-			String[] injectAnnotations = { Constants.PRODUCES_FQ_NAME, Constants.INJECT_FQ_NAME };
-			IField fields[] = type.getFields();
-			for (IField field : fields) {
-				int fieldFlags = field.getFlags();
-				String[] annotationNames = Stream.of(field.getAnnotations())
-						.map(annotation -> annotation.getElementName()).toArray(String[]::new);
-				List<String> fieldScopes = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
-						scopeFQNames);
+            String[] injectAnnotations = { Constants.PRODUCES_FQ_NAME, Constants.INJECT_FQ_NAME };
+            IField fields[] = type.getFields();
+            for (IField field : fields) {
+                int fieldFlags = field.getFlags();
+                String[] annotationNames = Stream.of(field.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new);
+                List<String> fieldScopes = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
+                                                                                      scopeFQNames);
 
-				// If a managed bean has a non-static public field, it must have
-				// scope @Dependent. If a managed bean with a non-static public field declares
-				// any scope other than @Dependent, the container automatically detects the
-				// problem and treats it as a definition error.
-				//
-				// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#managed_beans
-				if (isManagedBean	&& Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
-					&& (fieldScopes.size() != 1 || !fieldScopes.get(0).equals(Constants.DEPENDENT_FQ_NAME))) {
-					Range range = PositionUtils.toNameRange(field, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("ManagedBeanWithNonStaticPublicField"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.InvalidManagedBeanWithNonStaticPublicField, DiagnosticSeverity.Error));
-				}
+                // If a managed bean has a non-static public field, it must have
+                // scope @Dependent. If a managed bean with a non-static public field declares
+                // any scope other than @Dependent, the container automatically detects the
+                // problem and treats it as a definition error.
+                //
+                // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#managed_beans
+                if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
+                    && (fieldScopes.size() != 1 || !fieldScopes.get(0).equals(Constants.DEPENDENT_FQ_NAME))) {
+                    Range range = PositionUtils.toNameRange(field, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("ManagedBeanWithNonStaticPublicField"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.InvalidManagedBeanWithNonStaticPublicField, DiagnosticSeverity.Error));
+                }
 
-				// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
-				// A bean class or producer method or field may specify at most one scope type
-				// annotation. If a bean class or producer method or field specifies multiple
-				// scope type annotations, the container automatically detects the problem and
-				// treats it as a definition error.
-				//
-				// Here we only look at the fields.
-				List<String> fieldInjects = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
-						injectAnnotations);
-				boolean isProducerField = false, isInjectField = false;
-				for (String annotation : fieldInjects) {
-					if (Constants.PRODUCES_FQ_NAME.equals(annotation))
-						isProducerField = true;
-					else if (Constants.INJECT_FQ_NAME.equals(annotation))
-						isInjectField = true;
-				}
-				if (isProducerField && fieldScopes.size() > 1) {
-					List<String> diagnosticData = fieldScopes.stream()
-							.map(annotation -> DiagnosticUtils.getSimpleName(annotation)).collect(Collectors.toList()); // convert
-																														// to
-																														// simple
-																														// name
-					diagnosticData.add(Constants.PRODUCES);
-					Range range = PositionUtils.toNameRange(field, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("ScopeTypeAnnotationsProducerField"), range,
-							Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
-							ErrorCode.InvalidNumberOfScopeAnnotationsByProducerField, DiagnosticSeverity.Error));
-				}
+                // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
+                // A bean class or producer method or field may specify at most one scope type
+                // annotation. If a bean class or producer method or field specifies multiple
+                // scope type annotations, the container automatically detects the problem and
+                // treats it as a definition error.
+                //
+                // Here we only look at the fields.
+                List<String> fieldInjects = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
+                                                                                       injectAnnotations);
+                boolean isProducerField = false, isInjectField = false;
+                for (String annotation : fieldInjects) {
+                    if (Constants.PRODUCES_FQ_NAME.equals(annotation))
+                        isProducerField = true;
+                    else if (Constants.INJECT_FQ_NAME.equals(annotation))
+                        isInjectField = true;
+                }
+                if (isProducerField && fieldScopes.size() > 1) {
+                    List<String> diagnosticData = fieldScopes.stream().map(annotation -> DiagnosticUtils.getSimpleName(annotation)).collect(Collectors.toList()); // convert
+                                                                                                                                                                  // to
+                                                                                                                                                                  // simple
+                                                                                                                                                                  // name
+                    diagnosticData.add(Constants.PRODUCES);
+                    Range range = PositionUtils.toNameRange(field, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("ScopeTypeAnnotationsProducerField"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
+                                                             ErrorCode.InvalidNumberOfScopeAnnotationsByProducerField, DiagnosticSeverity.Error));
+                }
 
-				if (isProducerField && isInjectField) {
+                if (isProducerField && isInjectField) {
 
-					// Produces and Inject Annotations Checks:
-					//
-					// go through each field and method to make sure @Produces and @Inject are not
-					// used together
-					//
-					// see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					// declaring_producer_field
-					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					// declaring_producer_method
-					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					// declaring_injected_field
-					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					// declaring_initializer
-					//
-					// A single field cannot have the same
-					Range range = PositionUtils.toNameRange(field, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("ManagedBeanProducesAndInjectField"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.InvalidFieldWithProducesAndInjectAnnotations, DiagnosticSeverity.Error));
-				}
+                    // Produces and Inject Annotations Checks:
+                    //
+                    // go through each field and method to make sure @Produces and @Inject are not
+                    // used together
+                    //
+                    // see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                    // declaring_producer_field
+                    // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                    // declaring_producer_method
+                    // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                    // declaring_injected_field
+                    // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                    // declaring_initializer
+                    //
+                    // A single field cannot have the same
+                    Range range = PositionUtils.toNameRange(field, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("ManagedBeanProducesAndInjectField"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.InvalidFieldWithProducesAndInjectAnnotations, DiagnosticSeverity.Error));
+                }
 
-			}
+            }
 
-			IMethod[] methods = type.getMethods();
-			List<IMethod> constructorMethods = new ArrayList<IMethod>();
-			for (IMethod method : methods) {
+            IMethod[] methods = type.getMethods();
+            List<IMethod> constructorMethods = new ArrayList<IMethod>();
+            for (IMethod method : methods) {
 
-				// Find all methods on the type that are constructors.
-				if (DiagnosticUtils.isConstructorMethod(method))
-					constructorMethods.add(method);
+                // Find all methods on the type that are constructors.
+                if (DiagnosticUtils.isConstructorMethod(method))
+                    constructorMethods.add(method);
 
-				// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
-				// A bean class or producer method or field may specify at most one scope type
-				// annotation. If a bean class or producer method or field specifies multiple
-				// scope type annotations, the container automatically detects the problem and
-				// treats it as a definition error.
-				//
-				// Here we only look at the methods.
-				String[] annotationNames = Stream.of(method.getAnnotations())
-						.map(annotation -> annotation.getElementName()).toArray(String[]::new);
-				List<String> methodScopes = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
-						scopeFQNames);
-				List<String> methodInjects = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
-						injectAnnotations);
-				boolean isProducerMethod = false, isInjectMethod = false;
-				for (String annotation : methodInjects) {
-					if (Constants.PRODUCES_FQ_NAME.equals(annotation))
-						isProducerMethod = true;
-					else if (Constants.INJECT_FQ_NAME.equals(annotation))
-						isInjectMethod = true;
-				}
+                // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
+                // A bean class or producer method or field may specify at most one scope type
+                // annotation. If a bean class or producer method or field specifies multiple
+                // scope type annotations, the container automatically detects the problem and
+                // treats it as a definition error.
+                //
+                // Here we only look at the methods.
+                String[] annotationNames = Stream.of(method.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new);
+                List<String> methodScopes = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
+                                                                                       scopeFQNames);
+                List<String> methodInjects = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
+                                                                                        injectAnnotations);
+                boolean isProducerMethod = false, isInjectMethod = false;
+                for (String annotation : methodInjects) {
+                    if (Constants.PRODUCES_FQ_NAME.equals(annotation))
+                        isProducerMethod = true;
+                    else if (Constants.INJECT_FQ_NAME.equals(annotation))
+                        isInjectMethod = true;
+                }
 
-				if (isProducerMethod && methodScopes.size() > 1) {
-					List<String> diagnosticData = methodScopes.stream()
-							.map(annotation -> DiagnosticUtils.getSimpleName(annotation)).collect(Collectors.toList()); // convert
-																														// to
-																														// simple
-																														// name
-					diagnosticData.add(Constants.PRODUCES);
-					Range range = PositionUtils.toNameRange(method, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("ScopeTypeAnnotationsProducerMethod"), range,
-							Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
-							ErrorCode.InvalidNumberOfScopeAnnotationsByProducerMethod, DiagnosticSeverity.Error));
-				}
+                if (isProducerMethod && methodScopes.size() > 1) {
+                    List<String> diagnosticData = methodScopes.stream().map(annotation -> DiagnosticUtils.getSimpleName(annotation)).collect(Collectors.toList()); // convert
+                                                                                                                                                                   // to
+                                                                                                                                                                   // simple
+                                                                                                                                                                   // name
+                    diagnosticData.add(Constants.PRODUCES);
+                    Range range = PositionUtils.toNameRange(method, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("ScopeTypeAnnotationsProducerMethod"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(diagnosticData)),
+                                                             ErrorCode.InvalidNumberOfScopeAnnotationsByProducerMethod, DiagnosticSeverity.Error));
+                }
 
-				if (isProducerMethod && isInjectMethod) {
+                if (isProducerMethod && isInjectMethod) {
 
-					// Produces and Inject Annotations Checks:
-					//
-					// go through each field and method to make sure @Produces and @Inject are not
-					// used together
-					//
-					// see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					// declaring_producer_field
-					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					// declaring_producer_method
-					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					// declaring_injected_field
-					// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-					// declaring_initializer
-					//
-					// A single method cannot have the same
-					Range range = PositionUtils.toNameRange(method, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("ManagedBeanProducesAndInjectMethod"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.InvalidMethodWithProducesAndInjectAnnotations, DiagnosticSeverity.Error));
-				}
+                    // Produces and Inject Annotations Checks:
+                    //
+                    // go through each field and method to make sure @Produces and @Inject are not
+                    // used together
+                    //
+                    // see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                    // declaring_producer_field
+                    // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                    // declaring_producer_method
+                    // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                    // declaring_injected_field
+                    // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                    // declaring_initializer
+                    //
+                    // A single method cannot have the same
+                    Range range = PositionUtils.toNameRange(method, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("ManagedBeanProducesAndInjectMethod"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.InvalidMethodWithProducesAndInjectAnnotations, DiagnosticSeverity.Error));
+                }
 
-			}
+            }
 
-			if (isManagedBean && constructorMethods.size() > 0) {
-				// If the managed bean does not have a constructor that takes no parameters,
-				// it must have a constructor annotated @Inject. No additional special
-				// annotations are required.
+            if (isManagedBean && constructorMethods.size() > 0) {
+                // If the managed bean does not have a constructor that takes no parameters,
+                // it must have a constructor annotated @Inject. No additional special
+                // annotations are required.
 
-				// If there are no constructor methods, there is an implicit empty constructor
-				// generated by the compiler.
-				List<IMethod> methodsNeedingDiagnostics = new ArrayList<IMethod>();
-				for (IMethod m : constructorMethods) {
-					if (m.getNumberOfParameters() == 0) {
-						methodsNeedingDiagnostics.clear();
-						break;
-					}
-					IAnnotation[] annotations = m.getAnnotations();
-					boolean hasParameterizedInjectConstructor = false;
-					// look up '@Inject' annotation
-					for (IAnnotation annotation : annotations) {
-						if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(),
-								Constants.INJECT_FQ_NAME)) {
-							hasParameterizedInjectConstructor = true;
-							break;
-						}
-					}
-					if (hasParameterizedInjectConstructor) {
-						methodsNeedingDiagnostics.clear();
-						break;
-					} else
-						methodsNeedingDiagnostics.add(m);
-				}
+                // If there are no constructor methods, there is an implicit empty constructor
+                // generated by the compiler.
+                List<IMethod> methodsNeedingDiagnostics = new ArrayList<IMethod>();
+                for (IMethod m : constructorMethods) {
+                    if (m.getNumberOfParameters() == 0) {
+                        methodsNeedingDiagnostics.clear();
+                        break;
+                    }
+                    IAnnotation[] annotations = m.getAnnotations();
+                    boolean hasParameterizedInjectConstructor = false;
+                    // look up '@Inject' annotation
+                    for (IAnnotation annotation : annotations) {
+                        if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(),
+                                                                 Constants.INJECT_FQ_NAME)) {
+                            hasParameterizedInjectConstructor = true;
+                            break;
+                        }
+                    }
+                    if (hasParameterizedInjectConstructor) {
+                        methodsNeedingDiagnostics.clear();
+                        break;
+                    } else
+                        methodsNeedingDiagnostics.add(m);
+                }
 
-				// Deliver a diagnostic on all parameterized constructors that they must add an
-				// @Inject annotation
-				for (IMethod m : methodsNeedingDiagnostics) {
-					Range range = PositionUtils.toNameRange(m, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("ManagedBeanConstructorWithParameters"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.InvalidManagedBeanWithInvalidConstructor, DiagnosticSeverity.Error));
-				}
-			}
+                // Deliver a diagnostic on all parameterized constructors that they must add an
+                // @Inject annotation
+                for (IMethod m : methodsNeedingDiagnostics) {
+                    Range range = PositionUtils.toNameRange(m, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("ManagedBeanConstructorWithParameters"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.InvalidManagedBeanWithInvalidConstructor, DiagnosticSeverity.Error));
+                }
+            }
 
-			// If a managed bean class is of generic type, it must be annotated
-			// with @Dependent
-			if (isManagedBean) {
-				boolean isClassGeneric = type.getTypeParameters().length != 0;
-				boolean isDependent = managedBeanAnnotations.stream()
-						.anyMatch(annotation -> Constants.DEPENDENT_FQ_NAME.equals(annotation));
+            // If a managed bean class is of generic type, it must be annotated
+            // with @Dependent
+            if (isManagedBean) {
+                boolean isClassGeneric = type.getTypeParameters().length != 0;
+                boolean isDependent = managedBeanAnnotations.stream().anyMatch(annotation -> Constants.DEPENDENT_FQ_NAME.equals(annotation));
 
-				if (isClassGeneric && !isDependent) {
-					Range range = PositionUtils.toNameRange(type, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("ManagedBeanGenericType"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.InvalidGenericManagedBeanClassWithNoDependentScope, DiagnosticSeverity.Error));
-				}
-			}
+                if (isClassGeneric && !isDependent) {
+                    Range range = PositionUtils.toNameRange(type, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("ManagedBeanGenericType"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.InvalidGenericManagedBeanClassWithNoDependentScope, DiagnosticSeverity.Error));
+                }
+            }
 
-			// Inject and Disposes, Observes, ObservesAsync Annotations:
-			//
-			// go through each method to make sure @Inject
-			// and @Disposes, @Observes, @ObservesAsync are not used together
-			//
-			// see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-			// declaring_bean_constructor
-			// https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-			// declaring_initializer
+            // Inject and Disposes, Observes, ObservesAsync Annotations:
+            //
+            // go through each method to make sure @Inject
+            // and @Disposes, @Observes, @ObservesAsync are not used together
+            //
+            // see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+            // declaring_bean_constructor
+            // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+            // declaring_initializer
 
-			invalidParamsCheck(context, uri, unit, diagnostics, type, Constants.INJECT_FQ_NAME);
+            invalidParamsCheck(context, uri, unit, diagnostics, type, Constants.INJECT_FQ_NAME);
 
-			if (isManagedBean) {
+            if (isManagedBean) {
 
-				// Produces and Disposes, Observes, ObservesAsync Annotations:
-				//
-				// go through each method to make sure @Produces
-				// and @Disposes, @Observes, @ObservesAsync are not used together
-				//
-				// see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
-				// declaring_producer_method
-				//
-				// note:
-				// we need to check for bean defining annotations first to make sure the
-				// managed bean is discovered.
-				invalidParamsCheck(context, uri, unit, diagnostics, type, Constants.PRODUCES_FQ_NAME);
+                // Produces and Disposes, Observes, ObservesAsync Annotations:
+                //
+                // go through each method to make sure @Produces
+                // and @Disposes, @Observes, @ObservesAsync are not used together
+                //
+                // see: https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#
+                // declaring_producer_method
+                //
+                // note:
+                // we need to check for bean defining annotations first to make sure the
+                // managed bean is discovered.
+                invalidParamsCheck(context, uri, unit, diagnostics, type, Constants.PRODUCES_FQ_NAME);
 
-				for (IMethod method : methods) {
-					int numDisposes = 0;
-					Set<String> invalidAnnotations = new TreeSet<>();
-					ILocalVariable[] params = method.getParameters();
+                for (IMethod method : methods) {
+                    int numDisposes = 0;
+                    Set<String> invalidAnnotations = new TreeSet<>();
+                    ILocalVariable[] params = method.getParameters();
 
-					for (ILocalVariable param : params) {
-						IAnnotation[] annotations = param.getAnnotations();
-						for (IAnnotation annotation : annotations) {
-							String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
-									annotation.getElementName(),
-									Constants.INVALID_INJECT_PARAMS_FQ);
-							if (Constants.DISPOSES_FQ_NAME.equals(matchedAnnotation)) {
-								numDisposes++;
-							} else if (Constants.OBSERVES_FQ_NAME.equals(matchedAnnotation)
-										|| Constants.OBSERVES_ASYNC_FQ_NAME.equals(matchedAnnotation)) {
-								invalidAnnotations.add("@" + annotation.getElementName());
-							}
-						}
-					}
+                    for (ILocalVariable param : params) {
+                        IAnnotation[] annotations = param.getAnnotations();
+                        for (IAnnotation annotation : annotations) {
+                            String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
+                                                                                                 annotation.getElementName(),
+                                                                                                 Constants.INVALID_INJECT_PARAMS_FQ);
+                            if (Constants.DISPOSES_FQ_NAME.equals(matchedAnnotation)) {
+                                numDisposes++;
+                            } else if (Constants.OBSERVES_FQ_NAME.equals(matchedAnnotation)
+                                       || Constants.OBSERVES_ASYNC_FQ_NAME.equals(matchedAnnotation)) {
+                                invalidAnnotations.add("@" + annotation.getElementName());
+                            }
+                        }
+                    }
 
-					if (numDisposes == 0)
-						continue;
-					if (numDisposes > 1) {
-						Range range = PositionUtils.toNameRange(method, context.getUtils());
-						diagnostics.add(context.createDiagnostic(uri,
-								Messages.getMessage("ManagedBeanDisposeOneParameter"), range,
-								Constants.DIAGNOSTIC_SOURCE, null,
-								ErrorCode.InvalidDisposesAnnotationOnMultipleMethodParams, DiagnosticSeverity.Error));
-					}
+                    if (numDisposes == 0)
+                        continue;
+                    if (numDisposes > 1) {
+                        Range range = PositionUtils.toNameRange(method, context.getUtils());
+                        diagnostics.add(context.createDiagnostic(uri,
+                                                                 Messages.getMessage("ManagedBeanDisposeOneParameter"), range,
+                                                                 Constants.DIAGNOSTIC_SOURCE, null,
+                                                                 ErrorCode.InvalidDisposesAnnotationOnMultipleMethodParams, DiagnosticSeverity.Error));
+                    }
 
-					if (!invalidAnnotations.isEmpty()) {
-						Range range = PositionUtils.toNameRange(method, context.getUtils());
-						diagnostics.add(context.createDiagnostic(uri,
-								createInvalidDisposesLabel(invalidAnnotations), range,
-								Constants.DIAGNOSTIC_SOURCE, null,
-								ErrorCode.InvalidDisposerMethodParamAnnotation, DiagnosticSeverity.Error));
-					}
-				}
-			}
-		}
+                    if (!invalidAnnotations.isEmpty()) {
+                        Range range = PositionUtils.toNameRange(method, context.getUtils());
+                        diagnostics.add(context.createDiagnostic(uri,
+                                                                 createInvalidDisposesLabel(invalidAnnotations), range,
+                                                                 Constants.DIAGNOSTIC_SOURCE, null,
+                                                                 ErrorCode.InvalidDisposerMethodParamAnnotation, DiagnosticSeverity.Error));
+                    }
+                }
+            }
+        }
 
-		return diagnostics;
-	}
+        return diagnostics;
+    }
 
-	private void invalidParamsCheck(JavaDiagnosticsContext context, String uri, ICompilationUnit unit,
-			List<Diagnostic> diagnostics, IType type, String target) throws JavaModelException {
-		for (IMethod method : type.getMethods()) {
-			IAnnotation targetAnnotation = null;
+    private void invalidParamsCheck(JavaDiagnosticsContext context, String uri, ICompilationUnit unit,
+                                    List<Diagnostic> diagnostics, IType type, String target) throws JavaModelException {
+        for (IMethod method : type.getMethods()) {
+            IAnnotation targetAnnotation = null;
 
-			for (IAnnotation annotation : method.getAnnotations()) {
-				if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(), target)) {
-					targetAnnotation = annotation;
-					break;
-				}
-			}
+            for (IAnnotation annotation : method.getAnnotations()) {
+                if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(), target)) {
+                    targetAnnotation = annotation;
+                    break;
+                }
+            }
 
-			if (targetAnnotation == null)
-				continue;
+            if (targetAnnotation == null)
+                continue;
 
-			Set<String> invalidAnnotations = new TreeSet<>();
-			ILocalVariable[] params = method.getParameters();
-			for (ILocalVariable param : params) {
-				List<String> paramScopes = DiagnosticUtils.getMatchedJavaElementNames(type,
-						Stream.of(param.getAnnotations()).map(annotation -> annotation.getElementName())
-								.toArray(String[]::new),
-						Constants.INVALID_INJECT_PARAMS_FQ);
-				for (String annotation : paramScopes) {
-					invalidAnnotations.add("@" + DiagnosticUtils.getSimpleName(annotation));
-				}
-			}
+            Set<String> invalidAnnotations = new TreeSet<>();
+            ILocalVariable[] params = method.getParameters();
+            for (ILocalVariable param : params) {
+                List<String> paramScopes = DiagnosticUtils.getMatchedJavaElementNames(type,
+                                                                                      Stream.of(param.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new),
+                                                                                      Constants.INVALID_INJECT_PARAMS_FQ);
+                for (String annotation : paramScopes) {
+                    invalidAnnotations.add("@" + DiagnosticUtils.getSimpleName(annotation));
+                }
+            }
 
-			if (!invalidAnnotations.isEmpty()) {
-				Range range = PositionUtils.toNameRange(method, context.getUtils());
-				if (Constants.PRODUCES_FQ_NAME.equals(target)) {
-					diagnostics.add(context.createDiagnostic(uri,
-							createInvalidProducesLabel(invalidAnnotations), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.InvalidProducerMethodParamAnnotation, DiagnosticSeverity.Error));
-				} else {
-					diagnostics.add(context.createDiagnostic(uri,
-							createInvalidInjectLabel(invalidAnnotations), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.InvalidInjectAnnotatedMethodParamAnnotation, DiagnosticSeverity.Error));
-				}
-			}
-		}
-	}
+            if (!invalidAnnotations.isEmpty()) {
+                Range range = PositionUtils.toNameRange(method, context.getUtils());
+                if (Constants.PRODUCES_FQ_NAME.equals(target)) {
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             createInvalidProducesLabel(invalidAnnotations), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.InvalidProducerMethodParamAnnotation, DiagnosticSeverity.Error));
+                } else {
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             createInvalidInjectLabel(invalidAnnotations), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.InvalidInjectAnnotatedMethodParamAnnotation, DiagnosticSeverity.Error));
+                }
+            }
+        }
+    }
 
-	private String createInvalidInjectLabel(Set<String> invalidAnnotations) {
-		return Messages.getMessage("ManagedBeanInvalidInject", String.join(", ", invalidAnnotations));
-	}
+    private String createInvalidInjectLabel(Set<String> invalidAnnotations) {
+        return Messages.getMessage("ManagedBeanInvalidInject", String.join(", ", invalidAnnotations));
+    }
 
-	private String createInvalidProducesLabel(Set<String> invalidAnnotations) {
-		return Messages.getMessage("ManagedBeanInvalidProduces", String.join(", ", invalidAnnotations));
-	}
+    private String createInvalidProducesLabel(Set<String> invalidAnnotations) {
+        return Messages.getMessage("ManagedBeanInvalidProduces", String.join(", ", invalidAnnotations));
+    }
 
-	private String createInvalidDisposesLabel(Set<String> invalidAnnotations) {
-		return Messages.getMessage("ManagedBeanInvalidDisposer", String.join(", ", invalidAnnotations));
-	}
+    private String createInvalidDisposesLabel(Set<String> invalidAnnotations) {
+        return Messages.getMessage("ManagedBeanInvalidDisposer", String.join(", ", invalidAnnotations));
+    }
 
 }

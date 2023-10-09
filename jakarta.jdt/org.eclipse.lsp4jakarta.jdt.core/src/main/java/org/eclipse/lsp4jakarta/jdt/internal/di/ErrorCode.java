@@ -18,19 +18,19 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * Bean validation error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	InvalidInjectAnnotationOnFinalField,
-	InvalidInjectAnnotationOnFinalMethod,
-	InvalidInjectAnnotationOnAbstractMethod,
-	InvalidInjectAnnotationOnStaticMethod,
-	InvalidInjectAnnotationOnGenericMethod,
-	InvalidInjectAnnotationOnMultipleConstructors;
+    InvalidInjectAnnotationOnFinalField,
+    InvalidInjectAnnotationOnFinalMethod,
+    InvalidInjectAnnotationOnAbstractMethod,
+    InvalidInjectAnnotationOnStaticMethod,
+    InvalidInjectAnnotationOnGenericMethod,
+    InvalidInjectAnnotationOnMultipleConstructors;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 
 }

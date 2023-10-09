@@ -27,42 +27,41 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.AbstractJavaFeatureDefinit
 
 /**
  * Wrap the completion participant in try/catch
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/java/completion/JavaCompletionDefinition.java
  *
  * @author datho7561
  */
-public class JavaCompletionDefinition extends AbstractJavaFeatureDefinition<IJavaCompletionParticipant>
-		implements IJavaCompletionParticipant {
+public class JavaCompletionDefinition extends AbstractJavaFeatureDefinition<IJavaCompletionParticipant> implements IJavaCompletionParticipant {
 
-	private static final Logger LOGGER = Logger.getLogger(JavaCompletionDefinition.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JavaCompletionDefinition.class.getName());
 
-	public JavaCompletionDefinition(IConfigurationElement element) {
-		super(element);
-	}
+    public JavaCompletionDefinition(IConfigurationElement element) {
+        super(element);
+    }
 
-	// -------------- Completion
+    // -------------- Completion
 
-	@Override
-	public boolean isAdaptedForCompletion(JavaCompletionContext context, IProgressMonitor monitor) {
-		try {
-			return getParticipant().isAdaptedForCompletion(context, monitor);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error while calling isAdaptedForCompletion", e);
-			return false;
-		}
-	}
+    @Override
+    public boolean isAdaptedForCompletion(JavaCompletionContext context, IProgressMonitor monitor) {
+        try {
+            return getParticipant().isAdaptedForCompletion(context, monitor);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while calling isAdaptedForCompletion", e);
+            return false;
+        }
+    }
 
-	@Override
-	public List<? extends CompletionItem> collectCompletionItems(JavaCompletionContext context,
-			IProgressMonitor monitor) {
-		try {
-			List<? extends CompletionItem> completionItems = getParticipant().collectCompletionItems(context, monitor);
-			return completionItems != null ? completionItems : Collections.emptyList();
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error while calling collectCompletionItems", e);
-			return Collections.emptyList();
-		}
-	}
+    @Override
+    public List<? extends CompletionItem> collectCompletionItems(JavaCompletionContext context,
+                                                                 IProgressMonitor monitor) {
+        try {
+            List<? extends CompletionItem> completionItems = getParticipant().collectCompletionItems(context, monitor);
+            return completionItems != null ? completionItems : Collections.emptyList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while calling collectCompletionItems", e);
+            return Collections.emptyList();
+        }
+    }
 }

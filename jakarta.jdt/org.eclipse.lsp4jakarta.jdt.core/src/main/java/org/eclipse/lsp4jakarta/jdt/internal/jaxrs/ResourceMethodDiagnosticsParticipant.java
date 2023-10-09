@@ -41,85 +41,84 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
  */
 public class ResourceMethodDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
-	@Override
-	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
-			throws CoreException {
-		ITypeRoot typeRoot = context.getTypeRoot();
-		String uri = context.getUri();
-		IJavaElement[] elements = typeRoot.getChildren();
-		List<Diagnostic> diagnostics = new ArrayList<>();
+    @Override
+    public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) throws CoreException {
+        ITypeRoot typeRoot = context.getTypeRoot();
+        String uri = context.getUri();
+        IJavaElement[] elements = typeRoot.getChildren();
+        List<Diagnostic> diagnostics = new ArrayList<>();
 
-		String[] methodDesignators = ArrayUtils.addAll(Constants.SET_OF_METHOD_DESIGNATORS_ANNOTATIONS,
-				Constants.PATH_ANNOTATION);
+        String[] methodDesignators = ArrayUtils.addAll(Constants.SET_OF_METHOD_DESIGNATORS_ANNOTATIONS,
+                                                       Constants.PATH_ANNOTATION);
 
-		for (IJavaElement element : elements) {
-			if (monitor.isCanceled()) {
-				return null;
-			}
+        for (IJavaElement element : elements) {
+            if (monitor.isCanceled()) {
+                return null;
+            }
 
-			if (element.getElementType() == IJavaElement.TYPE) {
-				IType type = (IType) element;
-				if (!type.isClass()) {
-					continue;
-				}
+            if (element.getElementType() == IJavaElement.TYPE) {
+                IType type = (IType) element;
+                if (!type.isClass()) {
+                    continue;
+                }
 
-				IMethod[] methods = type.getMethods();
-				boolean isInterface = type.isInterface();
+                IMethod[] methods = type.getMethods();
+                boolean isInterface = type.isInterface();
 
-				for (IMethod method : methods) {
-					IAnnotation[] methodAnnotations = method.getAnnotations();
-					boolean isResourceMethod = false;
-					boolean isValid = true;
-					boolean isPublic = Flags.isPublic(method.getFlags());
-					boolean usesDfltAccessModifier = Flags.isPackageDefault(method.getFlags());
-					Range methodRange = PositionUtils.toNameRange(method, context.getUtils());
+                for (IMethod method : methods) {
+                    IAnnotation[] methodAnnotations = method.getAnnotations();
+                    boolean isResourceMethod = false;
+                    boolean isValid = true;
+                    boolean isPublic = Flags.isPublic(method.getFlags());
+                    boolean usesDfltAccessModifier = Flags.isPackageDefault(method.getFlags());
+                    Range methodRange = PositionUtils.toNameRange(method, context.getUtils());
 
-					for (IAnnotation annotation : methodAnnotations) {
-						String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
-								annotation.getElementName(), methodDesignators);
-						if (matchedAnnotation != null) {
-							if (isValid && !isPublic && !(usesDfltAccessModifier && isInterface))
-								isValid = false;
-							if (!Constants.PATH_ANNOTATION.equals(matchedAnnotation)) {
-								isResourceMethod = true;
-								break;
-							}
-						}
-					}
-					if (!isValid) {
-						diagnostics.add(context.createDiagnostic(uri, Messages.getMessage("OnlyPublicMethods"),
-								methodRange, Constants.DIAGNOSTIC_SOURCE, ErrorCode.NonPublicResourceMethod,
-								DiagnosticSeverity.Error));
-					}
-					if (isResourceMethod) {
-						int numEntityParams = 0;
-						ILocalVariable[] parameters = method.getParameters();
-						for (ILocalVariable param : parameters) {
-							boolean isEntityParam = true;
-							IAnnotation[] annotations = param.getAnnotations();
-							for (IAnnotation annotation : annotations) {
-								String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
-										annotation.getElementName(), Constants.SET_OF_NON_ENTITY_PARAM_ANNOTATIONS);
-								if (matchedAnnotation != null) {
-									isEntityParam = false;
-									break;
-								}
-							}
-							if (isEntityParam)
-								numEntityParams++;
-						}
-						if (numEntityParams > 1) {
-							diagnostics.add(
-									context.createDiagnostic(uri, Messages.getMessage("ResourceMethodsEntityParameter"),
-											methodRange, Constants.DIAGNOSTIC_SOURCE,
-											ErrorCode.ResourceMethodMultipleEntityParams, DiagnosticSeverity.Error));
-						}
-					}
-				}
+                    for (IAnnotation annotation : methodAnnotations) {
+                        String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
+                                                                                             annotation.getElementName(), methodDesignators);
+                        if (matchedAnnotation != null) {
+                            if (isValid && !isPublic && !(usesDfltAccessModifier && isInterface))
+                                isValid = false;
+                            if (!Constants.PATH_ANNOTATION.equals(matchedAnnotation)) {
+                                isResourceMethod = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!isValid) {
+                        diagnostics.add(context.createDiagnostic(uri, Messages.getMessage("OnlyPublicMethods"),
+                                                                 methodRange, Constants.DIAGNOSTIC_SOURCE, ErrorCode.NonPublicResourceMethod,
+                                                                 DiagnosticSeverity.Error));
+                    }
+                    if (isResourceMethod) {
+                        int numEntityParams = 0;
+                        ILocalVariable[] parameters = method.getParameters();
+                        for (ILocalVariable param : parameters) {
+                            boolean isEntityParam = true;
+                            IAnnotation[] annotations = param.getAnnotations();
+                            for (IAnnotation annotation : annotations) {
+                                String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
+                                                                                                     annotation.getElementName(), Constants.SET_OF_NON_ENTITY_PARAM_ANNOTATIONS);
+                                if (matchedAnnotation != null) {
+                                    isEntityParam = false;
+                                    break;
+                                }
+                            }
+                            if (isEntityParam)
+                                numEntityParams++;
+                        }
+                        if (numEntityParams > 1) {
+                            diagnostics.add(
+                                            context.createDiagnostic(uri, Messages.getMessage("ResourceMethodsEntityParameter"),
+                                                                     methodRange, Constants.DIAGNOSTIC_SOURCE,
+                                                                     ErrorCode.ResourceMethodMultipleEntityParams, DiagnosticSeverity.Error));
+                        }
+                    }
+                }
 
-			}
-		}
+            }
+        }
 
-		return diagnostics;
-	}
+        return diagnostics;
+    }
 }

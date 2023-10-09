@@ -42,102 +42,101 @@ import org.eclipse.lsp4jakarta.ls.api.JakartaLanguageClientAPI;
 
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
 
-	public JakartaLanguageClient() {
-		// do nothing
-	}
+    public JakartaLanguageClient() {
+        // do nothing
+    }
 
-	private IProgressMonitor getProgressMonitor(CancelChecker cancelChecker) {
-		IProgressMonitor monitor = new NullProgressMonitor() {
-			public boolean isCanceled() {
-				cancelChecker.checkCanceled();
-				return false;
-			};
-		};
-		return monitor;
-	}
+    private IProgressMonitor getProgressMonitor(CancelChecker cancelChecker) {
+        IProgressMonitor monitor = new NullProgressMonitor() {
+            public boolean isCanceled() {
+                cancelChecker.checkCanceled();
+                return false;
+            };
+        };
+        return monitor;
+    }
 
-	@Override
-	public CompletableFuture<JakartaJavaCompletionResult> getJavaCompletion(JakartaJavaCompletionParams javaParams) {
-		return CompletableFutures.computeAsync(cancelChecker -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			CompletionList completionList;
-			try {
-				completionList = PropertiesManagerForJava.getInstance().completion(javaParams,
-						JDTUtilsLSImpl.getInstance(), monitor);
-				JavaCursorContextResult javaCursorContext = PropertiesManagerForJava.getInstance()
-						.javaCursorContext(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
-				return new JakartaJavaCompletionResult(completionList, javaCursorContext);
-			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
-		});
-	}
+    @Override
+    public CompletableFuture<JakartaJavaCompletionResult> getJavaCompletion(JakartaJavaCompletionParams javaParams) {
+        return CompletableFutures.computeAsync(cancelChecker -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            CompletionList completionList;
+            try {
+                completionList = PropertiesManagerForJava.getInstance().completion(javaParams,
+                                                                                   JDTUtilsLSImpl.getInstance(), monitor);
+                JavaCursorContextResult javaCursorContext = PropertiesManagerForJava.getInstance().javaCursorContext(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
+                return new JakartaJavaCompletionResult(completionList, javaCursorContext);
+            } catch (JavaModelException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return null;
+            }
+        });
+    }
 
-	@Override
-	public CompletableFuture<List<ProjectLabelInfoEntry>> getAllJavaProjectLabels() {
-		return CompletableFutures.computeAsync((cancelChecker) -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			return ProjectLabelManager.getInstance().getProjectLabelInfo();
-		});
-	}
+    @Override
+    public CompletableFuture<List<ProjectLabelInfoEntry>> getAllJavaProjectLabels() {
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            return ProjectLabelManager.getInstance().getProjectLabelInfo();
+        });
+    }
 
-	@Override
-	public CompletableFuture<ProjectLabelInfoEntry> getJavaProjectLabels(JakartaJavaProjectLabelsParams javaParams) {
-		return CompletableFutures.computeAsync((cancelChecker) -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			return ProjectLabelManager.getInstance().getProjectLabelInfo(javaParams, JDTUtilsLSImpl.getInstance(),
-					monitor);
-		});
-	}
+    @Override
+    public CompletableFuture<ProjectLabelInfoEntry> getJavaProjectLabels(JakartaJavaProjectLabelsParams javaParams) {
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            return ProjectLabelManager.getInstance().getProjectLabelInfo(javaParams, JDTUtilsLSImpl.getInstance(),
+                                                                         monitor);
+        });
+    }
 
-	@Override
-	public CompletableFuture<JakartaJavaFileInfo> getJavaFileInfo(JakartaJavaFileInfoParams javaParams) {
-		return CompletableFutures.computeAsync(cancelChecker -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			return PropertiesManagerForJava.getInstance().fileInfo(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
-		});
-	}
+    @Override
+    public CompletableFuture<JakartaJavaFileInfo> getJavaFileInfo(JakartaJavaFileInfoParams javaParams) {
+        return CompletableFutures.computeAsync(cancelChecker -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            return PropertiesManagerForJava.getInstance().fileInfo(javaParams, JDTUtilsLSImpl.getInstance(), monitor);
+        });
+    }
 
-	@Override
-	public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(
-			JakartaJavaDiagnosticsParams javaParams) {
-		return CompletableFutures.computeAsync((cancelChecker) -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			try {
-				return PropertiesManagerForJava.getInstance().diagnostics(javaParams, JDTUtilsLSImpl.getInstance(),
-						monitor);
-			} catch (JavaModelException e) {
-				return Collections.emptyList();
-			}
-		});
-	}
+    @Override
+    public CompletableFuture<List<PublishDiagnosticsParams>> getJavaDiagnostics(
+                                                                                JakartaJavaDiagnosticsParams javaParams) {
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            try {
+                return PropertiesManagerForJava.getInstance().diagnostics(javaParams, JDTUtilsLSImpl.getInstance(),
+                                                                          monitor);
+            } catch (JavaModelException e) {
+                return Collections.emptyList();
+            }
+        });
+    }
 
-	@Override
-	public CompletableFuture<List<CodeAction>> getJavaCodeAction(JakartaJavaCodeActionParams javaParams) {
-		return CompletableFutures.computeAsync((cancelChecker) -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			try {
-				return (List<CodeAction>) PropertiesManagerForJava.getInstance().codeAction(javaParams,
-						JDTUtilsLSImpl.getInstance(), monitor);
-			} catch (JavaModelException e) {
-				return Collections.emptyList();
-			}
-		});
-	}
+    @Override
+    public CompletableFuture<List<CodeAction>> getJavaCodeAction(JakartaJavaCodeActionParams javaParams) {
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            try {
+                return (List<CodeAction>) PropertiesManagerForJava.getInstance().codeAction(javaParams,
+                                                                                            JDTUtilsLSImpl.getInstance(), monitor);
+            } catch (JavaModelException e) {
+                return Collections.emptyList();
+            }
+        });
+    }
 
-	@Override
-	public CompletableFuture<CodeAction> resolveCodeAction(CodeAction unresolved) {
-		return CompletableFutures.computeAsync((cancelChecker) -> {
-			IProgressMonitor monitor = getProgressMonitor(cancelChecker);
-			try {
-				return (CodeAction) PropertiesManagerForJava.getInstance().resolveCodeAction(unresolved,
-						JDTUtilsLSImpl.getInstance(), monitor);
-			} catch (JavaModelException e) {
-				return null;
-			}
-		});
-	}
+    @Override
+    public CompletableFuture<CodeAction> resolveCodeAction(CodeAction unresolved) {
+        return CompletableFutures.computeAsync((cancelChecker) -> {
+            IProgressMonitor monitor = getProgressMonitor(cancelChecker);
+            try {
+                return (CodeAction) PropertiesManagerForJava.getInstance().resolveCodeAction(unresolved,
+                                                                                             JDTUtilsLSImpl.getInstance(), monitor);
+            } catch (JavaModelException e) {
+                return null;
+            }
+        });
+    }
 
 }

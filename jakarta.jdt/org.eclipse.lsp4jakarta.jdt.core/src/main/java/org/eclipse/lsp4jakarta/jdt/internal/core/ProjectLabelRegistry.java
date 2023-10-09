@@ -28,68 +28,68 @@ import org.eclipse.lsp4jakarta.jdt.core.ProjectLabelDefinition;
 /**
  * Registry to hold the extension point
  * "org.eclipse.lsp4mp.jdt.core.projectLabelProviders".
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/ProjectLabelRegistry.java
  *
  */
 public class ProjectLabelRegistry {
 
-	private static final String CLASS_ATTR = "class";
+    private static final String CLASS_ATTR = "class";
 
-	private static final String EXTENSION_PROJECT_LABEL_PROVIDERS = "projectLabelProviders";
+    private static final String EXTENSION_PROJECT_LABEL_PROVIDERS = "projectLabelProviders";
 
-	private static final Logger LOGGER = Logger.getLogger(ProjectLabelRegistry.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ProjectLabelRegistry.class.getName());
 
-	private static final ProjectLabelRegistry INSTANCE = new ProjectLabelRegistry();
+    private static final ProjectLabelRegistry INSTANCE = new ProjectLabelRegistry();
 
-	private final List<ProjectLabelDefinition> projectLabelDefinitions;
+    private final List<ProjectLabelDefinition> projectLabelDefinitions;
 
-	private boolean projectDefinitionsLoaded;
+    private boolean projectDefinitionsLoaded;
 
-	public static ProjectLabelRegistry getInstance() {
-		return INSTANCE;
-	}
+    public static ProjectLabelRegistry getInstance() {
+        return INSTANCE;
+    }
 
-	public ProjectLabelRegistry() {
-		projectDefinitionsLoaded = false;
-		projectLabelDefinitions = new ArrayList<>();
-	}
+    public ProjectLabelRegistry() {
+        projectDefinitionsLoaded = false;
+        projectLabelDefinitions = new ArrayList<>();
+    }
 
-	/**
-	 * Returns a list of project label definitions
-	 *
-	 * @return a list of project label definitions
-	 */
-	public List<ProjectLabelDefinition> getProjectLabelDefinitions() {
-		loadProjectLabelDefinitions();
-		return projectLabelDefinitions;
-	}
+    /**
+     * Returns a list of project label definitions
+     *
+     * @return a list of project label definitions
+     */
+    public List<ProjectLabelDefinition> getProjectLabelDefinitions() {
+        loadProjectLabelDefinitions();
+        return projectLabelDefinitions;
+    }
 
-	private synchronized void loadProjectLabelDefinitions() {
-		if (projectDefinitionsLoaded)
-			return;
+    private synchronized void loadProjectLabelDefinitions() {
+        if (projectDefinitionsLoaded)
+            return;
 
-		// Immediately set the flag, as to ensure that this method is never
-		// called twice
-		projectDefinitionsLoaded = true;
+        // Immediately set the flag, as to ensure that this method is never
+        // called twice
+        projectDefinitionsLoaded = true;
 
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JakartaCorePlugin.PLUGIN_ID,
-				EXTENSION_PROJECT_LABEL_PROVIDERS);
-		addProjectLabelDefinition(cf);
-	}
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IConfigurationElement[] cf = registry.getConfigurationElementsFor(JakartaCorePlugin.PLUGIN_ID,
+                                                                          EXTENSION_PROJECT_LABEL_PROVIDERS);
+        addProjectLabelDefinition(cf);
+    }
 
-	private void addProjectLabelDefinition(IConfigurationElement[] cf) {
-		for (IConfigurationElement ce : cf) {
-			try {
-				IProjectLabelProvider provider = (IProjectLabelProvider) ce.createExecutableExtension(CLASS_ATTR);
-				synchronized (projectLabelDefinitions) {
-					this.projectLabelDefinitions.add(new ProjectLabelDefinition(provider));
-				}
-			} catch (Throwable t) {
-				LOGGER.log(Level.SEVERE, "Error while collecting project label extension contributions", t);
-			}
-		}
-	}
+    private void addProjectLabelDefinition(IConfigurationElement[] cf) {
+        for (IConfigurationElement ce : cf) {
+            try {
+                IProjectLabelProvider provider = (IProjectLabelProvider) ce.createExecutableExtension(CLASS_ATTR);
+                synchronized (projectLabelDefinitions) {
+                    this.projectLabelDefinitions.add(new ProjectLabelDefinition(provider));
+                }
+            } catch (Throwable t) {
+                LOGGER.log(Level.SEVERE, "Error while collecting project label extension contributions", t);
+            }
+        }
+    }
 }

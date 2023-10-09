@@ -38,83 +38,82 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
  */
 public class FilterDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor)
-			throws CoreException {
-		String uri = context.getUri();
-		IJDTUtils utils = JDTUtilsLSImpl.getInstance();
-		ICompilationUnit unit = utils.resolveCompilationUnit(uri);
-		List<Diagnostic> diagnostics = new ArrayList<>();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) throws CoreException {
+        String uri = context.getUri();
+        IJDTUtils utils = JDTUtilsLSImpl.getInstance();
+        ICompilationUnit unit = utils.resolveCompilationUnit(uri);
+        List<Diagnostic> diagnostics = new ArrayList<>();
 
-		if (unit == null) {
-			return diagnostics;
-		}
+        if (unit == null) {
+            return diagnostics;
+        }
 
-		IAnnotation[] allAnnotations;
+        IAnnotation[] allAnnotations;
 
-		IType[] alltypes = unit.getAllTypes();
-		for (IType type : alltypes) {
-			allAnnotations = type.getAnnotations();
-			IAnnotation webFilterAnnotation = null;
+        IType[] alltypes = unit.getAllTypes();
+        for (IType type : alltypes) {
+            allAnnotations = type.getAnnotations();
+            IAnnotation webFilterAnnotation = null;
 
-			for (IAnnotation annotation : allAnnotations) {
-				if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(),
-						Constants.WEBFILTER_FQ_NAME)) {
-					webFilterAnnotation = annotation;
-				}
-			}
+            for (IAnnotation annotation : allAnnotations) {
+                if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(),
+                                                         Constants.WEBFILTER_FQ_NAME)) {
+                    webFilterAnnotation = annotation;
+                }
+            }
 
-			String[] interfaces = { Constants.FILTER_FQ_NAME };
-			boolean isFilterImplemented = DiagnosticUtils.doesImplementInterfaces(type, interfaces);
+            String[] interfaces = { Constants.FILTER_FQ_NAME };
+            boolean isFilterImplemented = DiagnosticUtils.doesImplementInterfaces(type, interfaces);
 
-			if (webFilterAnnotation != null && !isFilterImplemented) {
-				Range range = PositionUtils.toNameRange(type, context.getUtils());
-				diagnostics.add(context.createDiagnostic(uri,
-						Messages.getMessage("WebFilterMustImplement"), range,
-						Constants.DIAGNOSTIC_SOURCE, null,
-						ErrorCode.ClassWebFilterAnnotatedNoFilterInterfaceImpl, DiagnosticSeverity.Error));
-			}
+            if (webFilterAnnotation != null && !isFilterImplemented) {
+                Range range = PositionUtils.toNameRange(type, context.getUtils());
+                diagnostics.add(context.createDiagnostic(uri,
+                                                         Messages.getMessage("WebFilterMustImplement"), range,
+                                                         Constants.DIAGNOSTIC_SOURCE, null,
+                                                         ErrorCode.ClassWebFilterAnnotatedNoFilterInterfaceImpl, DiagnosticSeverity.Error));
+            }
 
-			/* URL pattern diagnostic check */
-			if (webFilterAnnotation != null) {
-				IMemberValuePair[] memberValues = webFilterAnnotation.getMemberValuePairs();
+            /* URL pattern diagnostic check */
+            if (webFilterAnnotation != null) {
+                IMemberValuePair[] memberValues = webFilterAnnotation.getMemberValuePairs();
 
-				boolean isUrlpatternSpecified = false;
-				boolean isServletNamesSpecified = false;
-				boolean isValueSpecified = false;
-				for (IMemberValuePair mv : memberValues) {
-					if (mv.getMemberName().equals(Constants.URL_PATTERNS)) {
-						isUrlpatternSpecified = true;
-						continue;
-					}
-					if (mv.getMemberName().equals(Constants.SERVLET_NAMES)) {
-						isServletNamesSpecified = true;
-						continue;
-					}
-					if (mv.getMemberName().equals(Constants.VALUE)) {
-						isValueSpecified = true;
-					}
-				}
-				if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
-					Range range = PositionUtils.toNameRange(webFilterAnnotation, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("WebFilterMustDefine"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.WebFilterAnnotationMissingAttributes, DiagnosticSeverity.Error));
-				}
-				if (isUrlpatternSpecified && isValueSpecified) {
-					Range range = PositionUtils.toNameRange(webFilterAnnotation, context.getUtils());
-					diagnostics.add(context.createDiagnostic(uri,
-							Messages.getMessage("WebFilterCannotHaveBoth"), range,
-							Constants.DIAGNOSTIC_SOURCE, null,
-							ErrorCode.WebFilterAnnotationAttributeConflict, DiagnosticSeverity.Error));
-				}
-			}
-		}
+                boolean isUrlpatternSpecified = false;
+                boolean isServletNamesSpecified = false;
+                boolean isValueSpecified = false;
+                for (IMemberValuePair mv : memberValues) {
+                    if (mv.getMemberName().equals(Constants.URL_PATTERNS)) {
+                        isUrlpatternSpecified = true;
+                        continue;
+                    }
+                    if (mv.getMemberName().equals(Constants.SERVLET_NAMES)) {
+                        isServletNamesSpecified = true;
+                        continue;
+                    }
+                    if (mv.getMemberName().equals(Constants.VALUE)) {
+                        isValueSpecified = true;
+                    }
+                }
+                if (!isUrlpatternSpecified && !isValueSpecified && !isServletNamesSpecified) {
+                    Range range = PositionUtils.toNameRange(webFilterAnnotation, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("WebFilterMustDefine"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.WebFilterAnnotationMissingAttributes, DiagnosticSeverity.Error));
+                }
+                if (isUrlpatternSpecified && isValueSpecified) {
+                    Range range = PositionUtils.toNameRange(webFilterAnnotation, context.getUtils());
+                    diagnostics.add(context.createDiagnostic(uri,
+                                                             Messages.getMessage("WebFilterCannotHaveBoth"), range,
+                                                             Constants.DIAGNOSTIC_SOURCE, null,
+                                                             ErrorCode.WebFilterAnnotationAttributeConflict, DiagnosticSeverity.Error));
+                }
+            }
+        }
 
-		return diagnostics;
-	}
+        return diagnostics;
+    }
 }

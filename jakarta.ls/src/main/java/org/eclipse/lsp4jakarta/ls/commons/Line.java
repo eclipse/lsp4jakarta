@@ -16,54 +16,52 @@ package org.eclipse.lsp4jakarta.ls.commons;
  * a particular offset, consisting of a particular number of characters,
  * and being closed with a particular line delimiter.
  */
-final class Line /*implements IRegion*/ {
+final class Line /* implements IRegion */ {
 
-	/** The offset of the line */
-	public int offset;
-	/** The length of the line */
-	public int length;
-	/** The delimiter of this line */
-	public final String delimiter;
+    /** The offset of the line */
+    public int offset;
+    /** The length of the line */
+    public int length;
+    /** The delimiter of this line */
+    public final String delimiter;
 
-	/**
-	 * Creates a new Line.
-	 *
-	 * @param offset the offset of the line
-	 * @param end the last including character offset of the line
-	 * @param delimiter the line's delimiter
-	 */
-	public Line(int offset, int end, String delimiter) {
-		this.offset= offset;
-		this.length= (end - offset) +1;
-		this.delimiter= delimiter;
-	}
+    /**
+     * Creates a new Line.
+     *
+     * @param offset the offset of the line
+     * @param end the last including character offset of the line
+     * @param delimiter the line's delimiter
+     */
+    public Line(int offset, int end, String delimiter) {
+        this.offset = offset;
+        this.length = (end - offset) + 1;
+        this.delimiter = delimiter;
+    }
 
-	/**
-	 * Creates a new Line.
-	 *
-	 * @param offset the offset of the line
-	 * @param length the length of the line
-	 */
-	public Line(int offset, int length) {
-		this.offset= offset;
-		this.length= length;
-		this.delimiter= null;
-	}
+    /**
+     * Creates a new Line.
+     *
+     * @param offset the offset of the line
+     * @param length the length of the line
+     */
+    public Line(int offset, int length) {
+        this.offset = offset;
+        this.length = length;
+        this.delimiter = null;
+    }
 
-	//@Override
-	public int getOffset() {
-		return offset;
-	}
+    //@Override
+    public int getOffset() {
+        return offset;
+    }
 
-	//@Override
-	public int getLength() {
-		return length;
-	}
+    //@Override
+    public int getLength() {
+        return length;
+    }
 
-	@Override
-	public String toString() {
-		return "Line [offset: " + offset + ", length: " + length + ", delimiter: '" + delimiter + "']"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-	}
+    @Override
+    public String toString() {
+        return "Line [offset: " + offset + ", length: " + length + ", delimiter: '" + delimiter + "']"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    }
 }
-
-

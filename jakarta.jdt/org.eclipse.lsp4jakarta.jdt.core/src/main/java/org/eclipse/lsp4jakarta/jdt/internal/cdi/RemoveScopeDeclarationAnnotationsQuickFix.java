@@ -36,47 +36,46 @@ import com.google.gson.JsonArray;
  */
 public class RemoveScopeDeclarationAnnotationsQuickFix extends RemoveAnnotationConflictQuickFix {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveScopeDeclarationAnnotationsQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveScopeDeclarationAnnotationsQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.CDIRemoveScopeDeclarationAnnotationsButOne;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.CDIRemoveScopeDeclarationAnnotationsButOne;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		List<CodeAction> codeActions = new ArrayList<>();
-		ASTNode node = context.getCoveredNode();
-		IBinding parentType = getBinding(node);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
+        ASTNode node = context.getCoveredNode();
+        IBinding parentType = getBinding(node);
 
-		if (parentType != null) {
-			JsonArray diagnosticData = (JsonArray) diagnostic.getData();
-			List<String> annotations = IntStream.range(0, diagnosticData.size())
-					.mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
+        if (parentType != null) {
+            JsonArray diagnosticData = (JsonArray) diagnostic.getData();
+            List<String> annotations = IntStream.range(0, diagnosticData.size()).mapToObj(idx -> diagnosticData.get(idx).getAsString()).collect(Collectors.toList());
 
-			annotations.remove(Constants.PRODUCES);
-			for (String annotation : annotations) {
-				List<String> resultingAnnotations = new ArrayList<>(annotations);
-				resultingAnnotations.remove(annotation);
+            annotations.remove(Constants.PRODUCES);
+            for (String annotation : annotations) {
+                List<String> resultingAnnotations = new ArrayList<>(annotations);
+                resultingAnnotations.remove(annotation);
 
-				createCodeAction(diagnostic, context, parentType, codeActions,
-						resultingAnnotations.toArray(new String[] {}));
-			}
-		}
+                createCodeAction(diagnostic, context, parentType, codeActions,
+                                 resultingAnnotations.toArray(new String[] {}));
+            }
+        }
 
-		return codeActions;
-	}
+        return codeActions;
+    }
 }

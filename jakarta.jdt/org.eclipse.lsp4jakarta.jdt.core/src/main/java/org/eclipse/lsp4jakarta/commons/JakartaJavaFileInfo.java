@@ -15,29 +15,29 @@ package org.eclipse.lsp4jakarta.commons;
 
 /**
  * Java file information.
- * 
+ *
  * @author Angelo ZERR
  *
  */
 public class JakartaJavaFileInfo {
 
-	private String packageName;
+    private String packageName;
 
-	/**
-	 * Returns the package name.
-	 * 
-	 * @return the package name.
-	 */
-	public String getPackageName() {
-		return packageName;
-	}
+    /**
+     * Returns the package name.
+     *
+     * @return the package name.
+     */
+    public String getPackageName() {
+        return packageName;
+    }
 
-	/**
-	 * Set the package name.
-	 * 
-	 * @param packageName the package name.
-	 */
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
+    /**
+     * Set the package name.
+     *
+     * @param packageName the package name.
+     */
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
 }

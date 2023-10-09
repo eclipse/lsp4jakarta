@@ -23,39 +23,39 @@ import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Wrapper class around <code>IProjectLabelProvider</code>
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/ProjectLabelDefinition.java
  */
 public class ProjectLabelDefinition {
-	/** Logger object to record events for this class. */
-	private static final Logger LOGGER = Logger.getLogger(ProjectLabelDefinition.class.getName());
+    /** Logger object to record events for this class. */
+    private static final Logger LOGGER = Logger.getLogger(ProjectLabelDefinition.class.getName());
 
-	/** Project label provider instance. */
-	private final IProjectLabelProvider projectLabelProvider;
+    /** Project label provider instance. */
+    private final IProjectLabelProvider projectLabelProvider;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param projectLabelProvider the project label provider instance.
-	 */
-	public ProjectLabelDefinition(IProjectLabelProvider projectLabelProvider) {
-		this.projectLabelProvider = projectLabelProvider;
-	}
+    /**
+     * Constructor.
+     *
+     * @param projectLabelProvider the project label provider instance.
+     */
+    public ProjectLabelDefinition(IProjectLabelProvider projectLabelProvider) {
+        this.projectLabelProvider = projectLabelProvider;
+    }
 
-	/**
-	 * Returns a list of project labels ("maven", "jakarta", etc.) for the
-	 * given <code>project</code>
-	 * 
-	 * @param project the Java project
-	 * @return a list of project labels for the given <code>project</code>
-	 */
-	public List<String> getProjectLabels(IJavaProject project) {
-		try {
-			return projectLabelProvider.getProjectLabels(project);
-		} catch (JavaModelException e) {
-			LOGGER.log(Level.SEVERE, "Error while getting project labels", e);
-			return Collections.emptyList();
-		}
-	}
+    /**
+     * Returns a list of project labels ("maven", "jakarta", etc.) for the
+     * given <code>project</code>
+     *
+     * @param project the Java project
+     * @return a list of project labels for the given <code>project</code>
+     */
+    public List<String> getProjectLabels(IJavaProject project) {
+        try {
+            return projectLabelProvider.getProjectLabels(project);
+        } catch (JavaModelException e) {
+            LOGGER.log(Level.SEVERE, "Error while getting project labels", e);
+            return Collections.emptyList();
+        }
+    }
 }

@@ -25,7 +25,7 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
  */
 public interface JakartaJavaCodeActionProvider {
 
-	@JsonRequest("jakarta/java/codeAction")
-	CompletableFuture<List<CodeAction>> getJavaCodeAction(JakartaJavaCodeActionParams javaParams);
+    @JsonRequest("jakarta/java/codeAction")
+    CompletableFuture<List<CodeAction>> getJavaCodeAction(JakartaJavaCodeActionParams javaParams);
 
 }

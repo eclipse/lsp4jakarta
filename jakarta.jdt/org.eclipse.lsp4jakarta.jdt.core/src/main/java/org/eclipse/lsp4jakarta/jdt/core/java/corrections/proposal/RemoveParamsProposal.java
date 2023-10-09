@@ -40,58 +40,58 @@ import org.eclipse.lsp4jakarta.jdt.internal.jaxrs.RemoveMethodEntityParamsWithEx
  */
 public class RemoveParamsProposal extends ASTRewriteCorrectionProposal {
 
-	private final CompilationUnit invocationNode;
-	private final IBinding binding;
+    private final CompilationUnit invocationNode;
+    private final IBinding binding;
 
-	// parameters to remove
-	private final List<SingleVariableDeclaration> params;
+    // parameters to remove
+    private final List<SingleVariableDeclaration> params;
 
-	// parameter to keep
-	private final SingleVariableDeclaration paramToKeep;
+    // parameter to keep
+    private final SingleVariableDeclaration paramToKeep;
 
-	/**
-	 * Constructor for RemoveParamsProposal that accepts parameters to remove and a
-	 * parameter to keep.
-	 *
-	 * @param params      the parameters of the function to remove
-	 * @param paramToKeep the parameter of the function to keep
-	 */
-	public RemoveParamsProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-			IBinding binding, int relevance, List<SingleVariableDeclaration> params,
-			SingleVariableDeclaration paramToKeep) {
-		super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-		this.invocationNode = invocationNode;
-		this.binding = binding;
-		this.params = params;
-		this.paramToKeep = paramToKeep;
-	}
+    /**
+     * Constructor for RemoveParamsProposal that accepts parameters to remove and a
+     * parameter to keep.
+     *
+     * @param params the parameters of the function to remove
+     * @param paramToKeep the parameter of the function to keep
+     */
+    public RemoveParamsProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+                                IBinding binding, int relevance, List<SingleVariableDeclaration> params,
+                                SingleVariableDeclaration paramToKeep) {
+        super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
+        this.invocationNode = invocationNode;
+        this.binding = binding;
+        this.params = params;
+        this.paramToKeep = paramToKeep;
+    }
 
-	@Override
-	protected ASTRewrite getRewrite() throws CoreException {
-		ASTNode declNode = null;
-		ASTNode boundNode = invocationNode.findDeclaringNode(binding);
+    @Override
+    protected ASTRewrite getRewrite() throws CoreException {
+        ASTNode declNode = null;
+        ASTNode boundNode = invocationNode.findDeclaringNode(binding);
 
-		if (boundNode != null) {
-			declNode = boundNode;
-		} else {
-			CompilationUnit newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
-			declNode = newRoot.findDeclaringNode(binding.getKey());
-		}
+        if (boundNode != null) {
+            declNode = boundNode;
+        } else {
+            CompilationUnit newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
+            declNode = newRoot.findDeclaringNode(binding.getKey());
+        }
 
-		AST ast = declNode.getAST();
-		ASTRewrite rewrite = ASTRewrite.create(ast);
+        AST ast = declNode.getAST();
+        ASTRewrite rewrite = ASTRewrite.create(ast);
 
-		if (declNode instanceof MethodDeclaration) {
-			ListRewrite parametersList = rewrite.getListRewrite(declNode, MethodDeclaration.PARAMETERS_PROPERTY);
+        if (declNode instanceof MethodDeclaration) {
+            ListRewrite parametersList = rewrite.getListRewrite(declNode, MethodDeclaration.PARAMETERS_PROPERTY);
 
-			// remove the parameters except the parameter to keep
-			for (SingleVariableDeclaration param : params) {
-				if (!param.equals(paramToKeep)) {
-					parametersList.remove(param, null);
-				}
-			}
-		}
+            // remove the parameters except the parameter to keep
+            for (SingleVariableDeclaration param : params) {
+                if (!param.equals(paramToKeep)) {
+                    parametersList.remove(param, null);
+                }
+            }
+        }
 
-		return rewrite;
-	}
+        return rewrite;
+    }
 }

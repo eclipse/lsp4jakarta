@@ -18,20 +18,20 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * Persistence error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	InvalidFinalMethodInEntityAnnotatedClass,
-	InvalidPersistentFieldInEntityAnnotatedClass,
-	InvalidConstructorInEntityAnnotatedClass,
-	InvalidFinalModifierOnEntityAnnotatedClass,
-	InvalidMapKeyAnnotationsOnSameMethod,
-	InvalidMapKeyAnnotationsOnSameField,
-	InvalidMethodWithMultipleMPJCAnnotations,
-	InvalidFieldWithMultipleMPJCAnnotations;
+    InvalidFinalMethodInEntityAnnotatedClass,
+    InvalidPersistentFieldInEntityAnnotatedClass,
+    InvalidConstructorInEntityAnnotatedClass,
+    InvalidFinalModifierOnEntityAnnotatedClass,
+    InvalidMapKeyAnnotationsOnSameMethod,
+    InvalidMapKeyAnnotationsOnSameField,
+    InvalidMethodWithMultipleMPJCAnnotations,
+    InvalidFieldWithMultipleMPJCAnnotations;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 }

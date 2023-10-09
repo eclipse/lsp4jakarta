@@ -26,56 +26,55 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.AbstractJavaFeatureDefinit
 
 /**
  * Wrapper class around java participants {@link IJavaDiagnosticsParticipant}.
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/java/diagnostics/JavaDiagnosticsDefinition.java
  */
-public class JavaDiagnosticsDefinition extends AbstractJavaFeatureDefinition<IJavaDiagnosticsParticipant>
-		implements IJavaDiagnosticsParticipant {
-	private static final Logger LOGGER = Logger.getLogger(JavaDiagnosticsDefinition.class.getName());
+public class JavaDiagnosticsDefinition extends AbstractJavaFeatureDefinition<IJavaDiagnosticsParticipant> implements IJavaDiagnosticsParticipant {
+    private static final Logger LOGGER = Logger.getLogger(JavaDiagnosticsDefinition.class.getName());
 
-	public JavaDiagnosticsDefinition(IConfigurationElement element) {
-		super(element);
-	}
+    public JavaDiagnosticsDefinition(IConfigurationElement element) {
+        super(element);
+    }
 
-	// -------------- Diagnostics
+    // -------------- Diagnostics
 
-	@Override
-	public boolean isAdaptedForDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) {
-		try {
-			return getParticipant().isAdaptedForDiagnostics(context, monitor);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error while calling isAdaptedForDiagnostics", e);
-			return false;
-		}
-	}
+    @Override
+    public boolean isAdaptedForDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) {
+        try {
+            return getParticipant().isAdaptedForDiagnostics(context, monitor);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while calling isAdaptedForDiagnostics", e);
+            return false;
+        }
+    }
 
-	@Override
-	public void beginDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) {
-		try {
-			getParticipant().beginDiagnostics(context, monitor);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error while calling beginDiagnostics", e);
-		}
-	}
+    @Override
+    public void beginDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) {
+        try {
+            getParticipant().beginDiagnostics(context, monitor);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while calling beginDiagnostics", e);
+        }
+    }
 
-	@Override
-	public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) {
-		try {
-			return getParticipant().collectDiagnostics(context, monitor);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error while collecting diagnostics", e);
-			return null;
-		}
-	}
+    @Override
+    public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) {
+        try {
+            return getParticipant().collectDiagnostics(context, monitor);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while collecting diagnostics", e);
+            return null;
+        }
+    }
 
-	@Override
-	public void endDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) {
-		try {
-			getParticipant().endDiagnostics(context, monitor);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error while calling endDiagnostics", e);
-		}
-	}
+    @Override
+    public void endDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) {
+        try {
+            getParticipant().endDiagnostics(context, monitor);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while calling endDiagnostics", e);
+        }
+    }
 
 }

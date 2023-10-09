@@ -20,26 +20,26 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.RemoveAnnotationConflict
  */
 public class RemovePostConstructAnnotationQuickFix extends RemoveAnnotationConflictQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public RemovePostConstructAnnotationQuickFix() {
-		super(false, "jakarta.annotation.PostConstruct");
-	}
+    /**
+     * Constructor.
+     */
+    public RemovePostConstructAnnotationQuickFix() {
+        super(false, "jakarta.annotation.PostConstruct");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemovePostConstructAnnotationQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemovePostConstructAnnotationQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JakartaCodeActionId getCodeActionId() {
-		return JakartaCodeActionId.RemoveAnnotationPostConstruct;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JakartaCodeActionId getCodeActionId() {
+        return JakartaCodeActionId.RemoveAnnotationPostConstruct;
+    }
 }

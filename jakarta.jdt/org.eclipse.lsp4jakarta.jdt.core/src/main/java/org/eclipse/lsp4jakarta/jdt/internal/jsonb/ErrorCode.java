@@ -18,15 +18,15 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * JSON Binding (JSON-B) error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	InvalidNumerOfJsonbCreatorAnnotationsInClass,
-	InvalidJSonBindindAnnotationWithJsonbTransientOnField,
-	InvalidJSonBindindAnnotationWithJsonbTransientOnAccessor;
+    InvalidNumerOfJsonbCreatorAnnotationsInClass,
+    InvalidJSonBindindAnnotationWithJsonbTransientOnField,
+    InvalidJSonBindindAnnotationWithJsonbTransientOnAccessor;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 }

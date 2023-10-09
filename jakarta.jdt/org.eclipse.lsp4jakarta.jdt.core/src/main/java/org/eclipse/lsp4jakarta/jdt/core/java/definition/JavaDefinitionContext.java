@@ -27,33 +27,33 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  */
 public class JavaDefinitionContext extends AbtractJavaContext {
 
-	private final IJavaElement hyperlinkedElement;
+    private final IJavaElement hyperlinkedElement;
 
-	private final Position hyperlinkedPosition;
+    private final Position hyperlinkedPosition;
 
-	public JavaDefinitionContext(String uri, ITypeRoot typeRoot, IJDTUtils utils, IJavaElement hyperlinkeElement,
-			Position hyperlinkePosition) {
-		super(uri, typeRoot, utils);
-		this.hyperlinkedElement = hyperlinkeElement;
-		this.hyperlinkedPosition = hyperlinkePosition;
-	}
+    public JavaDefinitionContext(String uri, ITypeRoot typeRoot, IJDTUtils utils, IJavaElement hyperlinkeElement,
+                                 Position hyperlinkePosition) {
+        super(uri, typeRoot, utils);
+        this.hyperlinkedElement = hyperlinkeElement;
+        this.hyperlinkedPosition = hyperlinkePosition;
+    }
 
-	/**
-	 * Returns the hyperlinked Java element.
-	 * 
-	 * @return the hyperlinked Java element.
-	 */
-	public IJavaElement getHyperlinkedElement() {
-		return hyperlinkedElement;
-	}
+    /**
+     * Returns the hyperlinked Java element.
+     *
+     * @return the hyperlinked Java element.
+     */
+    public IJavaElement getHyperlinkedElement() {
+        return hyperlinkedElement;
+    }
 
-	/**
-	 * Returns the hyperlinked position.
-	 * 
-	 * @return the hyperlinked position.
-	 */
-	public Position getHyperlinkedPosition() {
-		return hyperlinkedPosition;
-	}
+    /**
+     * Returns the hyperlinked position.
+     *
+     * @return the hyperlinked position.
+     */
+    public Position getHyperlinkedPosition() {
+        return hyperlinkedPosition;
+    }
 
 }

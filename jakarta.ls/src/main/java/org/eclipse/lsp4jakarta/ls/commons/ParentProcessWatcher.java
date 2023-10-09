@@ -34,118 +34,118 @@ import com.google.common.io.Closeables;
  */
 public final class ParentProcessWatcher implements Runnable, Function<MessageConsumer, MessageConsumer> {
 
-	private static final Logger LOGGER = Logger.getLogger(ParentProcessWatcher.class.getName());
-	private static final boolean isJava1x = System.getProperty("java.version").startsWith("1.");
-	private static final boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+    private static final Logger LOGGER = Logger.getLogger(ParentProcessWatcher.class.getName());
+    private static final boolean isJava1x = System.getProperty("java.version").startsWith("1.");
+    private static final boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
 
-	/**
-	 * Exit code returned when XML Language Server is forced to exit.
-	 */
-	private static final int FORCED_EXIT_CODE = 1;
+    /**
+     * Exit code returned when XML Language Server is forced to exit.
+     */
+    private static final int FORCED_EXIT_CODE = 1;
 
-	private static final long INACTIVITY_DELAY_SECS = 30 * 1000;
-	private static final int POLL_DELAY_SECS = 10;
-	private volatile long lastActivityTime;
-	private final ProcessLanguageServer server;
-	private final Function<MessageConsumer, MessageConsumer> wrapper;
-	private ScheduledFuture<?> task;
-	private ScheduledExecutorService service;
+    private static final long INACTIVITY_DELAY_SECS = 30 * 1000;
+    private static final int POLL_DELAY_SECS = 10;
+    private volatile long lastActivityTime;
+    private final ProcessLanguageServer server;
+    private final Function<MessageConsumer, MessageConsumer> wrapper;
+    private ScheduledFuture<?> task;
+    private ScheduledExecutorService service;
 
-	public interface ProcessLanguageServer extends LanguageServer {
+    public interface ProcessLanguageServer extends LanguageServer {
 
-		long getParentProcessId();
+        long getParentProcessId();
 
-		void exit(int exitCode);
-	}
+        void exit(int exitCode);
+    }
 
-	public ParentProcessWatcher(ProcessLanguageServer server, Function<MessageConsumer, MessageConsumer> wrapper) {
-		this.server = server;
-		this.wrapper = wrapper;
-		service = Executors.newScheduledThreadPool(1);
-		task = service.scheduleWithFixedDelay(this, POLL_DELAY_SECS, POLL_DELAY_SECS, TimeUnit.SECONDS);
-	}
+    public ParentProcessWatcher(ProcessLanguageServer server, Function<MessageConsumer, MessageConsumer> wrapper) {
+        this.server = server;
+        this.wrapper = wrapper;
+        service = Executors.newScheduledThreadPool(1);
+        task = service.scheduleWithFixedDelay(this, POLL_DELAY_SECS, POLL_DELAY_SECS, TimeUnit.SECONDS);
+    }
 
-	@Override
-	public void run() {
-		if (!parentProcessStillRunning()) {
-			LOGGER.warning("Parent process stopped running, forcing server exit");
-			task.cancel(true);
-			server.exit(FORCED_EXIT_CODE);
-		}
-	}
+    @Override
+    public void run() {
+        if (!parentProcessStillRunning()) {
+            LOGGER.warning("Parent process stopped running, forcing server exit");
+            task.cancel(true);
+            server.exit(FORCED_EXIT_CODE);
+        }
+    }
 
-	/**
-	 * Checks whether the parent process is still running. If not, then we assume it
-	 * has crashed, and we have to terminate the Java Language Server.
-	 *
-	 * @return true if the parent process is still running
-	 */
-	private boolean parentProcessStillRunning() {
-		// Wait until parent process id is available
-		final long pid = server.getParentProcessId();
-		if (pid == 0 || lastActivityTime > (System.currentTimeMillis() - INACTIVITY_DELAY_SECS)) {
-			return true;
-		}
-		String command;
-		if (isWindows) {
-			command = "cmd /c \"tasklist /FI \"PID eq " + pid + "\" | findstr " + pid + "\"";
-		} else {
-			command = "kill -0 " + pid;
-		}
-		Process process = null;
-		boolean finished = false;
-		try {
-			process = Runtime.getRuntime().exec(command);
-			finished = process.waitFor(POLL_DELAY_SECS, TimeUnit.SECONDS);
-			if (!finished) {
-				process.destroy();
-				finished = process.waitFor(POLL_DELAY_SECS, TimeUnit.SECONDS); // wait for the process to stop
-			}
-			if (isWindows && finished && process.exitValue() > 1) {
-				// the tasklist command should return 0 (parent process exists) or 1 (parent
-				// process doesn't exist)
-				LOGGER.warning("The tasklist command: '" + command + "' returns " + process.exitValue());
-				return true;
-			}
-			return !finished || process.exitValue() == 0;
-		} catch (IOException | InterruptedException e) {
-			LOGGER.log(Level.WARNING, e.getMessage(), e);
-			return true;
-		} finally {
-			if (process != null) {
-				if (!finished) {
-					process.destroyForcibly();
-				}
-				// Terminating or destroying the Process doesn't close the process handle on
-				// Windows.
-				// It is only closed when the Process object is garbage collected (in its
-				// finalize() method).
-				// On Windows, when the Java LS is idle, we need to explicitly request a GC,
-				// to prevent an accumulation of zombie processes, as finalize() will be called.
-				if (isWindows) {
-					// Java >= 9 doesn't close the handle when the process is garbage collected
-					// We need to close the opened streams
-					if (!isJava1x) {
-						Closeables.closeQuietly(process.getInputStream());
-						Closeables.closeQuietly(process.getErrorStream());
-						try {
-							Closeables.close(process.getOutputStream(), false);
-						} catch (IOException e) {
-						}
-					}
-					System.gc();
-				}
-			}
-		}
+    /**
+     * Checks whether the parent process is still running. If not, then we assume it
+     * has crashed, and we have to terminate the Java Language Server.
+     *
+     * @return true if the parent process is still running
+     */
+    private boolean parentProcessStillRunning() {
+        // Wait until parent process id is available
+        final long pid = server.getParentProcessId();
+        if (pid == 0 || lastActivityTime > (System.currentTimeMillis() - INACTIVITY_DELAY_SECS)) {
+            return true;
+        }
+        String command;
+        if (isWindows) {
+            command = "cmd /c \"tasklist /FI \"PID eq " + pid + "\" | findstr " + pid + "\"";
+        } else {
+            command = "kill -0 " + pid;
+        }
+        Process process = null;
+        boolean finished = false;
+        try {
+            process = Runtime.getRuntime().exec(command);
+            finished = process.waitFor(POLL_DELAY_SECS, TimeUnit.SECONDS);
+            if (!finished) {
+                process.destroy();
+                finished = process.waitFor(POLL_DELAY_SECS, TimeUnit.SECONDS); // wait for the process to stop
+            }
+            if (isWindows && finished && process.exitValue() > 1) {
+                // the tasklist command should return 0 (parent process exists) or 1 (parent
+                // process doesn't exist)
+                LOGGER.warning("The tasklist command: '" + command + "' returns " + process.exitValue());
+                return true;
+            }
+            return !finished || process.exitValue() == 0;
+        } catch (IOException | InterruptedException e) {
+            LOGGER.log(Level.WARNING, e.getMessage(), e);
+            return true;
+        } finally {
+            if (process != null) {
+                if (!finished) {
+                    process.destroyForcibly();
+                }
+                // Terminating or destroying the Process doesn't close the process handle on
+                // Windows.
+                // It is only closed when the Process object is garbage collected (in its
+                // finalize() method).
+                // On Windows, when the Java LS is idle, we need to explicitly request a GC,
+                // to prevent an accumulation of zombie processes, as finalize() will be called.
+                if (isWindows) {
+                    // Java >= 9 doesn't close the handle when the process is garbage collected
+                    // We need to close the opened streams
+                    if (!isJava1x) {
+                        Closeables.closeQuietly(process.getInputStream());
+                        Closeables.closeQuietly(process.getErrorStream());
+                        try {
+                            Closeables.close(process.getOutputStream(), false);
+                        } catch (IOException e) {
+                        }
+                    }
+                    System.gc();
+                }
+            }
+        }
 
-	}
+    }
 
-	@Override
-	public MessageConsumer apply(final MessageConsumer consumer) {
-		// inject our own consumer to refresh the timestamp
-		return message -> {
-			lastActivityTime = System.currentTimeMillis();
-			wrapper.apply(consumer).consume(message);
-		};
-	}
+    @Override
+    public MessageConsumer apply(final MessageConsumer consumer) {
+        // inject our own consumer to refresh the timestamp
+        return message -> {
+            lastActivityTime = System.currentTimeMillis();
+            wrapper.apply(consumer).consume(message);
+        };
+    }
 }

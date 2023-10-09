@@ -34,14 +34,14 @@ public class JakartaLanguageServerLauncher {
 
         Function<MessageConsumer, MessageConsumer> wrapper;
         wrapper = it -> it;
-        if ("true".equals(System.getProperty("runAsync")) ) {
+        if ("true".equals(System.getProperty("runAsync"))) {
             wrapper = it -> msg -> CompletableFuture.runAsync(() -> it.consume(msg));
         }
         if (!"false".equals(System.getProperty("watchParentProcess"))) {
             wrapper = new ParentProcessWatcher(server, wrapper);
         }
         Launcher<LanguageClient> launcher = createServerLauncher(server, System.in, System.out,
-                Executors.newCachedThreadPool());
+                                                                 Executors.newCachedThreadPool());
 
         server.setLanguageClient(launcher.getRemoteProxy());
         launcher.startListening();
@@ -53,18 +53,17 @@ public class JakartaLanguageServerLauncher {
      * applied to the incoming and outgoing message streams so additional message
      * handling such as validation and tracing can be included.
      *
-     * @param server          - the server that receives method calls from the
-     *                        remote client
-     * @param in              - input stream to listen for incoming messages
-     * @param out             - output stream to send outgoing messages
+     * @param server - the server that receives method calls from the
+     *            remote client
+     * @param in - input stream to listen for incoming messages
+     * @param out - output stream to send outgoing messages
      * @param executorService - the executor service used to start threads
-     * @param wrapper         - a function for plugging in additional message
-     *                        consumers
+     * @param wrapper - a function for plugging in additional message
+     *            consumers
      */
     public static Launcher<LanguageClient> createServerLauncher(LanguageServer server, InputStream in, OutputStream out,
-            ExecutorService executorService) {
-        return new Builder<LanguageClient>().setLocalService(server).setRemoteInterface(JakartaLanguageClientAPI.class)
-                .setInput(in).setOutput(out).setExecutorService(executorService).create();
+                                                                ExecutorService executorService) {
+        return new Builder<LanguageClient>().setLocalService(server).setRemoteInterface(JakartaLanguageClientAPI.class).setInput(in).setOutput(out).setExecutorService(executorService).create();
     }
 
 }

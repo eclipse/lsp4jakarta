@@ -37,74 +37,71 @@ import org.eclipse.jdt.internal.corext.codemanipulation.ContextSensitiveImportRe
 /**
  * Similar functionality as NewAnnotationProposal. The main difference is that
  * first removes specified annotations before adding a new annotation.
- * 
+ *
  * Note: This class only accepts one new annotation to add.
- * 
+ *
  * @author Kathryn Kodama
  */
 public class ReplaceAnnotationProposal extends InsertAnnotationProposal {
 
-	private final String[] removeAnnotations;
+    private final String[] removeAnnotations;
 
-	public ReplaceAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-			IBinding binding, int relevance, String annotation, String... removeAnnotations) {
-		super(label, targetCU, invocationNode, binding, relevance, annotation);
-		this.removeAnnotations = removeAnnotations;
-	}
+    public ReplaceAnnotationProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+                                     IBinding binding, int relevance, String annotation, String... removeAnnotations) {
+        super(label, targetCU, invocationNode, binding, relevance, annotation);
+        this.removeAnnotations = removeAnnotations;
+    }
 
-	@Override
-	protected ASTRewrite getRewrite() throws CoreException {
-		CompilationUnit fInvocationNode = getInvocationNode();
-		IBinding fBinding = getBinding();
-		String[] annotations = getAnnotations();
+    @Override
+    protected ASTRewrite getRewrite() throws CoreException {
+        CompilationUnit fInvocationNode = getInvocationNode();
+        IBinding fBinding = getBinding();
+        String[] annotations = getAnnotations();
 
-		ASTNode declNode = null;
-		ASTNode boundNode = fInvocationNode.findDeclaringNode(fBinding);
-		CompilationUnit newRoot = fInvocationNode;
-		if (boundNode != null) {
-			declNode = boundNode; // is same CU
-		} else {
-			newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
-			declNode = newRoot.findDeclaringNode(fBinding.getKey());
-		}
-		ImportRewrite imports = createImportRewrite(newRoot);
+        ASTNode declNode = null;
+        ASTNode boundNode = fInvocationNode.findDeclaringNode(fBinding);
+        CompilationUnit newRoot = fInvocationNode;
+        if (boundNode != null) {
+            declNode = boundNode; // is same CU
+        } else {
+            newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
+            declNode = newRoot.findDeclaringNode(fBinding.getKey());
+        }
+        ImportRewrite imports = createImportRewrite(newRoot);
 
-		boolean isField = declNode instanceof VariableDeclarationFragment;
-		if (isField) {
-			declNode = declNode.getParent();
-		}
-		if (declNode instanceof TypeDeclaration || isField) {
-			AST ast = declNode.getAST();
-			ASTRewrite rewrite = ASTRewrite.create(ast);
+        boolean isField = declNode instanceof VariableDeclarationFragment;
+        if (isField) {
+            declNode = declNode.getParent();
+        }
+        if (declNode instanceof TypeDeclaration || isField) {
+            AST ast = declNode.getAST();
+            ASTRewrite rewrite = ASTRewrite.create(ast);
 
-			ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
+            ImportRewriteContext importRewriteContext = new ContextSensitiveImportRewriteContext(declNode, imports);
 
-			// remove annotations in the removeAnnotations list
-			@SuppressWarnings("unchecked")
-			List<? extends ASTNode> children = (List<? extends ASTNode>) declNode
-					.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
-			for (ASTNode child : children) {
-				if (child instanceof Annotation) {
-					Annotation annotation = (Annotation) child;
-					IAnnotationBinding annotationBinding = annotation.resolveAnnotationBinding();
-					boolean containsAnnotation = Arrays.stream(removeAnnotations)
-							.anyMatch(annotationBinding.getName()::contains);
-					if (containsAnnotation) {
-						rewrite.remove(child, null);
-					}
-				}
-			}
-			for (String annotation : annotations) {
-				Annotation marker = ast.newMarkerAnnotation();
-				marker.setTypeName(ast.newName(imports.addImport(annotation, importRewriteContext))); // $NON-NLS-1$
-				rewrite.getListRewrite(declNode,
-						isField ? FieldDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY)
-						.insertFirst(marker, null);
-			}
+            // remove annotations in the removeAnnotations list
+            @SuppressWarnings("unchecked")
+            List<? extends ASTNode> children = (List<? extends ASTNode>) declNode.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
+            for (ASTNode child : children) {
+                if (child instanceof Annotation) {
+                    Annotation annotation = (Annotation) child;
+                    IAnnotationBinding annotationBinding = annotation.resolveAnnotationBinding();
+                    boolean containsAnnotation = Arrays.stream(removeAnnotations).anyMatch(annotationBinding.getName()::contains);
+                    if (containsAnnotation) {
+                        rewrite.remove(child, null);
+                    }
+                }
+            }
+            for (String annotation : annotations) {
+                Annotation marker = ast.newMarkerAnnotation();
+                marker.setTypeName(ast.newName(imports.addImport(annotation, importRewriteContext))); // $NON-NLS-1$
+                rewrite.getListRewrite(declNode,
+                                       isField ? FieldDeclaration.MODIFIERS2_PROPERTY : TypeDeclaration.MODIFIERS2_PROPERTY).insertFirst(marker, null);
+            }
 
-			return rewrite;
-		}
-		return null;
-	}
+            return rewrite;
+        }
+        return null;
+    }
 
 }

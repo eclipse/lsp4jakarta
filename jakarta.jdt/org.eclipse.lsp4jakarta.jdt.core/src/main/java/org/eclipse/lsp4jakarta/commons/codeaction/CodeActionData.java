@@ -20,57 +20,57 @@ import java.util.Objects;
  */
 public class CodeActionData {
 
-	private String id;
+    private String id;
 
-	public CodeActionData() {
-		this(null);
-	}
+    public CodeActionData() {
+        this(null);
+    }
 
-	public CodeActionData(ICodeActionId id) {
-		setCodeActionId(id);
-	}
+    public CodeActionData(ICodeActionId id) {
+        setCodeActionId(id);
+    }
 
-	/**
-	 * Returns the id of this code action as a string.
-	 *
-	 * Each type of code action has an id that represents it, so that it's easy to
-	 * associate a given code action to the code that generated it.
-	 *
-	 * @return the id of this code action
-	 */
-	public String getCodeActionId() {
-		return id;
-	}
+    /**
+     * Returns the id of this code action as a string.
+     *
+     * Each type of code action has an id that represents it, so that it's easy to
+     * associate a given code action to the code that generated it.
+     *
+     * @return the id of this code action
+     */
+    public String getCodeActionId() {
+        return id;
+    }
 
-	/**
-	 * Sets the id of this code action.
-	 *
-	 * @param id the new value for the id of this code action
-	 */
-	public void setCodeActionId(ICodeActionId id) {
-		if (id != null) {
-			this.id = id.getId();
-		} else {
-			this.id = null;
-		}
-	}
+    /**
+     * Sets the id of this code action.
+     *
+     * @param id the new value for the id of this code action
+     */
+    public void setCodeActionId(ICodeActionId id) {
+        if (id != null) {
+            this.id = id.getId();
+        } else {
+            this.id = null;
+        }
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof CodeActionData)) {
-			return false;
-		}
-		CodeActionData other = (CodeActionData) obj;
-		return Objects.equals(id, other.id);
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof CodeActionData)) {
+            return false;
+        }
+        CodeActionData other = (CodeActionData) obj;
+        return Objects.equals(id, other.id);
+    }
 
-	@Override
-	public String toString() {
-		return "CodeActionData [id=" + id + "]";
-	}
+    @Override
+    public String toString() {
+        return "CodeActionData [id=" + id + "]";
+    }
 
 }

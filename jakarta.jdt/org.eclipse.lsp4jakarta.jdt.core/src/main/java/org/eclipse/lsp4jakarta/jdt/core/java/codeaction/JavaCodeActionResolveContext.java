@@ -24,16 +24,16 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  */
 public class JavaCodeActionResolveContext extends JavaCodeActionContext {
 
-	private final CodeAction unresolved;
+    private final CodeAction unresolved;
 
-	public JavaCodeActionResolveContext(ITypeRoot typeRoot, int selectionOffset, int selectionLength, IJDTUtils utils,
-			JakartaJavaCodeActionParams params, CodeAction unresolved) {
-		super(typeRoot, selectionOffset, selectionLength, utils, params);
-		this.unresolved = unresolved;
-	}
+    public JavaCodeActionResolveContext(ITypeRoot typeRoot, int selectionOffset, int selectionLength, IJDTUtils utils,
+                                        JakartaJavaCodeActionParams params, CodeAction unresolved) {
+        super(typeRoot, selectionOffset, selectionLength, utils, params);
+        this.unresolved = unresolved;
+    }
 
-	public CodeAction getUnresolved() {
-		return this.unresolved;
-	}
+    public CodeAction getUnresolved() {
+        return this.unresolved;
+    }
 
 }

@@ -21,26 +21,26 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.InsertDefaultConstructor
  */
 public class InsertDefaultProtectedConstructorQuickFix extends InsertDefaultConstructorToClassQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public InsertDefaultProtectedConstructorQuickFix() {
-		super("protected");
-	}
+    /**
+     * Constructor.
+     */
+    public InsertDefaultProtectedConstructorQuickFix() {
+        super("protected");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return InsertDefaultProtectedConstructorQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return InsertDefaultProtectedConstructorQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.PersistenceInsertProtectedCtrtToClass;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.PersistenceInsertProtectedCtrtToClass;
+    }
 }

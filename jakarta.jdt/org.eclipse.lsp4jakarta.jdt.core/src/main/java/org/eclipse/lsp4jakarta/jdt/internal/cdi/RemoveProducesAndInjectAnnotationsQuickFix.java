@@ -21,26 +21,26 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.RemoveAnnotationConflict
  */
 public class RemoveProducesAndInjectAnnotationsQuickFix extends RemoveAnnotationConflictQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public RemoveProducesAndInjectAnnotationsQuickFix() {
-		super(false, "jakarta.enterprise.inject.Produces", "jakarta.inject.Inject");
-	}
+    /**
+     * Constructor.
+     */
+    public RemoveProducesAndInjectAnnotationsQuickFix() {
+        super(false, "jakarta.enterprise.inject.Produces", "jakarta.inject.Inject");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveProducesAndInjectAnnotationsQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveProducesAndInjectAnnotationsQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.CDIRemoveProducesAndInjectAnnotations;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.CDIRemoveProducesAndInjectAnnotations;
+    }
 }

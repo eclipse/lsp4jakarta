@@ -20,20 +20,20 @@ import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * Project label provider API
- * 
+ *
  * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/IProjectLabelProvider.java
  *
  * @author dakwon
  */
 public interface IProjectLabelProvider {
 
-	/**
-	 * Returns a list of project labels ("maven", "jakarta", etc.) for the given
-	 * project
-	 * 
-	 * @param project the project to get labels for
-	 * @return a list of project labels for the given project
-	 * @throws JavaModelException
-	 */
-	List<String> getProjectLabels(IJavaProject project) throws JavaModelException;
+    /**
+     * Returns a list of project labels ("maven", "jakarta", etc.) for the given
+     * project
+     *
+     * @param project the project to get labels for
+     * @return a list of project labels for the given project
+     * @throws JavaModelException
+     */
+    List<String> getProjectLabels(IJavaProject project) throws JavaModelException;
 }

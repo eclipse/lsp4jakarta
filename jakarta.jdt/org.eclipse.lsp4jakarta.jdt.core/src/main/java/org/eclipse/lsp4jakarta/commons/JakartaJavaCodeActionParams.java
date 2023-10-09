@@ -20,55 +20,55 @@ import org.eclipse.lsp4j.TextDocumentIdentifier;
 
 /**
  * Jakarta Java codeAction parameters.
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaCodeActionParams.java
- * 
+ *
  * @author Angelo ZERR
  *
  */
 public class JakartaJavaCodeActionParams extends CodeActionParams {
 
-	private boolean resourceOperationSupported;
+    private boolean resourceOperationSupported;
 
-	private boolean commandConfigurationUpdateSupported;
+    private boolean commandConfigurationUpdateSupported;
 
-	private boolean resolveSupported;
+    private boolean resolveSupported;
 
-	public JakartaJavaCodeActionParams() {
-		super();
-	}
+    public JakartaJavaCodeActionParams() {
+        super();
+    }
 
-	public JakartaJavaCodeActionParams(final TextDocumentIdentifier textDocument, final Range range,
-			final CodeActionContext context) {
-		super(textDocument, range, context);
-	}
+    public JakartaJavaCodeActionParams(final TextDocumentIdentifier textDocument, final Range range,
+                                       final CodeActionContext context) {
+        super(textDocument, range, context);
+    }
 
-	public String getUri() {
-		return getTextDocument().getUri();
-	}
+    public String getUri() {
+        return getTextDocument().getUri();
+    }
 
-	public boolean isResourceOperationSupported() {
-		return resourceOperationSupported;
-	}
+    public boolean isResourceOperationSupported() {
+        return resourceOperationSupported;
+    }
 
-	public void setResourceOperationSupported(boolean resourceOperationSupported) {
-		this.resourceOperationSupported = resourceOperationSupported;
-	}
+    public void setResourceOperationSupported(boolean resourceOperationSupported) {
+        this.resourceOperationSupported = resourceOperationSupported;
+    }
 
-	public boolean isCommandConfigurationUpdateSupported() {
-		return commandConfigurationUpdateSupported;
-	}
+    public boolean isCommandConfigurationUpdateSupported() {
+        return commandConfigurationUpdateSupported;
+    }
 
-	public void setCommandConfigurationUpdateSupported(boolean commandConfigurationUpdateSupported) {
-		this.commandConfigurationUpdateSupported = commandConfigurationUpdateSupported;
-	}
+    public void setCommandConfigurationUpdateSupported(boolean commandConfigurationUpdateSupported) {
+        this.commandConfigurationUpdateSupported = commandConfigurationUpdateSupported;
+    }
 
-	public boolean isResolveSupported() {
-		return this.resolveSupported;
-	}
+    public boolean isResolveSupported() {
+        return this.resolveSupported;
+    }
 
-	public void setResolveSupported(boolean resolveSupported) {
-		this.resolveSupported = resolveSupported;
-	}
+    public void setResolveSupported(boolean resolveSupported) {
+        this.resolveSupported = resolveSupported;
+    }
 }

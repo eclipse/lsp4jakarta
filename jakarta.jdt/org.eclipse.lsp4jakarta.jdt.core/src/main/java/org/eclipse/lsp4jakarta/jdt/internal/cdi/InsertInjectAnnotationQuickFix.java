@@ -25,42 +25,42 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.InsertAnnotationMissingQ
  */
 public class InsertInjectAnnotationQuickFix extends InsertAnnotationMissingQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public InsertInjectAnnotationQuickFix() {
-		super("jakarta.inject.Inject");
-	}
+    /**
+     * Constructor.
+     */
+    public InsertInjectAnnotationQuickFix() {
+        super("jakarta.inject.Inject");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return InsertInjectAnnotationQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return InsertInjectAnnotationQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.CDIInsertInjectAnnotation;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.CDIInsertInjectAnnotation;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("restriction")
-	@Override
-	protected IBinding getBinding(ASTNode node) {
-		if (node.getParent() instanceof VariableDeclarationFragment) {
-			return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
-		}
-		if (node.getParent() instanceof MethodDeclaration) {
-			MethodDeclaration methodDecl = (MethodDeclaration) node.getParent();
-			return methodDecl.resolveBinding();
-		}
-		return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("restriction")
+    @Override
+    protected IBinding getBinding(ASTNode node) {
+        if (node.getParent() instanceof VariableDeclarationFragment) {
+            return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        }
+        if (node.getParent() instanceof MethodDeclaration) {
+            MethodDeclaration methodDecl = (MethodDeclaration) node.getParent();
+            return methodDecl.resolveBinding();
+        }
+        return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
+    }
 }

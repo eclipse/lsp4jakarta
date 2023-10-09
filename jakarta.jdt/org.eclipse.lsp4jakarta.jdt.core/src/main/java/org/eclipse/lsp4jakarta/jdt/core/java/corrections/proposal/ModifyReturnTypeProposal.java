@@ -26,7 +26,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.annotations.ModifyConstructReturnTyp
 
 /**
  * Code action proposal for changing the return type of a method.
- * 
+ *
  * @author Yijia Jing
  * @see CodeActionHandler
  * @see ModifyConstructReturnTypeQuickFix
@@ -34,44 +34,44 @@ import org.eclipse.lsp4jakarta.jdt.internal.annotations.ModifyConstructReturnTyp
  */
 public class ModifyReturnTypeProposal extends ASTRewriteCorrectionProposal {
 
-	private final CompilationUnit invocationNode;
-	private final IBinding binding;
-	private final Type newReturnType;
+    private final CompilationUnit invocationNode;
+    private final IBinding binding;
+    private final Type newReturnType;
 
-	/**
-	 * Constructor for ModifyReturnTypeProposal that accepts the new return type of
-	 * a method.
-	 * 
-	 * @param newReturnType the new return type to change to
-	 */
-	public ModifyReturnTypeProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-			IBinding binding, int relevance, Type newReturnType) {
-		super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-		this.invocationNode = invocationNode;
-		this.binding = binding;
-		this.newReturnType = newReturnType;
-	}
+    /**
+     * Constructor for ModifyReturnTypeProposal that accepts the new return type of
+     * a method.
+     *
+     * @param newReturnType the new return type to change to
+     */
+    public ModifyReturnTypeProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+                                    IBinding binding, int relevance, Type newReturnType) {
+        super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
+        this.invocationNode = invocationNode;
+        this.binding = binding;
+        this.newReturnType = newReturnType;
+    }
 
-	@SuppressWarnings("restriction")
-	@Override
-	protected ASTRewrite getRewrite() {
-		ASTNode declNode = null;
-		ASTNode boundNode = invocationNode.findDeclaringNode(binding);
-		CompilationUnit newRoot = invocationNode;
+    @SuppressWarnings("restriction")
+    @Override
+    protected ASTRewrite getRewrite() {
+        ASTNode declNode = null;
+        ASTNode boundNode = invocationNode.findDeclaringNode(binding);
+        CompilationUnit newRoot = invocationNode;
 
-		if (boundNode != null) {
-			declNode = boundNode;
-		} else {
-			newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
-			declNode = newRoot.findDeclaringNode(binding.getKey());
-		}
+        if (boundNode != null) {
+            declNode = boundNode;
+        } else {
+            newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
+            declNode = newRoot.findDeclaringNode(binding.getKey());
+        }
 
-		if (declNode.getNodeType() == ASTNode.METHOD_DECLARATION) {
-			AST ast = declNode.getAST();
-			ASTRewrite rewrite = ASTRewrite.create(ast);
-			rewrite.set(declNode, MethodDeclaration.RETURN_TYPE2_PROPERTY, newReturnType, null);
-			return rewrite;
-		}
-		return null;
-	}
+        if (declNode.getNodeType() == ASTNode.METHOD_DECLARATION) {
+            AST ast = declNode.getAST();
+            ASTRewrite rewrite = ASTRewrite.create(ast);
+            rewrite.set(declNode, MethodDeclaration.RETURN_TYPE2_PROPERTY, newReturnType, null);
+            return rewrite;
+        }
+        return null;
+    }
 }

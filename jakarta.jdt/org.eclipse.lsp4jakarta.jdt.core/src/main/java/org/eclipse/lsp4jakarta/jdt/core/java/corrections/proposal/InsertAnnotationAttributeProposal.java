@@ -43,92 +43,92 @@ import org.eclipse.lsp4j.CodeActionKind;
 
 public class InsertAnnotationAttributeProposal extends LinkedCorrectionProposal {
 
-	private final Annotation fAnnotation;
-	private final Set<String> attributes;
+    private final Annotation fAnnotation;
+    private final Set<String> attributes;
 
-	public InsertAnnotationAttributeProposal(String label, ICompilationUnit targetCU, Annotation annotation,
-			int relevance, String... attributes) {
-		super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-		this.fAnnotation = annotation;
-		this.attributes = new HashSet<>(Arrays.asList(attributes));
-	}
+    public InsertAnnotationAttributeProposal(String label, ICompilationUnit targetCU, Annotation annotation,
+                                             int relevance, String... attributes) {
+        super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
+        this.fAnnotation = annotation;
+        this.attributes = new HashSet<>(Arrays.asList(attributes));
+    }
 
-	@Override
-	protected ASTRewrite getRewrite() throws CoreException {
-		AST ast = fAnnotation.getAST();
+    @Override
+    protected ASTRewrite getRewrite() throws CoreException {
+        AST ast = fAnnotation.getAST();
 
-		ASTRewrite rewrite = ASTRewrite.create(ast);
-		createImportRewrite((CompilationUnit) fAnnotation.getRoot());
+        ASTRewrite rewrite = ASTRewrite.create(ast);
+        createImportRewrite((CompilationUnit) fAnnotation.getRoot());
 
-		ListRewrite listRewrite;
-		if (fAnnotation instanceof NormalAnnotation) {
-			listRewrite = rewrite.getListRewrite(fAnnotation, NormalAnnotation.VALUES_PROPERTY);
-		} else {
-			NormalAnnotation newAnnotation = ast.newNormalAnnotation();
-			newAnnotation.setTypeName((Name) rewrite.createMoveTarget(fAnnotation.getTypeName()));
-			rewrite.replace(fAnnotation, newAnnotation, null);
+        ListRewrite listRewrite;
+        if (fAnnotation instanceof NormalAnnotation) {
+            listRewrite = rewrite.getListRewrite(fAnnotation, NormalAnnotation.VALUES_PROPERTY);
+        } else {
+            NormalAnnotation newAnnotation = ast.newNormalAnnotation();
+            newAnnotation.setTypeName((Name) rewrite.createMoveTarget(fAnnotation.getTypeName()));
+            rewrite.replace(fAnnotation, newAnnotation, null);
 
-			listRewrite = rewrite.getListRewrite(newAnnotation, NormalAnnotation.VALUES_PROPERTY);
-		}
-		addDefinedAtributes(fAnnotation.resolveTypeBinding(), listRewrite);
+            listRewrite = rewrite.getListRewrite(newAnnotation, NormalAnnotation.VALUES_PROPERTY);
+        }
+        addDefinedAtributes(fAnnotation.resolveTypeBinding(), listRewrite);
 
-		return rewrite;
-	}
+        return rewrite;
+    }
 
-	private void addDefinedAtributes(ITypeBinding binding, ListRewrite listRewriter) {
-		Set<String> implementedAttribs = new HashSet<String>();
-		if (fAnnotation instanceof NormalAnnotation) {
-			List<MemberValuePair> list = ((NormalAnnotation) fAnnotation).values();
-			for (int i = 0; i < list.size(); i++) {
-				MemberValuePair curr = list.get(i);
-				implementedAttribs.add(curr.getName().getIdentifier());
-			}
-		} else if (fAnnotation instanceof SingleMemberAnnotation) {
-			implementedAttribs.add("value"); //$NON-NLS-1$
-		}
-		ASTRewrite rewriter = listRewriter.getASTRewrite();
-		AST ast = rewriter.getAST();
-		ImportRewriteContext context = null;
-		ASTNode bodyDeclaration = ASTResolving.findParentBodyDeclaration(listRewriter.getParent());
-		if (bodyDeclaration != null) {
-			context = new ContextSensitiveImportRewriteContext(bodyDeclaration, getImportRewrite());
-		}
+    private void addDefinedAtributes(ITypeBinding binding, ListRewrite listRewriter) {
+        Set<String> implementedAttribs = new HashSet<String>();
+        if (fAnnotation instanceof NormalAnnotation) {
+            List<MemberValuePair> list = ((NormalAnnotation) fAnnotation).values();
+            for (int i = 0; i < list.size(); i++) {
+                MemberValuePair curr = list.get(i);
+                implementedAttribs.add(curr.getName().getIdentifier());
+            }
+        } else if (fAnnotation instanceof SingleMemberAnnotation) {
+            implementedAttribs.add("value"); //$NON-NLS-1$
+        }
+        ASTRewrite rewriter = listRewriter.getASTRewrite();
+        AST ast = rewriter.getAST();
+        ImportRewriteContext context = null;
+        ASTNode bodyDeclaration = ASTResolving.findParentBodyDeclaration(listRewriter.getParent());
+        if (bodyDeclaration != null) {
+            context = new ContextSensitiveImportRewriteContext(bodyDeclaration, getImportRewrite());
+        }
 
-		IMethodBinding[] declaredMethods = binding.getDeclaredMethods();
-		for (int i = 0; i < declaredMethods.length; i++) {
-			IMethodBinding curr = declaredMethods[i];
-			if (!implementedAttribs.contains(curr.getName()) && attributes.contains(curr.getName())) {
-				MemberValuePair pair = ast.newMemberValuePair();
-				pair.setName(ast.newSimpleName(curr.getName()));
-				pair.setValue(newDefaultExpression(ast, curr.getReturnType(), context));
-				listRewriter.insertLast(pair, null);
-			}
-		}
-	}
+        IMethodBinding[] declaredMethods = binding.getDeclaredMethods();
+        for (int i = 0; i < declaredMethods.length; i++) {
+            IMethodBinding curr = declaredMethods[i];
+            if (!implementedAttribs.contains(curr.getName()) && attributes.contains(curr.getName())) {
+                MemberValuePair pair = ast.newMemberValuePair();
+                pair.setName(ast.newSimpleName(curr.getName()));
+                pair.setValue(newDefaultExpression(ast, curr.getReturnType(), context));
+                listRewriter.insertLast(pair, null);
+            }
+        }
+    }
 
-	private Expression newDefaultExpression(AST ast, ITypeBinding type, ImportRewriteContext context) {
-		if (type.isPrimitive()) {
-			String name = type.getName();
-			if ("boolean".equals(name)) { //$NON-NLS-1$
-				return ast.newBooleanLiteral(false);
-			} else {
-				return ast.newNumberLiteral("0"); //$NON-NLS-1$
-			}
-		}
-		if (type == ast.resolveWellKnownType("java.lang.String")) { //$NON-NLS-1$
-			return ast.newStringLiteral();
-		}
-		if (type.isArray()) {
-			ArrayInitializer initializer = ast.newArrayInitializer();
-			initializer.expressions().add(newDefaultExpression(ast, type.getElementType(), context));
-			return initializer;
-		}
-		if (type.isAnnotation()) {
-			MarkerAnnotation annotation = ast.newMarkerAnnotation();
-			annotation.setTypeName(ast.newName(getImportRewrite().addImport(type, context)));
-			return annotation;
-		}
-		return ast.newNullLiteral();
-	}
+    private Expression newDefaultExpression(AST ast, ITypeBinding type, ImportRewriteContext context) {
+        if (type.isPrimitive()) {
+            String name = type.getName();
+            if ("boolean".equals(name)) { //$NON-NLS-1$
+                return ast.newBooleanLiteral(false);
+            } else {
+                return ast.newNumberLiteral("0"); //$NON-NLS-1$
+            }
+        }
+        if (type == ast.resolveWellKnownType("java.lang.String")) { //$NON-NLS-1$
+            return ast.newStringLiteral();
+        }
+        if (type.isArray()) {
+            ArrayInitializer initializer = ast.newArrayInitializer();
+            initializer.expressions().add(newDefaultExpression(ast, type.getElementType(), context));
+            return initializer;
+        }
+        if (type.isAnnotation()) {
+            MarkerAnnotation annotation = ast.newMarkerAnnotation();
+            annotation.setTypeName(ast.newName(getImportRewrite().addImport(type, context)));
+            return annotation;
+        }
+        return ast.newNullLiteral();
+    }
 
 }

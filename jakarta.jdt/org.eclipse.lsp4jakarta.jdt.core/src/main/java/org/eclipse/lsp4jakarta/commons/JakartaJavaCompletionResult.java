@@ -20,39 +20,39 @@ import org.eclipse.lsp4j.CompletionList;
  * Represents completion information and context calculated by the Java language server component.
  */
 public class JakartaJavaCompletionResult {
-	private CompletionList completionList;
-	private JavaCursorContextResult cursorContext;
+    private CompletionList completionList;
+    private JavaCursorContextResult cursorContext;
 
-	public JakartaJavaCompletionResult(CompletionList completionList,
-			JavaCursorContextResult cursorContext) {
-		this.completionList = completionList;
-		this.cursorContext = cursorContext;
-	}
+    public JakartaJavaCompletionResult(CompletionList completionList,
+                                       JavaCursorContextResult cursorContext) {
+        this.completionList = completionList;
+        this.cursorContext = cursorContext;
+    }
 
-	public JakartaJavaCompletionResult() {
-		this(null, null);
-	}
+    public JakartaJavaCompletionResult() {
+        this(null, null);
+    }
 
-	/**
-	 * Returns the list of completion items contributed by the Java language server
-	 * component.
-	 *
-	 * @return the list of completion items contributed by the Java language server
-	 *         component
-	 */
-	public CompletionList getCompletionList() {
-		return completionList;
-	}
+    /**
+     * Returns the list of completion items contributed by the Java language server
+     * component.
+     *
+     * @return the list of completion items contributed by the Java language server
+     *         component
+     */
+    public CompletionList getCompletionList() {
+        return completionList;
+    }
 
-	/**
-	 * Returns information on the context of the cursor in the Java file, calculated
-	 * by the Java language server component.
-	 *
-	 * @return information on the context of the cursor in the Java file, calculated
-	 *         by the Java language server component
-	 */
-	public JavaCursorContextResult getCursorContext() {
-		return cursorContext;
-	}
+    /**
+     * Returns information on the context of the cursor in the Java file, calculated
+     * by the Java language server component.
+     *
+     * @return information on the context of the cursor in the Java file, calculated
+     *         by the Java language server component
+     */
+    public JavaCursorContextResult getCursorContext() {
+        return cursorContext;
+    }
 
 }

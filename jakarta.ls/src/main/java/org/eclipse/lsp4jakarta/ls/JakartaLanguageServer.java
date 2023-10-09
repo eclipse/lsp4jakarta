@@ -45,15 +45,14 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
 
     private final WorkspaceService workspaceService;
     private final TextDocumentService textDocumentService;
-	private final JakartaTextDocuments javaDocuments;
-
+    private final JakartaTextDocuments javaDocuments;
 
     private JakartaLanguageClientAPI languageClient;
 
     public JakartaLanguageServer() {
         // Workspace service handles workspace settings changes and calls update
         // settings.
-    	javaDocuments = new JakartaTextDocuments(this, this);
+        javaDocuments = new JakartaTextDocuments(this, this);
         workspaceService = new JakartaWorkspaceService(this);
         textDocumentService = new JakartaTextDocumentService(this, javaDocuments);
     }
@@ -67,7 +66,7 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
 
         InitializeResult initializeResult = new InitializeResult(serverCapabilities);
         // Provide Completion Capability to the LS
-        initializeResult.getCapabilities().setCompletionProvider(new CompletionOptions(false, null));				
+        initializeResult.getCapabilities().setCompletionProvider(new CompletionOptions(false, null));
         initializeResult.getCapabilities().setHoverProvider(true);
         initializeResult.getCapabilities().setCodeActionProvider(true);
         return CompletableFuture.completedFuture(initializeResult);
@@ -121,20 +120,20 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
         return parentProcessId != null ? parentProcessId : 0;
     }
 
-	@Override
-	public CompletableFuture<ProjectLabelInfoEntry> getJavaProjectLabels(
-			JakartaJavaProjectLabelsParams javaParams) {
-		return getLanguageClient().getJavaProjectLabels(javaParams);
-	}
+    @Override
+    public CompletableFuture<ProjectLabelInfoEntry> getJavaProjectLabels(
+                                                                         JakartaJavaProjectLabelsParams javaParams) {
+        return getLanguageClient().getJavaProjectLabels(javaParams);
+    }
 
-	@Override
-	public CompletableFuture<List<ProjectLabelInfoEntry>> getAllJavaProjectLabels() {
-		return getLanguageClient().getAllJavaProjectLabels();
-	}
+    @Override
+    public CompletableFuture<List<ProjectLabelInfoEntry>> getAllJavaProjectLabels() {
+        return getLanguageClient().getAllJavaProjectLabels();
+    }
 
-	@Override
-	public CompletableFuture<JakartaJavaFileInfo> getJavaFileInfo(JakartaJavaFileInfoParams javaParams) {
-		return getLanguageClient().getJavaFileInfo(javaParams);
-	}
+    @Override
+    public CompletableFuture<JakartaJavaFileInfo> getJavaFileInfo(JakartaJavaFileInfoParams javaParams) {
+        return getLanguageClient().getJavaFileInfo(javaParams);
+    }
 
 }

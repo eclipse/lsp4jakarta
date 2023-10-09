@@ -26,28 +26,26 @@ import org.eclipse.lsp4j.CompletionItem;
  */
 public interface IJavaCompletionParticipant {
 
-	/**
-	 * Returns true if this completion feature should be active in this context, and false otherwise
-	 *
-	 * @param context the context of where completion is triggered
-	 * @param monitor the progress monitor
-	 * @return true if this completion feature should be active in this context, and false otherwise
-	 * @throws CoreException
-	 */
-	default boolean isAdaptedForCompletion(JavaCompletionContext context, IProgressMonitor monitor)
-			throws CoreException {
-		return true;
-	}
+    /**
+     * Returns true if this completion feature should be active in this context, and false otherwise
+     *
+     * @param context the context of where completion is triggered
+     * @param monitor the progress monitor
+     * @return true if this completion feature should be active in this context, and false otherwise
+     * @throws CoreException
+     */
+    default boolean isAdaptedForCompletion(JavaCompletionContext context, IProgressMonitor monitor) throws CoreException {
+        return true;
+    }
 
-	/**
-	 * Returns the completion items for the given completion context
-	 *
-	 * @param context the completion context
-	 * @param monitor the progress monitor
-	 * @return the completion items for the given completion context
-	 * @throws CoreException
-	 */
-	List<? extends CompletionItem> collectCompletionItems(JavaCompletionContext context, IProgressMonitor monitor)
-			throws CoreException;
+    /**
+     * Returns the completion items for the given completion context
+     *
+     * @param context the completion context
+     * @param monitor the progress monitor
+     * @return the completion items for the given completion context
+     * @throws CoreException
+     */
+    List<? extends CompletionItem> collectCompletionItems(JavaCompletionContext context, IProgressMonitor monitor) throws CoreException;
 
 }

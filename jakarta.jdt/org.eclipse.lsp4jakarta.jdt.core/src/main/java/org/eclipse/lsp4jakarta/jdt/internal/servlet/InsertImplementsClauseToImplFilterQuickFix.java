@@ -42,77 +42,71 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
  */
 public class InsertImplementsClauseToImplFilterQuickFix implements IJavaCodeActionParticipant {
 
-	/** Logger object to record events for this class. */
-	private static final Logger LOGGER = Logger.getLogger(InsertImplementsClauseToImplFilterQuickFix.class.getName());
+    /** Logger object to record events for this class. */
+    private static final Logger LOGGER = Logger.getLogger(InsertImplementsClauseToImplFilterQuickFix.class.getName());
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return InsertImplementsClauseToImplFilterQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return InsertImplementsClauseToImplFilterQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		ASTNode node = context.getCoveredNode();
-		ITypeBinding parentType = Bindings.getBindingOfParentType(node);
-		List<CodeAction> codeActions = new ArrayList<>();
-		if (parentType != null) {
-			ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel(Constants.FILTER, parentType.getName()));
-			codeAction.setRelevance(0);
-			codeAction.setKind(CodeActionKind.QuickFix);
-			codeAction.setDiagnostics(Arrays.asList(diagnostic));
-			codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
-					context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(),
-					context.getParams().isCommandConfigurationUpdateSupported(),
-					JakartaCodeActionId.ServletFilterImplementation));
-			codeActions.add(codeAction);
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        ASTNode node = context.getCoveredNode();
+        ITypeBinding parentType = Bindings.getBindingOfParentType(node);
+        List<CodeAction> codeActions = new ArrayList<>();
+        if (parentType != null) {
+            ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel(Constants.FILTER, parentType.getName()));
+            codeAction.setRelevance(0);
+            codeAction.setKind(CodeActionKind.QuickFix);
+            codeAction.setDiagnostics(Arrays.asList(diagnostic));
+            codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(), context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(), context.getParams().isCommandConfigurationUpdateSupported(), JakartaCodeActionId.ServletFilterImplementation));
+            codeActions.add(codeAction);
+        }
 
-		return codeActions;
-	}
+        return codeActions;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
-		CodeAction toResolve = context.getUnresolved();
-		ASTNode node = context.getCoveredNode();
-		ITypeBinding parentType = Bindings.getBindingOfParentType(node);
-		String label = getLabel(Constants.FILTER, parentType.getName());
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
+        CodeAction toResolve = context.getUnresolved();
+        ASTNode node = context.getCoveredNode();
+        ITypeBinding parentType = Bindings.getBindingOfParentType(node);
+        String label = getLabel(Constants.FILTER, parentType.getName());
 
-		ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(label,
-				context.getCompilationUnit(), parentType,
-				context.getASTRoot(), "jakarta.servlet.Filter", 0);
-		try {
-			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
-		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to implement Filter.",
-					e);
-		}
+        ChangeCorrectionProposal proposal = new ImplementInterfaceProposal(label, context.getCompilationUnit(), parentType, context.getASTRoot(), "jakarta.servlet.Filter", 0);
+        try {
+            toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
+        } catch (CoreException e) {
+            LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to implement Filter.",
+                       e);
+        }
 
-		return toResolve;
-	}
+        return toResolve;
+    }
 
-	/**
-	 * Returns the code action label.
-	 * 
-	 * @param interfaceName The interface name.
-	 * @param interfaceType The type interface type.
-	 * 
-	 * @return The code action label.
-	 */
-	@SuppressWarnings("restriction")
-	private String getLabel(String interfaceName, String interfaceType) {
-		return Messages.getMessage("LetClassImplement",
-				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels.getJavaElementName(interfaceType),
-				org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels
-						.getJavaElementName(interfaceName));
-	}
+    /**
+     * Returns the code action label.
+     *
+     * @param interfaceName The interface name.
+     * @param interfaceType The type interface type.
+     *
+     * @return The code action label.
+     */
+    @SuppressWarnings("restriction")
+    private String getLabel(String interfaceName, String interfaceType) {
+        return Messages.getMessage("LetClassImplement",
+                                   org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels.getJavaElementName(interfaceType),
+                                   org.eclipse.jdt.internal.core.manipulation.util.BasicElementLabels.getJavaElementName(interfaceName));
+    }
 }

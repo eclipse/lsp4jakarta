@@ -24,22 +24,22 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  */
 public class JavaCompletionContext extends AbtractJavaContext {
 
-	private int offset;
+    private int offset;
 
-	public JavaCompletionContext(String uri, ITypeRoot typeRoot, IJDTUtils utils, int offset) {
-		super(uri, typeRoot, utils);
-		this.offset = offset;
-	}
+    public JavaCompletionContext(String uri, ITypeRoot typeRoot, IJDTUtils utils, int offset) {
+        super(uri, typeRoot, utils);
+        this.offset = offset;
+    }
 
-	/**
-	 * Returns the offset from the beginning of the document where completion was
-	 * triggered
-	 *
-	 * @return the offset from the beginning of the document where completion was
-	 *         triggered
-	 */
-	public int getOffset() {
-		return offset;
-	}
+    /**
+     * Returns the offset from the beginning of the document where completion was
+     * triggered
+     *
+     * @return the offset from the beginning of the document where completion was
+     *         triggered
+     */
+    public int getOffset() {
+        return offset;
+    }
 
 }

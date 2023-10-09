@@ -38,56 +38,53 @@ import org.junit.Test;
 
 public class ResourceMethodTest extends BaseJakartaTest {
 
-	protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
-	@Test
-	public void NonPublicMethod() throws Exception {
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jaxrs/NotPublicResourceMethod.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    public void NonPublicMethod() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jaxrs/NotPublicResourceMethod.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		Diagnostic d = d(20, 17, 30, "Only public methods can be exposed as resource methods.",
-				DiagnosticSeverity.Error, "jakarta-jaxrs", "NonPublicResourceMethod");
+        Diagnostic d = d(20, 17, 30, "Only public methods can be exposed as resource methods.",
+                         DiagnosticSeverity.Error, "jakarta-jaxrs", "NonPublicResourceMethod");
 
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
 
-		// Test for quick-fix code action
-		JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
-		TextEdit te = te(20, 4, 20, 11, "public"); // range may need to change
-		CodeAction ca = ca(uri, "Make method public", d, te);
-		assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca);
-	}
+        // Test for quick-fix code action
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
+        TextEdit te = te(20, 4, 20, 11, "public"); // range may need to change
+        CodeAction ca = ca(uri, "Make method public", d, te);
+        assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca);
+    }
 
-	@Test
-	public void multipleEntityParamsMethod() throws Exception {
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path(
-						"src/main/java/io/openliberty/sample/jakarta/jaxrs/MultipleEntityParamsResourceMethod.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    public void multipleEntityParamsMethod() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/jaxrs/MultipleEntityParamsResourceMethod.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		Diagnostic d = d(21, 13, 46, "Resource methods cannot have more than one entity parameter.",
-				DiagnosticSeverity.Error, "jakarta-jaxrs", "ResourceMethodMultipleEntityParams");
+        Diagnostic d = d(21, 13, 46, "Resource methods cannot have more than one entity parameter.",
+                         DiagnosticSeverity.Error, "jakarta-jaxrs", "ResourceMethodMultipleEntityParams");
 
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
 
-		// Test for quick-fix code action
-		JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
+        // Test for quick-fix code action
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d);
 
-		TextEdit te1 = te(21, 112, 21, 130, "");
-		CodeAction ca1 = ca(uri, "Remove all entity parameters except entityParam1", d, te1);
+        TextEdit te1 = te(21, 112, 21, 130, "");
+        CodeAction ca1 = ca(uri, "Remove all entity parameters except entityParam1", d, te1);
 
-		TextEdit te2 = te(21, 47, 21, 68, "");
-		CodeAction ca2 = ca(uri, "Remove all entity parameters except entityParam2", d, te2);
+        TextEdit te2 = te(21, 47, 21, 68, "");
+        CodeAction ca2 = ca(uri, "Remove all entity parameters except entityParam2", d, te2);
 
-		assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca1, ca2);
-	}
+        assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca1, ca2);
+    }
 
 }

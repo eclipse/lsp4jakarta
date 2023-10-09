@@ -43,79 +43,76 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
  */
 public class ModifyConstructReturnTypeQuickFix implements IJavaCodeActionParticipant {
 
-	/** Logger object to record events for this class. */
-	private static final Logger LOGGER = Logger.getLogger(ModifyConstructReturnTypeQuickFix.class.getName());
+    /** Logger object to record events for this class. */
+    private static final Logger LOGGER = Logger.getLogger(ModifyConstructReturnTypeQuickFix.class.getName());
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return ModifyConstructReturnTypeQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return ModifyConstructReturnTypeQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		List<CodeAction> codeActions = new ArrayList<>();
-		ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel());
-		codeAction.setRelevance(0);
-		codeAction.setKind(CodeActionKind.QuickFix);
-		codeAction.setDiagnostics(Arrays.asList(diagnostic));
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
+        ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel());
+        codeAction.setRelevance(0);
+        codeAction.setKind(CodeActionKind.QuickFix);
+        codeAction.setDiagnostics(Arrays.asList(diagnostic));
 
-		ICodeActionId id = JakartaCodeActionId.ChangeReturnTypeToVoid;
-		codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
-				context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(),
-				context.getParams().isCommandConfigurationUpdateSupported(), id));
-		codeActions.add(codeAction);
-		return codeActions;
-	}
+        ICodeActionId id = JakartaCodeActionId.ChangeReturnTypeToVoid;
+        codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(), context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(), context.getParams().isCommandConfigurationUpdateSupported(), id));
+        codeActions.add(codeAction);
+        return codeActions;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
-		CodeAction toResolve = context.getUnresolved();
-		ASTNode node = context.getCoveredNode();
-		IBinding parentType = getBinding(node);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
+        CodeAction toResolve = context.getUnresolved();
+        ASTNode node = context.getCoveredNode();
+        IBinding parentType = getBinding(node);
 
-		ChangeCorrectionProposal proposal = new ModifyReturnTypeProposal(getLabel(), context.getCompilationUnit(),
-				context.getASTRoot(), parentType, 0, node.getAST().newPrimitiveType(PrimitiveType.VOID));
+        ChangeCorrectionProposal proposal = new ModifyReturnTypeProposal(getLabel(), context.getCompilationUnit(), context.getASTRoot(), parentType, 0, node.getAST().newPrimitiveType(PrimitiveType.VOID));
 
-		try {
-			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
-		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to create workspace edit to change a method's retrun type", e);
-		}
+        try {
+            toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
+        } catch (CoreException e) {
+            LOGGER.log(Level.SEVERE, "Unable to create workspace edit to change a method's retrun type", e);
+        }
 
-		return toResolve;
-	}
+        return toResolve;
+    }
 
-	/**
-	 * Returns the named entity associated to the given node.
-	 * 
-	 * @param node The AST Node
-	 * 
-	 * @return The named entity associated to the given node.
-	 */
-	@SuppressWarnings("restriction")
-	protected IBinding getBinding(ASTNode node) {
-		if (node.getParent() instanceof MethodDeclaration) {
-			return ((MethodDeclaration) node.getParent()).resolveBinding();
-		}
-		return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
-	}
+    /**
+     * Returns the named entity associated to the given node.
+     *
+     * @param node The AST Node
+     *
+     * @return The named entity associated to the given node.
+     */
+    @SuppressWarnings("restriction")
+    protected IBinding getBinding(ASTNode node) {
+        if (node.getParent() instanceof MethodDeclaration) {
+            return ((MethodDeclaration) node.getParent()).resolveBinding();
+        }
+        return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
+    }
 
-	/**
-	 * Returns the code action label.
-	 *
-	 * @return The code action label.
-	 */
-	private String getLabel() {
-		return Messages.getMessage("ChangeReturnTypeToVoid");
-	}
+    /**
+     * Returns the code action label.
+     *
+     * @return The code action label.
+     */
+    private String getLabel() {
+        return Messages.getMessage("ChangeReturnTypeToVoid");
+    }
 }

@@ -23,56 +23,55 @@ import java.util.List;
  *
  */
 public class ProjectLabelInfoEntry {
-	public static final ProjectLabelInfoEntry EMPTY_PROJECT_INFO = new ProjectLabelInfoEntry("", "",
-			Collections.emptyList());
+    public static final ProjectLabelInfoEntry EMPTY_PROJECT_INFO = new ProjectLabelInfoEntry("", "", Collections.emptyList());
 
-	private final String uri;
-	private final String name;
-	private final List<String> labels;
+    private final String uri;
+    private final String name;
+    private final List<String> labels;
 
-	public ProjectLabelInfoEntry(String uri, String name, List<String> labels) {
-		this.uri = uri;
-		this.name = name;
-		this.labels = labels;
-	}
+    public ProjectLabelInfoEntry(String uri, String name, List<String> labels) {
+        this.uri = uri;
+        this.name = name;
+        this.labels = labels;
+    }
 
-	/**
-	 * Returns the project uri
-	 *
-	 * @return the project uri
-	 */
-	public String getUri() {
-		return uri;
-	}
+    /**
+     * Returns the project uri
+     *
+     * @return the project uri
+     */
+    public String getUri() {
+        return uri;
+    }
 
-	/**
-	 * Returns the name of the project
-	 *
-	 * @return The name of this project
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Returns the name of the project
+     *
+     * @return The name of this project
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Returns the labels for the current project uri
-	 *
-	 * @return the labels for the current project uri
-	 */
-	public List<String> getLabels() {
-		return labels;
-	}
+    /**
+     * Returns the labels for the current project uri
+     *
+     * @return the labels for the current project uri
+     */
+    public List<String> getLabels() {
+        return labels;
+    }
 
-	/**
-	 * Returns true if the project has the given label and false otherwise.
-	 *
-	 * @param label the label.
-	 * @return true if the project has the given label and false otherwise.
-	 */
-	public boolean hasLabel(String label) {
-		//boolean truth = true;
-		//return truth;
-		// right?
-		return labels != null && labels.contains(label);
-	}
+    /**
+     * Returns true if the project has the given label and false otherwise.
+     *
+     * @param label the label.
+     * @return true if the project has the given label and false otherwise.
+     */
+    public boolean hasLabel(String label) {
+        //boolean truth = true;
+        //return truth;
+        // right?
+        return labels != null && labels.contains(label);
+    }
 }

@@ -38,8 +38,7 @@ import org.eclipse.jdt.internal.core.JavaModelManager;
  */
 public class BaseJakartaTest {
 
-    protected static IJavaProject loadJavaProject(String projectName, String parentDirName)
-            throws CoreException, Exception {
+    protected static IJavaProject loadJavaProject(String projectName, String parentDirName) throws CoreException, Exception {
         // Move project to working directory
         File projectFolder = copyProjectToWorkingDirectory(projectName, parentDirName);
 
@@ -65,15 +64,13 @@ public class BaseJakartaTest {
             waitForBackgroundJobs(monitor);
         }
 
-        IJavaProject javaProject = JavaModelManager.getJavaModelManager().getJavaModel()
-                .getJavaProject(description.getName());
+        IJavaProject javaProject = JavaModelManager.getJavaModelManager().getJavaModel().getJavaProject(description.getName());
         return javaProject;
     }
 
     private static File copyProjectToWorkingDirectory(String projectName, String parentDirName) throws IOException {
         File from = new File("projects/" + parentDirName + "/" + projectName);
-        File to = new File(getWorkingProjectDirectory(),
-                java.nio.file.Paths.get(parentDirName, projectName).toString());
+        File to = new File(getWorkingProjectDirectory(), java.nio.file.Paths.get(parentDirName, projectName).toString());
 
         if (to.exists()) {
             FileUtils.forceDelete(to);

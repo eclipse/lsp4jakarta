@@ -18,20 +18,20 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
  * Servlet error code.
  */
 public enum ErrorCode implements IJavaErrorCode {
-	ClassWebFilterAnnotatedNoFilterInterfaceImpl,
-	WebFilterAnnotationMissingAttributes,
-	WebFilterAnnotationAttributeConflict,
-	WebFilterAnnotatedClassReqIfaceNoImpl,
-	WebServletAnnotatedClassDoesNotExtendHttpServlet,
-	WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet,
-	WebServletAnnotationMissingAttributes,
-	WebServletAnnotationAttributeConflict;
+    ClassWebFilterAnnotatedNoFilterInterfaceImpl,
+    WebFilterAnnotationMissingAttributes,
+    WebFilterAnnotationAttributeConflict,
+    WebFilterAnnotatedClassReqIfaceNoImpl,
+    WebServletAnnotatedClassDoesNotExtendHttpServlet,
+    WebServletAnnotatedClassUnknownSuperTypeDoesNotExtendHttpServlet,
+    WebServletAnnotationMissingAttributes,
+    WebServletAnnotationAttributeConflict;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getCode() {
-		return name();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCode() {
+        return name();
+    }
 }

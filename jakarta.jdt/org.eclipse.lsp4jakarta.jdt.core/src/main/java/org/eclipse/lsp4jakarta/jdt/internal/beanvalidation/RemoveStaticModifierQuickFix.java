@@ -28,41 +28,40 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.RemoveModifierConflictQu
  */
 public class RemoveStaticModifierQuickFix extends RemoveModifierConflictQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public RemoveStaticModifierQuickFix() {
-		super("static");
-	}
+    /**
+     * Constructor.
+     */
+    public RemoveStaticModifierQuickFix() {
+        super("static");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveStaticModifierQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveStaticModifierQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JakartaCodeActionId getCodeActionId() {
-		return JakartaCodeActionId.BBRemoveStaticModifier;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JakartaCodeActionId getCodeActionId() {
+        return JakartaCodeActionId.BBRemoveStaticModifier;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		List<? extends CodeAction> codeActions = new ArrayList<>();
-		if (diagnostic.getCode().getLeft()
-				.equals(ErrorCode.InvalidConstrainAnnotationOnStaticMethodOrField.getCode())) {
-			codeActions = super.getCodeActions(context, diagnostic, monitor);
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        List<? extends CodeAction> codeActions = new ArrayList<>();
+        if (diagnostic.getCode().getLeft().equals(ErrorCode.InvalidConstrainAnnotationOnStaticMethodOrField.getCode())) {
+            codeActions = super.getCodeActions(context, diagnostic, monitor);
+        }
 
-		return codeActions;
-	}
+        return codeActions;
+    }
 }

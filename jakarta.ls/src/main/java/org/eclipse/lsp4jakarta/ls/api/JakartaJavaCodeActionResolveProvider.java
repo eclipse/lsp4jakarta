@@ -22,7 +22,7 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
  */
 public interface JakartaJavaCodeActionResolveProvider {
 
-	@JsonRequest("jakarta/java/codeActionResolve")
-	CompletableFuture<CodeAction> resolveCodeAction(CodeAction unresolved);
+    @JsonRequest("jakarta/java/codeActionResolve")
+    CompletableFuture<CodeAction> resolveCodeAction(CodeAction unresolved);
 
 }

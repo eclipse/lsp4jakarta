@@ -31,80 +31,79 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  */
 public abstract class AbtractJavaContext {
 
-	private final String uri;
+    private final String uri;
 
-	private final ITypeRoot typeRoot;
+    private final ITypeRoot typeRoot;
 
-	private final IJDTUtils utils;
+    private final IJDTUtils utils;
 
-	private Map<String, Object> cache;
-	
-	private CompilationUnit fASTRoot;
+    private Map<String, Object> cache;
 
-	public AbtractJavaContext(String uri, ITypeRoot typeRoot, IJDTUtils utils) {
-		this.uri = uri;
-		this.typeRoot = typeRoot;
-		this.utils = utils;
-		this.fASTRoot = null;
-	}
+    private CompilationUnit fASTRoot;
 
-	public String getUri() {
-		return uri;
-	}
+    public AbtractJavaContext(String uri, ITypeRoot typeRoot, IJDTUtils utils) {
+        this.uri = uri;
+        this.typeRoot = typeRoot;
+        this.utils = utils;
+        this.fASTRoot = null;
+    }
 
-	public ITypeRoot getTypeRoot() {
-		return typeRoot;
-	}
+    public String getUri() {
+        return uri;
+    }
 
-	public IJavaProject getJavaProject() {
-		return getTypeRoot().getJavaProject();
-	}
+    public ITypeRoot getTypeRoot() {
+        return typeRoot;
+    }
 
-	public IJDTUtils getUtils() {
-		return utils;
-	}
+    public IJavaProject getJavaProject() {
+        return getTypeRoot().getJavaProject();
+    }
 
+    public IJDTUtils getUtils() {
+        return utils;
+    }
 
-	/**
-	 * Associates the specified value with the specified key in the cache.
-	 *
-	 * @param key   the key.
-	 * @param value the value.
-	 */
-	public void put(String key, Object value) {
-		if (cache == null) {
-			cache = new HashMap<>();
-		}
-		cache.put(key, value);
-	}
+    /**
+     * Associates the specified value with the specified key in the cache.
+     *
+     * @param key the key.
+     * @param value the value.
+     */
+    public void put(String key, Object value) {
+        if (cache == null) {
+            cache = new HashMap<>();
+        }
+        cache.put(key, value);
+    }
 
-	/**
-	 * Returns the value to which the specified key is mapped, or {@code null} if
-	 * this map contains no mapping for the key.
-	 *
-	 * @param key the key.
-	 * @return the value to which the specified key is mapped, or {@code null} if
-	 *         this map contains no mapping for the key.
-	 */
-	public Object get(String key) {
-		if (cache == null) {
-			return null;
-		}
-		return cache.get(key);
-	}
-	
-	public CompilationUnit getASTRoot() {
-		if (fASTRoot == null) {
-			fASTRoot = ASTResolving.createQuickFixAST((ICompilationUnit) getTypeRoot(), null);
-		}
-		return fASTRoot;
-	}
-	
-	/**
-	 * @param root The ASTRoot to set.
-	 */
-	public void setASTRoot(CompilationUnit root) {
-		fASTRoot = root;
-	}
+    /**
+     * Returns the value to which the specified key is mapped, or {@code null} if
+     * this map contains no mapping for the key.
+     *
+     * @param key the key.
+     * @return the value to which the specified key is mapped, or {@code null} if
+     *         this map contains no mapping for the key.
+     */
+    public Object get(String key) {
+        if (cache == null) {
+            return null;
+        }
+        return cache.get(key);
+    }
+
+    public CompilationUnit getASTRoot() {
+        if (fASTRoot == null) {
+            fASTRoot = ASTResolving.createQuickFixAST((ICompilationUnit) getTypeRoot(), null);
+        }
+        return fASTRoot;
+    }
+
+    /**
+     * @param root The ASTRoot to set.
+     */
+    public void setASTRoot(CompilationUnit root) {
+        fASTRoot = root;
+    }
 
 }

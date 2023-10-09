@@ -38,7 +38,7 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.InsertAnnotati
 
 /**
  * QuickFix for inserting annotations.
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/java/codeaction/InsertAnnotationMissingQuickFix.java
  *
@@ -47,140 +47,136 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.InsertAnnotati
  */
 public abstract class InsertAnnotationMissingQuickFix implements IJavaCodeActionParticipant {
 
-	private static final Logger LOGGER = Logger.getLogger(InsertAnnotationMissingQuickFix.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(InsertAnnotationMissingQuickFix.class.getName());
 
-	protected static final String ANNOTATION_KEY = "annotation";
+    protected static final String ANNOTATION_KEY = "annotation";
 
-	private final String[] annotations;
+    private final String[] annotations;
 
-	private final boolean generateOnlyOneCodeAction;
+    private final boolean generateOnlyOneCodeAction;
 
-	/**
-	 * Constructor for insert annotation quick fix.
-	 *
-	 * <p>
-	 * The participant will generate a CodeAction per annotation.
-	 * </p>
-	 *
-	 * @param annotations list of annotation to insert.
-	 */
-	public InsertAnnotationMissingQuickFix(String... annotations) {
-		this(false, annotations);
-	}
+    /**
+     * Constructor for insert annotation quick fix.
+     *
+     * <p>
+     * The participant will generate a CodeAction per annotation.
+     * </p>
+     *
+     * @param annotations list of annotation to insert.
+     */
+    public InsertAnnotationMissingQuickFix(String... annotations) {
+        this(false, annotations);
+    }
 
-	/**
-	 * Constructor for insert annotation quick fix.
-	 *
-	 * @param generateOnlyOneCodeAction true if the participant must generate a
-	 *                                  CodeAction which insert the list of
-	 *                                  annotation and false otherwise.
-	 * @param annotations               list of annotation to insert.
-	 */
-	public InsertAnnotationMissingQuickFix(boolean generateOnlyOneCodeAction, String... annotations) {
-		this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;
-		this.annotations = annotations;
-	}
+    /**
+     * Constructor for insert annotation quick fix.
+     *
+     * @param generateOnlyOneCodeAction true if the participant must generate a
+     *            CodeAction which insert the list of
+     *            annotation and false otherwise.
+     * @param annotations list of annotation to insert.
+     */
+    public InsertAnnotationMissingQuickFix(boolean generateOnlyOneCodeAction, String... annotations) {
+        this.generateOnlyOneCodeAction = generateOnlyOneCodeAction;
+        this.annotations = annotations;
+    }
 
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		List<CodeAction> codeActions = new ArrayList<>();
-		insertAnnotations(diagnostic, context, codeActions);
-		return codeActions;
-	}
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
+        insertAnnotations(diagnostic, context, codeActions);
+        return codeActions;
+    }
 
-	@Override
-	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
-		CodeAction toResolve = context.getUnresolved();
-		CodeActionResolveData data = (CodeActionResolveData) toResolve.getData();
-		List<String> resolveAnnotations = (List<String>) data.getExtendedDataEntry(ANNOTATION_KEY);
-		String[] resolveAnnotationsArray = resolveAnnotations.toArray(String[]::new);
-		String name = getLabel(resolveAnnotationsArray);
-		ASTNode node = context.getCoveringNode();
-		IBinding parentType = getBinding(node);
+    @Override
+    public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
+        CodeAction toResolve = context.getUnresolved();
+        CodeActionResolveData data = (CodeActionResolveData) toResolve.getData();
+        List<String> resolveAnnotations = (List<String>) data.getExtendedDataEntry(ANNOTATION_KEY);
+        String[] resolveAnnotationsArray = resolveAnnotations.toArray(String[]::new);
+        String name = getLabel(resolveAnnotationsArray);
+        ASTNode node = context.getCoveringNode();
+        IBinding parentType = getBinding(node);
 
-		ChangeCorrectionProposal proposal = new InsertAnnotationProposal(name, context.getCompilationUnit(),
-				context.getASTRoot(), parentType, 0, resolveAnnotationsArray);
-		try {
-			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
-		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to create workspace edit for code action to insert missing annotation", e);
-		}
+        ChangeCorrectionProposal proposal = new InsertAnnotationProposal(name, context.getCompilationUnit(), context.getASTRoot(), parentType, 0, resolveAnnotationsArray);
+        try {
+            toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
+        } catch (CoreException e) {
+            LOGGER.log(Level.SEVERE, "Unable to create workspace edit for code action to insert missing annotation", e);
+        }
 
-		return toResolve;
-	}
+        return toResolve;
+    }
 
-	protected IBinding getBinding(ASTNode node) {
-		if (node.getParent() instanceof VariableDeclarationFragment) {
-			return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
-		}
-		return Bindings.getBindingOfParentType(node);
-	}
+    protected IBinding getBinding(ASTNode node) {
+        if (node.getParent() instanceof VariableDeclarationFragment) {
+            return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        }
+        return Bindings.getBindingOfParentType(node);
+    }
 
-	protected String[] getAnnotations() {
-		return this.annotations;
-	}
+    protected String[] getAnnotations() {
+        return this.annotations;
+    }
 
-	protected void insertAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, List<CodeAction> codeActions)
-			throws CoreException {
-		if (generateOnlyOneCodeAction) {
-			insertAnnotation(diagnostic, context, codeActions, annotations);
-		} else {
-			for (String annotation : annotations) {
-				insertAnnotation(diagnostic, context, codeActions, annotation);
-			}
-		}
-	}
+    protected void insertAnnotations(Diagnostic diagnostic, JavaCodeActionContext context, List<CodeAction> codeActions) throws CoreException {
+        if (generateOnlyOneCodeAction) {
+            insertAnnotation(diagnostic, context, codeActions, annotations);
+        } else {
+            for (String annotation : annotations) {
+                insertAnnotation(diagnostic, context, codeActions, annotation);
+            }
+        }
+    }
 
-	protected void insertAnnotation(Diagnostic diagnostic, JavaCodeActionContext context, List<CodeAction> codeActions,
-			String... annotations) throws CoreException {
-		String name = getLabel(annotations);
-		ExtendedCodeAction codeAction = new ExtendedCodeAction(name);
-		codeAction.setRelevance(0);
-		codeAction.setDiagnostics(Collections.singletonList(diagnostic));
-		codeAction.setKind(CodeActionKind.QuickFix);
+    protected void insertAnnotation(Diagnostic diagnostic, JavaCodeActionContext context, List<CodeAction> codeActions,
+                                    String... annotations) throws CoreException {
+        String name = getLabel(annotations);
+        ExtendedCodeAction codeAction = new ExtendedCodeAction(name);
+        codeAction.setRelevance(0);
+        codeAction.setDiagnostics(Collections.singletonList(diagnostic));
+        codeAction.setKind(CodeActionKind.QuickFix);
 
-		Map<String, Object> extendedData = new HashMap<>();
-		extendedData.put(ANNOTATION_KEY, Arrays.asList(annotations));
-		codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
-				context.getParams().getRange(), extendedData, context.getParams().isResourceOperationSupported(),
-				context.getParams().isCommandConfigurationUpdateSupported(), getCodeActionId()));
+        Map<String, Object> extendedData = new HashMap<>();
+        extendedData.put(ANNOTATION_KEY, Arrays.asList(annotations));
+        codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(), context.getParams().getRange(), extendedData, context.getParams().isResourceOperationSupported(), context.getParams().isCommandConfigurationUpdateSupported(), getCodeActionId()));
 
-		codeActions.add(codeAction);
-	}
+        codeActions.add(codeAction);
+    }
 
-	private static String getLabel(String[] annotations) {
-		StringBuilder name = new StringBuilder("Insert ");
-		for (int i = 0; i < annotations.length; i++) {
-			String annotation = annotations[i];
-			String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
-			if (i > 0) {
-				name.append(", ");
-			}
-			name.append("@");
-			name.append(annotationName);
-		}
-		return name.toString();
-	}
+    private static String getLabel(String[] annotations) {
+        StringBuilder name = new StringBuilder("Insert ");
+        for (int i = 0; i < annotations.length; i++) {
+            String annotation = annotations[i];
+            String annotationName = annotation.substring(annotation.lastIndexOf('.') + 1, annotation.length());
+            if (i > 0) {
+                name.append(", ");
+            }
+            name.append("@");
+            name.append(annotationName);
+        }
+        return name.toString();
+    }
 
-	/**
-	 * Returns the id for this code action.
-	 *
-	 * @return the id for this code action
-	 */
-	protected abstract ICodeActionId getCodeActionId();
+    /**
+     * Returns the id for this code action.
+     *
+     * @return the id for this code action
+     */
+    protected abstract ICodeActionId getCodeActionId();
 
-	/**
-	 * Returns true if all the listed annotations should be added in one code
-	 * action, and false if separate code actions should be generated for each
-	 * annotation.
-	 *
-	 * @return true if all the listed annotations should be added in one code
-	 *         action, and false if separate code actions should be generated for
-	 *         each annotation
-	 */
-	protected boolean isGenerateOnlyOneCodeAction() {
-		return this.generateOnlyOneCodeAction;
-	}
+    /**
+     * Returns true if all the listed annotations should be added in one code
+     * action, and false if separate code actions should be generated for each
+     * annotation.
+     *
+     * @return true if all the listed annotations should be added in one code
+     *         action, and false if separate code actions should be generated for
+     *         each annotation
+     */
+    protected boolean isGenerateOnlyOneCodeAction() {
+        return this.generateOnlyOneCodeAction;
+    }
 
 }

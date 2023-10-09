@@ -17,59 +17,59 @@ package org.eclipse.lsp4jakarta.commons.codeaction;
  * Represents id of an lsp4mp code action.
  */
 public enum JakartaCodeActionId implements ICodeActionId {
-	IgnoreUnknownProperty,
-	// JAXRS
-	jaxrsInsertPublicCtrtToClass,
-	MakeConstructorPublic,
-	MakeMethodPublic,
-	RemoveAllEntityParametersExcept,
-	// Annotations
-	ChangeReturnTypeToVoid,
-	InsertResourceAnnotationTypeAttribute,
-	InsertResourceAnnotationNameAttribute,
-	RemoveAllParameters,
-	RemoveAnnotationPreDestroy,
-	RemoveAnnotationPostConstruct,
-	AnnotationRemoveStaticModifier,
-	// Bean validation
-	RemoveConstraintAnnotation,
-	BBRemoveStaticModifier,
-	// Dependency injection
-	DIRemoveInjectAnnotation,
-	DIRemoveFinalModifier,
-	DIRemoveAbstractModifier,
-	DIRemoveStaticModifier,
-	// JSON-B
-	JSONBRemoveJsonbCreatorAnnotation,
-	JSONBRemoveJsonbTransientAnnotation,
-	JSONBRemoveAllButJsonbTransientAnnotation,
-	// Persistence
-	PersistenceRemoveFinalModifier,
-	PersistenceRemoveMapKeyAnnotation,
-	PersistenceInsertAttributesToMKJCAnnotation,
-	PersistenceInsertPublicCtrtToClass,
-	PersistenceInsertProtectedCtrtToClass,
-	// WebSockets
-	WBInsertPathParamAnnotationWithValueAttrib,
-	// Servlet
-	ServletCompleteWebFilterAnnotation,
-	ServletCompleteServletAnnotation,
-	ServletFilterImplementation,
-	ServletExtendClass,
-	ServletListenerImplementation,
-	// CDI
-	CDIRemoveProducesAndInjectAnnotations,
-	CDIInsertInjectAnnotation,
-	CDIInsertProtectedCtrtToClass,
-	CDIInsertPublicCtrtToClass,
-	CDIRemoveInvalidInjectAnnotations,
-	CDIRemoveProducesAnnotation,
-	CDIRemoveInjectAnnotation,
-	CDIRemoveScopeDeclarationAnnotationsButOne,
-	CDIReplaceScopeAnnotations;
+    IgnoreUnknownProperty,
+    // JAXRS
+    jaxrsInsertPublicCtrtToClass,
+    MakeConstructorPublic,
+    MakeMethodPublic,
+    RemoveAllEntityParametersExcept,
+    // Annotations
+    ChangeReturnTypeToVoid,
+    InsertResourceAnnotationTypeAttribute,
+    InsertResourceAnnotationNameAttribute,
+    RemoveAllParameters,
+    RemoveAnnotationPreDestroy,
+    RemoveAnnotationPostConstruct,
+    AnnotationRemoveStaticModifier,
+    // Bean validation
+    RemoveConstraintAnnotation,
+    BBRemoveStaticModifier,
+    // Dependency injection
+    DIRemoveInjectAnnotation,
+    DIRemoveFinalModifier,
+    DIRemoveAbstractModifier,
+    DIRemoveStaticModifier,
+    // JSON-B
+    JSONBRemoveJsonbCreatorAnnotation,
+    JSONBRemoveJsonbTransientAnnotation,
+    JSONBRemoveAllButJsonbTransientAnnotation,
+    // Persistence
+    PersistenceRemoveFinalModifier,
+    PersistenceRemoveMapKeyAnnotation,
+    PersistenceInsertAttributesToMKJCAnnotation,
+    PersistenceInsertPublicCtrtToClass,
+    PersistenceInsertProtectedCtrtToClass,
+    // WebSockets
+    WBInsertPathParamAnnotationWithValueAttrib,
+    // Servlet
+    ServletCompleteWebFilterAnnotation,
+    ServletCompleteServletAnnotation,
+    ServletFilterImplementation,
+    ServletExtendClass,
+    ServletListenerImplementation,
+    // CDI
+    CDIRemoveProducesAndInjectAnnotations,
+    CDIInsertInjectAnnotation,
+    CDIInsertProtectedCtrtToClass,
+    CDIInsertPublicCtrtToClass,
+    CDIRemoveInvalidInjectAnnotations,
+    CDIRemoveProducesAnnotation,
+    CDIRemoveInjectAnnotation,
+    CDIRemoveScopeDeclarationAnnotationsButOne,
+    CDIReplaceScopeAnnotations;
 
-	@Override
-	public String getId() {
-		return name();
-	}
+    @Override
+    public String getId() {
+        return name();
+    }
 }

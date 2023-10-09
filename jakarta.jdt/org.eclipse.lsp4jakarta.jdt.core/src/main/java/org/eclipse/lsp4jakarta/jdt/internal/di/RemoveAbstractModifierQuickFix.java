@@ -20,26 +20,26 @@ import org.eclipse.lsp4jakarta.jdt.core.java.codeaction.RemoveModifierConflictQu
  */
 public class RemoveAbstractModifierQuickFix extends RemoveModifierConflictQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public RemoveAbstractModifierQuickFix() {
-		super(false, "abstract");
-	}
+    /**
+     * Constructor.
+     */
+    public RemoveAbstractModifierQuickFix() {
+        super(false, "abstract");
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveAbstractModifierQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveAbstractModifierQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected JakartaCodeActionId getCodeActionId() {
-		return JakartaCodeActionId.DIRemoveAbstractModifier;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected JakartaCodeActionId getCodeActionId() {
+        return JakartaCodeActionId.DIRemoveAbstractModifier;
+    }
 }

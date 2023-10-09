@@ -39,151 +39,149 @@ import org.eclipse.lsp4jakarta.jdt.internal.jaxrs.InsertDefaultPublicConstructor
 /**
  * Code action proposal for changing the visibility modifier of a method, field,
  * or type. Used by JAX-RS NonPublicResourceMethodQuickFix.
- * 
+ *
  * @author Matthew Shocrylas
  * @author Leslie Dawson
  * @see CodeActionHandler
  * @see InsertDefaultPublicConstructorQuickFix
  * @see PersistenceEntityQuickFix
- * 
+ *
  */
 public class ModifyModifiersProposal extends ASTRewriteCorrectionProposal {
 
-	private final CompilationUnit invocationNode;
-	private final IBinding binding;
-	private final ASTNode coveredNode;
+    private final CompilationUnit invocationNode;
+    private final IBinding binding;
+    private final ASTNode coveredNode;
 
-	// list of modifiers to add
-	private final List<String> modifiersToAdd;
+    // list of modifiers to add
+    private final List<String> modifiersToAdd;
 
-	// list of modifiers (if they exist) to remove
-	private final List<String> modifiersToRemove;
+    // list of modifiers (if they exist) to remove
+    private final List<String> modifiersToRemove;
 
-	/**
-	 * Constructor for ModifyModifiersProposal that accepts both a list of modifiers
-	 * to remove as well as to add
-	 * 
-	 * @param modifiersToAdd    list of valid modifiers as strings to be added
-	 * @param modifiersToRemove list of modifiers as strings to be removed
-	 */
-	public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-			IBinding binding, int relevance, ASTNode coveredNode, List<String> modifiersToAdd,
-			List<String> modifiersToRemove) {
-		super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-		this.invocationNode = invocationNode;
-		this.binding = binding;
-		this.coveredNode = coveredNode;
-		this.modifiersToAdd = modifiersToAdd;
-		this.modifiersToRemove = modifiersToRemove;
-	}
+    /**
+     * Constructor for ModifyModifiersProposal that accepts both a list of modifiers
+     * to remove as well as to add
+     *
+     * @param modifiersToAdd list of valid modifiers as strings to be added
+     * @param modifiersToRemove list of modifiers as strings to be removed
+     */
+    public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+                                   IBinding binding, int relevance, ASTNode coveredNode, List<String> modifiersToAdd,
+                                   List<String> modifiersToRemove) {
+        super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
+        this.invocationNode = invocationNode;
+        this.binding = binding;
+        this.coveredNode = coveredNode;
+        this.modifiersToAdd = modifiersToAdd;
+        this.modifiersToRemove = modifiersToRemove;
+    }
 
-	/**
-	 * Constructor for ModifyModifiersProposal that accepts only a list of modifiers
-	 * to add If a visibility modifier is specified to be added, existing visibility
-	 * modifiers will be removed
-	 *
-	 * @param modifiersToAdd list of valid modifiers as strings to be added
-	 */
-	public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
-			IBinding binding, int relevance, ASTNode coveredNode, List<String> modifiersToAdd) {
-		super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
-		this.invocationNode = invocationNode;
-		this.binding = binding;
-		this.coveredNode = coveredNode;
-		this.modifiersToAdd = modifiersToAdd;
-		this.modifiersToRemove = new ArrayList<>();
-	}
+    /**
+     * Constructor for ModifyModifiersProposal that accepts only a list of modifiers
+     * to add If a visibility modifier is specified to be added, existing visibility
+     * modifiers will be removed
+     *
+     * @param modifiersToAdd list of valid modifiers as strings to be added
+     */
+    public ModifyModifiersProposal(String label, ICompilationUnit targetCU, CompilationUnit invocationNode,
+                                   IBinding binding, int relevance, ASTNode coveredNode, List<String> modifiersToAdd) {
+        super(label, CodeActionKind.QuickFix, targetCU, null, relevance);
+        this.invocationNode = invocationNode;
+        this.binding = binding;
+        this.coveredNode = coveredNode;
+        this.modifiersToAdd = modifiersToAdd;
+        this.modifiersToRemove = new ArrayList<>();
+    }
 
-	@Override
-	protected ASTRewrite getRewrite() throws CoreException {
-		ASTNode declNode = null;
-		ASTNode boundNode = invocationNode.findDeclaringNode(binding);
-		CompilationUnit newRoot = invocationNode;
+    @Override
+    protected ASTRewrite getRewrite() throws CoreException {
+        ASTNode declNode = null;
+        ASTNode boundNode = invocationNode.findDeclaringNode(binding);
+        CompilationUnit newRoot = invocationNode;
 
-		if (boundNode != null) {
-			declNode = boundNode;
-		} else {
-			newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
-			declNode = newRoot.findDeclaringNode(binding.getKey());
-		}
+        if (boundNode != null) {
+            declNode = boundNode;
+        } else {
+            newRoot = ASTResolving.createQuickFixAST(getCompilationUnit(), null);
+            declNode = newRoot.findDeclaringNode(binding.getKey());
+        }
 
-		if (coveredNode != null) {
-			declNode = coveredNode;
-		}
-		boolean isField = declNode instanceof VariableDeclarationFragment;
-		if (isField) {
-			declNode = declNode.getParent();
-		}
+        if (coveredNode != null) {
+            declNode = coveredNode;
+        }
+        boolean isField = declNode instanceof VariableDeclarationFragment;
+        if (isField) {
+            declNode = declNode.getParent();
+        }
 
-		AST ast = declNode.getAST();
-		ASTRewrite rewrite = ASTRewrite.create(ast);
+        AST ast = declNode.getAST();
+        ASTRewrite rewrite = ASTRewrite.create(ast);
 
-		ListRewrite modifiersList = null;
-		List<ASTNode> modifiers = new ArrayList();
+        ListRewrite modifiersList = null;
+        List<ASTNode> modifiers = new ArrayList();
 
-		switch (declNode.getNodeType()) {
-			case ASTNode.METHOD_DECLARATION:
-				modifiersList = rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY);
-				modifiers = (List<ASTNode>) declNode.getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
-				break;
-			case ASTNode.FIELD_DECLARATION:
-				modifiersList = rewrite.getListRewrite(declNode, FieldDeclaration.MODIFIERS2_PROPERTY);
-				modifiers = (List<ASTNode>) declNode.getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
-				break;
-			case ASTNode.TYPE_DECLARATION:
-				modifiersList = rewrite.getListRewrite(declNode, TypeDeclaration.MODIFIERS2_PROPERTY);
-				modifiers = (List<ASTNode>) declNode.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
-				break;
-			case ASTNode.SINGLE_VARIABLE_DECLARATION:
-				modifiersList = rewrite.getListRewrite(declNode, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
-				modifiers = (List<ASTNode>) declNode
-						.getStructuralProperty(SingleVariableDeclaration.MODIFIERS2_PROPERTY);
-				break;
-			default:
-				modifiersList = null;
-		}
+        switch (declNode.getNodeType()) {
+            case ASTNode.METHOD_DECLARATION:
+                modifiersList = rewrite.getListRewrite(declNode, MethodDeclaration.MODIFIERS2_PROPERTY);
+                modifiers = (List<ASTNode>) declNode.getStructuralProperty(MethodDeclaration.MODIFIERS2_PROPERTY);
+                break;
+            case ASTNode.FIELD_DECLARATION:
+                modifiersList = rewrite.getListRewrite(declNode, FieldDeclaration.MODIFIERS2_PROPERTY);
+                modifiers = (List<ASTNode>) declNode.getStructuralProperty(FieldDeclaration.MODIFIERS2_PROPERTY);
+                break;
+            case ASTNode.TYPE_DECLARATION:
+                modifiersList = rewrite.getListRewrite(declNode, TypeDeclaration.MODIFIERS2_PROPERTY);
+                modifiers = (List<ASTNode>) declNode.getStructuralProperty(TypeDeclaration.MODIFIERS2_PROPERTY);
+                break;
+            case ASTNode.SINGLE_VARIABLE_DECLARATION:
+                modifiersList = rewrite.getListRewrite(declNode, SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+                modifiers = (List<ASTNode>) declNode.getStructuralProperty(SingleVariableDeclaration.MODIFIERS2_PROPERTY);
+                break;
+            default:
+                modifiersList = null;
+        }
 
-		for (ASTNode modifier : modifiers) {
-			if (modifier instanceof MarkerAnnotation) {
-				MarkerAnnotation markAnno = (MarkerAnnotation) modifier;
-				Name markAnnoTypeName = markAnno.getTypeName();
-				// Check if modifier is in toRemove list
-				if (modifiersToRemove.stream().anyMatch(m -> m.equals(markAnnoTypeName.toString()))) {
-					modifiersList.remove(markAnno, null);
-					continue;
-				}
-			} else if (modifier instanceof Modifier) {
-				Modifier.ModifierKeyword modKeyword = ((Modifier) modifier).getKeyword();
+        for (ASTNode modifier : modifiers) {
+            if (modifier instanceof MarkerAnnotation) {
+                MarkerAnnotation markAnno = (MarkerAnnotation) modifier;
+                Name markAnnoTypeName = markAnno.getTypeName();
+                // Check if modifier is in toRemove list
+                if (modifiersToRemove.stream().anyMatch(m -> m.equals(markAnnoTypeName.toString()))) {
+                    modifiersList.remove(markAnno, null);
+                    continue;
+                }
+            } else if (modifier instanceof Modifier) {
+                Modifier.ModifierKeyword modKeyword = ((Modifier) modifier).getKeyword();
 
-				// Check if modifier is in toRemove list
-				if (modifiersToRemove.stream().anyMatch(m -> m.equals(modKeyword.toString()))) {
-					modifiersList.remove(modifier, null);
-					continue;
-				}
+                // Check if modifier is in toRemove list
+                if (modifiersToRemove.stream().anyMatch(m -> m.equals(modKeyword.toString()))) {
+                    modifiersList.remove(modifier, null);
+                    continue;
+                }
 
-				// Otherwise check if the existing modifier is private, public or protected
-				if (modKeyword.equals(Modifier.ModifierKeyword.PRIVATE_KEYWORD)
-						|| modKeyword.equals(Modifier.ModifierKeyword.PUBLIC_KEYWORD)
-						|| modKeyword.equals(Modifier.ModifierKeyword.PROTECTED_KEYWORD)) {
+                // Otherwise check if the existing modifier is private, public or protected
+                if (modKeyword.equals(Modifier.ModifierKeyword.PRIVATE_KEYWORD)
+                    || modKeyword.equals(Modifier.ModifierKeyword.PUBLIC_KEYWORD)
+                    || modKeyword.equals(Modifier.ModifierKeyword.PROTECTED_KEYWORD)) {
 
-					// if adding a visibility modifier, need to remove the existing one
-					if (modifiersToAdd.stream()
-							.anyMatch(m -> (m.equals(Modifier.ModifierKeyword.PRIVATE_KEYWORD.toString())
-									|| m.equals(Modifier.ModifierKeyword.PUBLIC_KEYWORD.toString())
-									|| m.equals(Modifier.ModifierKeyword.PROTECTED_KEYWORD.toString())))) {
-						modifiersList.remove(modifier, null);
-					}
-				}
-			}
-		}
+                    // if adding a visibility modifier, need to remove the existing one
+                    if (modifiersToAdd.stream().anyMatch(m -> (m.equals(Modifier.ModifierKeyword.PRIVATE_KEYWORD.toString())
+                                                               || m.equals(Modifier.ModifierKeyword.PUBLIC_KEYWORD.toString())
+                                                               || m.equals(Modifier.ModifierKeyword.PROTECTED_KEYWORD.toString())))) {
+                        modifiersList.remove(modifier, null);
+                    }
+                }
+            }
+        }
 
-		// now add the ones we want
-		for (String newModifier : modifiersToAdd) {
-			// make a new marker
-			Modifier marker = ast.newModifier(Modifier.ModifierKeyword.toKeyword(newModifier));
-			modifiersList.insertLast(marker, null);
-		}
+        // now add the ones we want
+        for (String newModifier : modifiersToAdd) {
+            // make a new marker
+            Modifier marker = ast.newModifier(Modifier.ModifierKeyword.toKeyword(newModifier));
+            modifiersList.insertLast(marker, null);
+        }
 
-		return rewrite;
-	}
+        return rewrite;
+    }
 }

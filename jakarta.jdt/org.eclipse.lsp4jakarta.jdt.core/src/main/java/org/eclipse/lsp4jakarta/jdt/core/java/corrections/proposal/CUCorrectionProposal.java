@@ -39,119 +39,119 @@ import org.eclipse.text.edits.TextEdit;
  */
 public class CUCorrectionProposal extends ChangeCorrectionProposal implements ICUCorrectionProposal {
 
-	private CUCorrectionProposalCore fProposalCore;
+    private CUCorrectionProposalCore fProposalCore;
 
-	/**
-	 * Constructs a correction proposal working on a compilation unit with a given
-	 * text change.
-	 *
-	 * @param name      the name that is displayed in the proposal selection dialog
-	 * @param kind      the kind of the correction type that the proposal performs
-	 * @param cu        the compilation unit to which the change can be applied
-	 * @param change    the change that is executed when the proposal is applied or
-	 *                  <code>null</code> if implementors override
-	 *                  {@link #addEdits(IDocument, TextEdit)} to provide the text
-	 *                  edits or {@link #createTextChange()} to provide a text
-	 *                  change
-	 * @param relevance the relevance of this proposal
-	 */
-	public CUCorrectionProposal(String name, String kind, ICompilationUnit cu, TextChange change, int relevance) {
-		super(name, kind, change, relevance);
-		if (cu == null) {
-			throw new IllegalArgumentException("Compilation unit must not be null"); //$NON-NLS-1$
-		}
-		fProposalCore = new CUCorrectionProposalCore(name, cu, change, relevance);
-	}
+    /**
+     * Constructs a correction proposal working on a compilation unit with a given
+     * text change.
+     *
+     * @param name the name that is displayed in the proposal selection dialog
+     * @param kind the kind of the correction type that the proposal performs
+     * @param cu the compilation unit to which the change can be applied
+     * @param change the change that is executed when the proposal is applied or
+     *            <code>null</code> if implementors override
+     *            {@link #addEdits(IDocument, TextEdit)} to provide the text
+     *            edits or {@link #createTextChange()} to provide a text
+     *            change
+     * @param relevance the relevance of this proposal
+     */
+    public CUCorrectionProposal(String name, String kind, ICompilationUnit cu, TextChange change, int relevance) {
+        super(name, kind, change, relevance);
+        if (cu == null) {
+            throw new IllegalArgumentException("Compilation unit must not be null"); //$NON-NLS-1$
+        }
+        fProposalCore = new CUCorrectionProposalCore(name, cu, change, relevance);
+    }
 
-	/**
-	 * Called when the {@link CompilationUnitChange} is initialized. Subclasses can
-	 * override to add text edits to the root edit of the change. Implementors must
-	 * not access the proposal, e.g. not call {@link #getChange()}.
-	 * <p>
-	 * The default implementation does not add any edits
-	 * </p>
-	 *
-	 * @param document content of the underlying compilation unit. To be accessed
-	 *                 read only.
-	 * @param editRoot The root edit to add all edits to
-	 * @throws CoreException can be thrown if adding the edits is failing.
-	 */
-	protected void addEdits(IDocument document, TextEdit editRoot) throws CoreException {
-		// empty default implementation
-	}
+    /**
+     * Called when the {@link CompilationUnitChange} is initialized. Subclasses can
+     * override to add text edits to the root edit of the change. Implementors must
+     * not access the proposal, e.g. not call {@link #getChange()}.
+     * <p>
+     * The default implementation does not add any edits
+     * </p>
+     *
+     * @param document content of the underlying compilation unit. To be accessed
+     *            read only.
+     * @param editRoot The root edit to add all edits to
+     * @throws CoreException can be thrown if adding the edits is failing.
+     */
+    protected void addEdits(IDocument document, TextEdit editRoot) throws CoreException {
+        // empty default implementation
+    }
 
-	@Override
-	public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
-		return fProposalCore.getAdditionalProposalInfo(monitor);
-	}
+    @Override
+    public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
+        return fProposalCore.getAdditionalProposalInfo(monitor);
+    }
 
-	@Override
-	public void apply() throws CoreException {
-		performChange();
-	}
+    @Override
+    public void apply() throws CoreException {
+        performChange();
+    }
 
-	/**
-	 * Creates the text change for this proposal. This method is only called once
-	 * and only when no text change has been passed in
-	 * {@link #CUCorrectionProposal(String, ICompilationUnit, TextChange, int)}.
-	 *
-	 * @return the created text change
-	 * @throws CoreException if the creation of the text change failed
-	 */
-	protected TextChange createTextChange() throws CoreException {
-		TextChange change = fProposalCore.getNewChange();
-		// initialize text change
-		IDocument document = change.getCurrentDocument(new NullProgressMonitor());
-		addEdits(document, change.getEdit());
-		return change;
-	}
+    /**
+     * Creates the text change for this proposal. This method is only called once
+     * and only when no text change has been passed in
+     * {@link #CUCorrectionProposal(String, ICompilationUnit, TextChange, int)}.
+     *
+     * @return the created text change
+     * @throws CoreException if the creation of the text change failed
+     */
+    protected TextChange createTextChange() throws CoreException {
+        TextChange change = fProposalCore.getNewChange();
+        // initialize text change
+        IDocument document = change.getCurrentDocument(new NullProgressMonitor());
+        addEdits(document, change.getEdit());
+        return change;
+    }
 
-	@Override
-	protected final Change createChange() throws CoreException {
-		return createTextChange(); // make sure that only text changes are allowed here
-	}
+    @Override
+    protected final Change createChange() throws CoreException {
+        return createTextChange(); // make sure that only text changes are allowed here
+    }
 
-	/**
-	 * Returns the text change that is invoked when the change is applied.
-	 *
-	 * @return the text change that is invoked when the change is applied
-	 * @throws CoreException if accessing the change failed
-	 */
-	@Override
-	public final TextChange getTextChange() throws CoreException {
-		return (TextChange) getChange();
-	}
+    /**
+     * Returns the text change that is invoked when the change is applied.
+     *
+     * @return the text change that is invoked when the change is applied
+     * @throws CoreException if accessing the change failed
+     */
+    @Override
+    public final TextChange getTextChange() throws CoreException {
+        return (TextChange) getChange();
+    }
 
-	/**
-	 * The compilation unit on which the change works.
-	 *
-	 * @return the compilation unit on which the change works
-	 */
-	public final ICompilationUnit getCompilationUnit() {
-		return fProposalCore.getCompilationUnit();
-	}
+    /**
+     * The compilation unit on which the change works.
+     *
+     * @return the compilation unit on which the change works
+     */
+    public final ICompilationUnit getCompilationUnit() {
+        return fProposalCore.getCompilationUnit();
+    }
 
-	/**
-	 * Creates a preview of the content of the compilation unit after applying the
-	 * change.
-	 *
-	 * @return the preview of the changed compilation unit
-	 * @throws CoreException if the creation of the change failed
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
-	 */
-	public String getPreviewContent() throws CoreException {
-		return getTextChange().getPreviewContent(new NullProgressMonitor());
-	}
+    /**
+     * Creates a preview of the content of the compilation unit after applying the
+     * change.
+     *
+     * @return the preview of the changed compilation unit
+     * @throws CoreException if the creation of the change failed
+     *
+     * @noreference This method is not intended to be referenced by clients.
+     */
+    public String getPreviewContent() throws CoreException {
+        return getTextChange().getPreviewContent(new NullProgressMonitor());
+    }
 
-	@Override
-	public String toString() {
-		try {
-			return getPreviewContent();
-		} catch (CoreException e) {
-			// didn't work out
-		}
-		return super.toString();
-	}
+    @Override
+    public String toString() {
+        try {
+            return getPreviewContent();
+        } catch (CoreException e) {
+            // didn't work out
+        }
+        return super.toString();
+    }
 
 }

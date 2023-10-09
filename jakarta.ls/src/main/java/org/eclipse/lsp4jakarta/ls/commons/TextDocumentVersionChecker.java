@@ -26,22 +26,22 @@ import org.eclipse.lsp4j.jsonrpc.CancelChecker;
  */
 public class TextDocumentVersionChecker implements CancelChecker {
 
-	private final TextDocument textDocument;
+    private final TextDocument textDocument;
 
-	private final int version;
+    private final int version;
 
-	public TextDocumentVersionChecker(TextDocument textDocument, int version) {
-		this.textDocument = textDocument;
-		this.version = version;
-	}
+    public TextDocumentVersionChecker(TextDocument textDocument, int version) {
+        this.textDocument = textDocument;
+        this.version = version;
+    }
 
-	@Override
-	public void checkCanceled() {
-		if (textDocument.getVersion() != version) {
-			// the text document version has changed
-			throw new CancellationException("Text document version '" + version + "' has changed to version '"
-					+ textDocument.getVersion() + ".");
-		}
-	}
+    @Override
+    public void checkCanceled() {
+        if (textDocument.getVersion() != version) {
+            // the text document version has changed
+            throw new CancellationException("Text document version '" + version + "' has changed to version '"
+                                            + textDocument.getVersion() + ".");
+        }
+    }
 
 }

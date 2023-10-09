@@ -33,89 +33,88 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.AbstractJavaFeatureDefinit
 
 /**
  * Wrapper class around {@link IJavaCodeActionParticipant} participants.
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/java/codeaction/JavaCodeActionDefinition.java
  */
-public class JavaCodeActionDefinition extends AbstractJavaFeatureDefinition<IJavaCodeActionParticipant>
-		implements IJavaCodeActionParticipant {
+public class JavaCodeActionDefinition extends AbstractJavaFeatureDefinition<IJavaCodeActionParticipant> implements IJavaCodeActionParticipant {
 
-	private static final Logger LOGGER = Logger.getLogger(JavaCodeActionDefinition.class.getName());
-	private static final String KIND_ATTR = "kind";
-	private static final String TARGET_DIAGNOSTIC_ATTR = "targetDiagnostic";
+    private static final Logger LOGGER = Logger.getLogger(JavaCodeActionDefinition.class.getName());
+    private static final String KIND_ATTR = "kind";
+    private static final String TARGET_DIAGNOSTIC_ATTR = "targetDiagnostic";
 
-	private final String kind;
-	private final String targetDiagnostic;
+    private final String kind;
+    private final String targetDiagnostic;
 
-	public JavaCodeActionDefinition(IConfigurationElement element) {
-		super(element);
-		this.kind = getKind(element);
-		this.targetDiagnostic = element.getAttribute(TARGET_DIAGNOSTIC_ATTR);
-	}
+    public JavaCodeActionDefinition(IConfigurationElement element) {
+        super(element);
+        this.kind = getKind(element);
+        this.targetDiagnostic = element.getAttribute(TARGET_DIAGNOSTIC_ATTR);
+    }
 
-	private static String getKind(IConfigurationElement element) throws InvalidRegistryObjectException {
-		String kind = element.getAttribute(KIND_ATTR);
-		return !StringUtils.isEmpty(kind) ? kind : CodeActionKind.QuickFix;
-	}
+    private static String getKind(IConfigurationElement element) throws InvalidRegistryObjectException {
+        String kind = element.getAttribute(KIND_ATTR);
+        return !StringUtils.isEmpty(kind) ? kind : CodeActionKind.QuickFix;
+    }
 
-	@Override
-	public String getParticipantId() {
-		try {
-			return getParticipant().getParticipantId();
-		} catch (CoreException e) {
-			LOGGER.log(Level.WARNING, "Unable to get CodeAction participant", e);
-			return "";
-		}
-	}
+    @Override
+    public String getParticipantId() {
+        try {
+            return getParticipant().getParticipantId();
+        } catch (CoreException e) {
+            LOGGER.log(Level.WARNING, "Unable to get CodeAction participant", e);
+            return "";
+        }
+    }
 
-	@Override
-	public boolean isAdaptedForCodeAction(JavaCodeActionContext context, IProgressMonitor monitor) {
-		try {
-			return getParticipant().isAdaptedForCodeAction(context, monitor);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error while calling isAdaptedForCodeAction", e);
-			return false;
-		}
-	}
+    @Override
+    public boolean isAdaptedForCodeAction(JavaCodeActionContext context, IProgressMonitor monitor) {
+        try {
+            return getParticipant().isAdaptedForCodeAction(context, monitor);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while calling isAdaptedForCodeAction", e);
+            return false;
+        }
+    }
 
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) {
-		try {
-			List<? extends CodeAction> codeActions = getParticipant().getCodeActions(context, diagnostic, monitor);
-			return codeActions != null ? codeActions : Collections.emptyList();
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error while calling getCodeActions", e);
-			return Collections.emptyList();
-		}
-	}
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) {
+        try {
+            List<? extends CodeAction> codeActions = getParticipant().getCodeActions(context, diagnostic, monitor);
+            return codeActions != null ? codeActions : Collections.emptyList();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error while calling getCodeActions", e);
+            return Collections.emptyList();
+        }
+    }
 
-	@Override
-	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
-		try {
-			return getParticipant().resolveCodeAction(context);
-		} catch (CoreException e) {
-			LOGGER.log(Level.WARNING, "Unable to get CodeAction participant", e);
-			return context.getUnresolved();
-		}
-	}
+    @Override
+    public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
+        try {
+            return getParticipant().resolveCodeAction(context);
+        } catch (CoreException e) {
+            LOGGER.log(Level.WARNING, "Unable to get CodeAction participant", e);
+            return context.getUnresolved();
+        }
+    }
 
-	/**
-	 * Returns the code action kind.
-	 *
-	 * @return the code action kind.
-	 */
-	public String getKind() {
-		return kind;
-	}
+    /**
+     * Returns the code action kind.
+     *
+     * @return the code action kind.
+     */
+    public String getKind() {
+        return kind;
+    }
 
-	/**
-	 * Returns the target diagnostic and null otherwise.
-	 *
-	 * @return the target diagnostic and null otherwise.
-	 */
-	public String getTargetDiagnostic() {
-		return targetDiagnostic;
-	}
+    /**
+     * Returns the target diagnostic and null otherwise.
+     *
+     * @return the target diagnostic and null otherwise.
+     */
+    public String getTargetDiagnostic() {
+        return targetDiagnostic;
+    }
 
 }

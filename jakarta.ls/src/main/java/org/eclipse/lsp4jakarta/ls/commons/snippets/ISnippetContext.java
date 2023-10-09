@@ -22,12 +22,12 @@ package org.eclipse.lsp4jakarta.ls.commons.snippets;
  */
 public interface ISnippetContext<T> {
 
-	/**
-	 * Return true if the given value match the snippet context and false otherwise.
-	 *
-	 * @param value the value to check.
-	 * @return true if the given value match the snippet context and false
-	 *         otherwise.
-	 */
-	boolean isMatch(T value);
+    /**
+     * Return true if the given value match the snippet context and false otherwise.
+     *
+     * @param value the value to check.
+     * @return true if the given value match the snippet context and false
+     *         otherwise.
+     */
+    boolean isMatch(T value);
 }

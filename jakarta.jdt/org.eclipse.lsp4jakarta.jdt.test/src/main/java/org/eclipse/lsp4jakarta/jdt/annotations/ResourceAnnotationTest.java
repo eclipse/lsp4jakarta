@@ -37,37 +37,36 @@ import org.junit.Test;
 
 public class ResourceAnnotationTest extends BaseJakartaTest {
 
-	protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
-	@Test
-	public void GeneratedAnnotation() throws Exception {
-		IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path("src/main/java/io/openliberty/sample/jakarta/annotations/ResourceAnnotation.java"));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+    @Test
+    public void GeneratedAnnotation() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/annotations/ResourceAnnotation.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		// expected annotations
-		Diagnostic d1 = d(22, 0, 22, "The @Resource annotation must define the attribute 'type'.",
-				DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceTypeAttribute");
+        // expected annotations
+        Diagnostic d1 = d(22, 0, 22, "The @Resource annotation must define the attribute 'type'.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceTypeAttribute");
 
-		Diagnostic d2 = d(39, 0, 30, "The @Resource annotation must define the attribute 'name'.",
-				DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceNameAttribute");
+        Diagnostic d2 = d(39, 0, 30, "The @Resource annotation must define the attribute 'name'.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceNameAttribute");
 
-		assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2);
 
-		JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
-		TextEdit te = te(22, 0, 22, 22, "@Resource(name = \"aa\", type = \"\")");
-		CodeAction ca = ca(uri, "Insert 'type' attribute to @Resource", d1, te);
-		assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca);
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
+        TextEdit te = te(22, 0, 22, 22, "@Resource(name = \"aa\", type = \"\")");
+        CodeAction ca = ca(uri, "Insert 'type' attribute to @Resource", d1, te);
+        assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca);
 
-		JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
-		TextEdit te1 = te(39, 0, 39, 30, "@Resource(type = \"\", name = \"\")");
-		CodeAction ca1 = ca(uri, "Insert 'name' attribute to @Resource", d2, te1);
-		assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca1);
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
+        TextEdit te1 = te(39, 0, 39, 30, "@Resource(type = \"\", name = \"\")");
+        CodeAction ca1 = ca(uri, "Insert 'name' attribute to @Resource", d2, te1);
+        assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca1);
 
-	}
+    }
 
 }

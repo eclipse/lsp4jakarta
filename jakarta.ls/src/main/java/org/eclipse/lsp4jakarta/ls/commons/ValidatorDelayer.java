@@ -86,7 +86,7 @@ public class ValidatorDelayer<T extends TextDocument> {
      * Returns true if the document has a revalidation pending and false otherwise.
      *
      * @param uri the uri of the document to check
-     * 
+     *
      * @return true if the document has a revalidation pending and false otherwise
      */
     public boolean isRevalidating(String uri) {

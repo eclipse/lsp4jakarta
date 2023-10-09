@@ -43,87 +43,83 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
  */
 public class UpdateContructorAccessToPublicQuickFix implements IJavaCodeActionParticipant {
 
-	/** Logger object to record events for this class. */
-	private static final Logger LOGGER = Logger.getLogger(UpdateContructorAccessToPublicQuickFix.class.getName());
+    /** Logger object to record events for this class. */
+    private static final Logger LOGGER = Logger.getLogger(UpdateContructorAccessToPublicQuickFix.class.getName());
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return UpdateContructorAccessToPublicQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return UpdateContructorAccessToPublicQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		ASTNode node = context.getCoveredNode();
-		MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
-		IMethodBinding parentMethod = parentNode.resolveBinding();
-		List<CodeAction> codeActions = new ArrayList<>();
-		if (parentMethod != null) {
-			ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel());
-			codeAction.setRelevance(0);
-			codeAction.setKind(CodeActionKind.QuickFix);
-			codeAction.setDiagnostics(Arrays.asList(diagnostic));
-			codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
-					context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(),
-					context.getParams().isCommandConfigurationUpdateSupported(),
-					JakartaCodeActionId.MakeConstructorPublic));
-			codeActions.add(codeAction);
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        ASTNode node = context.getCoveredNode();
+        MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
+        IMethodBinding parentMethod = parentNode.resolveBinding();
+        List<CodeAction> codeActions = new ArrayList<>();
+        if (parentMethod != null) {
+            ExtendedCodeAction codeAction = new ExtendedCodeAction(getLabel());
+            codeAction.setRelevance(0);
+            codeAction.setKind(CodeActionKind.QuickFix);
+            codeAction.setDiagnostics(Arrays.asList(diagnostic));
+            codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(), context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(), context.getParams().isCommandConfigurationUpdateSupported(), JakartaCodeActionId.MakeConstructorPublic));
+            codeActions.add(codeAction);
+        }
 
-		return codeActions;
-	}
+        return codeActions;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
-		CodeAction toResolve = context.getUnresolved();
-		ASTNode node = context.getCoveredNode();
-		MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
-		IMethodBinding parentMethod = parentNode.resolveBinding();
-		String label = getLabel();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
+        CodeAction toResolve = context.getUnresolved();
+        ASTNode node = context.getCoveredNode();
+        MethodDeclaration parentNode = (MethodDeclaration) node.getParent();
+        IMethodBinding parentMethod = parentNode.resolveBinding();
+        String label = getLabel();
 
-		ChangeCorrectionProposal proposal = new ModifyModifiersProposal(label, context.getCompilationUnit(),
-				context.getASTRoot(), parentMethod, 0, null, Arrays.asList("public"));
-		try {
-			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
-		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to make a constructor public.",
-					e);
-		}
+        ChangeCorrectionProposal proposal = new ModifyModifiersProposal(label, context.getCompilationUnit(), context.getASTRoot(), parentMethod, 0, null, Arrays.asList("public"));
+        try {
+            toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
+        } catch (CoreException e) {
+            LOGGER.log(Level.SEVERE, "Unable to resolve code action edit to make a constructor public.",
+                       e);
+        }
 
-		return toResolve;
-	}
+        return toResolve;
+    }
 
-	/**
-	 * Returns the code action label.
-	 * 
-	 * @return The code action label.
-	 */
-	private static String getLabel() {
-		return Messages.getMessage("MakeConstructorPublic");
-	}
+    /**
+     * Returns the code action label.
+     *
+     * @return The code action label.
+     */
+    private static String getLabel() {
+        return Messages.getMessage("MakeConstructorPublic");
+    }
 
-	/**
-	 * Returns the named entity associated to the given node.
-	 * 
-	 * @param node The AST Node
-	 * 
-	 * @return The named entity associated to the given node.
-	 */
-	@SuppressWarnings("restriction")
-	protected static IBinding getBinding(ASTNode node) {
-		if (node.getParent() instanceof VariableDeclarationFragment) {
-			return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
-		}
+    /**
+     * Returns the named entity associated to the given node.
+     *
+     * @param node The AST Node
+     *
+     * @return The named entity associated to the given node.
+     */
+    @SuppressWarnings("restriction")
+    protected static IBinding getBinding(ASTNode node) {
+        if (node.getParent() instanceof VariableDeclarationFragment) {
+            return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        }
 
-		return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
-	}
+        return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
+    }
 }

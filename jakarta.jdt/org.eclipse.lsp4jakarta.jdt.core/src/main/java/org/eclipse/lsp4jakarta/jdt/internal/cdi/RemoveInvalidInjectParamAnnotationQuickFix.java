@@ -21,26 +21,26 @@ import org.eclipse.lsp4jakarta.commons.codeaction.JakartaCodeActionId;
  */
 public class RemoveInvalidInjectParamAnnotationQuickFix extends RemoveMethodParamAnnotationQuickFix {
 
-	/**
-	 * Constructor.
-	 */
-	public RemoveInvalidInjectParamAnnotationQuickFix() {
-		super(Constants.INVALID_INJECT_PARAMS.toArray((String[]::new)));
-	}
+    /**
+     * Constructor.
+     */
+    public RemoveInvalidInjectParamAnnotationQuickFix() {
+        super(Constants.INVALID_INJECT_PARAMS.toArray((String[]::new)));
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return RemoveInvalidInjectParamAnnotationQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return RemoveInvalidInjectParamAnnotationQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected ICodeActionId getCodeActionId() {
-		return JakartaCodeActionId.CDIRemoveInvalidInjectAnnotations;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected ICodeActionId getCodeActionId() {
+        return JakartaCodeActionId.CDIRemoveInvalidInjectAnnotations;
+    }
 }

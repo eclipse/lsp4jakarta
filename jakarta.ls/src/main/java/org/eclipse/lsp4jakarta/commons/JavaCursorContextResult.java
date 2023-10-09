@@ -18,52 +18,52 @@ package org.eclipse.lsp4jakarta.commons;
  */
 public class JavaCursorContextResult {
 
-	private JavaCursorContextKind kind;
-	private String prefix;
+    private JavaCursorContextKind kind;
+    private String prefix;
 
-	public JavaCursorContextResult(JavaCursorContextKind kind, String prefix) {
-		this.kind = kind;
-		this.prefix = prefix;
-	}
+    public JavaCursorContextResult(JavaCursorContextKind kind, String prefix) {
+        this.kind = kind;
+        this.prefix = prefix;
+    }
 
-	public JavaCursorContextResult() {
-		this(null, null);
-	}
+    public JavaCursorContextResult() {
+        this(null, null);
+    }
 
-	/**
-	 * Returns the context of the cursor in the Java file or <code>NONE</code> if
-	 * none of the contexts apply.
-	 *
-	 * For instance, it returns <code>IN_METHOD_ANNOTATIONS</code> if the cursor is
-	 * in the list of annotations before a method declaration.
-	 *
-	 * @return the context of the cursor in the Java file
-	 */
-	public JavaCursorContextKind getKind() {
-		return kind;
-	}
+    /**
+     * Returns the context of the cursor in the Java file or <code>NONE</code> if
+     * none of the contexts apply.
+     *
+     * For instance, it returns <code>IN_METHOD_ANNOTATIONS</code> if the cursor is
+     * in the list of annotations before a method declaration.
+     *
+     * @return the context of the cursor in the Java file
+     */
+    public JavaCursorContextKind getKind() {
+        return kind;
+    }
 
-	/**
-	 * Returns the text content to the left of the cursor, up to the first whitespace.
-	 *
-	 * eg.
-	 *
-	 * <code>
-	 * public static|
-	 * </code>
-	 *
-	 * would return <code>"static"</code>
-	 *
-	 * <code>
-	 *      |
-	 * <code>
-	 *
-	 * would return <code>""</code>
-	 *
-	 *@return the text content to the left of the cursor, up to the first whitespace
-	 */
-	public String getPrefix() {
-		return prefix;
-	}
+    /**
+     * Returns the text content to the left of the cursor, up to the first whitespace.
+     *
+     * eg.
+     *
+     * <code>
+     * public static|
+     * </code>
+     *
+     * would return <code>"static"</code>
+     *
+     * <code>
+     * |
+     * <code>
+     *
+     * would return <code>""</code>
+     *
+     * @return the text content to the left of the cursor, up to the first whitespace
+     */
+    public String getPrefix() {
+        return prefix;
+    }
 
 }

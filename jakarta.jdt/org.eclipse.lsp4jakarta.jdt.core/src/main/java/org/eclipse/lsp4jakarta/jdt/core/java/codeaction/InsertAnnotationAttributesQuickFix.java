@@ -37,116 +37,113 @@ import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ModifyAnnotati
  * Inserts the specified set of attributes the the specified annotation.
  */
 public abstract class InsertAnnotationAttributesQuickFix implements IJavaCodeActionParticipant {
-	/** Logger object to record events for this class. */
-	private static final Logger LOGGER = Logger.getLogger(InsertAnnotationAttributesQuickFix.class.getName());
+    /** Logger object to record events for this class. */
+    private static final Logger LOGGER = Logger.getLogger(InsertAnnotationAttributesQuickFix.class.getName());
 
-	/** Code action label template. */
-	private static final String CODE_ACTION_LABEL = "Insert ''{0}'' attribute{1} to @{2}";
+    /** Code action label template. */
+    private static final String CODE_ACTION_LABEL = "Insert ''{0}'' attribute{1} to @{2}";
 
-	/** The annotation to which attributes are added. */
-	private final String annotation;
+    /** The annotation to which attributes are added. */
+    private final String annotation;
 
-	/** The attributes the add to the annotation. */
-	private final String[] attributes;
+    /** The attributes the add to the annotation. */
+    private final String[] attributes;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param annotation The fully qualified annotation to modify.
-	 * @param attributes The attribute names to add to given annotation.
-	 */
-	public InsertAnnotationAttributesQuickFix(String annotation, String... attributes) {
-		this.annotation = annotation;
-		this.attributes = attributes;
-	}
+    /**
+     * Constructor.
+     *
+     * @param annotation The fully qualified annotation to modify.
+     * @param attributes The attribute names to add to given annotation.
+     */
+    public InsertAnnotationAttributesQuickFix(String annotation, String... attributes) {
+        this.annotation = annotation;
+        this.attributes = attributes;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getParticipantId() {
-		return InsertAnnotationAttributesQuickFix.class.getName();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getParticipantId() {
+        return InsertAnnotationAttributesQuickFix.class.getName();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
-			IProgressMonitor monitor) throws CoreException {
-		List<CodeAction> codeActions = new ArrayList<>();
-		String name = getLabel(annotation, attributes);
-		ExtendedCodeAction codeAction = new ExtendedCodeAction(name);
-		codeAction.setRelevance(0);
-		codeAction.setDiagnostics(Collections.singletonList(diagnostic));
-		codeAction.setKind(CodeActionKind.QuickFix);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
+                                                     IProgressMonitor monitor) throws CoreException {
+        List<CodeAction> codeActions = new ArrayList<>();
+        String name = getLabel(annotation, attributes);
+        ExtendedCodeAction codeAction = new ExtendedCodeAction(name);
+        codeAction.setRelevance(0);
+        codeAction.setDiagnostics(Collections.singletonList(diagnostic));
+        codeAction.setKind(CodeActionKind.QuickFix);
 
-		codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(),
-				context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(),
-				context.getParams().isCommandConfigurationUpdateSupported(), getCodeActionId()));
-		codeActions.add(codeAction);
+        codeAction.setData(new CodeActionResolveData(context.getUri(), getParticipantId(), context.getParams().getRange(), null, context.getParams().isResourceOperationSupported(), context.getParams().isCommandConfigurationUpdateSupported(), getCodeActionId()));
+        codeActions.add(codeAction);
 
-		return codeActions;
-	}
+        return codeActions;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
-		CodeAction toResolve = context.getUnresolved();
-		String label = getLabel(annotation, attributes);
-		ASTNode node = context.getCoveringNode();
-		IBinding parentType = getBinding(node);
-		ChangeCorrectionProposal proposal = new ModifyAnnotationProposal(label, context.getCompilationUnit(),
-				context.getASTRoot(), parentType, 0, Arrays.asList(attributes), annotation);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CodeAction resolveCodeAction(JavaCodeActionResolveContext context) {
+        CodeAction toResolve = context.getUnresolved();
+        String label = getLabel(annotation, attributes);
+        ASTNode node = context.getCoveringNode();
+        IBinding parentType = getBinding(node);
+        ChangeCorrectionProposal proposal = new ModifyAnnotationProposal(label, context.getCompilationUnit(), context.getASTRoot(), parentType, 0, Arrays.asList(attributes), annotation);
 
-		try {
-			toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
-		} catch (CoreException e) {
-			LOGGER.log(Level.SEVERE,
-					"Unable to resolve code action edit for inserting an anotation with attributes",
-					e);
-		}
+        try {
+            toResolve.setEdit(context.convertToWorkspaceEdit(proposal));
+        } catch (CoreException e) {
+            LOGGER.log(Level.SEVERE,
+                       "Unable to resolve code action edit for inserting an anotation with attributes",
+                       e);
+        }
 
-		return toResolve;
-	}
+        return toResolve;
+    }
 
-	/**
-	 * Returns the id for this code action.
-	 *
-	 * @return The id for this code action.
-	 */
-	protected abstract ICodeActionId getCodeActionId();
+    /**
+     * Returns the id for this code action.
+     *
+     * @return The id for this code action.
+     */
+    protected abstract ICodeActionId getCodeActionId();
 
-	/**
-	 * Returns the code action label.
-	 * 
-	 * @param annotaiton The annotation name.
-	 * @param attributes The attribute names.
-	 * 
-	 * @return The code action label.
-	 */
-	protected String getLabel(String annotation, String[] attributes) {
-		String[] parts = annotation.split("\\.");
-		String AnnotationName = (parts.length > 1) ? parts[parts.length - 1] : annotation;
-		String atributeNames = String.join(",", attributes);
-		String pluralSuffix = (attributes.length > 1) ? "s" : "";
-		return MessageFormat.format(CODE_ACTION_LABEL, atributeNames, pluralSuffix, AnnotationName);
-	}
+    /**
+     * Returns the code action label.
+     *
+     * @param annotaiton The annotation name.
+     * @param attributes The attribute names.
+     *
+     * @return The code action label.
+     */
+    protected String getLabel(String annotation, String[] attributes) {
+        String[] parts = annotation.split("\\.");
+        String AnnotationName = (parts.length > 1) ? parts[parts.length - 1] : annotation;
+        String atributeNames = String.join(",", attributes);
+        String pluralSuffix = (attributes.length > 1) ? "s" : "";
+        return MessageFormat.format(CODE_ACTION_LABEL, atributeNames, pluralSuffix, AnnotationName);
+    }
 
-	/**
-	 * Returns the named entity associated to the given node.
-	 * 
-	 * @param node The AST Node
-	 * 
-	 * @return The named entity associated to the given node.
-	 */
-	@SuppressWarnings("restriction")
-	protected IBinding getBinding(ASTNode node) {
-		if (node.getParent() instanceof VariableDeclarationFragment) {
-			return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
-		}
-		return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
-	}
+    /**
+     * Returns the named entity associated to the given node.
+     *
+     * @param node The AST Node
+     *
+     * @return The named entity associated to the given node.
+     */
+    @SuppressWarnings("restriction")
+    protected IBinding getBinding(ASTNode node) {
+        if (node.getParent() instanceof VariableDeclarationFragment) {
+            return ((VariableDeclarationFragment) node.getParent()).resolveBinding();
+        }
+        return org.eclipse.jdt.internal.corext.dom.Bindings.getBindingOfParentType(node);
+    }
 }

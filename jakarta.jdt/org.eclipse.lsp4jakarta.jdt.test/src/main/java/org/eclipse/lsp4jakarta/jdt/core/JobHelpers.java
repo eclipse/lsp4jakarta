@@ -39,7 +39,6 @@ public final class JobHelpers {
 
     private static final Logger LOGGER = Logger.getLogger(JobHelpers.class.getName());
 
-
     private JobHelpers() {
         //no instantiation
     }
@@ -50,7 +49,7 @@ public final class JobHelpers {
     public static void waitForJobsToComplete() {
         try {
             waitForJobsToComplete(new NullProgressMonitor());
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
     }
@@ -76,24 +75,23 @@ public final class JobHelpers {
         jobManager.suspend();
         try {
             Job[] jobs = jobManager.find(null);
-            for(int i = 0; i < jobs.length; i++ ) {
-                if(jobs[i] instanceof WorkspaceJob || jobs[i].getClass().getName().endsWith("JREUpdateJob")) {
+            for (int i = 0; i < jobs.length; i++) {
+                if (jobs[i] instanceof WorkspaceJob || jobs[i].getClass().getName().endsWith("JREUpdateJob")) {
                     jobs[i].join();
                 }
             }
             workspace.run(new IWorkspaceRunnable() {
                 @Override
-                public void run(IProgressMonitor monitor) {
-                }
+                public void run(IProgressMonitor monitor) {}
             }, workspace.getRoot(), 0, monitor);
 
             // Now we flush all background processing queues
             boolean processed = flushProcessingQueues(jobManager, monitor);
-            for(int i = 0; i < 10 && processed; i++ ) {
+            for (int i = 0; i < 10 && processed; i++) {
                 processed = flushProcessingQueues(jobManager, monitor);
                 try {
                     Thread.sleep(10);
-                } catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                 }
             }
             if (processed) {
@@ -106,16 +104,15 @@ public final class JobHelpers {
         waitForBuildJobs();
     }
 
-    private static boolean flushProcessingQueues(IJobManager jobManager, IProgressMonitor monitor)
-            throws InterruptedException, CoreException {
+    private static boolean flushProcessingQueues(IJobManager jobManager, IProgressMonitor monitor) throws InterruptedException, CoreException {
         boolean processed = false;
-        for(IBackgroundProcessingQueue queue : getProcessingQueues(jobManager)) {
+        for (IBackgroundProcessingQueue queue : getProcessingQueues(jobManager)) {
             queue.join();
-            if(!queue.isEmpty()) {
+            if (!queue.isEmpty()) {
                 Deque<MavenExecutionContext> context = MavenExecutionContext.suspend();
                 try {
                     IStatus status = queue.run(monitor);
-                    if(!status.isOK()) {
+                    if (!status.isOK()) {
                         throw new CoreException(status);
                     }
                     processed = true;
@@ -123,7 +120,7 @@ public final class JobHelpers {
                     MavenExecutionContext.resume(context);
                 }
             }
-            if(queue.isEmpty()) {
+            if (queue.isEmpty()) {
                 queue.cancel();
             }
         }
@@ -132,8 +129,8 @@ public final class JobHelpers {
 
     private static List<IBackgroundProcessingQueue> getProcessingQueues(IJobManager jobManager) {
         ArrayList<IBackgroundProcessingQueue> queues = new ArrayList<>();
-        for(Job job : jobManager.find(null)) {
-            if(job instanceof IBackgroundProcessingQueue) {
+        for (Job job : jobManager.find(null)) {
+            if (job instanceof IBackgroundProcessingQueue) {
                 queues.add((IBackgroundProcessingQueue) job);
             }
         }
@@ -158,9 +155,9 @@ public final class JobHelpers {
 
     public static void waitForJobs(IJobMatcher matcher, int maxWaitMillis) {
         final long limit = System.currentTimeMillis() + maxWaitMillis;
-        while(true) {
+        while (true) {
             Job job = getJob(matcher);
-            if(job == null) {
+            if (job == null) {
                 return;
             }
             boolean timeout = System.currentTimeMillis() > limit;
@@ -171,7 +168,7 @@ public final class JobHelpers {
             job.wakeUp();
             try {
                 Thread.sleep(POLLING_DELAY);
-            } catch(InterruptedException e) {
+            } catch (InterruptedException e) {
                 // ignore and keep waiting
             }
         }
@@ -179,8 +176,8 @@ public final class JobHelpers {
 
     private static Job getJob(IJobMatcher matcher) {
         Job[] jobs = Job.getJobManager().find(null);
-        for(Job job : jobs) {
-            if(matcher.matches(job)) {
+        for (Job job : jobs) {
+            if (matcher.matches(job)) {
                 return job;
             }
         }
@@ -200,7 +197,7 @@ public final class JobHelpers {
         @Override
         public boolean matches(Job job) {
             return (job instanceof WorkspaceJob) || job.getClass().getName().matches("(.*\\.AutoBuild.*)")
-                    || job.getClass().getName().endsWith("JREUpdateJob");
+                   || job.getClass().getName().endsWith("JREUpdateJob");
         }
 
     }

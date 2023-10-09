@@ -31,123 +31,122 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.diagnostics.JavaDiagnostic
 /**
  * Registry to hold the extension point
  * "org.eclipse.lsp4mp.jdt.core.javaFeaturesParticipants".
- * 
+ *
  * Based on:
  * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/java/JavaFeaturesRegistry.java
  *
  */
 public class JavaFeaturesRegistry {
 
-	private static final String EXTENSION_JAVA_FEATURE_PARTICIPANTS = "javaFeatureParticipants";
+    private static final String EXTENSION_JAVA_FEATURE_PARTICIPANTS = "javaFeatureParticipants";
 
-	private static final String CODEACTION_ELT = "codeAction";
-	private static final String COMPLETION_ELT = "completion";
-	private static final String DIAGNOSTICS_ELT = "diagnostics";
+    private static final String CODEACTION_ELT = "codeAction";
+    private static final String COMPLETION_ELT = "completion";
+    private static final String DIAGNOSTICS_ELT = "diagnostics";
 
-	private static final Logger LOGGER = Logger.getLogger(JavaFeaturesRegistry.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JavaFeaturesRegistry.class.getName());
 
-	private static final JavaFeaturesRegistry INSTANCE = new JavaFeaturesRegistry();
+    private static final JavaFeaturesRegistry INSTANCE = new JavaFeaturesRegistry();
 
-	private final List<JavaCompletionDefinition> javaCompletionDefinitions;
+    private final List<JavaCompletionDefinition> javaCompletionDefinitions;
 
-	private final List<JavaDiagnosticsDefinition> javaDiagnosticsDefinitions;
+    private final List<JavaDiagnosticsDefinition> javaDiagnosticsDefinitions;
 
-	private final List<JavaCodeActionDefinition> javaCodeActionDefinitions;
+    private final List<JavaCodeActionDefinition> javaCodeActionDefinitions;
 
-	private boolean javaFeatureDefinitionsLoaded;
+    private boolean javaFeatureDefinitionsLoaded;
 
-	public static JavaFeaturesRegistry getInstance() {
-		return INSTANCE;
-	}
+    public static JavaFeaturesRegistry getInstance() {
+        return INSTANCE;
+    }
 
-	public JavaFeaturesRegistry() {
-		javaFeatureDefinitionsLoaded = false;
+    public JavaFeaturesRegistry() {
+        javaFeatureDefinitionsLoaded = false;
 
-		javaCompletionDefinitions = new ArrayList<>();
-		javaDiagnosticsDefinitions = new ArrayList<>();
-		javaCodeActionDefinitions = new ArrayList<>();
-	}
+        javaCompletionDefinitions = new ArrayList<>();
+        javaDiagnosticsDefinitions = new ArrayList<>();
+        javaCodeActionDefinitions = new ArrayList<>();
+    }
 
-	/**
-	 * Returns a list of completion definition
-	 *
-	 * @return a list of completion definition
-	 */
-	public List<JavaCompletionDefinition> getJavaCompletionDefinitions() {
-		loadJavaFeatureDefinitions();
-		return javaCompletionDefinitions;
-	}
+    /**
+     * Returns a list of completion definition
+     *
+     * @return a list of completion definition
+     */
+    public List<JavaCompletionDefinition> getJavaCompletionDefinitions() {
+        loadJavaFeatureDefinitions();
+        return javaCompletionDefinitions;
+    }
 
-	private synchronized void loadJavaFeatureDefinitions() {
-		if (javaFeatureDefinitionsLoaded)
-			return;
+    private synchronized void loadJavaFeatureDefinitions() {
+        if (javaFeatureDefinitionsLoaded)
+            return;
 
-		// Immediately set the flag, as to ensure that this method is never
-		// called twice
-		javaFeatureDefinitionsLoaded = true;
+        // Immediately set the flag, as to ensure that this method is never
+        // called twice
+        javaFeatureDefinitionsLoaded = true;
 
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JakartaCorePlugin.PLUGIN_ID,
-				EXTENSION_JAVA_FEATURE_PARTICIPANTS);
-		addJavaFeatureDefinition(cf);
-	}
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IConfigurationElement[] cf = registry.getConfigurationElementsFor(JakartaCorePlugin.PLUGIN_ID,
+                                                                          EXTENSION_JAVA_FEATURE_PARTICIPANTS);
+        addJavaFeatureDefinition(cf);
+    }
 
-	private void addJavaFeatureDefinition(IConfigurationElement[] cf) {
-		for (IConfigurationElement ce : cf) {
-			try {
-				createAndAddDefinition(ce);
-			} catch (Throwable t) {
-				LOGGER.log(Level.SEVERE, "Error while collecting java features extension contributions", t);
-			}
-		}
-	}
+    private void addJavaFeatureDefinition(IConfigurationElement[] cf) {
+        for (IConfigurationElement ce : cf) {
+            try {
+                createAndAddDefinition(ce);
+            } catch (Throwable t) {
+                LOGGER.log(Level.SEVERE, "Error while collecting java features extension contributions", t);
+            }
+        }
+    }
 
-	private void createAndAddDefinition(IConfigurationElement ce) throws CoreException {
-		switch (ce.getName()) {
-			case CODEACTION_ELT: {
-				JavaCodeActionDefinition definition = new JavaCodeActionDefinition(ce);
-				synchronized (javaCodeActionDefinitions) {
-					javaCodeActionDefinitions.add(definition);
-				}
-				break;
-			}
-			case COMPLETION_ELT: {
-				JavaCompletionDefinition definition = new JavaCompletionDefinition(ce);
-				synchronized (javaCompletionDefinitions) {
-					javaCompletionDefinitions.add(definition);
-				}
-				break;
-			}
-			case DIAGNOSTICS_ELT: {
-				JavaDiagnosticsDefinition definition = new JavaDiagnosticsDefinition(ce);
-				synchronized (javaDiagnosticsDefinitions) {
-					javaDiagnosticsDefinitions.add(definition);
-				}
-				break;
-			}
-			default:
-		}
-	}
+    private void createAndAddDefinition(IConfigurationElement ce) throws CoreException {
+        switch (ce.getName()) {
+            case CODEACTION_ELT: {
+                JavaCodeActionDefinition definition = new JavaCodeActionDefinition(ce);
+                synchronized (javaCodeActionDefinitions) {
+                    javaCodeActionDefinitions.add(definition);
+                }
+                break;
+            }
+            case COMPLETION_ELT: {
+                JavaCompletionDefinition definition = new JavaCompletionDefinition(ce);
+                synchronized (javaCompletionDefinitions) {
+                    javaCompletionDefinitions.add(definition);
+                }
+                break;
+            }
+            case DIAGNOSTICS_ELT: {
+                JavaDiagnosticsDefinition definition = new JavaDiagnosticsDefinition(ce);
+                synchronized (javaDiagnosticsDefinitions) {
+                    javaDiagnosticsDefinitions.add(definition);
+                }
+                break;
+            }
+            default:
+        }
+    }
 
-	/**
-	 * Returns a list of diagnostics definition.
-	 *
-	 * @return a list of diagnostics definition.
-	 */
-	public List<JavaDiagnosticsDefinition> getJavaDiagnosticsDefinitions() {
-		loadJavaFeatureDefinitions();
-		return javaDiagnosticsDefinitions;
-	}
+    /**
+     * Returns a list of diagnostics definition.
+     *
+     * @return a list of diagnostics definition.
+     */
+    public List<JavaDiagnosticsDefinition> getJavaDiagnosticsDefinitions() {
+        loadJavaFeatureDefinitions();
+        return javaDiagnosticsDefinitions;
+    }
 
-	/**
-	 * Returns a list of code action definition.
-	 *
-	 * @return a list of code action definition.
-	 */
-	public List<JavaCodeActionDefinition> getJavaCodeActionDefinitions(String codeActionKind) {
-		loadJavaFeatureDefinitions();
-		return javaCodeActionDefinitions.stream().filter(definition -> codeActionKind.startsWith(definition.getKind()))
-				.collect(Collectors.toList());
-	}
+    /**
+     * Returns a list of code action definition.
+     *
+     * @return a list of code action definition.
+     */
+    public List<JavaCodeActionDefinition> getJavaCodeActionDefinitions(String codeActionKind) {
+        loadJavaFeatureDefinitions();
+        return javaCodeActionDefinitions.stream().filter(definition -> codeActionKind.startsWith(definition.getKind())).collect(Collectors.toList());
+    }
 
 }
