@@ -38,7 +38,6 @@ import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
-import org.eclipse.lsp4jakarta.commons.DocumentFormat;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
@@ -50,6 +49,7 @@ import org.eclipse.lsp4jakarta.ls.commons.TextDocument;
 import org.eclipse.lsp4jakarta.ls.commons.ValidatorDelayer;
 import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments;
 import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments.JakartaTextDocument;
+import org.eclipse.lsp4jakarta.ls.java.JavaTextDocumentSnippetRegistry;
 import org.eclipse.lsp4jakarta.snippets.JavaSnippetCompletionContext;
 import org.eclipse.lsp4jakarta.snippets.SnippetContextForJava;
 
@@ -123,16 +123,17 @@ public class JakartaTextDocumentService implements TextDocumentService {
                 JavaCursorContextResult cursorContext = completionResult.getCursorContext();
 
                 // calculate the snippet completion items based on the cursor context
-                List<CompletionItem> snippetCompletionItems = documents.getSnippetRegistry().getCompletionItems(
-                                                                                                                document, finalizedCompletionOffset, canSupportMarkdown,
-                                                                                                                snippetsSupported,
-                                                                                                                (context, model) -> {
-                                                                                                                    if (context != null
-                                                                                                                        && context instanceof SnippetContextForJava) {
-                                                                                                                        return ((SnippetContextForJava) context).isMatch(new JavaSnippetCompletionContext(projectInfo, cursorContext));
-                                                                                                                    }
-                                                                                                                    return true;
-                                                                                                                }, projectInfo);
+                JavaTextDocumentSnippetRegistry snippetRegistry = documents.getSnippetRegistry();
+                List<CompletionItem> snippetCompletionItems = snippetRegistry.getCompletionItems(
+                                                                                                 document, finalizedCompletionOffset, canSupportMarkdown,
+                                                                                                 snippetsSupported,
+                                                                                                 (context, model) -> {
+                                                                                                     if (context != null
+                                                                                                         && context instanceof SnippetContextForJava) {
+                                                                                                         return ((SnippetContextForJava) context).isMatch(new JavaSnippetCompletionContext(projectInfo, cursorContext));
+                                                                                                     }
+                                                                                                     return true;
+                                                                                                 }, projectInfo);
                 list.getItems().addAll(snippetCompletionItems);
 
                 // This reduces the number of completion requests to the server. See:
@@ -152,9 +153,14 @@ public class JakartaTextDocumentService implements TextDocumentService {
         jakartaCodeActionParams.setRange(params.getRange());
         jakartaCodeActionParams.setContext(params.getContext());
 
+        // TODO: Retrieve client capabilities, and pass it along in the parameter object:
+        // Investigate:
+        // jakartaCodeActionParams.setResourceOperationSupported(),
+        // jakartaCodeActionParams.setCommandConfigurationUpdateSupported(),
+        // jakartaCodeActionParams.etResolveSupported().
+
         // Pass the JakartaJavaCodeActionParams to IDE client, to be forwarded to the
-        // JDT LS ext
-        // Async thread to get the list of code actions from the JDT LS ext
+        // JDT LS extension.
         return jakartaLanguageServer.getLanguageClient().getJavaCodeAction(jakartaCodeActionParams) //
                         .thenApply(codeActions -> {
                             // Return the corresponding list of CodeActions, put in an Either and wrap as a
@@ -237,24 +243,16 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
         JakartaJavaDiagnosticsParams javaParams = new JakartaJavaDiagnosticsParams(uris, new JakartaJavaDiagnosticsSettings(null));
 
-        // TODO?: Use settings to see if markdown is - for now default to setting it
-        // boolean markdownSupported =
-        // sharedSettings.getHoverSettings().isContentFormatSupported(MarkupKind.MARKDOWN);
-        // if (markdownSupported) {
-        // javaParams.setDocumentFormat(DocumentFormat.Markdown);
-        // }
-        javaParams.setDocumentFormat(DocumentFormat.Markdown);
-
-        jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams) //
-                        .thenApply(diagnostics -> {
-                            if (diagnostics == null) {
-                                return null;
-                            }
-                            for (PublishDiagnosticsParams diagnostic : diagnostics) {
-                                jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
-                            }
-                            return null;
-                        });
+        // TODO: Is there a need to set the document format?
+        jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).thenApply(diagnostics -> {
+            if (diagnostics == null) {
+                return null;
+            }
+            for (PublishDiagnosticsParams diagnostic : diagnostics) {
+                jakartaLanguageServer.getLanguageClient().publishDiagnostics(diagnostic);
+            }
+            return null;
+        });
     }
 
     protected void cleanDiagnostics() {

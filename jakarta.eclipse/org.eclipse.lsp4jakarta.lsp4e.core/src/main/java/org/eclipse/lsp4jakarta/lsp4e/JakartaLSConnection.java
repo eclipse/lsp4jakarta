@@ -70,7 +70,6 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
             Activator.getDefault().getLog().log(
                                                 new Status(IStatus.ERROR, Activator.getDefault().getBundle().getSymbolicName(), e.getMessage(), e));
         }
-
     }
 
     private String computeClasspath() throws IOException {
@@ -105,5 +104,4 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
 
         return root;
     }
-
 }
