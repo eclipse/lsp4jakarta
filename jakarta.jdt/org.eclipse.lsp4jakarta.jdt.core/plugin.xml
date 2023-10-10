@@ -22,6 +22,14 @@
             <command id="jakarta/java/diagnostics"/>
 		</delegateCommandHandler>
 	</extension>	
+	
+	   <!-- Delegate command handler for Java project types -->
+   <extension point="org.eclipse.jdt.ls.core.delegateCommandHandler">
+      <delegateCommandHandler class="org.eclipse.lsp4jakarta.jdt.internal.core.ls.JakartaJavaProjectDelegateCommandHandler">
+            <command id="jakarta/java/projectLabels"/>
+      </delegateCommandHandler>
+   </extension>
+	
 
    <extension point="org.eclipse.lsp4jakarta.jdt.core.projectLabelProviders">
       <provider class="org.eclipse.lsp4jakarta.jdt.internal.core.providers.JakartaProjectLabelProvider" />
