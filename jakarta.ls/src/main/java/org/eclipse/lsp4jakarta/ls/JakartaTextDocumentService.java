@@ -38,6 +38,7 @@ import org.eclipse.lsp4j.HoverParams;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
+import org.eclipse.lsp4jakarta.commons.DocumentFormat;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
@@ -243,7 +244,11 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
         JakartaJavaDiagnosticsParams javaParams = new JakartaJavaDiagnosticsParams(uris, new JakartaJavaDiagnosticsSettings(null));
 
-        // TODO: Is there a need to set the document format?
+        // TODO: Use settings to see if markdown format is supported, or remove it if not needed.
+        // Leave it hard coded for now.
+        // sharedSettings.getHoverSettings().isContentFormatSupported(MarkupKind.MARKDOWN);
+        javaParams.setDocumentFormat(DocumentFormat.Markdown);
+
         jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).thenApply(diagnostics -> {
             if (diagnostics == null) {
                 return null;
