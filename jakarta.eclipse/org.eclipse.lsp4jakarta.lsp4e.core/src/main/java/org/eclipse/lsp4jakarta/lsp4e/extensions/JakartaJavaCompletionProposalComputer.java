@@ -29,8 +29,8 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.lsp4e.operations.completion.LSContentAssistProcessor;
 
 public class JakartaJavaCompletionProposalComputer implements IJavaCompletionProposalComputer {
-    private static TimeUnit TIMEOUT_UNIT = TimeUnit.SECONDS;
-    private static long TIMEOUT_LENGTH = 20000;
+    private static TimeUnit TIMEOUT_UNIT = TimeUnit.MILLISECONDS;
+    private static long TIMEOUT_LENGTH = 2000;
     private LSContentAssistProcessor lsContentAssistProcessor;
 
     public JakartaJavaCompletionProposalComputer() {
