@@ -25,7 +25,7 @@ import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.commons.ProjectLabelInfoEntry;
 import org.eclipse.lsp4jakarta.ls.commons.snippets.ISnippetContext;
 import org.eclipse.lsp4jakarta.ls.commons.snippets.Snippet;
-import org.eclipse.lsp4jakarta.ls.java.JavaTextDocumentSnippetRegistry;;
+import org.eclipse.lsp4jakarta.ls.java.JavaTextDocumentSnippetRegistry;
 import org.junit.Test;
 
 /**

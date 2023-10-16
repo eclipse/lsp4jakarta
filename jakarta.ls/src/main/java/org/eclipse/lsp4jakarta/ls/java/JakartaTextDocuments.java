@@ -234,14 +234,20 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
         String documentURI = document.getUri();
         // Search future which load project info in cache
         CompletableFuture<ProjectLabelInfoEntry> projectInfo = null;
-        if (projectURI != null) {
-            // the java document has already been linked to a project URI, get future from
-            // the project cache.
-            projectInfo = projectCache.get(projectURI);
-        } else {
-            // get the current future for the given document URI
-            projectInfo = documentCache.get(documentURI);
-        }
+
+        // TODO: re-enable the retrieval of ProjectLabelInfoEntry objects from the caches?
+
+        // We are not going to cache the ProjectLabelInfoEntry for right now - currently caching
+        // is breaking the classpath filtering behaviour - if the pom changes to restrict the classpath, caching
+        // prevents us from returning to the client to re-compute the classpath contents.
+        //if (projectURI != null) {
+        // the java document has already been linked to a project URI, get future from
+        // the project cache.
+        //    projectInfo = projectCache.get(projectURI);
+        //} else {
+        // get the current future for the given document URI
+        //    projectInfo = documentCache.get(documentURI);
+        //}
         if (projectInfo == null || projectInfo.isCancelled() || projectInfo.isCompletedExceptionally()) {
             // not found in the cache, load the project info from the JDT LS Extension
             JakartaJavaProjectLabelsParams params = new JakartaJavaProjectLabelsParams();
@@ -258,18 +264,24 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
                 e.printStackTrace();
             }
 
-            if (entry != null) {
-                // project info with labels are get from the JDT LS
-                String newProjectURI = entry.getUri();
-                // cache the project info in the project cache level.
-                projectCache.put(newProjectURI, future);
-                // update the project URI of the document to link it to a project URI
-                document.setProjectURI(newProjectURI);
-                // evict the document cache level.
-                documentCache.remove(documentURI);
-            }
+            // TODO: re-enable caching of the ProjectLabelInfoEntry objects?
+
+            // since we have effectively disabled cache lookups, and go to the client on every completion call
+            // (as we were doing in the previous code base) we will also disable the addition of
+            // a ProjectLabelInfoEntry into the caches
+
+            //if (entry != null) {
+            // project info with labels are get from the JDT LS
+            //    String newProjectURI = entry.getUri();
+            // cache the project info in the project cache level.
+            //    projectCache.put(newProjectURI, future);
+            // update the project URI of the document to link it to a project URI
+            //    document.setProjectURI(newProjectURI);
+            // evict the document cache level.
+            //    documentCache.remove(documentURI);
+            //}
             // cache the future in the document level.
-            documentCache.put(documentURI, future);
+            //documentCache.put(documentURI, future);
             return future;
         } // >> to here from this original code:
 
