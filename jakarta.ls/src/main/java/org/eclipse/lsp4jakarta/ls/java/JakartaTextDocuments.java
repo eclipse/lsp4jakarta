@@ -220,7 +220,8 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
      *         file document.
      */
     private CompletableFuture<ProjectLabelInfoEntry> getProjectInfo(JakartaTextDocument document) {
-        return getProjectInfoFromCache(document). //
+        //TODO: revert this to getProjectInfoFromCache when/if ProjectLabelInfoEntry caching is re-enabled
+        return getProjectInfoFromClient(document). //
                         exceptionally(ex -> {
                             LOGGER.log(Level.WARNING, String.format(
                                                                     "Error while getting ProjectLabelInfoEntry (classpath) for '%s'", document.getUri()),
@@ -229,10 +230,9 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
                         });
     }
 
-    CompletableFuture<ProjectLabelInfoEntry> getProjectInfoFromCache(JakartaTextDocument document) {
-        String projectURI = document.getProjectURI();
+    CompletableFuture<ProjectLabelInfoEntry> getProjectInfoFromClient(JakartaTextDocument document) {
         String documentURI = document.getUri();
-        // Search future which load project info in cache
+        // Search future which load project info
         CompletableFuture<ProjectLabelInfoEntry> projectInfo = null;
 
         // TODO: re-enable the retrieval of ProjectLabelInfoEntry objects from the caches?
@@ -240,14 +240,49 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
         // We are not going to cache the ProjectLabelInfoEntry for right now - currently caching
         // is breaking the classpath filtering behaviour - if the pom changes to restrict the classpath, caching
         // prevents us from returning to the client to re-compute the classpath contents.
-        //if (projectURI != null) {
-        // the java document has already been linked to a project URI, get future from
-        // the project cache.
-        //    projectInfo = projectCache.get(projectURI);
-        //} else {
-        // get the current future for the given document URI
-        //    projectInfo = documentCache.get(documentURI);
-        //}
+
+        // see getProjectInfoFromCache
+
+        JakartaJavaProjectLabelsParams params = new JakartaJavaProjectLabelsParams();
+        params.setUri(documentURI);
+        params.setTypes(getSnippetRegistry().getTypes());
+        final CompletableFuture<ProjectLabelInfoEntry> future = projectInfoProvider.getJavaProjectLabels(params);
+        ProjectLabelInfoEntry entry = null;
+        try {
+            // future.get() will definitely wait but forced me to re-write the code abit
+            entry = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.log(Level.WARNING, String.format(
+                                                    "Error while getting the CompletableFuture ProjectLabelInfoEntry object from client for '%s'", document.getUri()),
+                       e);
+        }
+
+        // TODO: re-enable caching of the ProjectLabelInfoEntry objects?
+
+        // since we have effectively disabled cache lookups, and go to the client on every completion call
+        // (as we were doing in the previous code base) we will also disable the addition of
+        // a ProjectLabelInfoEntry into the caches
+
+        // see getProjectInfoFromCache
+
+        return future;
+
+    }
+
+    CompletableFuture<ProjectLabelInfoEntry> getProjectInfoFromCache(JakartaTextDocument document) {
+        String projectURI = document.getProjectURI();
+        String documentURI = document.getUri();
+        // Search future which load project info in cache
+        CompletableFuture<ProjectLabelInfoEntry> projectInfo = null;
+
+        if (projectURI != null) {
+            // the java document has already been linked to a project URI, get future from
+            // the project cache.
+            projectInfo = projectCache.get(projectURI);
+        } else {
+            // get the current future for the given document URI
+            projectInfo = documentCache.get(documentURI);
+        }
         if (projectInfo == null || projectInfo.isCancelled() || projectInfo.isCompletedExceptionally()) {
             // not found in the cache, load the project info from the JDT LS Extension
             JakartaJavaProjectLabelsParams params = new JakartaJavaProjectLabelsParams();
@@ -264,57 +299,20 @@ public class JakartaTextDocuments extends TextDocuments<JakartaTextDocument> {
                 e.printStackTrace();
             }
 
-            // TODO: re-enable caching of the ProjectLabelInfoEntry objects?
-
-            // since we have effectively disabled cache lookups, and go to the client on every completion call
-            // (as we were doing in the previous code base) we will also disable the addition of
-            // a ProjectLabelInfoEntry into the caches
-
-            //if (entry != null) {
-            // project info with labels are get from the JDT LS
-            //    String newProjectURI = entry.getUri();
-            // cache the project info in the project cache level.
-            //    projectCache.put(newProjectURI, future);
-            // update the project URI of the document to link it to a project URI
-            //    document.setProjectURI(newProjectURI);
-            // evict the document cache level.
-            //    documentCache.remove(documentURI);
-            //}
+            if (entry != null) {
+                // project info with labels are get from the JDT LS
+                String newProjectURI = entry.getUri();
+                // cache the project info in the project cache level.
+                projectCache.put(newProjectURI, future);
+                // update the project URI of the document to link it to a project URI
+                document.setProjectURI(newProjectURI);
+                // evict the document cache level.
+                documentCache.remove(documentURI);
+            }
             // cache the future in the document level.
-            //documentCache.put(documentURI, future);
+            documentCache.put(documentURI, future);
             return future;
-        } // >> to here from this original code:
-
-        /*
-         * original code block preserved here -
-         * 'thenApply(..) does not seem to halt and wait for the async compute happening
-         * in the
-         * LSClient/EclipseIDE to determine a result before the code here races to a
-         * point where the
-         * lack of a result causes the completion window to not be populated - must
-         * figure out why 'thenApply does not wait as I
-         * believe it should...
-         *
-         * final CompletableFuture<ProjectLabelInfoEntry> future =
-         * projectInfoProvider.getJavaProjectLabels(params);
-         * future.thenApply(entry -> {
-         * if (entry != null) {
-         * // project info with labels are get from the JDT LS
-         * String newProjectURI = entry.getUri();
-         * // cache the project info in the project cache level.
-         * projectCache.put(newProjectURI, future);
-         * // update the project URI of the document to link it to a project URI
-         * document.setProjectURI(newProjectURI);
-         * // evict the document cache level.
-         * documentCache.remove(documentURI);
-         * }
-         * return entry;
-         * });
-         * // cache the future in the document level.
-         * documentCache.put(documentURI, future);
-         * return future;
-         * }
-         */
+        }
 
         // Returns the cached project info
         return projectInfo;
