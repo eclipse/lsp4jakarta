@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.lsp4j.Command;
@@ -35,7 +36,9 @@ import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Hover;
 import org.eclipse.lsp4j.HoverParams;
+import org.eclipse.lsp4j.MarkupKind;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.TextDocumentClientCapabilities;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4jakarta.commons.DocumentFormat;
@@ -48,9 +51,12 @@ import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.ls.commons.BadLocationException;
 import org.eclipse.lsp4jakarta.ls.commons.TextDocument;
 import org.eclipse.lsp4jakarta.ls.commons.ValidatorDelayer;
+import org.eclipse.lsp4jakarta.ls.commons.client.ExtendedClientCapabilities;
 import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments;
 import org.eclipse.lsp4jakarta.ls.java.JakartaTextDocuments.JakartaTextDocument;
 import org.eclipse.lsp4jakarta.ls.java.JavaTextDocumentSnippetRegistry;
+import org.eclipse.lsp4jakarta.settings.JakartaTraceSettings;
+import org.eclipse.lsp4jakarta.settings.SharedSettings;
 import org.eclipse.lsp4jakarta.snippets.JavaSnippetCompletionContext;
 import org.eclipse.lsp4jakarta.snippets.SnippetContextForJava;
 
@@ -59,14 +65,16 @@ public class JakartaTextDocumentService implements TextDocumentService {
     private static final Logger LOGGER = Logger.getLogger(JakartaTextDocumentService.class.getName());
 
     private final JakartaLanguageServer jakartaLanguageServer;
+    private final SharedSettings sharedSettings;
 
     // Text document manager that maintains the contexts of the text documents
     private final JakartaTextDocuments documents;
 
     private ValidatorDelayer<JakartaTextDocument> validatorDelayer;
 
-    public JakartaTextDocumentService(JakartaLanguageServer jls, JakartaTextDocuments jakartaTextDocuments) {
+    public JakartaTextDocumentService(JakartaLanguageServer jls, SharedSettings sharedSettings, JakartaTextDocuments jakartaTextDocuments) {
         this.jakartaLanguageServer = jls;
+        this.sharedSettings = sharedSettings;
         this.documents = jakartaTextDocuments;
         this.validatorDelayer = new ValidatorDelayer<>((javaTextDocument) -> {
             triggerValidationFor(javaTextDocument);
@@ -103,7 +111,7 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
             final Integer finalizedCompletionOffset = completionOffset;
             boolean canSupportMarkdown = true;
-            boolean snippetsSupported = true;
+            boolean snippetsSupported = sharedSettings.getCompletionCapabilities().isCompletionSnippetsSupported();
 
             cancelChecker.checkCanceled();
 
@@ -149,20 +157,16 @@ public class JakartaTextDocumentService implements TextDocumentService {
     @Override
     public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
         // Prepare the JakartaJavaCodeActionParams
-        JakartaJavaCodeActionParams jakartaCodeActionParams = new JakartaJavaCodeActionParams();
-        jakartaCodeActionParams.setTextDocument(params.getTextDocument());
-        jakartaCodeActionParams.setRange(params.getRange());
-        jakartaCodeActionParams.setContext(params.getContext());
-
-        // TODO: Retrieve client capabilities, and pass it along in the parameter object:
-        // Investigate:
-        // jakartaCodeActionParams.setResourceOperationSupported(),
-        // jakartaCodeActionParams.setCommandConfigurationUpdateSupported(),
-        // jakartaCodeActionParams.etResolveSupported().
+        JakartaJavaCodeActionParams codeActionParams = new JakartaJavaCodeActionParams();
+        codeActionParams.setTextDocument(params.getTextDocument());
+        codeActionParams.setRange(params.getRange());
+        codeActionParams.setContext(params.getContext());
+        codeActionParams.setResourceOperationSupported(jakartaLanguageServer.getCapabilityManager().getClientCapabilities().isResourceOperationSupported());
+        codeActionParams.setResolveSupported(jakartaLanguageServer.getCapabilityManager().getClientCapabilities().isCodeActionResolveSupported());
 
         // Pass the JakartaJavaCodeActionParams to IDE client, to be forwarded to the
         // JDT LS extension.
-        return jakartaLanguageServer.getLanguageClient().getJavaCodeAction(jakartaCodeActionParams) //
+        return jakartaLanguageServer.getLanguageClient().getJavaCodeAction(codeActionParams) //
                         .thenApply(codeActions -> {
                             // Return the corresponding list of CodeActions, put in an Either and wrap as a
                             // CompletableFuture
@@ -244,10 +248,10 @@ public class JakartaTextDocumentService implements TextDocumentService {
 
         JakartaJavaDiagnosticsParams javaParams = new JakartaJavaDiagnosticsParams(uris, new JakartaJavaDiagnosticsSettings(null));
 
-        // TODO: Use settings to see if markdown format is supported, or remove it if not needed.
-        // Leave it hard coded for now.
-        // sharedSettings.getHoverSettings().isContentFormatSupported(MarkupKind.MARKDOWN);
-        javaParams.setDocumentFormat(DocumentFormat.Markdown);
+        boolean markdownSupported = sharedSettings.getHoverSettings().isContentFormatSupported(MarkupKind.MARKDOWN);
+        if (markdownSupported) {
+            javaParams.setDocumentFormat(DocumentFormat.Markdown);
+        }
 
         jakartaLanguageServer.getLanguageClient().getJavaDiagnostics(javaParams).thenApply(diagnostics -> {
             if (diagnostics == null) {
@@ -265,5 +269,30 @@ public class JakartaTextDocumentService implements TextDocumentService {
         documents.all().forEach(doc -> {
             jakartaLanguageServer.getLanguageClient().publishDiagnostics(new PublishDiagnosticsParams(doc.getUri(), new ArrayList<Diagnostic>()));
         });
+    }
+
+    /**
+     * Update shared settings from the client capabilities.
+     *
+     * @param capabilities the client capabilities
+     * @param extendedClientCapabilities the extended client capabilities
+     */
+    public void updateClientCapabilities(ClientCapabilities capabilities,
+                                         ExtendedClientCapabilities extendedClientCapabilities) {
+        TextDocumentClientCapabilities textDocumentClientCapabilities = capabilities.getTextDocument();
+        if (textDocumentClientCapabilities != null) {
+            sharedSettings.getCompletionCapabilities().setCapabilities(textDocumentClientCapabilities.getCompletion());
+            sharedSettings.getHoverSettings().setCapabilities(textDocumentClientCapabilities.getHover());
+        }
+    }
+
+    /**
+     * Updates the trace settings defined by the client flowing requests between the LS and JDT extensions.
+     *
+     * @param newTrace The new trace setting.
+     */
+    public void updateTraceSettings(JakartaTraceSettings newTrace) {
+        JakartaTraceSettings trace = sharedSettings.getTraceSettings();
+        trace.update(newTrace);
     }
 }
