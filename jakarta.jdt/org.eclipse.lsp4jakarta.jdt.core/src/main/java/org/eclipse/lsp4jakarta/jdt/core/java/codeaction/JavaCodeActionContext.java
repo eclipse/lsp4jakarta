@@ -24,7 +24,7 @@ import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
-import org.eclipse.lsp4jakarta.jdt.core.java.AbtractJavaContext;
+import org.eclipse.lsp4jakarta.jdt.core.java.AbstractJavaContext;
 import org.eclipse.lsp4jakarta.jdt.core.java.corrections.proposal.ChangeCorrectionProposal;
 import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.core.java.ChangeUtil;
@@ -35,7 +35,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.ChangeUtil;
  * @author Angelo ZERR
  *
  */
-public class JavaCodeActionContext extends AbtractJavaContext implements IInvocationContext {
+public class JavaCodeActionContext extends AbstractJavaContext implements IInvocationContext {
 
     private final int selectionOffset;
     private final int selectionLength;

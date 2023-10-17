@@ -21,7 +21,7 @@ import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.commons.DocumentFormat;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsSettings;
-import org.eclipse.lsp4jakarta.jdt.core.java.AbtractJavaContext;
+import org.eclipse.lsp4jakarta.jdt.core.java.AbstractJavaContext;
 import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
 
 /**
@@ -30,7 +30,7 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  * @author Angelo ZERR
  *
  */
-public class JavaDiagnosticsContext extends AbtractJavaContext {
+public class JavaDiagnosticsContext extends AbstractJavaContext {
 
     private final DocumentFormat documentFormat;
 

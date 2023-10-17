@@ -14,7 +14,7 @@
 package org.eclipse.lsp4jakarta.jdt.core.java.completion;
 
 import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.lsp4jakarta.jdt.core.java.AbtractJavaContext;
+import org.eclipse.lsp4jakarta.jdt.core.java.AbstractJavaContext;
 import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
 
 /**
@@ -22,7 +22,7 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  *
  * @author datho7561
  */
-public class JavaCompletionContext extends AbtractJavaContext {
+public class JavaCompletionContext extends AbstractJavaContext {
 
     private int offset;
 

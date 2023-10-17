@@ -29,7 +29,7 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  * @author Angelo ZERR
  *
  */
-public abstract class AbtractJavaContext {
+public abstract class AbstractJavaContext {
 
     private final String uri;
 
@@ -41,7 +41,7 @@ public abstract class AbtractJavaContext {
 
     private CompilationUnit fASTRoot;
 
-    public AbtractJavaContext(String uri, ITypeRoot typeRoot, IJDTUtils utils) {
+    public AbstractJavaContext(String uri, ITypeRoot typeRoot, IJDTUtils utils) {
         this.uri = uri;
         this.typeRoot = typeRoot;
         this.utils = utils;

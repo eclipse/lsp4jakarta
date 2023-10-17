@@ -16,7 +16,7 @@ package org.eclipse.lsp4jakarta.jdt.core.java.definition;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4jakarta.jdt.core.java.AbtractJavaContext;
+import org.eclipse.lsp4jakarta.jdt.core.java.AbstractJavaContext;
 import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
 
 /**
@@ -25,7 +25,7 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
  * @author Angelo ZERR
  *
  */
-public class JavaDefinitionContext extends AbtractJavaContext {
+public class JavaDefinitionContext extends AbstractJavaContext {
 
     private final IJavaElement hyperlinkedElement;
 
