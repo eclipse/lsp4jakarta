@@ -1,64 +1,63 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.eclipse.lsp4jakarta</groupId>
-    <artifactId>jdt-parent</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
-  </parent>
-  <artifactId>org.eclipse.lsp4jakarta.jdt.test</artifactId>
-  <packaging>eclipse-test-plugin</packaging>
-
-  <name>Eclipse LSP4Jakarta JDT Test Plugin</name>
-  <description>Eclipse LSP4Jakarta JDT Test Plugin</description>
-
-  <organization>
-	  <name>Eclipse LSP4Jakarta</name>
-	  <url>https://github.com/eclipse/lsp4jakarta</url>
-  </organization>
-
-  <licenses>
-	  <license>
-		  <name>EPL-2.0</name>
-		  <url>https://www.eclipse.org/legal/epl-2.0/</url>
-		  <comments>Eclipse Public License 2.0</comments>
-	  </license>
-  </licenses>
-  
-  <properties>
-	   <deploySourceFolder>${project.build.directory}/projects</deploySourceFolder>
-	   <deployTargetFolder>vscode/snapshots/builds/jakarta-jdt/${project.version}</deployTargetFolder>
-	   <skipDeployToJBossOrg>false</skipDeployToJBossOrg>
-	</properties>
-	
-	<build>
-	   <pluginManagement>
-	       <plugins>
-	           <plugin>
-	               <groupId>org.eclipse.tycho</groupId>
-	               <artifactId>target-platform-configuration</artifactId>
-	               <version>${tycho.version}</version>
-	           </plugin>
-	       </plugins>
-	   </pluginManagement>
-	   <plugins>
-	       <plugin>
-	           <artifactId>maven-assembly-plugin</artifactId>
-	           <executions>
-	               <execution>
-	                   <phase>package</phase>
-	                   <goals>
-	                       <goal>single</goal>
-	                   </goals>
-	                   <configuration>
-	                       <appendAssemblyId>true</appendAssemblyId>
-	                       <outputDirectory>${project.build.directory}/projects</outputDirectory>
-	                       <descriptors>
-	                           <descriptor>src/main/assembly/projects.xml</descriptor>
-	                       </descriptors>
-	                   </configuration>
-	               </execution>
-	           </executions>
-	       </plugin>
-	   </plugins>
-	</build>
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.eclipse.lsp4jakarta</groupId>
+        <artifactId>jdt-parent</artifactId>
+        <version>0.2.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>org.eclipse.lsp4jakarta.jdt.test</artifactId>
+    <packaging>eclipse-test-plugin</packaging>
+    <name>Eclipse LSP4Jakarta JDT Test Plugin</name>
+    <description>Eclipse LSP4Jakarta JDT Test Plugin</description>
+    <organization>
+        <name>Eclipse LSP4Jakarta</name>
+        <url>https://github.com/eclipse/lsp4jakarta</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>EPL-2.0</name>
+            <url>https://www.eclipse.org/legal/epl-2.0/</url>
+            <comments>Eclipse Public License 2.0</comments>
+        </license>
+    </licenses>
+    <properties>
+        <deploySourceFolder>${project.build.directory}/projects</deploySourceFolder>
+        <deployTargetFolder>vscode/snapshots/builds/jakarta-jdt/${project.version}</deployTargetFolder>
+        <skipDeployToJBossOrg>false</skipDeployToJBossOrg>
+    </properties>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>target-platform-configuration</artifactId>
+                    <version>${tycho.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>true</appendAssemblyId>
+                            <outputDirectory>${project.build.directory}/projects</outputDirectory>
+                            <descriptors>
+                                <descriptor>src/main/assembly/projects.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

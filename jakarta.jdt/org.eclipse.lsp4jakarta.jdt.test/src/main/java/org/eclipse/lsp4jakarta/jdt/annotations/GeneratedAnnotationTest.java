@@ -22,37 +22,34 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
+import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 import org.junit.Test;
 
 public class GeneratedAnnotationTest extends BaseJakartaTest {
 
-    protected static JDTUtils JDT_UTILS = new JDTUtils();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
     @Test
     public void GeneratedAnnotation() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject()
-                .getFile(new Path("src/main/java/io/openliberty/sample/jakarta/annotations/GeneratedAnnotation.java"));
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/annotations/GeneratedAnnotation.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
-        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected annotations
         Diagnostic d1 = d(7, 4, 63,
-                "The @Generated annotation must define the attribute 'date' following the ISO 8601 standard.",
-                DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
-        
+                          "The @Generated annotation must define the attribute 'date' following the ISO 8601 standard.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
+
         Diagnostic d2 = d(13, 4, 70,
-                "The @Generated annotation must define the attribute 'date' following the ISO 8601 standard.",
-                DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
-        
+                          "The @Generated annotation must define the attribute 'date' following the ISO 8601 standard.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "InvalidDateFormat");
 
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2);
-
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2);
     }
-
 }

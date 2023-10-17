@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2019 Red Hat Inc. and others.
+* Copyright (c) 2019, 2023 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,25 +17,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import org.eclipse.lsp4j.CodeActionContext;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 /**
  * Arguments utilities.
  *
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/ls/ArgumentUtils.java
+ *
  * @author Angelo ZERR
- * 
- * Helper methods re-used from
- * https://github.com/eclipse/lsp4mp/blob/5cf8de4874bd0ec9904c411c871f4813b024ac96/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/internal/core/ls/ArgumentUtils.java
+ *
  */
 public class ArgumentUtils {
-    
+
     private static final String DATA_PROPERTY = "data";
     private static final String SOURCE_PROPERTY = "source";
     private static final String MESSAGE_PROPERTY = "message";
@@ -47,7 +48,6 @@ public class ArgumentUtils {
     private static final String CHARACTER_PROPERTY = "character";
     private static final String LINE_PROPERTY = "line";
     private static final String URI_PROPERTY = "uri";
-    
 
     public static Map<String, Object> getFirst(List<Object> arguments) {
         return arguments.isEmpty() ? null : (Map<String, Object>) arguments.get(0);
@@ -122,14 +122,37 @@ public class ArgumentUtils {
         List<String> only = null;
         return new CodeActionContext(diagnostics, only);
     }
-    
+
+    /**
+     * Returns the child if it exists and is an object, and null otherwise
+     *
+     * @param obj the object to get the child of
+     * @param key the key of the child
+     * @return the child if it exists and is an object, and null otherwise
+     */
+    public static Map<String, Object> getObject(Map<String, Object> obj, String key) {
+        Object child = obj.get(key);
+        if (child != null && child instanceof Map<?, ?>) {
+            return (Map<String, Object>) child;
+        }
+        return null;
+    }
+
+    /**
+     * Returns the child as a JsonObject if it exists and is an object, and null
+     * otherwise
+     *
+     * @param obj the object to get the child of
+     * @param key the key of the child
+     * @return the child as a JsonObject if it exists and is an object, and null
+     *         otherwise
+     */
     public static JsonObject getObjectAsJson(Map<String, Object> obj, String key) {
         Object child = obj.get(key);
         if (child != null && child instanceof Map<?, ?>) {
             Gson gson = new Gson();
-            return (JsonObject) gson.toJsonTree(obj);
+            return (JsonObject) gson.toJsonTree(child);
         }
         return null;
     }
-    
 }

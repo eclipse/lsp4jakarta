@@ -25,8 +25,8 @@ public final class Messages {
 
     /**
      * Returns message for the given key defined in resource bundle file.
-     * 
-     * @param key  the given key
+     *
+     * @param key the given key
      * @param args replacements
      * @return Returns message for the given key defined in resource bundle file
      */

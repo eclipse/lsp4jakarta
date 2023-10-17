@@ -36,8 +36,9 @@ import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.WorkspaceEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCodeActionParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
 import org.junit.Assert;
 
 /**
@@ -59,10 +60,9 @@ public class JakartaForJavaAssert {
         return codeActionParams;
     }
 
-    public static void assertJavaCodeAction(JakartaJavaCodeActionParams params, JDTUtils utils, CodeAction... expected)
-            throws JavaModelException {
-        List<? extends CodeAction> actual = JDTServicesManager.getInstance().getCodeAction(params, utils,
-                new NullProgressMonitor());
+    public static void assertJavaCodeAction(JakartaJavaCodeActionParams params, IJDTUtils utils, CodeAction... expected) throws JavaModelException {
+        List<? extends CodeAction> actual = PropertiesManagerForJava.getInstance().codeAction(params, utils,
+                                                                                              new NullProgressMonitor());
         assertCodeActions(actual != null && actual.size() > 0 ? actual : Collections.emptyList(), expected);
     }
 
@@ -81,7 +81,7 @@ public class JakartaForJavaAssert {
         });
 
         Assert.assertEquals(expected.length, actual.size());
-        
+
         // remove extra '\r'
         for (CodeAction ca : actual) {
             ca.setTitle(replaceNewLineCharacters(ca.getTitle()));
@@ -92,13 +92,13 @@ public class JakartaForJavaAssert {
                     te.setNewText(replaceNewLineCharacters(te.getNewText()));
                 }
             }
-        }        
-        
+        }
+
         for (int i = 0; i < expected.length; i++) {
             Assert.assertEquals("Assert title [" + i + "]", expected[i].getTitle(),
-                    ((CodeAction) actual.get(i)).getTitle());
+                                ((CodeAction) actual.get(i)).getTitle());
             Assert.assertEquals("Assert edit [" + i + "]", expected[i].getEdit(),
-                    ((CodeAction) actual.get(i)).getEdit());
+                                ((CodeAction) actual.get(i)).getEdit());
         }
     }
 
@@ -126,23 +126,21 @@ public class JakartaForJavaAssert {
     // Assert for diagnostics
 
     public static Diagnostic d(int line, int startCharacter, int endCharacter, String message,
-            DiagnosticSeverity severity, final String source, String code, Object data) {
-        Diagnostic d = new Diagnostic(r(line, startCharacter, line, endCharacter), message, severity, source,
-                code != null ? code : null);
+                               DiagnosticSeverity severity, final String source, String code, Object data) {
+        Diagnostic d = new Diagnostic(r(line, startCharacter, line, endCharacter), message, severity, source, code != null ? code : null);
         d.setData(data);
         return d;
     }
-    
+
     public static Diagnostic d(int line, int startCharacter, int endCharacter, String message,
-            DiagnosticSeverity severity, final String source, String code) {
+                               DiagnosticSeverity severity, final String source, String code) {
         return d(line, startCharacter, line, endCharacter, message, severity, source, code);
     }
 
     public static Diagnostic d(int startLine, int startCharacter, int endLine, int endCharacter, String message,
-            DiagnosticSeverity severity, final String source, String code) {
+                               DiagnosticSeverity severity, final String source, String code) {
         // Diagnostic on 1 line
-        return new Diagnostic(r(startLine, startCharacter, endLine, endCharacter), message, severity, source,
-                code != null ? code : null);
+        return new Diagnostic(r(startLine, startCharacter, endLine, endCharacter), message, severity, source, code != null ? code : null);
     }
 
     public static Range r(int line, int startCharacter, int endCharacter) {
@@ -157,13 +155,14 @@ public class JakartaForJavaAssert {
         return new Position(line, character);
     }
 
-    public static void assertJavaDiagnostics(JakartaDiagnosticsParams params, JDTUtils utils, Diagnostic... expected)
-            throws JavaModelException {
-        List<PublishDiagnosticsParams> actual = JDTServicesManager.getInstance().getJavaDiagnostics(params);
+    public static void assertJavaDiagnostics(JakartaJavaDiagnosticsParams params, IJDTUtils utils,
+                                             Diagnostic... expected) throws JavaModelException {
+        List<PublishDiagnosticsParams> actual = PropertiesManagerForJava.getInstance().diagnostics(params,
+                                                                                                   utils, new NullProgressMonitor());
 
         assertDiagnostics(
-                actual != null && actual.size() > 0 ? actual.get(0).getDiagnostics() : Collections.emptyList(),
-                expected);
+                          actual != null && actual.size() > 0 ? actual.get(0).getDiagnostics() : Collections.emptyList(),
+                          expected);
     }
 
     public static void assertDiagnostics(List<Diagnostic> actual, Diagnostic... expected) {
@@ -175,12 +174,10 @@ public class JakartaForJavaAssert {
          * ordering of diagnostics should not matter when testing for equality, so we
          * sort diagnostics by their range.
          */
-        Comparator<Position> posOrder = (a, b) -> a.getLine() == b.getLine() ? b.getCharacter() - a.getCharacter()
-                : b.getLine() - a.getLine();
+        Comparator<Position> posOrder = (a, b) -> a.getLine() == b.getLine() ? b.getCharacter() - a.getCharacter() : b.getLine() - a.getLine();
 
-        Comparator<Range> rangePosOrder = (a, b) -> posOrder.compare(a.getStart(), b.getStart()) == 0
-                ? posOrder.compare(a.getEnd(), b.getEnd())
-                : posOrder.compare(a.getStart(), b.getStart());
+        Comparator<Range> rangePosOrder = (a, b) -> posOrder.compare(a.getStart(), b.getStart()) == 0 ? posOrder.compare(a.getEnd(), b.getEnd()) : posOrder.compare(a.getStart(),
+                                                                                                                                                                    b.getStart());
 
         Comparator<Diagnostic> diagnosticRangeOrder = (a, b) -> rangePosOrder.compare(a.getRange(), b.getRange());
 
@@ -197,7 +194,7 @@ public class JakartaForJavaAssert {
         List<Diagnostic> received = actual;
         final boolean filterMessage;
         if (expected != null && !expected.isEmpty()
-                && (expected.get(0).getMessage() == null || expected.get(0).getMessage().isEmpty())) {
+            && (expected.get(0).getMessage() == null || expected.get(0).getMessage().isEmpty())) {
             filterMessage = true;
         } else {
             filterMessage = false;
@@ -225,7 +222,7 @@ public class JakartaForJavaAssert {
     /**
      * Returns new string without '\r' for new lines. (Windows generates an extra
      * '\r' for each new line, it makes test messages fail to compare.)
-     * 
+     *
      * @param source test message string
      * @return new string without '\r' for new lines
      */

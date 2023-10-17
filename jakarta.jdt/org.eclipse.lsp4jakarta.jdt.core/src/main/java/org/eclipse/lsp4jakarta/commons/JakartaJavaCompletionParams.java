@@ -14,63 +14,62 @@
 *******************************************************************************/
 package org.eclipse.lsp4jakarta.commons;
 
-
 import org.eclipse.lsp4j.Position;
 
 /**
- * Parameters that are passed on completion trigger for MicroProfile projects in Java files
+ * Parameters that are passed on completion trigger for Java projects.
  *
  * @author datho7561
  */
 public class JakartaJavaCompletionParams {
 
-	private String uri;
-	private Position position;
+    private String uri;
+    private Position position;
 
-	public JakartaJavaCompletionParams() {
+    public JakartaJavaCompletionParams() {
 
-	}
+    }
 
-	public JakartaJavaCompletionParams(String uri, Position position) {
-		this();
-		setUri(uri);
-		setPosition(position);
-	}
+    public JakartaJavaCompletionParams(String uri, Position position) {
+        this();
+        setUri(uri);
+        setPosition(position);
+    }
 
-	/**
-	 * Returns the java file uri.
-	 *
-	 * @return the java file uri.
-	 */
-	public String getUri() {
-		return uri;
-	}
+    /**
+     * Returns the java file uri.
+     *
+     * @return the java file uri.
+     */
+    public String getUri() {
+        return uri;
+    }
 
-	/**
-	 * Set the java file uri.
-	 *
-	 * @param uri the java file uri.
-	 */
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
+    /**
+     * Set the java file uri.
+     *
+     * @param uri the java file uri.
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 
-	/**
-	 * Returns the hover position
-	 *
-	 * @return the hover position
-	 */
-	public Position getPosition() {
-		return position;
-	}
+    /**
+     * Returns the hover position
+     *
+     * @return the hover position
+     */
+    public Position getPosition() {
+        return position;
+    }
 
-	/**
-	 * Sets the hover position
-	 *
-	 * @param position the hover position
-	 */
-	public void setPosition(Position position) {
-		this.position = position;
-	}
+    /**
+     * Sets the hover position
+     *
+     * @param position the hover position
+     */
+    public void setPosition(Position position) {
+        this.position = position;
+    }
 
 }

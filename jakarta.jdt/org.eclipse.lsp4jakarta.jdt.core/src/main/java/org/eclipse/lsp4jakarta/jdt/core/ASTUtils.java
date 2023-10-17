@@ -28,7 +28,7 @@ public class ASTUtils {
 
     /**
      * Converts a given compilation unit to an ASTNode.
-     * 
+     *
      * @param unit
      * @return ASTNode parsed from the compilation unit
      */
@@ -42,7 +42,7 @@ public class ASTUtils {
 
     /**
      * Given a compilation unit returns a list of all method invocations.
-     * 
+     *
      * @param unit
      * @return list of method invocations
      */

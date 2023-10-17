@@ -39,6 +39,7 @@
             id="org.jakartaee.lsp4e.jakartaserver">
       </contentTypeMapping>
    </extension>
+
    <extension
          id="jakarta-completion-computer"
          name="Jakarta Proposals (based on Jakarta LS)"
@@ -50,4 +51,5 @@
             needsSortingAfterFiltering="false">
       </javaCompletionProposalComputer>
    </extension>
+
 </plugin>

@@ -12,7 +12,8 @@
  *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.jsonp;
 
-import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.*;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.assertJavaDiagnostics;
+import static org.eclipse.lsp4jakarta.jdt.core.JakartaForJavaAssert.d;
 
 import java.util.Arrays;
 
@@ -21,36 +22,37 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
+import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 import org.junit.Test;
 
 public class JakartaJsonpTest extends BaseJakartaTest {
-    protected static JDTUtils JDT_UTILS = new JDTUtils();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
     @Test
     public void invalidPointerTarget() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject().getFile(
-                new Path("src/main/java/io/openliberty/sample/jakarta/jsonp/CreatePointerInvalidTarget.java"));
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/jsonp/CreatePointerInvalidTarget.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
-        
-        JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
         diagnosticsParams.setUris(Arrays.asList(uri));
-        
-        Diagnostic d1 = d(20, 60, 64, 
-                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.", 
-                DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
-        
-        Diagnostic d2 = d(21, 62, 70, 
-                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.", 
-                DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
-        
-        Diagnostic d3 = d(22, 60, 80, 
-                "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.", 
-                DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidCreatePointerArg");
-        
-        assertJavaDiagnostics(diagnosticsParams, JDT_UTILS, d1, d2, d3);
+
+        Diagnostic d1 = d(20, 60, 64,
+                          "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.",
+                          DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidJsonCreatePointerTarget");
+
+        Diagnostic d2 = d(21, 62, 70,
+                          "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.",
+                          DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidJsonCreatePointerTarget");
+
+        Diagnostic d3 = d(22, 60, 80,
+                          "Json.createPointer target must be a sequence of '/' prefixed tokens or an empty String.",
+                          DiagnosticSeverity.Error, "jakarta-jsonp", "InvalidJsonCreatePointerTarget");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2, d3);
     }
 }

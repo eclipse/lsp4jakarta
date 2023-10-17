@@ -32,38 +32,38 @@ public class JakartaCorePlugin implements BundleActivator {
 
     public void start(BundleContext context) throws Exception {
 //    	super.start(context);
-		plugin = this;
-	}
+        plugin = this;
+    }
 
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
+    public void stop(BundleContext context) throws Exception {
+        plugin = null;
 //		super.stop(context);
-	}
+    }
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
-	public static JakartaCorePlugin getDefault() {
-		return plugin;
-	}
+    /**
+     * Returns the shared instance
+     *
+     * @return the shared instance
+     */
+    public static JakartaCorePlugin getDefault() {
+        return plugin;
+    }
 
-	/**
-	 * Add the given Jakarta properties changed listener.
-	 *
-	 * @param listener the listener to add
-	 */
-	public static void log(IStatus status) {
+    /**
+     * Add the given Jakarta properties changed listener.
+     *
+     * @param listener the listener to add
+     */
+    public static void log(IStatus status) {
 //        getDefault().getLog().log(status);
     }
 
-	/**
-	 * Remove the given Jakarta properties changed listener.
-	 *
-	 * @param listener the listener to remove
-	 */
-	public static void logException(String errMsg, Throwable ex) {
+    /**
+     * Remove the given Jakarta properties changed listener.
+     *
+     * @param listener the listener to remove
+     */
+    public static void logException(String errMsg, Throwable ex) {
 //        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, errMsg, ex));
     }
 

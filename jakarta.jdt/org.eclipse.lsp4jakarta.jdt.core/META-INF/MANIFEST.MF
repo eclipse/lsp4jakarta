@@ -4,7 +4,7 @@ Bundle-Name: Eclipse LSP4Jakarta JDT Extension (Incubation)
 Bundle-Vendor: Eclipse LSP4Jakarta
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.eclipse.lsp4jakarta.jdt.core;singleton:=true
-Bundle-Version: 0.1.2.qualifier
+Bundle-Version: 0.2.0.qualifier
 Bundle-Activator: org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin
 Require-Bundle: 
  org.eclipse.core.runtime,
@@ -27,5 +27,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: 
- org.eclipse.lsp4jakarta.commons, 
- org.eclipse.lsp4jakarta.jdt.core
+ org.eclipse.lsp4jakarta.commons,
+ org.eclipse.lsp4jakarta.jdt.core,
+ org.eclipse.lsp4jakarta.jdt.core.utils,
+ org.eclipse.lsp4jakarta.jdt.internal.core.ls

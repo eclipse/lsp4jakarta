@@ -29,7 +29,7 @@ import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 public class JsonRpcHelpers {
     /**
      * Convert line, column to a document offset.
-     * 
+     *
      * @param buffer
      * @param line
      * @param column
@@ -44,7 +44,7 @@ public class JsonRpcHelpers {
 
     /**
      * Convert line, column to a document offset.
-     * 
+     *
      * @param document
      * @param line
      * @param column
@@ -54,14 +54,14 @@ public class JsonRpcHelpers {
         try {
             return document.getLineOffset(line) + column;
         } catch (BadLocationException e) {
-        	JakartaCorePlugin.logException(e.getMessage(), e);
+            JakartaCorePlugin.logException(e.getMessage(), e);
         }
         return -1;
     }
 
     /**
      * Convert offset to line number and column.
-     * 
+     *
      * @param buffer
      * @param line
      * @param column
@@ -84,7 +84,7 @@ public class JsonRpcHelpers {
             int column = offset - document.getLineOffset(line);
             return new int[] { line, column };
         } catch (BadLocationException e) {
-        	JakartaCorePlugin.logException(e.getMessage(), e);
+            JakartaCorePlugin.logException(e.getMessage(), e);
         }
         return null;
     }

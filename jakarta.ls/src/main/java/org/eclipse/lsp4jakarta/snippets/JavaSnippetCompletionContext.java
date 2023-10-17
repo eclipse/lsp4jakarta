@@ -22,33 +22,33 @@ import org.eclipse.lsp4jakarta.commons.ProjectLabelInfoEntry;
  */
 public class JavaSnippetCompletionContext {
 
-	private ProjectLabelInfoEntry projectLabelInfoEntry;
-	private JavaCursorContextResult javaCursorContextResult;
+    private ProjectLabelInfoEntry projectLabelInfoEntry;
+    private JavaCursorContextResult javaCursorContextResult;
 
-	public JavaSnippetCompletionContext(ProjectLabelInfoEntry projectLabelInfoEntry,
-			JavaCursorContextResult javaCursorContextResult) {
-		this.projectLabelInfoEntry = projectLabelInfoEntry;
-		this.javaCursorContextResult = javaCursorContextResult;
-	}
+    public JavaSnippetCompletionContext(ProjectLabelInfoEntry projectLabelInfoEntry,
+                                        JavaCursorContextResult javaCursorContextResult) {
+        this.projectLabelInfoEntry = projectLabelInfoEntry;
+        this.javaCursorContextResult = javaCursorContextResult;
+    }
 
-	/**
-	 * Returns the project label info entry for the file in which completion was
-	 * triggered.
-	 *
-	 * @return the project label info entry for the file in which completion was
-	 *         triggered
-	 */
-	public ProjectLabelInfoEntry getProjectLabelInfoEntry() {
-		return projectLabelInfoEntry;
-	}
+    /**
+     * Returns the project label info entry for the file in which completion was
+     * triggered.
+     *
+     * @return the project label info entry for the file in which completion was
+     *         triggered
+     */
+    public ProjectLabelInfoEntry getProjectLabelInfoEntry() {
+        return projectLabelInfoEntry;
+    }
 
-	/**
-	 * Returns the context related to the cursor location in the given document.
-	 *
-	 * @return the context related to the cursor location in the given document
-	 */
-	public JavaCursorContextResult getJavaCursorContextResult() {
-		return javaCursorContextResult;
-	}
+    /**
+     * Returns the context related to the cursor location in the given document.
+     *
+     * @return the context related to the cursor location in the given document
+     */
+    public JavaCursorContextResult getJavaCursorContextResult() {
+        return javaCursorContextResult;
+    }
 
 }

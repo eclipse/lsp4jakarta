@@ -25,9 +25,10 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.lsp4jakarta.commons.JakartaDiagnosticsParams;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.jdt.core.BaseJakartaTest;
-import org.eclipse.lsp4jakarta.jdt.core.JDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
+import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -37,46 +38,43 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class NoDiagnosticsTest extends BaseJakartaTest {
 
-	@Parameter
-	public String filePath;
+    @Parameter
+    public String filePath;
 
-	protected static JDTUtils JDT_UTILS = new JDTUtils();
+    protected static IJDTUtils IJDT_UTILS = JDTUtilsLSImpl.getInstance();
 
-	@Test
-	public void checkForNoDiagnostics() throws Exception {
+    @Test
+    public void checkForNoDiagnostics() throws Exception {
+        IJavaProject javaProject = loadJavaProject("demo-servlet-no-diagnostics", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path(filePath));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
 
-		JDTUtils utils = JDT_UTILS;
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
 
-		IJavaProject javaProject = loadJavaProject("demo-servlet-no-diagnostics", "");
-		IFile javaFile = javaProject.getProject()
-				.getFile(new Path(filePath));
-		String uri = javaFile.getLocation().toFile().toURI().toString();
+        // should be no diagnostics in the file.
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS);
 
-		JakartaDiagnosticsParams diagnosticsParams = new JakartaDiagnosticsParams();
-		diagnosticsParams.setUris(Arrays.asList(uri));
+    }
 
-		// should be no diagnostics in the file.
-		assertJavaDiagnostics(diagnosticsParams, utils);
+    // list of java files in demo-servlet-no-diagnostics.
+    @Parameters
+    public static List<String> projectFileProvider() throws Exception {
 
-	}
+        String packagePath = "/src/main/java/io/openliberty/sample/jakarta/";
+        String basePath = System.getProperty("user.dir")
+                          + "/projects/demo-servlet-no-diagnostics/";
+        File dir = new File(basePath + packagePath);
+        String[] extensions = new String[] { "java" };
+        List<String> results = new ArrayList<String>();
 
-	// list of java files in demo-servlet-no-diagnostics.
-	@Parameters
-	public static List<String> projectFileProvider() throws Exception {
+        Collection<File> files = FileUtils.listFiles(dir, extensions, true);
+        for (File file : files) {
+            // Get relative path from source folder and add it in the results array.
+            results.add(file.getAbsolutePath().substring(basePath.length()));
+        }
 
-		String packagePath = "/src/main/java/io/openliberty/sample/jakarta/";
-		String basePath = System.getProperty("user.dir")
-				+ "/projects/demo-servlet-no-diagnostics/";
-		File dir = new File(basePath + packagePath);
-		String[] extensions = new String[] { "java" };
-		List<String> results = new ArrayList<String>();
-
-		Collection<File> files = FileUtils.listFiles(dir, extensions, true);
-		for (File file : files) {
-			// Get relative path from source folder and add it in the results array.
-			results.add(file.getAbsolutePath().substring(basePath.length()));
-		}
-		return results;
-	}
+        return results;
+    }
 
 }

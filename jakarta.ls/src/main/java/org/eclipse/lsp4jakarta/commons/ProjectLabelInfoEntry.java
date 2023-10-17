@@ -25,24 +25,36 @@ import java.util.List;
  *
  */
 public class ProjectLabelInfoEntry {
-    public static final ProjectLabelInfoEntry EMPTY_PROJECT_INFO = new ProjectLabelInfoEntry("",
-            Collections.emptyList());
+    public static final ProjectLabelInfoEntry EMPTY_PROJECT_INFO = new ProjectLabelInfoEntry("", "", Collections.emptyList());
 
     private final String uri;
+    private final String name;
     private final List<String> labels;
 
-    public ProjectLabelInfoEntry(String uri, List<String> labels) {
+    public ProjectLabelInfoEntry(String uri, String name, List<String> labels) {
         this.uri = uri;
+        this.name = name;
         this.labels = labels;
     }
 
     /**
      * Returns the project uri
      *
+     * FIXME: on Linux, this is actually an absolute path and not a uri.
+     *
      * @return the project uri
      */
     public String getUri() {
         return uri;
+    }
+
+    /**
+     * Returns the name of the project
+     *
+     * @return The name of this project
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -61,6 +73,8 @@ public class ProjectLabelInfoEntry {
      * @return true if the project has the given label and false otherwise.
      */
     public boolean hasLabel(String label) {
+        //boolean truth = true;
+        //return truth;
         return labels != null && labels.contains(label);
     }
 }

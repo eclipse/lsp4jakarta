@@ -11,7 +11,6 @@
 * Contributors:
 *     Red Hat Inc. - initial API and implementation
 *******************************************************************************/
-
 package org.eclipse.lsp4jakarta.commons;
 
 import org.eclipse.lsp4j.CodeActionContext;
@@ -20,27 +19,28 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 
 /**
- * Java codeAction parameters. reused from
- * https://github.com/eclipse/lsp4mp/blob/master/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaCodeActionParams.java
+ * Jakarta Java codeAction parameters.
  *
- * @author credit to Angelo ZERR
+ * Based on:
+ * https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/commons/MicroProfileJavaCodeActionParams.java
  *
+ * @author Angelo ZERR
  */
 public class JakartaJavaCodeActionParams extends CodeActionParams {
 
     private boolean resourceOperationSupported;
+
+    private boolean commandConfigurationUpdateSupported;
+
+    private boolean resolveSupported;
 
     public JakartaJavaCodeActionParams() {
         super();
     }
 
     public JakartaJavaCodeActionParams(final TextDocumentIdentifier textDocument, final Range range,
-            final CodeActionContext context) {
+                                       final CodeActionContext context) {
         super(textDocument, range, context);
-    }
-
-    public JakartaJavaCodeActionParams(CodeActionParams params) {
-        super(params.getTextDocument(), params.getRange(), params.getContext());
     }
 
     public String getUri() {
@@ -53,6 +53,22 @@ public class JakartaJavaCodeActionParams extends CodeActionParams {
 
     public void setResourceOperationSupported(boolean resourceOperationSupported) {
         this.resourceOperationSupported = resourceOperationSupported;
+    }
+
+    public boolean isCommandConfigurationUpdateSupported() {
+        return commandConfigurationUpdateSupported;
+    }
+
+    public void setCommandConfigurationUpdateSupported(boolean commandConfigurationUpdateSupported) {
+        this.commandConfigurationUpdateSupported = commandConfigurationUpdateSupported;
+    }
+
+    public boolean isResolveSupported() {
+        return this.resolveSupported;
+    }
+
+    public void setResolveSupported(boolean resolveSupported) {
+        this.resolveSupported = resolveSupported;
     }
 
 }
