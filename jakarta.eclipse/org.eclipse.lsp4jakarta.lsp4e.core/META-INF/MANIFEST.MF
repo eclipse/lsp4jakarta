@@ -6,6 +6,7 @@ Bundle-SymbolicName: org.eclipse.lsp4jakarta.lsp4e.core;singleton:=true
 Bundle-Version: 0.2.0.qualifier
 Bundle-Activator: org.eclipse.lsp4jakarta.lsp4e.Activator
 Require-Bundle: 
+ com.google.gson,
  org.eclipse.lsp4e,
  org.eclipse.core.runtime,
  org.eclipse.ui.workbench,
