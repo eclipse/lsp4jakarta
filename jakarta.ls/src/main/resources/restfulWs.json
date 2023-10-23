@@ -10,7 +10,7 @@
         "import jakarta.ws.rs.core.MediaType;",
         "",
         "@Path(\"${2:/path}\")",
-        "public class ${3:classname} {",
+        "public class ${TM_FILENAME_BASE} {",
         "",
         "\t@GET",
         "\t@Produces(MediaType.TEXT_PLAIN)",
