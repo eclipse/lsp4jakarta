@@ -121,13 +121,13 @@ public class JakartaDelegateCommandHandlerForJava extends AbstractJakartaDelegat
         Map<String, Object> obj = getFirst(arguments);
         if (obj == null) {
             throw new UnsupportedOperationException(String.format(
-                                                                  "Command '%s' must be called with one MicroProfileJavaFileInfoParams argument!", commandId));
+                                                                  "Command '%s' must be called with one JakartaJavaFileInfoParams argument!", commandId));
         }
         // Get project name from the java file URI
         String javaFileUri = getString(obj, "uri");
         if (javaFileUri == null) {
             throw new UnsupportedOperationException(String.format(
-                                                                  "Command '%s' must be called with required MicroProfileJavaFileInfoParams.uri (java file URI)!",
+                                                                  "Command '%s' must be called with required JakartaJavaFileInfoParams.uri (java file URI)!",
                                                                   commandId));
         }
         JakartaJavaFileInfoParams params = new JakartaJavaFileInfoParams();
