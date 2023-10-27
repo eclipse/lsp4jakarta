@@ -49,8 +49,8 @@ public class JakartaLSConnection extends ProcessStreamConnectionProvider {
 
         String debugPortString = System.getProperty(getClass().getName() + ".debugPort");
         if (debugPortString != null) {
-            commands.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="
-                         + debugPortString);
+            //commands.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="
+            //             + debugPortString);
         }
 
         commands.add("-classpath");
