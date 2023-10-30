@@ -44,6 +44,8 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaCompletionResult;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsParams;
 import org.eclipse.lsp4jakarta.commons.JakartaJavaDiagnosticsSettings;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfo;
+import org.eclipse.lsp4jakarta.commons.JakartaJavaFileInfoParams;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.commons.codeaction.CodeActionResolveData;
 import org.eclipse.lsp4jakarta.commons.utils.JSONUtility;
@@ -54,6 +56,7 @@ import org.eclipse.lsp4jakarta.jdt.core.PropertiesManagerForJava;
  */
 public class JakartaDelegateCommandHandlerForJava extends AbstractJakartaDelegateCommandHandler {
 
+    private static final String FILE_INFO_COMMAND_ID = "jakarta/java/fileInfo";
     private static final String JAVA_CODEACTION_COMMAND_ID = "jakarta/java/codeAction";
     private static final String JAVA_CODEACTION_RESOLVE_COMMAND_ID = "jakarta/java/codeActionResolve";
     private static final String JAVA_COMPLETION_COMMAND_ID = "jakarta/java/completion";
@@ -74,6 +77,8 @@ public class JakartaDelegateCommandHandlerForJava extends AbstractJakartaDelegat
     public Object executeCommand(String commandId, List<Object> arguments, IProgressMonitor monitor) throws Exception {
         JavaLanguageServerPlugin.logInfo(String.format("Executing command '%s' in LSP4Jakarta JDT LS extension", commandId));
         switch (commandId) {
+            case FILE_INFO_COMMAND_ID:
+                return getFileInfo(arguments, commandId);
             case JAVA_CODEACTION_COMMAND_ID:
                 return getCodeActionForJava(arguments, commandId, monitor);
             case JAVA_CODEACTION_RESOLVE_COMMAND_ID:
@@ -85,6 +90,49 @@ public class JakartaDelegateCommandHandlerForJava extends AbstractJakartaDelegat
             default:
                 throw new UnsupportedOperationException(String.format("Unsupported command '%s'!", commandId));
         }
+    }
+
+    /**
+     * Returns the file information (package name, etc) for the given Java file.
+     *
+     * @param arguments
+     * @param commandId
+     * @param monitor
+     * @return the file information (package name, etc) for the given Java file.
+     * @throws CoreException
+     * @throws JavaModelException
+     */
+    private static JakartaJavaFileInfo getFileInfo(List<Object> arguments, String commandId) throws JavaModelException, CoreException {
+        // Create java file information parameter
+        JakartaJavaFileInfoParams params = createJavaFileInfoParams(arguments, commandId);
+        // Return file information from the parameter
+        return PropertiesManagerForJava.getInstance().fileInfo(params, JDTUtilsLSImpl.getInstance());
+    }
+
+    /**
+     * Create the Java file information parameter from the given arguments map.
+     *
+     * @param arguments
+     * @param commandId
+     *
+     * @return the Java file information parameter.
+     */
+    private static JakartaJavaFileInfoParams createJavaFileInfoParams(List<Object> arguments, String commandId) {
+        Map<String, Object> obj = getFirst(arguments);
+        if (obj == null) {
+            throw new UnsupportedOperationException(String.format(
+                                                                  "Command '%s' must be called with one JakartaJavaFileInfoParams argument!", commandId));
+        }
+        // Get project name from the java file URI
+        String javaFileUri = getString(obj, "uri");
+        if (javaFileUri == null) {
+            throw new UnsupportedOperationException(String.format(
+                                                                  "Command '%s' must be called with required JakartaJavaFileInfoParams.uri (java file URI)!",
+                                                                  commandId));
+        }
+        JakartaJavaFileInfoParams params = new JakartaJavaFileInfoParams();
+        params.setUri(javaFileUri);
+        return params;
     }
 
     /**

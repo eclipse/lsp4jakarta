@@ -538,7 +538,7 @@ public class PropertiesManagerForJava {
      * @return the Java file information (ex : package name) from the given file URI
      *         and null otherwise.
      */
-    public JakartaJavaFileInfo fileInfo(JakartaJavaFileInfoParams params, IJDTUtils utils, IProgressMonitor monitor) {
+    public JakartaJavaFileInfo fileInfo(JakartaJavaFileInfoParams params, IJDTUtils utils) {
         String uri = params.getUri();
         final ICompilationUnit unit = utils.resolveCompilationUnit(uri);
         if (unit != null && unit.exists()) {
