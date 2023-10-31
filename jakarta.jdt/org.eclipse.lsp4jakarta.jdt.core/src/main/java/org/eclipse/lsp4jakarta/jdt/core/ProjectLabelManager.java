@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2019-2020 Red Hat Inc. and others.
+* Copyright (c) 2019-2023 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.ProjectLabelRegistry;
  * Project label manager which provides <code>ProjectLabelInfo</code> containing
  * project labels for all projects in the workspace
  *
+ * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.jdt/org.eclipse.lsp4mp.jdt.core/src/main/java/org/eclipse/lsp4mp/jdt/core/ProjectLabelManager.java
  */
 public class ProjectLabelManager {
     private static final ProjectLabelManager INSTANCE = new ProjectLabelManager();
@@ -129,8 +130,8 @@ public class ProjectLabelManager {
         }
 
         // Update labels by using the
-        // "org.eclipse.lsp4mp.jdt.core.projectLabelProviders" extension point (ex
-        // : "maven", "gradle", "quarkus", "jakarta").
+        // "org.eclipse.lsp4jakarta.jdt.core.projectLabelProviders" extension point (ex
+        // : "maven", "gradle", "jakarta").
         List<String> projectLabels = new ArrayList<>();
         List<ProjectLabelDefinition> definitions = ProjectLabelRegistry.getInstance().getProjectLabelDefinitions();
         for (ProjectLabelDefinition definition : definitions) {

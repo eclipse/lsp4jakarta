@@ -148,7 +148,7 @@
          The following is an example of a java feature participant extension:
 
 &lt;pre&gt;
- &lt;extension point=&quot;org.eclipse.lsp4mp.jdt.core.javaFeatureParticipants&quot;&gt;
+ &lt;extension point=&quot;org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants&quot;&gt;
   &lt;diagnostics
    class=&quot;com.example.MyJavaDiagnosticsParticipant&quot;&gt;
   &lt;/diagnostics&gt;
