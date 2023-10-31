@@ -14,10 +14,11 @@
 package org.eclipse.lsp4jakarta.commons.codeaction;
 
 /**
- * Represents id of an lsp4mp code action.
+ * LSP4Jakarta code action id.
+ *
+ * Based on: https://github.com/eclipse/lsp4mp/blob/0.9.0/microprofile.ls/org.eclipse.lsp4mp.ls/src/main/java/org/eclipse/lsp4mp/commons/codeaction/MicroProfileCodeActionId.java
  */
 public enum JakartaCodeActionId implements ICodeActionId {
-    IgnoreUnknownProperty,
     // JAXRS
     jaxrsInsertPublicCtrtToClass,
     MakeConstructorPublic,

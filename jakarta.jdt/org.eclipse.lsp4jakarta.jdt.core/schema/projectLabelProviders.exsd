@@ -57,7 +57,7 @@ Some example labels are: &quot;maven&quot;, &quot;gradle&quot; and &quot;jakarta
                   Name of a class that implements IProjectLabelProvider.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":org.eclipse.lsp4mp.jdt.core.IProjectLabelProvider"/>
+                  <meta.attribute kind="java" basedOn=":org.eclipse.lsp4jakarta.jdt.core.IProjectLabelProvider"/>
                </appinfo>
             </annotation>
          </attribute>

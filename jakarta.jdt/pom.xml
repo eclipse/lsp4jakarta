@@ -34,7 +34,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <tycho.version>3.0.3</tycho.version>
         <tycho.extras.version>${tycho.version}</tycho.extras.version>
-        <tycho.scmUrl>scm:git:https://github.com/eclipse/lsp4mp</tycho.scmUrl>
+        <tycho.scmUrl>scm:git:https://github.com/eclipse/lsp4jakarta</tycho.scmUrl>
         <tycho.generateSourceReferences>true</tycho.generateSourceReferences>
         <jdt.ls.version>1.21.0.20230316144047</jdt.ls.version>
         <releases.repo.id>repo.eclipse.org</releases.repo.id>
