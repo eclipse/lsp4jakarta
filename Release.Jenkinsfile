@@ -22,16 +22,16 @@ pipeline {
         withMaven {
           sh "VERSION=${params.VERSION}"
           sh '''
-                cd jakarta.eclipse
+                cd jakarta.jdt
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
+                ./mvnw versions:set-scm-tag -DnewTag=$VERSION
+                ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
                 cd ../jakarta.ls
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
                 ./mvnw versions:set-scm-tag -DnewTag=$VERSION
                 ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
-                cd ../jakarta.jdt
+                cd ../jakarta.eclipse
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
-                ./mvnw versions:set-scm-tag -DnewTag=$VERSION
-                ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
                 cd ..
               '''
         }
@@ -85,14 +85,14 @@ pipeline {
         withMaven {
           sh "$VERSION_SNAPSHOT=${params.VERSION_SNAPSHOT}"
           sh '''
-            cd jakarta.eclipse
+            cd jakarta.jdt
             ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION_SNAPSHOT
+            ./mvnw versions:set-scm-tag -DnewTag=$VERSION_SNAPSHOT
             cd ../jakarta.ls
             ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION_SNAPSHOT
             ./mvnw versions:set-scm-tag -DnewTag=$VERSION_SNAPSHOT
-            cd ../jakarta.jdt
+            cd ../jakarta.eclipse
             ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION_SNAPSHOT
-            ./mvnw versions:set-scm-tag -DnewTag=$VERSION_SNAPSHOT
             cd ..
           '''
         }
