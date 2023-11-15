@@ -93,10 +93,6 @@ public class ClientCapabilitiesWrapper {
                && capabilities.getWorkspace().getWorkspaceEdit().getResourceOperations().contains(ResourceOperationKind.Delete);
     }
 
-    public boolean isInlayHintDynamicRegistered() {
-        return v3Supported && isDynamicRegistrationSupported(getTextDocument().getInlayHint());
-    }
-
     /**
      * Returns true if the client supports both code action data and resolving
      * workspace edits for code actions, and false otherwise.

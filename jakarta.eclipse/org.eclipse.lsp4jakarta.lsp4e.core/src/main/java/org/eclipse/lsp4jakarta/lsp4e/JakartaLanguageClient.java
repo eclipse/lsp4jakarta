@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2022 IBM Corporation and others.
+* Copyright (c) 2020, 2023 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,11 +36,11 @@ import org.eclipse.lsp4jakarta.commons.JakartaJavaProjectLabelsParams;
 import org.eclipse.lsp4jakarta.commons.JavaCursorContextResult;
 import org.eclipse.lsp4jakarta.commons.ProjectLabelInfoEntry;
 import org.eclipse.lsp4jakarta.commons.codeaction.CodeActionResolveData;
+import org.eclipse.lsp4jakarta.commons.utils.JSONUtility;
 import org.eclipse.lsp4jakarta.jdt.core.ProjectLabelManager;
 import org.eclipse.lsp4jakarta.jdt.core.PropertiesManagerForJava;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 import org.eclipse.lsp4jakarta.ls.api.JakartaLanguageClientAPI;
-import org.eclipse.lsp4jakarta.commons.utils.JSONUtility;
 
 public class JakartaLanguageClient extends LanguageClientImpl implements JakartaLanguageClientAPI {
 
