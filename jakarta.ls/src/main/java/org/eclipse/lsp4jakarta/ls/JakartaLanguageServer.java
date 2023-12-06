@@ -137,11 +137,11 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
     @Override
     public CompletableFuture<Object> shutdown() {
         // Perform some clean up. During shutdown, TextDocumentService.didClose() may not be called properly.
-        ((JakartaTextDocumentService) textDocumentService).cleanDiagnostics();
+        textDocumentService.cleanDiagnostics();
 
         // If requested by the client, on shutdown (i.e. last file closed), shutdown the language server.
         if (capabilityManager.getClientCapabilities().shouldLanguageServerExitOnShutdown()) {
-            LOGGER.info("Jakarta EE server is shutding down");
+            LOGGER.info("Jakarta EE server is shutting down");
             ScheduledExecutorService delayer = Executors.newScheduledThreadPool(1);
             delayer.schedule(() -> exit(0), 1, TimeUnit.SECONDS);
         }
