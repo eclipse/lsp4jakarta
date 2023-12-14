@@ -20,6 +20,7 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaErrorCode;
 public enum ErrorCode implements IJavaErrorCode {
     InvalidNumberOfScopedAnnotationsByManagedBean,
     InvalidManagedBeanWithNonStaticPublicField,
+    InvalidManagedBeanWithNonStaticPublicFieldInvalidScope,
     InvalidNumberOfScopeAnnotationsByProducerField,
     InvalidFieldWithProducesAndInjectAnnotations,
     InvalidNumberOfScopeAnnotationsByProducerMethod,
@@ -38,5 +39,4 @@ public enum ErrorCode implements IJavaErrorCode {
     public String getCode() {
         return name();
     }
-
 }
