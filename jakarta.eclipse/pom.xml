@@ -26,8 +26,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <tycho.version>2.7.2</tycho.version>
-        <tycho.extras.version>${tycho.version}</tycho.extras.version>
+        <tycho.version>3.0.3</tycho.version>
         <tycho.test.platformArgs />
         <tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
     </properties>
@@ -139,15 +138,15 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.eclipse.tycho.extras</groupId>
-                        <artifactId>tycho-source-feature-plugin</artifactId>
-                        <version>${tycho.extras.version}</version>
+                        <groupId>org.eclipse.tycho</groupId>
+                        <artifactId>tycho-source-plugin</artifactId>
+                        <version>${tycho.version}</version>
                         <executions>
                             <execution>
-                                <id>source-feature</id>
+                                <id>feature-source</id>
                                 <phase>package</phase>
                                 <goals>
-                                    <goal>source-feature</goal>
+                                    <goal>feature-source</goal>
                                 </goals>
                             </execution>
                         </executions>
