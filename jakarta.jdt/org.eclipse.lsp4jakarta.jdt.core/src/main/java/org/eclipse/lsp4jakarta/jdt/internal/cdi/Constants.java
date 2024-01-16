@@ -48,9 +48,13 @@ public class Constants {
 
     public static final String DIAGNOSTIC_CODE_REDUNDANT_DISPOSES = "RemoveExtraDisposes";
 
-    public static final Set<String> INVALID_INJECT_PARAMS = new HashSet<String>(Arrays.asList(DISPOSES, OBSERVES, OBSERVES_ASYNC));
-    public static final String[] INVALID_INJECT_PARAMS_FQ = { DISPOSES_FQ_NAME, OBSERVES_FQ_NAME,
-                                                              OBSERVES_ASYNC_FQ_NAME };
+    public static final Set<String> INVALID_INITIALIZER_PARAMS = new HashSet<String>(Arrays.asList(DISPOSES, OBSERVES, OBSERVES_ASYNC));
+    public static final String[] INVALID_INITIALIZER_PARAMS_FQ = { DISPOSES_FQ_NAME, OBSERVES_FQ_NAME,
+                                                                   OBSERVES_ASYNC_FQ_NAME };
+
+    public static final Set<String> INVALID_PRODUCER_PARAMS = new HashSet<String>(Arrays.asList(DISPOSES, OBSERVES, OBSERVES_ASYNC));
+    public static final String[] INVALID_PRODUCER_PARAMS_FQ = { DISPOSES_FQ_NAME, OBSERVES_FQ_NAME,
+                                                                OBSERVES_ASYNC_FQ_NAME };
 
     // List can be found in the cdi doc here:
     // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#bean_defining_annotations
