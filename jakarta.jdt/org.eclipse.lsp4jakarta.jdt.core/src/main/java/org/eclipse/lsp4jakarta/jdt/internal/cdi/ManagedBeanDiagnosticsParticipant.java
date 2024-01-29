@@ -324,7 +324,7 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                         for (IAnnotation annotation : annotations) {
                             String matchedAnnotation = DiagnosticUtils.getMatchedJavaElementName(type,
                                                                                                  annotation.getElementName(),
-                                                                                                 Constants.INVALID_INJECT_PARAMS_FQ);
+                                                                                                 Constants.INVALID_PRODUCER_PARAMS_FQ);
                             if (Constants.DISPOSES_FQ_NAME.equals(matchedAnnotation)) {
                                 numDisposes++;
                             } else if (Constants.OBSERVES_FQ_NAME.equals(matchedAnnotation)
@@ -360,6 +360,8 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 
     private void invalidParamsCheck(JavaDiagnosticsContext context, String uri, ICompilationUnit unit,
                                     List<Diagnostic> diagnostics, IType type, String target) throws JavaModelException {
+        // this method will be called to scan all methods looking for either @Produces annotations OR @Inject annotations. In either
+        // scenario this method will then check for disallowed parameter annotations and add diagnostics to be displayed if detected.
         for (IMethod method : type.getMethods()) {
             IAnnotation targetAnnotation = null;
 
@@ -375,10 +377,19 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
 
             Set<String> invalidAnnotations = new TreeSet<>();
             ILocalVariable[] params = method.getParameters();
+
             for (ILocalVariable param : params) {
-                List<String> paramScopes = DiagnosticUtils.getMatchedJavaElementNames(type,
-                                                                                      Stream.of(param.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new),
-                                                                                      Constants.INVALID_INJECT_PARAMS_FQ);
+                List<String> paramScopes;
+                // look at the params of any method annotated @Produces - check for invalid parameter annotations
+                if (Constants.PRODUCES_FQ_NAME.equals(target)) {
+                    paramScopes = DiagnosticUtils.getMatchedJavaElementNames(type,
+                                                                             Stream.of(param.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new),
+                                                                             Constants.INVALID_PRODUCER_PARAMS_FQ);
+                } else { // look at the params of any method annotated @Inject - check for invalid parameter annotations
+                    paramScopes = DiagnosticUtils.getMatchedJavaElementNames(type,
+                                                                             Stream.of(param.getAnnotations()).map(annotation -> annotation.getElementName()).toArray(String[]::new),
+                                                                             Constants.INVALID_INITIALIZER_PARAMS_FQ);
+                }
                 for (String annotation : paramScopes) {
                     invalidAnnotations.add("@" + DiagnosticUtils.getSimpleName(annotation));
                 }

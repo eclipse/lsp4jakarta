@@ -96,8 +96,15 @@ public abstract class RemoveMethodParamAnnotationQuickFix implements IJavaCodeAc
                 }
             }
 
-            createCodeAction(diagnostic, context, codeActions, parameter,
-                             (String[]) annotationsToRemove.toArray(new String[annotationsToRemove.size()]));
+            // in the case of a method sig:
+            // public String greetDisposesObservesObservesAsync(@Disposes String name1, String name2, @ObservesAsync String name3)
+            // parameter name2 will have no annotation to remove - but this is still in need of a QF because params 1 & 3 are in conflict
+            // when processing param 2 we need to account for the fact that no QF is needed for that particular param, but
+            // a QF is needed for param 3. Previously the fact that param2 had no annotation to remove caused an ArrayIndexOOB when creating the label (QF string)
+            if (annotationsToRemove.size() > 0) {
+                createCodeAction(diagnostic, context, codeActions, parameter,
+                                 (String[]) annotationsToRemove.toArray(new String[annotationsToRemove.size()]));
+            }
         }
 
         return codeActions;

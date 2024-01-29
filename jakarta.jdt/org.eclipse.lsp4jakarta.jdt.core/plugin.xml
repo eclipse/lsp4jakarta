@@ -297,15 +297,21 @@
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.InsertDefaultPublicConstructorToMBeanQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidInjectAnnotatedMethodParamAnnotation"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidInjectParamAnnotationQuickFix" />    
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidInitializerParamAnnotationQuickFix" />    
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidInjectAnnotatedMethodParamAnnotation"
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInjectAnnotationQuickFix" />   
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidProducerMethodParamAnnotation"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidInjectParamAnnotationQuickFix" />     
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidProducerParamAnnotationQuickFix" />     
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidProducerMethodParamAnnotation"
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveProduceAnnotationQuickFix" />
+      <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidDisposesAnnotationOnMultipleMethodParams"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidProducerParamAnnotationQuickFix" />
+       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-cdi#InvalidDisposerMethodParamAnnotation"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidProducerParamAnnotationQuickFix" />
    </extension>
 </plugin>

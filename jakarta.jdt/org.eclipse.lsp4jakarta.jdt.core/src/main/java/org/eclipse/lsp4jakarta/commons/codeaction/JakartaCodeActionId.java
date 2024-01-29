@@ -64,6 +64,7 @@ public enum JakartaCodeActionId implements ICodeActionId {
     CDIInsertProtectedCtrtToClass,
     CDIInsertPublicCtrtToClass,
     CDIRemoveInvalidInjectAnnotations,
+    CDIRemoveInvalidProducesAnnotations,
     CDIRemoveProducesAnnotation,
     CDIRemoveInjectAnnotation,
     CDIRemoveScopeDeclarationAnnotationsButOne,

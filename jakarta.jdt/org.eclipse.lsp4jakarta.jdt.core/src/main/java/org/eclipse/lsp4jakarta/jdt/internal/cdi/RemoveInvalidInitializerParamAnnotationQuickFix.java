@@ -19,13 +19,13 @@ import org.eclipse.lsp4jakarta.commons.codeaction.JakartaCodeActionId;
  * Removes the @Disposes, @Observes and @ObservesAsync annotations from
  * the declaring element.
  */
-public class RemoveInvalidInjectParamAnnotationQuickFix extends RemoveMethodParamAnnotationQuickFix {
+public class RemoveInvalidInitializerParamAnnotationQuickFix extends RemoveMethodParamAnnotationQuickFix {
 
     /**
      * Constructor.
      */
-    public RemoveInvalidInjectParamAnnotationQuickFix() {
-        super(Constants.INVALID_INJECT_PARAMS.toArray((String[]::new)));
+    public RemoveInvalidInitializerParamAnnotationQuickFix() {
+        super(Constants.INVALID_INITIALIZER_PARAMS.toArray((String[]::new)));
     }
 
     /**
@@ -33,7 +33,7 @@ public class RemoveInvalidInjectParamAnnotationQuickFix extends RemoveMethodPara
      */
     @Override
     public String getParticipantId() {
-        return RemoveInvalidInjectParamAnnotationQuickFix.class.getName();
+        return RemoveInvalidInitializerParamAnnotationQuickFix.class.getName();
     }
 
     /**
