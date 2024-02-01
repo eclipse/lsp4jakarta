@@ -49,23 +49,40 @@ public class ResourceAnnotationTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // expected annotations
-        Diagnostic d1 = d(22, 0, 22, "The @Resource annotation must define the attribute 'type'.",
+        Diagnostic d1 = d(21, 0, 22, "The @Resource annotation must define the attribute 'type'.",
                           DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceTypeAttribute");
 
-        Diagnostic d2 = d(39, 0, 30, "The @Resource annotation must define the attribute 'name'.",
+        Diagnostic d2 = d(38, 0, 30, "The @Resource annotation must define the attribute 'name'.",
                           DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceNameAttribute");
 
-        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2);
+        // expected annotations
+        Diagnostic d3 = d(5, 14, 37, "The @Resource annotation must define the attribute 'type'.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceTypeAttribute");
 
-        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
-        TextEdit te = te(22, 0, 22, 22, "@Resource(name = \"aa\", type = \"\")");
-        CodeAction ca = ca(uri, "Insert 'type' attribute to @Resource", d1, te);
+        Diagnostic d4 = d(5, 39, 69, "The @Resource annotation must define the attribute 'name'.",
+                          DiagnosticSeverity.Error, "jakarta-annotations", "MissingResourceNameAttribute");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2, d3, d4);
+
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d3);
+        TextEdit te = te(5, 0, 6, 0, "@Resources({ @Resource(name = \"aaa\", type = \"\"), @Resource(type = Object.class) })\n");
+        CodeAction ca = ca(uri, "Insert 'type' attribute to @Resource", d3, te);
         assertJavaCodeAction(codeActionParams, IJDT_UTILS, ca);
 
-        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
-        TextEdit te1 = te(39, 0, 39, 30, "@Resource(type = \"\", name = \"\")");
-        CodeAction ca1 = ca(uri, "Insert 'name' attribute to @Resource", d2, te1);
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d4);
+        TextEdit te1 = te(5, 0, 6, 0, "@Resources({ @Resource(name = \"aaa\"), @Resource(type = Object.class, name = \"\") })\n");
+        CodeAction ca1 = ca(uri, "Insert 'name' attribute to @Resource", d4, te1);
         assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca1);
+
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d1);
+        TextEdit te2 = te(21, 0, 21, 22, "@Resource(name = \"aa\", type = \"\")");
+        CodeAction ca2 = ca(uri, "Insert 'type' attribute to @Resource", d1, te2);
+        assertJavaCodeAction(codeActionParams2, IJDT_UTILS, ca2);
+
+        JakartaJavaCodeActionParams codeActionParams3 = createCodeActionParams(uri, d2);
+        TextEdit te3 = te(38, 0, 38, 30, "@Resource(type = Object.class, name = \"\")");
+        CodeAction ca3 = ca(uri, "Insert 'name' attribute to @Resource", d2, te3);
+        assertJavaCodeAction(codeActionParams3, IJDT_UTILS, ca3);
 
     }
 

@@ -30,6 +30,10 @@ public class Constants {
     public static final String RESOURCE = "Resource";
     public static final String RESOURCE_FQ_NAME = "jakarta.annotation.Resource";
 
+    /* @Resources */
+    public static final String RESOURCES = "Resources";
+    public static final String RESOURCES_FQ_NAME = "jakarta.annotation.Resources";
+
     /* @PostConstruct */
     public static final String POST_CONSTRUCT = "PostConstruct";
     public static final String POST_CONSTRUCT_FQ_NAME = "jakarta.annotation.PostConstruct";
