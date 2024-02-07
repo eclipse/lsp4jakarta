@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021, 2024 IBM Corporation and others.
+* Copyright (c) 2024 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,15 +12,13 @@
 *******************************************************************************/
 package io.openliberty.sample.jakarta.di;
 
-public class GreetingNoDefaultConstructor {
+import io.openliberty.sample.jakarta.di.helpers.vetoed.PackageVetoedClass;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-    private String greeting;
+@ApplicationScoped
+public class VetoedPackageInjectionPointUser {
 
-    public GreetingNoDefaultConstructor(String greeting) {
-        this.greeting = greeting;
-    }
-
-    public String greet(String name) {
-        return greeting + " " + name;
-    }
+    @Inject
+    public VetoedPackageInjectionPointUser(PackageVetoedClass vbc) {}
 }
