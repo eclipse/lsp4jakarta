@@ -3,7 +3,7 @@ package io.openliberty.sample.jakarta.annotations;
 import jakarta.annotation.Resource;
 import jakarta.annotation.Resources;
 
-@Resources ({ @Resource(name = "aaa"), @Resource(type = Object.class) })
+@Resource(type = Object.class, name = "aa")
 public class ResourceAnnotation {
 
     private Integer studentId;
@@ -15,7 +15,8 @@ public class ResourceAnnotation {
     private boolean isSad;
 
     private String emailAddress;
-
+    
+    
     
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021, 2023 IBM Corporation and others.
+* Copyright (c) 2021, 2023, 2024 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -184,6 +184,17 @@ public class AnnotationDiagnosticsParticipant implements IJavaDiagnosticsPartici
                     if (element instanceof IType) {
                         for (IMemberValuePair internalAnnotation : annotation.getMemberValuePairs()) {
                             Object[] valuePairs = (Object[]) internalAnnotation.getValue();
+                            String diagnosticMessage;
+                            Range annotationRange = null;
+                            if (valuePairs.length == 0) {
+                                annotationRange = PositionUtils.toNameRange(annotation, context.getUtils());
+                                diagnosticMessage = Messages.getMessage("ResourcesAnnotationMustDefineResourceAnnotation",
+                                                                        "@Resources", "@Resource");
+                                diagnostics.add(context.createDiagnostic(uri, diagnosticMessage, annotationRange,
+                                                                         Constants.DIAGNOSTIC_SOURCE,
+                                                                         ErrorCode.MissingResourceAnnotation,
+                                                                         DiagnosticSeverity.Error));
+                            }
                             int objKind = internalAnnotation.getValueKind();
                             for (Object childAnnotationObj : valuePairs) {
                                 if (objKind == IMemberValuePair.K_ANNOTATION) {
@@ -194,8 +205,8 @@ public class AnnotationDiagnosticsParticipant implements IJavaDiagnosticsPartici
                                             IType type = (IType) element;
                                             if (type.getElementType() == IJavaElement.TYPE
                                                 && ((IType) type).isClass()) {
-                                                Range annotationRange = PositionUtils.toNameRange(childAnnotation,
-                                                                                                  context.getUtils());
+                                                annotationRange = PositionUtils.toNameRange(childAnnotation,
+                                                                                            context.getUtils());
                                                 Boolean nameEmpty = true;
                                                 Boolean typeEmpty = true;
                                                 for (IMemberValuePair pair : childAnnotation.getMemberValuePairs()) {
@@ -206,7 +217,6 @@ public class AnnotationDiagnosticsParticipant implements IJavaDiagnosticsPartici
                                                         typeEmpty = false;
                                                     }
                                                 }
-                                                String diagnosticMessage;
                                                 if (nameEmpty) {
                                                     diagnosticMessage = Messages.getMessage(
                                                                                             "AnnotationMustDefineAttribute",

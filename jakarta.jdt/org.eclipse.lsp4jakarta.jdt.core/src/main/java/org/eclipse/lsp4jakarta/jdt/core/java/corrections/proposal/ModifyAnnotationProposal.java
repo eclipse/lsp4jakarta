@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021, 2022 IBM Corporation and others.
+ * Copyright (c) 2021, 2022, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -198,7 +198,7 @@ public class ModifyAnnotationProposal extends InsertAnnotationProposal {
                 if (!existingAnnotations.isEmpty()) {
                     for (Annotation a : existingAnnotations) {
                         if (a instanceof SingleMemberAnnotation) {
-                            // this type of annotation contains a single valuie which may be a list of other annotations,
+                            // this type of annotation contains a single value which may be a list of other annotations,
                             // some of which need to be fixed
                             newAnnotationToWrite = processSingleMemberAnnotation(ast, imports, importRewriteContext, annotations, (SingleMemberAnnotation) a);
                         } else if (a instanceof NormalAnnotation) {
@@ -242,27 +242,60 @@ public class ModifyAnnotationProposal extends InsertAnnotationProposal {
         // This method will process the annotations in the list, one by one, for quick
         // fix actions on any applicable sub annotations
 
+        // Create a new SingleMemebrAnnotation Object that will be used to store the
+        // updates
+        // and used ny the TextEdit to write them to the file
         SingleMemberAnnotation newSingleMemberAnnotation = ast.newSingleMemberAnnotation();
+
+        // Internally the SingleMemberAnnotation maintains an ArrayInitilaizer which
+        // wraps a List
+        // of NormalAnnotations - create a new empty ArrayInitializer within the new
+        // SingleMemberAnnotation
         ArrayInitializer newAIInstance = (ArrayInitializer) ast.createInstance(ArrayInitializer.class);
 
         newSingleMemberAnnotation.setTypeName(
                                               ast.newName(imports.addImport(annotationToProcess.getTypeName().toString(), importRWCtx)));
+
+        // Get the empty new List of NormalAnnotations from the new
+        // SingleMemberAnnotation object. This List will hold processed NormalAnnotations from the
+        // original SingleMemberAnnotation object passed into this method above.
         List<NormalAnnotation> newCompositeAnnotationContents = newAIInstance.expressions();
 
-        // An ArrayInitializer is the object that holds the list of sub annotations within the SingleMemberAnnotation
+        // An ArrayInitializer 'ai' is the object that holds the list of sub annotations
+        // within the original SingleMemberAnnotation
         ArrayInitializer ai = (ArrayInitializer) ((SingleMemberAnnotation) annotationToProcess).getValue();
 
-        // get the list of annotations to process
+        // get the List of existing NormalAnnotations to process - the 'expressions()' method
+        // returns List<NormalAnnotations>
         List<NormalAnnotation> normalAnnotations = ai.expressions();
 
-        // for each annotation in the list, process it for the quick fix edit
-        for (NormalAnnotation na : normalAnnotations) {
-            NormalAnnotation newNormalAnnotation = processNormalAnnotation(ast, imports, importRWCtx, annotations,
-                                                                           na);
-            newCompositeAnnotationContents.add(newNormalAnnotation);
+        if (normalAnnotations.isEmpty()) {
+            // We are fixing an invalid annotation of the form:
+            // @Resources ({}) -
+            // add a single default sub-annotation
+            NormalAnnotation newChildDefaultAnnotation = processNormalAnnotation(ast, imports, importRWCtx, annotations,
+                                                                                 null);
+            newCompositeAnnotationContents.add(newChildDefaultAnnotation);
+        } else {
+
+            // for each original annotation in the list, process it for the quick fix edit
+            for (NormalAnnotation na : normalAnnotations) {
+                // processNormalAnnotation will create a new NormalAnnotation containing the
+                // results of the quick fix
+                NormalAnnotation newNormalAnnotation = processNormalAnnotation(ast, imports, importRWCtx, annotations,
+                                                                               na);
+                // add this new updated NormalAnnotation directly to the new List of
+                // NormalAnnotations
+                newCompositeAnnotationContents.add(newNormalAnnotation);
+            }
         }
 
-        // now add the processed annotations to the new SingleMemberAnnotation to be written into the file
+        // now add all of the processed annotations to the new SingleMemberAnnotation to
+        // be written into the file
+        // The ArrayInitializer newAIInstance contains the Lst of NormalAnnotations via
+        // the
+        // <code>newCompositeAnnotationContents.add(newNormalAnnotation);</code> call in
+        // the previous for loop
         newSingleMemberAnnotation.setValue(newAIInstance);
 
         return newSingleMemberAnnotation;
@@ -271,54 +304,84 @@ public class ModifyAnnotationProposal extends InsertAnnotationProposal {
     private NormalAnnotation processNormalAnnotation(AST ast, ImportRewrite imports, ImportRewriteContext importRWCtx,
                                                      String[] annotations, NormalAnnotation annotationToProcess) {
 
+        // A NormalAnnotation is an annotation that contains within it a name value pair
+        // IE:
+        //
+        // @Resource(name = "aaa", type = Object.class)
+        //
+        // 'name = "aaa"' is a MemberValuePair of the NormalAnnotation as is 'type = Object.class'
+        //
+        // This method will process this annotation in the list for quick
+        // fix actions on any applicable NormalAnnotation that is passed into this method
         NormalAnnotation newNormalAnnotation = ast.newNormalAnnotation();
 
-        // for every annotation we are fixing
+        // for every annotation type we are fixing
         for (String annotation : annotations) {
 
-            // create a new NormalAnnotation to be written
+            // create a new NormalAnnotation to be written back to the file
             newNormalAnnotation.setTypeName(ast.newName(imports.addImport(annotation, importRWCtx)));
             List<MemberValuePair> values = newNormalAnnotation.values();
 
-            // get the existing name/value pairs
-            List<MemberValuePair> existingValues = ((NormalAnnotation) annotationToProcess).values();
-            for (MemberValuePair mvp : existingValues) {
-                boolean containsAttributeToAdd = this.attributesToAdd.contains(mvp.getName().getFullyQualifiedName());
-                boolean containsAllToAdd = this.attributesToAdd.stream().allMatch(attr -> existingValues.stream().anyMatch(v -> v.equals(attr)));
-                boolean removeAttribute = this.attributesToRemove.contains(mvp.getName().getFullyQualifiedName());
+            if (annotationToProcess == null) {
+                // We are adding a new required default @Resource annotation to an empty
+                // @Resources annotation.
+                addNewAttributes(ast, values);
+            } else {
+                // get the existing name/value pairs from the existing NormalAnnotation that was
+                // passed into this method above
+                List<MemberValuePair> existingValues = ((NormalAnnotation) annotationToProcess).values();
+                for (MemberValuePair mvp : existingValues) {
+                    // does the current existing mvp contain the attribute that needs to be added by
+                    // this quickfix?
+                    boolean containsAttributeToAdd = this.attributesToAdd.contains(mvp.getName().getFullyQualifiedName());
+                    // does the current existing mvp contain all the attributes that need to be
+                    // added by this quickfix?
+                    boolean containsAllToAdd = this.attributesToAdd.stream().allMatch(attr -> existingValues.stream().anyMatch(v -> v.equals(attr)));
+                    // does the current existing mvp contain an attribute that is due to be removed
+                    // by this quickfix?
+                    boolean removeAttribute = this.attributesToRemove.contains(mvp.getName().getFullyQualifiedName());
 
-                if (!containsAttributeToAdd || !containsAllToAdd) {
+                    if (!containsAttributeToAdd || !containsAllToAdd) {
+                        // the existing NormalAnnotation currently being processed does not contain the
+                        // attribute to be added by this quickfix
+                        // so the quickfix should be applied to it.
+                        // But the current existing MVP entry within the NormalAnnotation is valid and
+                        // should continue to exist.
+                        // Copy over any existing valid mvp pairs into a new MVP that will be written
+                        // back to the file as part of this quickfix action
 
-                    // do not add attribute to be removed
-                    if (!removeAttribute) {
-                        // copy the existing values into the new Annotation
-                        MemberValuePair existingMemberValuePair = ast.newMemberValuePair();
-                        existingMemberValuePair.setName(ast.newSimpleName(mvp.getName().getFullyQualifiedName()));
+                        // (but) do not add an existing mvp that is to be removed by this quick fix
+                        if (!removeAttribute) {
+                            // create a new MVP to hold the existing mvp
+                            MemberValuePair newMemberValuePair = ast.newMemberValuePair();
+                            // copy the existing name portion of the MVP into the new MVP
+                            newMemberValuePair.setName(ast.newSimpleName(mvp.getName().getFullyQualifiedName()));
 
-                        if (mvp.getValue() instanceof StringLiteral) {
-                            existingMemberValuePair.setValue((StringLiteral) mvp.getValue().copySubtree(ast, mvp.getValue()));
-                        } else if (mvp.getValue() instanceof TypeLiteral) {
-                            existingMemberValuePair.setValue((TypeLiteral) mvp.getValue().copySubtree(ast, mvp.getValue()));
+                            // copy the existing value into the new MVP, depending on what type it is
+                            if (mvp.getValue() instanceof StringLiteral) {
+                                newMemberValuePair.setValue((StringLiteral) mvp.getValue().copySubtree(ast, mvp.getValue()));
+                            } else if (mvp.getValue() instanceof TypeLiteral) {
+                                newMemberValuePair.setValue((TypeLiteral) mvp.getValue().copySubtree(ast, mvp.getValue()));
 
+                            }
+
+                            // add this new MVP into the new NormalAnnotation
+                            values.add(newMemberValuePair);
                         }
-
-                        values.add(existingMemberValuePair);
+                    } else {
+                        // the current NormalAnnotation being processed already contains the attribute
+                        // to be added by this quick fix action
+                        // and so is not the one to have the quickfix applied to it
+                        // return an as-is copy of the existing annotation
+                        newNormalAnnotation = (NormalAnnotation) annotationToProcess.copySubtree(ast, annotationToProcess);
+                        return newNormalAnnotation;
                     }
 
-                    // add new String attributes
-                    //values = addNewAttributes(ast, values);
-                } else {
-                    // the current member annotation already contains the attribute and so is not
-                    // the one to have the quickfix applied to it
-                    // return an as-is copy of the exsiting (and removed) annotation.
-                    newNormalAnnotation = (NormalAnnotation) annotationToProcess.copySubtree(ast, annotationToProcess);
-                    return newNormalAnnotation;
                 }
 
+                // now add the attribute for this quickfix action to the new NormalAnnotation
+                values = addNewAttributes(ast, values);
             }
-
-            // add new String attributes
-            values = addNewAttributes(ast, values);
         }
         return newNormalAnnotation;
     }
