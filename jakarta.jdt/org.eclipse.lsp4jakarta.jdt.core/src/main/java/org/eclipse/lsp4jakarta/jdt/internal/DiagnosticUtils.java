@@ -29,8 +29,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.core.ImportContainerInfo;
-import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 
@@ -113,35 +111,19 @@ public class DiagnosticUtils {
      *         otherwise.
      */
     public static boolean isImportedJavaElement(ICompilationUnit unit, String javaElementFQName) throws JavaModelException {
+    	
+    	if (!unit.isOpen()) {
+    		unit.open(null);
+    	}
+    	
         IImportContainer container = unit.getImportContainer();
         if (container == null) {
             return false;
         }
 
-        // The following code uses JDT internal class and looks like
-        // ICompilationUnit#getImports()
-        // To avoid creating an array of IImportDeclaration, we do the following code:
-        JavaModelManager manager = JavaModelManager.getJavaModelManager();
-        Object info = manager.getInfo(container);
-        if (info == null) {
-            if (manager.getInfo(unit) != null) {
-                // CU was opened, but no import container, then no imports
-                return false;
-            } else {
-                try {
-                    unit.open(null);
-                } catch (JavaModelException e) {
-                    e.printStackTrace();
-                } // force opening of CU
-                info = manager.getInfo(container);
-                if (info == null)
-                    // after opening, if no import container, then no imports
-                    return false;
-            }
-        }
-        IJavaElement[] elements = ((ImportContainerInfo) info).getChildren();
-        for (IJavaElement child : elements) {
-            IImportDeclaration importDeclaration = (IImportDeclaration) child;
+        IImportDeclaration[] importDeclArray = unit.getImports();
+
+        for (IImportDeclaration importDeclaration : importDeclArray) {
             if (importDeclaration.isOnDemand()) {
                 String fqn = importDeclaration.getElementName();
                 String qualifier = fqn.substring(0, fqn.lastIndexOf('.'));
@@ -165,35 +147,18 @@ public class DiagnosticUtils {
      *         false otherwise.
      */
     protected static boolean isImportedJavaElement(ICompilationUnit unit, String[] javaElementFQNames) throws JavaModelException {
+    	if (!unit.isOpen()) {
+    		unit.open(null);
+    	}
+    	
         IImportContainer container = unit.getImportContainer();
         if (container == null) {
             return false;
         }
 
-        // The following code uses JDT internal class and looks like
-        // ICompilationUnit#getImports()
-        // To avoid creating an array of IImportDeclaration, we do the following code:
-        JavaModelManager manager = JavaModelManager.getJavaModelManager();
-        Object info = manager.getInfo(container);
-        if (info == null) {
-            if (manager.getInfo(unit) != null) {
-                // CU was opened, but no import container, then no imports
-                return false;
-            } else {
-                try {
-                    unit.open(null);
-                } catch (JavaModelException e) {
-                    e.printStackTrace();
-                } // force opening of CU
-                info = manager.getInfo(container);
-                if (info == null)
-                    // after opening, if no import container, then no imports
-                    return false;
-            }
-        }
-        IJavaElement[] elements = ((ImportContainerInfo) info).getChildren();
-        for (IJavaElement child : elements) {
-            IImportDeclaration importDeclaration = (IImportDeclaration) child;
+        IImportDeclaration[] importDeclArray = unit.getImports();
+
+        for (IImportDeclaration importDeclaration : importDeclArray) {
             if (importDeclaration.isOnDemand()) {
                 String fqn = importDeclaration.getElementName();
                 String qualifier = fqn.substring(0, fqn.lastIndexOf('.'));
@@ -210,6 +175,7 @@ public class DiagnosticUtils {
             }
         }
         return false;
+
     }
 
     /**
