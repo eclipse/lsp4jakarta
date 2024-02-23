@@ -111,11 +111,11 @@ public class DiagnosticUtils {
      *         otherwise.
      */
     public static boolean isImportedJavaElement(ICompilationUnit unit, String javaElementFQName) throws JavaModelException {
-    	
-    	if (!unit.isOpen()) {
-    		unit.open(null);
-    	}
-    	
+
+        if (!unit.isOpen()) {
+            unit.open(null);
+        }
+
         IImportContainer container = unit.getImportContainer();
         if (container == null) {
             return false;
@@ -147,10 +147,10 @@ public class DiagnosticUtils {
      *         false otherwise.
      */
     protected static boolean isImportedJavaElement(ICompilationUnit unit, String[] javaElementFQNames) throws JavaModelException {
-    	if (!unit.isOpen()) {
-    		unit.open(null);
-    	}
-    	
+        if (!unit.isOpen()) {
+            unit.open(null);
+        }
+
         IImportContainer container = unit.getImportContainer();
         if (container == null) {
             return false;
