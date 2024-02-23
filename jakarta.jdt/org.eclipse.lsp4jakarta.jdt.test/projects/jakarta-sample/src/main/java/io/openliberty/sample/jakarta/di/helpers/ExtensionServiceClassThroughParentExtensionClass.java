@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021, 2024 IBM Corporation and others.
+* Copyright (c) 2024 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,17 +10,12 @@
 * Contributors:
 *     IBM Corporation - initial implementation
 *******************************************************************************/
-package io.openliberty.sample.jakarta.di;
+package io.openliberty.sample.jakarta.di.helpers;
 
-public class GreetingNoDefaultConstructor {
+import jakarta.enterprise.context.ApplicationScoped;
 
-    private String greeting;
+@ApplicationScoped
+public class ExtensionServiceClassThroughParentExtensionClass extends ExtensionServiceClass {
 
-    public GreetingNoDefaultConstructor(String greeting) {
-        this.greeting = greeting;
-    }
-
-    public String greet(String name) {
-        return greeting + " " + name;
-    }
+    public ExtensionServiceClassThroughParentExtensionClass() {}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021, 2023 IBM Corporation and others.
+* Copyright (c) 2021, 2024 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -39,6 +40,8 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.utils.PositionUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
+import org.eclipse.lsp4jakarta.jdt.internal.core.java.ManagedBean;
+import org.eclipse.lsp4jakarta.jdt.internal.core.java.Primitive;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
 /**
@@ -82,37 +85,35 @@ public class DependencyInjectionDiagnosticsParticipant implements IJavaDiagnosti
             List<IMethod> injectedConstructors = new ArrayList<IMethod>();
             IMethod[] allMethods = type.getMethods();
             for (IMethod method : allMethods) {
+
+                Range range = PositionUtils.toNameRange(method, context.getUtils());
                 int methodFlag = method.getFlags();
-                boolean isFinal = Flags.isFinal(methodFlag);
-                boolean isAbstract = Flags.isAbstract(methodFlag);
-                boolean isStatic = Flags.isStatic(methodFlag);
-                boolean isGeneric = method.getTypeParameters().length != 0;
-                Range range = PositionUtils.toNameRange(method,
-                                                        context.getUtils());
                 if (containsAnnotation(type, method.getAnnotations(), INJECT_FQ_NAME)) {
                     if (DiagnosticUtils.isConstructorMethod(method))
                         injectedConstructors.add(method);
-                    if (isFinal) {
+                    if (Flags.isFinal(methodFlag)) {
                         String msg = Messages.getMessage("InjectNoFinalMethod");
 
                         diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
                                                                  ErrorCode.InvalidInjectAnnotationOnFinalMethod,
                                                                  DiagnosticSeverity.Error));
                     }
-                    if (isAbstract) {
+
+                    if (Flags.isAbstract(methodFlag)) {
                         String msg = Messages.getMessage("InjectNoAbstractMethod");
                         diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
                                                                  ErrorCode.InvalidInjectAnnotationOnAbstractMethod,
                                                                  DiagnosticSeverity.Error));
                     }
-                    if (isStatic) {
+
+                    if (Flags.isStatic(methodFlag)) {
                         String msg = Messages.getMessage("InjectNoStaticMethod");
                         diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
                                                                  ErrorCode.InvalidInjectAnnotationOnStaticMethod,
                                                                  DiagnosticSeverity.Error));
                     }
 
-                    if (isGeneric) {
+                    if (method.getTypeParameters().length != 0) {
                         String msg = Messages.getMessage("InjectNoGenericMethod");
                         diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
                                                                  ErrorCode.InvalidInjectAnnotationOnGenericMethod,
@@ -121,7 +122,9 @@ public class DependencyInjectionDiagnosticsParticipant implements IJavaDiagnosti
                 }
             }
 
-            // if more than one 'inject' constructor, add diagnostic to all constructors
+            // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_constructor:
+            // "If a bean class has more than one constructor annotated @Inject, the container automatically
+            // detects the problem and treats it as a definition error."
             if (injectedConstructors.size() > 1) {
                 String msg = Messages.getMessage("InjectMoreThanOneConstructor");
                 for (IMethod method : injectedConstructors) {
@@ -130,6 +133,19 @@ public class DependencyInjectionDiagnosticsParticipant implements IJavaDiagnosti
                     diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
                                                              ErrorCode.InvalidInjectAnnotationOnMultipleConstructors,
                                                              DiagnosticSeverity.Error));
+                }
+            }
+
+            // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_constructor:
+            // "A bean constructor may have any number of parameters. All parameters of a bean constructor
+            // are injection points."
+            for (IMethod constructor : injectedConstructors) {
+                if (constructor.getNumberOfParameters() > 0) {
+                    ILocalVariable[] params = constructor.getParameters();
+                    for (int i = 0; i < params.length; i++) {
+                        ILocalVariable param = params[i];
+                        getInjectionPointDiagnostics(diagnostics, context, uri, param);
+                    }
                 }
             }
         }
@@ -146,5 +162,78 @@ public class DependencyInjectionDiagnosticsParticipant implements IJavaDiagnosti
                 return false;
             }
         });
+    }
+
+    /**
+     * Obtains the injections point diagnostics for the given local variable.
+     *
+     * @param diagnostics The list of diagnostics to update.
+     * @param context The diagnostics context associated with this call.
+     * @param uri The URI associated with the file being processed.
+     * @param variable The ILocalVariable object being processed.
+     * @return
+     * @throws JavaModelException
+     */
+    private void getInjectionPointDiagnostics(List<Diagnostic> diagnostics, JavaDiagnosticsContext context, String uri, ILocalVariable variable) {
+        try {
+            // Note: Although, these checks apply to all managed bean parameters that are injections points,
+            // some of these checks may not apply to other non-managed beans that are injectable.
+            // Further consideration is required.
+            Range range = PositionUtils.toNameRange(variable, context.getUtils());
+            IType variableType = ManagedBean.variableSignatureToType(variable);
+
+            // Check if the type is a primitive.
+            if (Primitive.isPrimitive(variable)) {
+                String msg = Messages.getMessage("InjectionPointInvalidPrimitiveBean");
+                diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                         ErrorCode.InjectionPointInvalidPrimitiveBean,
+                                                         DiagnosticSeverity.Warning));
+
+                // Primitive types are special. The checks that follow do not apply to them and/or may cause errors.
+                return;
+            }
+
+            // Check if the type is an inner class.
+            if (ManagedBean.isInnerClass(variableType)) {
+                String msg = Messages.getMessage("InjectionPointInvalidInnerClassBean");
+                diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                         ErrorCode.InjectionPointInvalidInnerClassBean,
+                                                         DiagnosticSeverity.Warning));
+            }
+
+            // Check if the type is an abstract class or is not annotated with @Decorator.
+            if (ManagedBean.isAbstractClass(variableType) && !ManagedBean.isAnnotatedClass(variableType, ManagedBean.DECORATOR_ANNOTATION)) {
+                String msg = Messages.getMessage("InjectionPointInvalidAbstractClassBean");
+                diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                         ErrorCode.InjectionPointInvalidAbstractClassBean,
+                                                         DiagnosticSeverity.Warning));
+            }
+
+            // Check if the type implements jakarta.enterprise.inject.spi.Extension
+            if (ManagedBean.implementsExtends(variableType, ManagedBean.EXTENSION_SERVICE_IFACE)) {
+                String msg = Messages.getMessage("InjectionPointInvalidExtensionProviderBean");
+                diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                         ErrorCode.InjectionPointInvalidExtensionProviderBean,
+                                                         DiagnosticSeverity.Warning));
+            }
+
+            // Check if the type is annotated @Vetoed or in a package annotated @Vetoed.
+            if (ManagedBean.isAnnotatedClass(variableType, ManagedBean.VETOED_ANNOTATION) || ManagedBean.isPackageMetadataAnnotated(variableType, ManagedBean.VETOED_ANNOTATION)) {
+                String msg = Messages.getMessage("InjectionPointInvalidVetoedClassBean");
+                diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                         ErrorCode.InjectionPointInvalidVetoedClassBean,
+                                                         DiagnosticSeverity.Warning));
+            }
+
+            // Check if the type does not have a constructor with no parameters or the class declares a constructor that is not annotated @Inject.
+            if (!ManagedBean.containsValidConstructor(variableType)) {
+                String msg = Messages.getMessage("InjectionPointInvalidConstructorBean");
+                diagnostics.add(context.createDiagnostic(uri, msg, range, Constants.DIAGNOSTIC_SOURCE,
+                                                         ErrorCode.InjectionPointInvalidConstructorBean,
+                                                         DiagnosticSeverity.Warning));
+            }
+        } catch (JavaModelException jme) {
+            JakartaCorePlugin.logException("Cannot obtain injection point diagnostics for variable: " + variable + " in file: " + uri, jme);
+        }
     }
 }

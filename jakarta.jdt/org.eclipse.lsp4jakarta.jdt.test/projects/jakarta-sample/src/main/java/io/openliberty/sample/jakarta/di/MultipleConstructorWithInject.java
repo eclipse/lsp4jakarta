@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation.
+* Copyright (c) 2021, 2024 IBM Corporation.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,28 +10,29 @@
 * Contributors:
 *     Ananya Rao
 *******************************************************************************/
-
 package io.openliberty.sample.jakarta.di;
 
+import io.openliberty.sample.jakarta.di.helpers.ValidManagedBeanDefaultConstructor;
+import io.openliberty.sample.jakarta.di.helpers.ValidManagedBeanInjectedConstructor;
 import jakarta.inject.Inject;
 
-public class MultipleConstructorWithInject{
-    private int productNum;
-    private String productDesc;
-	
-    @Inject
-    public MultipleConstructorWithInject(int productNum) {
-        this.productNum = productNum;
-	}
-    @Inject
-    public MultipleConstructorWithInject(String productDesc) {
-        this.productDesc = productDesc;
-	}
+public class MultipleConstructorWithInject {
+    private ValidManagedBeanDefaultConstructor bean1;
+    private ValidManagedBeanInjectedConstructor bean2;
 
     @Inject
-    protected MultipleConstructorWithInject(int productNum, String productDesc) {
-        this.productNum = productNum;
-        this.productDesc = productDesc;
-	}
+    public MultipleConstructorWithInject(ValidManagedBeanDefaultConstructor bean1) {
+        this.bean1 = bean1;
+    }
+
+    @Inject
+    public MultipleConstructorWithInject(ValidManagedBeanInjectedConstructor bean2) {
+        this.bean2 = bean2;
+    }
+
+    @Inject
+    protected MultipleConstructorWithInject(ValidManagedBeanDefaultConstructor bean1, ValidManagedBeanInjectedConstructor bean2) {
+        this.bean1 = bean1;
+        this.bean2 = bean2;
+    }
 }
-

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021 IBM Corporation.
+* Copyright (c) 2021, 2024 IBM Corporation.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,15 +50,15 @@ public class MultipleConstructorInjectTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         // test expected diagnostic
-        Diagnostic d1 = d(22, 11, 40,
+        Diagnostic d1 = d(23, 11, 40,
                           "The @Inject annotation must not define more than one constructor.",
                           DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
 
-        Diagnostic d2 = d(26, 11, 40,
+        Diagnostic d2 = d(28, 11, 40,
                           "The @Inject annotation must not define more than one constructor.",
                           DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
 
-        Diagnostic d3 = d(31, 14, 43,
+        Diagnostic d3 = d(33, 14, 43,
                           "The @Inject annotation must not define more than one constructor.",
                           DiagnosticSeverity.Error, "jakarta-di", "InvalidInjectAnnotationOnMultipleConstructors");
 
@@ -66,12 +66,12 @@ public class MultipleConstructorInjectTest extends BaseJakartaTest {
 
         // test expected quick-fix
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d1);
-        TextEdit te = te(21, 4, 22, 4, "");
+        TextEdit te = te(22, 4, 23, 4, "");
         CodeAction ca = ca(uri, "Remove @Inject", d1, te);
         assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca);
 
         JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d3);
-        TextEdit te2 = te(30, 4, 31, 4, "");
+        TextEdit te2 = te(32, 4, 33, 4, "");
         CodeAction ca2 = ca(uri, "Remove @Inject", d3, te2);
         assertJavaCodeAction(codeActionParams2, IJDT_UTILS, ca2);
     }
