@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2021, 2023 IBM Corporation and others.
+* Copyright (c) 2021, 2023, 2024 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,7 +65,8 @@ public class AnnotationDiagnosticsParticipant implements IJavaDiagnosticsPartici
             ArrayList<Tuple.Two<IAnnotation, IAnnotatable>> annotatables = new ArrayList<Two<IAnnotation, IAnnotatable>>();
             String[] validAnnotations = { Constants.GENERATED_FQ_NAME };
             String[] validTypeAnnotations = { Constants.GENERATED_FQ_NAME,
-                                              Constants.RESOURCE_FQ_NAME };
+                                              Constants.RESOURCE_FQ_NAME,
+                                              Constants.RESOURCES_FQ_NAME };
             String[] validMethodAnnotations = { Constants.GENERATED_FQ_NAME,
                                                 Constants.POST_CONSTRUCT_FQ_NAME, Constants.PRE_DESTROY_FQ_NAME,
                                                 Constants.RESOURCE_FQ_NAME };
@@ -120,6 +121,7 @@ public class AnnotationDiagnosticsParticipant implements IJavaDiagnosticsPartici
                 IAnnotation annotation = annotatable.getFirst();
                 IAnnotatable element = annotatable.getSecond();
 
+                // process Types? (class declarations)
                 if (DiagnosticUtils.isMatchedAnnotation(unit, annotation, Constants.GENERATED_FQ_NAME)) {
                     for (IMemberValuePair pair : annotation.getMemberValuePairs()) {
                         // If date element exists and is non-empty, it must follow ISO 8601 format.
@@ -178,7 +180,74 @@ public class AnnotationDiagnosticsParticipant implements IJavaDiagnosticsPartici
                             }
                         }
                     }
+                } else if (DiagnosticUtils.isMatchedAnnotation(unit, annotation, Constants.RESOURCES_FQ_NAME)) {
+                    if (element instanceof IType) {
+                        for (IMemberValuePair internalAnnotation : annotation.getMemberValuePairs()) {
+                            Object[] valuePairs = (Object[]) internalAnnotation.getValue();
+                            String diagnosticMessage;
+                            Range annotationRange = null;
+                            if (valuePairs.length == 0) {
+                                annotationRange = PositionUtils.toNameRange(annotation, context.getUtils());
+                                diagnosticMessage = Messages.getMessage("ResourcesAnnotationMustDefineResourceAnnotation",
+                                                                        "@Resources", "@Resource");
+                                diagnostics.add(context.createDiagnostic(uri, diagnosticMessage, annotationRange,
+                                                                         Constants.DIAGNOSTIC_SOURCE,
+                                                                         ErrorCode.MissingResourceAnnotation,
+                                                                         DiagnosticSeverity.Error));
+                            }
+                            int objKind = internalAnnotation.getValueKind();
+                            for (Object childAnnotationObj : valuePairs) {
+                                if (objKind == IMemberValuePair.K_ANNOTATION) {
+                                    IAnnotation childAnnotation = (IAnnotation) childAnnotationObj;
+                                    if (DiagnosticUtils.isMatchedAnnotation(unit, childAnnotation,
+                                                                            Constants.RESOURCE_FQ_NAME)) {
+                                        if (element instanceof IType) {
+                                            IType type = (IType) element;
+                                            if (type.getElementType() == IJavaElement.TYPE
+                                                && ((IType) type).isClass()) {
+                                                annotationRange = PositionUtils.toNameRange(childAnnotation,
+                                                                                            context.getUtils());
+                                                Boolean nameEmpty = true;
+                                                Boolean typeEmpty = true;
+                                                for (IMemberValuePair pair : childAnnotation.getMemberValuePairs()) {
+                                                    if (pair.getMemberName().equals("name")) {
+                                                        nameEmpty = false;
+                                                    }
+                                                    if (pair.getMemberName().equals("type")) {
+                                                        typeEmpty = false;
+                                                    }
+                                                }
+                                                if (nameEmpty) {
+                                                    diagnosticMessage = Messages.getMessage(
+                                                                                            "AnnotationMustDefineAttribute",
+                                                                                            "@Resource", "name");
+                                                    diagnostics.add(context.createDiagnostic(uri, diagnosticMessage,
+                                                                                             annotationRange,
+                                                                                             Constants.DIAGNOSTIC_SOURCE,
+                                                                                             ErrorCode.MissingResourceNameAttribute,
+                                                                                             DiagnosticSeverity.Error));
+                                                }
+
+                                                if (typeEmpty) {
+                                                    diagnosticMessage = Messages.getMessage(
+                                                                                            "AnnotationMustDefineAttribute",
+                                                                                            "@Resource", "type");
+                                                    diagnostics.add(context.createDiagnostic(uri, diagnosticMessage,
+                                                                                             annotationRange,
+                                                                                             Constants.DIAGNOSTIC_SOURCE,
+                                                                                             ErrorCode.MissingResourceTypeAttribute,
+                                                                                             DiagnosticSeverity.Error));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+
+                // process methods now?
                 if (DiagnosticUtils.isMatchedAnnotation(unit, annotation, Constants.POST_CONSTRUCT_FQ_NAME)) {
                     if (element instanceof IMethod) {
                         IMethod method = (IMethod) element;

@@ -1,12 +1,12 @@
 package io.openliberty.sample.jakarta.annotations;
 
 import jakarta.annotation.Resource;
+import jakarta.annotation.Resources;
 
 @Resource(type = Object.class, name = "aa")
 public class ResourceAnnotation {
 
     private Integer studentId;
-
 
 	@Resource(shareable = true)
     private boolean isHappy;
@@ -14,10 +14,10 @@ public class ResourceAnnotation {
 	@Resource(name = "test")
     private boolean isSad;
 
-
     private String emailAddress;
-
-
+    
+    
+    
 }
 
 @Resource(name = "aa")

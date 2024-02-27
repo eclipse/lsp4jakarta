@@ -59,6 +59,9 @@
    <extension point="org.eclipse.lsp4jakarta.jdt.core.javaFeatureParticipants">
       <diagnostics class="org.eclipse.lsp4jakarta.jdt.internal.annotations.AnnotationDiagnosticsParticipant" />
       <codeAction kind="quickfix"
+                  targetDiagnostic="jakarta-annotations#MissingResourceAnnotation"
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.InsertDefaultResourceAnnotationToResourcesAnnotation" />
+      <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-annotations#MissingResourceNameAttribute"
                   class="org.eclipse.lsp4jakarta.jdt.internal.annotations.InsertNameAttributeToResourceAnnotationQuickFix" />
       <codeAction kind="quickfix"
@@ -84,7 +87,7 @@
                   class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemovePreDestroyAnnotationQuickFix" />
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-annotations#PreDestroyParams"
-                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemoveAllMethodParametersQuickFix" />
+                  class="org.eclipse.lsp4jakarta.jdt.internal.annotations.RemoveAllMethodParametersQuickFix" />                  
    </extension>
    
    <!-- Bean Validation -->
