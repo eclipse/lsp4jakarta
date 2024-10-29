@@ -236,6 +236,6 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
     @Override
     public void setTrace(SetTraceParams params) {
         // to avoid having error in vscode, the method is implemented
-		// FIXME : implement the behavior of this method.
+        // FIXME : implement the behavior of this method.
     }
 }
