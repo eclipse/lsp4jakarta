@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2020, 2023 IBM Corporation and others.
+* Copyright (c) 2020, 2024 IBM Corporation and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.InitializedParams;
 import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.SetTraceParams;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
@@ -230,5 +231,11 @@ public class JakartaLanguageServer implements LanguageServer, ProcessLanguageSer
      */
     public JakartaCapabilityManager getCapabilityManager() {
         return capabilityManager;
+    }
+
+    @Override
+    public void setTrace(SetTraceParams params) {
+        // to avoid having UnsupportedOperationException, the method is implemented
+        // FIXME : implement the behavior of this method.
     }
 }
