@@ -24,7 +24,7 @@ public class RemoveMapKeyAnnotationsQuickFix extends RemoveAnnotationConflictQui
      * Constructor.
      */
     public RemoveMapKeyAnnotationsQuickFix() {
-        super(false, "jakarta.persistence.annotation.MapKeyClass", "jakarta.persistence.annotation.MapKey");
+        super(false, "jakarta.persistence.MapKeyClass", "jakarta.persistence.MapKey");
     }
 
     /**
