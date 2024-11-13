@@ -15,6 +15,7 @@ package org.eclipse.lsp4jakarta.jdt.internal.core.ls;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CodeActionContext;
@@ -22,9 +23,12 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Arguments utilities.
@@ -48,6 +52,8 @@ public class ArgumentUtils {
     private static final String CHARACTER_PROPERTY = "character";
     private static final String LINE_PROPERTY = "line";
     private static final String URI_PROPERTY = "uri";
+
+    private static final Logger LOGGER = Logger.getLogger(ArgumentUtils.class.getName());
 
     public static Map<String, Object> getFirst(List<Object> arguments) {
         return arguments.isEmpty() ? null : (Map<String, Object>) arguments.get(0);
@@ -116,6 +122,8 @@ public class ArgumentUtils {
             // In Eclipse IDE (LSP client), the data is JsonObject, and in JDT-LS (ex :
             // vscode as LSP client) the data is a Map, we
             // convert the Map to a JsonObject to be consistent with any LSP clients.
+            LOGGER.info("diagnosticObj from vscode ============ " + diagnosticObj.toString());
+
             diagnostic.setData(getObjectAsJson(diagnosticObj, DATA_PROPERTY));
             return diagnostic;
         }).collect(Collectors.toList());
@@ -147,12 +155,22 @@ public class ArgumentUtils {
      * @return the child as a JsonObject if it exists and is an object, and null
      *         otherwise
      */
-    public static JsonObject getObjectAsJson(Map<String, Object> obj, String key) {
+    public static Object getObjectAsJson(Map<String, Object> obj, String key) {
+
+//        LOGGER.info(" object for " + key + "value = " + child.toString());
+
         Object child = obj.get(key);
-        if (child != null && child instanceof Map<?, ?>) {
+        if (child != null && child instanceof String) {
+            return child;
+        } else if (child instanceof List<?>) {
             Gson gson = new Gson();
-            return (JsonObject) gson.toJsonTree(child);
+//            String[] childArray = ((List<?>) child).toArray(new String[0]);
+            JsonArray jsonArray = gson.toJsonTree(child).getAsJsonArray();
+            return jsonArray;
+        } else {
+            return getObject(obj, key);
         }
-        return null;
+
+//        return child;
     }
 }
