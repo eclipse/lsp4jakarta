@@ -64,7 +64,6 @@ public class RemoveDynamicConstraintAnnotationQuickFix implements IJavaCodeActio
     @Override
     public List<? extends CodeAction> getCodeActions(JavaCodeActionContext context, Diagnostic diagnostic,
                                                      IProgressMonitor monitor) throws CoreException {
-        LOGGER.log(Level.SEVERE, "Diagnostics data ============",diagnostic);                                         
         String annotationName = diagnostic.getData().toString().replace("\"", "");
         String label = getLabel(annotationName);
         ASTNode node = context.getCoveredNode();

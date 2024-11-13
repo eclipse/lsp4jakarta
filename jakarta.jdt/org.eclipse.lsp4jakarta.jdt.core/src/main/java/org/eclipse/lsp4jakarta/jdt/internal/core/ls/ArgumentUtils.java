@@ -114,17 +114,20 @@ public class ArgumentUtils {
         }
         List<Map<String, Object>> diagnosticsObj = (List<Map<String, Object>>) contextObj.get(DIAGNOSTICS_PROPERTY);
         List<Diagnostic> diagnostics = diagnosticsObj.stream().map(diagnosticObj -> {
+            LOGGER.info("Received diagnostic data" + diagnosticObj.toString());
             Diagnostic diagnostic = new Diagnostic();
             diagnostic.setRange(getRange(diagnosticObj, RANGE_PROPERTY));
             diagnostic.setCode(getString(diagnosticObj, CODE_PROPERTY));
             diagnostic.setMessage(getString(diagnosticObj, MESSAGE_PROPERTY));
             diagnostic.setSource(getString(diagnosticObj, SOURCE_PROPERTY));
             // In Eclipse IDE (LSP client), the data is JsonObject, and in JDT-LS (ex :
-            // vscode as LSP client) the data is a Map, we
-            // convert the Map to a JsonObject to be consistent with any LSP clients.
-            LOGGER.info("diagnosticObj from vscode ============ " + diagnosticObj.toString());
-
-            diagnostic.setData(getObjectAsJson(diagnosticObj, DATA_PROPERTY));
+            // vscode as LSP client) the data is a Map.
+            
+            // In Vscode we are sending data in two different formats either as a string or
+            // as an array of strings. eg: data = “AssertTrue” or  data =[“ApplicationScoped", "RequestScoped”]
+            // if it is a string -> set data as an Object.
+            // if ite is an array of strings - > set data as an JsonArray
+            diagnostic.setData(getValueFromDataParameter(diagnosticObj, DATA_PROPERTY));
             return diagnostic;
         }).collect(Collectors.toList());
         List<String> only = null;
@@ -147,30 +150,32 @@ public class ArgumentUtils {
     }
 
     /**
-     * Returns the child as a JsonObject if it exists and is an object, and null
-     * otherwise
+     * Returns the child as a JSON array if the data parameter contains an array of strings; otherwise, 
+     * returns it as an object if present, or null if not.
      *
-     * @param obj the object to get the child of
+     *
+     * @param data the object to get the child of
      * @param key the key of the child
-     * @return the child as a JsonObject if it exists and is an object, and null
-     *         otherwise
+     * @return Returns the child as a JSON array if the data parameter contains an array of strings; otherwise, 
+     * returns it as an object if present, or null if not.
      */
-    public static Object getObjectAsJson(Map<String, Object> obj, String key) {
+    public static Object getValueFromDataParameter(Map<String, Object> data, String key) {
 
-//        LOGGER.info(" object for " + key + "value = " + child.toString());
-
-        Object child = obj.get(key);
+        Object child = data.get(key);
         if (child != null && child instanceof String) {
+        	// if the value in the 'data' is a string, we string the object. 
+        	// eg: data = “AssertTrue”
             return child;
         } else if (child instanceof List<?>) {
+        	// if the value in the 'data' is an array, we will convert it to an JsonArray.
+        	// eg: data =[“ApplicationScoped", "RequestScoped”]
             Gson gson = new Gson();
-//            String[] childArray = ((List<?>) child).toArray(new String[0]);
             JsonArray jsonArray = gson.toJsonTree(child).getAsJsonArray();
             return jsonArray;
         } else {
-            return getObject(obj, key);
+        	//Returns the object if it exists and is an object, and null otherwise
+            return getObject(data, key);
         }
 
-//        return child;
     }
 }
