@@ -55,29 +55,26 @@ public class ManagedBeanTest extends BaseJakartaTest {
         Diagnostic d1 = d(9, 12, 13,
                           "The @Dependent annotation must be defined by a managed bean with a non-static public field.",
                           DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanWithNonStaticPublicField");
-        Diagnostic d2 = d(9, 12, 13,
-                          "The @Dependent annotation must be the only scope defined by a non-static public field.",
-                          DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanWithNonStaticPublicFieldInvalidScope");
-        Diagnostic d3 = d(6, 12, 13,
+        Diagnostic d2 = d(6, 12, 13,
                           "The @Dependent annotation must be defined by a managed bean with a non-static public field.",
                           DiagnosticSeverity.Error, "jakarta-cdi", "InvalidManagedBeanWithNonStaticPublicField");
-        Diagnostic d4 = d(5, 13, 24,
+        Diagnostic d3 = d(5, 13, 24,
                           "Managed bean class of generic type must have scope @Dependent.",
                           DiagnosticSeverity.Error, "jakarta-cdi", "InvalidGenericManagedBeanClassWithNoDependentScope");
 
-        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2, d3, d4);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, d2, d3);
+
+        // Assert for diagnostic d2
+        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);
+        TextEdit te2 = te(4, 0, 5, 0, "@Dependent\n");
+        CodeAction ca2 = ca(uri, "Replace current scope with @Dependent", d2, te2);
+        assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca2);
 
         // Assert for diagnostic d3
-        JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d3);
+        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d3);
         TextEdit te3 = te(4, 0, 5, 0, "@Dependent\n");
         CodeAction ca3 = ca(uri, "Replace current scope with @Dependent", d3, te3);
-        assertJavaCodeAction(codeActionParams1, IJDT_UTILS, ca3);
-
-        // Assert for diagnostic d4
-        JakartaJavaCodeActionParams codeActionParams2 = createCodeActionParams(uri, d4);
-        TextEdit te4 = te(4, 0, 5, 0, "@Dependent\n");
-        CodeAction ca4 = ca(uri, "Replace current scope with @Dependent", d4, te4);
-        assertJavaCodeAction(codeActionParams2, IJDT_UTILS, ca4);
+        assertJavaCodeAction(codeActionParams2, IJDT_UTILS, ca3);
     }
 
     @Test

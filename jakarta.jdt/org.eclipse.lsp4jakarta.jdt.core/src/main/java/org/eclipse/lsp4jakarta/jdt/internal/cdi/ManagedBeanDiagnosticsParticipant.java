@@ -86,7 +86,11 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                 List<String> fieldScopes = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
                                                                                       scopeFQNames);
 
-                // If a managed bean has a non-static public field, it must have scope @Dependent.
+                // If a managed bean has a non-static public field, it must have
+                // scope @Dependent. If a managed bean with a non-static public field declares
+                // any scope other than @Dependent, the container automatically detects the
+                // problem and treats it as a definition error.
+                //
                 // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#managed_beans
                 if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
                     && !managedBeanAnnotations.contains(Constants.DEPENDENT_FQ_NAME)) {
@@ -95,18 +99,6 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                                                              Messages.getMessage("ManagedBeanWithNonStaticPublicField"), range,
                                                              Constants.DIAGNOSTIC_SOURCE, null,
                                                              ErrorCode.InvalidManagedBeanWithNonStaticPublicField, DiagnosticSeverity.Error));
-                }
-
-                // If a managed bean with a non-static public field declares any scope other than @Dependent,
-                // the container automatically detects the problem and treats it as a definition error.
-                // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#managed_beans
-                if (isManagedBean && Flags.isPublic(fieldFlags) && !Flags.isStatic(fieldFlags)
-                    && fieldScopes.size() == 1 && !fieldScopes.get(0).equals(Constants.DEPENDENT_FQ_NAME)) {
-                    Range range = PositionUtils.toNameRange(field, context.getUtils());
-                    diagnostics.add(context.createDiagnostic(uri,
-                                                             Messages.getMessage("ManagedBeanWithNonStaticPublicFieldInvalidScope"), range,
-                                                             Constants.DIAGNOSTIC_SOURCE, null,
-                                                             ErrorCode.InvalidManagedBeanWithNonStaticPublicFieldInvalidScope, DiagnosticSeverity.Error));
                 }
 
                 // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_bean_scope
