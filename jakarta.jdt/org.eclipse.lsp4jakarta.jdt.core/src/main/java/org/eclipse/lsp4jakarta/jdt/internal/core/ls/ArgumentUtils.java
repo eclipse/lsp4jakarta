@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2019, 2023 Red Hat Inc. and others.
+* Copyright (c) 2019, 2024 Red Hat Inc. and others.
 *
 * This program and the accompanying materials are made available under the
 * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,12 +23,9 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
-import org.eclipse.lsp4jakarta.jdt.internal.beanvalidation.RemoveDynamicConstraintAnnotationQuickFix;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * Arguments utilities.
