@@ -147,34 +147,32 @@ public class ArgumentUtils {
     }
 
     /**
-	 * Returns the child as a JSON array if the data parameter contains an array of
-	 * strings; otherwise,
-	 * returns it as an object if present, or null if not.
-	 *
-	 *
-	 * @param data the object to get the child of
-	 * @param key  the key of the child
-	 * @return Returns the child as a JSON array if the data parameter contains an
-	 *         array of strings; otherwise,
-	 *         returns it as an object if present, or null if not.
-	 */
+     * Returns the child as a JSON array if the data parameter contains an array of strings; otherwise, 
+     * returns it as an object if present, or null if not.
+     *
+     *
+     * @param data the object to get the child of
+     * @param key the key of the child
+     * @return Returns the child as a JSON array if the data parameter contains an array of strings; otherwise, 
+     * returns null.
+     */
     public static Object getValueFromDataParameter(Map<String, Object> data, String key) {
 
-    	Object child = data.get(key);
-    	if (child instanceof String) {
-    		// if the value in the 'data' is a string, we string the object.
-    		// eg: data = “AssertTrue”
-    		return child;
-    	} else if (child instanceof List<?>) {
-    		// if the value in the 'data' is an array, we will convert it to an JsonArray.
-    		// eg: data =[“ApplicationScoped", "RequestScoped”]
-    		Gson gson = new Gson();
-    		JsonArray jsonArray = gson.toJsonTree(child).getAsJsonArray();
-    		return jsonArray;
-    	} else {
-    		// Returns null if it is in any other format.
-    		return null;
-    	}
+        Object child = data.get(key);
+        if (child instanceof String) {
+            // if the value in the 'data' is a string, we string the object. 
+        	// eg: data = “AssertTrue”
+            return child;
+        } else if (child instanceof List<?>) {
+        	// if the value in the 'data' is an array, we will convert it to an JsonArray.
+        	// eg: data =[“ApplicationScoped", "RequestScoped”]
+            Gson gson = new Gson();
+            JsonArray jsonArray = gson.toJsonTree(child).getAsJsonArray();
+            return jsonArray;
+        } else {
+        	// Returns null if it is in any other format.
+            return null;
+        }
 
     }
 }
