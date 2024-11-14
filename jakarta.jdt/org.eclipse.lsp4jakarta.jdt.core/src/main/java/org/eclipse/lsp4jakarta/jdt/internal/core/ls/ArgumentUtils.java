@@ -172,8 +172,8 @@ public class ArgumentUtils {
     		JsonArray jsonArray = gson.toJsonTree(child).getAsJsonArray();
     		return jsonArray;
     	} else {
-    		// Returns the object if it exists and is an object, and null otherwise
-    		return getObject(data, key);
+    		// Returns null if it is in any other format.
+    		return null;
     	}
 
     }
