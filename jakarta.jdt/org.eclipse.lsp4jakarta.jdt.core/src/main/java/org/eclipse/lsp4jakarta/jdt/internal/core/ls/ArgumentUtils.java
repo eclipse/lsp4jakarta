@@ -161,16 +161,16 @@ public class ArgumentUtils {
         Object child = data.get(key);
         if (child instanceof String) {
             // if the value in the 'data' is a string, we string the object. 
-        	// eg: data = “AssertTrue”
+            // eg: data = “AssertTrue”
             return child;
         } else if (child instanceof List<?>) {
-        	// if the value in the 'data' is an array, we will convert it to an JsonArray.
-        	// eg: data =[“ApplicationScoped", "RequestScoped”]
+            // if the value in the 'data' is an array, we will convert it to an JsonArray.
+            // eg: data =[“ApplicationScoped", "RequestScoped”]
             Gson gson = new Gson();
             JsonArray jsonArray = gson.toJsonTree(child).getAsJsonArray();
             return jsonArray;
         } else {
-        	// Returns null if it is in any other format.
+            // Returns null if it is in any other format.
             return null;
         }
 
