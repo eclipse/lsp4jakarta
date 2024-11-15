@@ -310,11 +310,14 @@
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidProducerMethodParamAnnotation"
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveProduceAnnotationQuickFix" />
+      <!-- These quick fixes remove remove the @Disposes annotation as well as the @Observes annotation.
+           They are mutually exclusive and only one needs to go.
       <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidDisposesAnnotationOnMultipleMethodParams"
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidProducerParamAnnotationQuickFix" />
-       <codeAction kind="quickfix"
+      <codeAction kind="quickfix"
                   targetDiagnostic="jakarta-cdi#InvalidDisposerMethodParamAnnotation"
                   class="org.eclipse.lsp4jakarta.jdt.internal.cdi.RemoveInvalidProducerParamAnnotationQuickFix" />
+      -->
    </extension>
 </plugin>
