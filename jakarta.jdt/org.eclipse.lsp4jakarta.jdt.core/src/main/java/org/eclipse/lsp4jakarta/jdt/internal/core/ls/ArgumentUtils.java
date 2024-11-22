@@ -111,7 +111,6 @@ public class ArgumentUtils {
         }
         List<Map<String, Object>> diagnosticsObj = (List<Map<String, Object>>) contextObj.get(DIAGNOSTICS_PROPERTY);
         List<Diagnostic> diagnostics = diagnosticsObj.stream().map(diagnosticObj -> {
-            LOGGER.info("Received diagnostic data" + diagnosticObj.toString());
             Diagnostic diagnostic = new Diagnostic();
             diagnostic.setRange(getRange(diagnosticObj, RANGE_PROPERTY));
             diagnostic.setCode(getString(diagnosticObj, CODE_PROPERTY));
