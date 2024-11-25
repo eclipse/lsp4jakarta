@@ -25,11 +25,11 @@ pipeline {
                 cd jakarta.jdt
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
                 ./mvnw versions:set-scm-tag -DnewTag=$VERSION
-                ./mvnw clean verify -B -Peclipse-sign -Dcbi.jarsigner.skip=false
+                ./mvnw clean verify
                 cd ../jakarta.ls
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
                 ./mvnw versions:set-scm-tag -DnewTag=$VERSION
-                ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
+                ./mvnw clean verify
                 cd ../jakarta.eclipse
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
                 cd ..
