@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.eclipse.lsp4jakarta</groupId>
     <artifactId>org.eclipse.lsp4jakarta.ls</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.2-SNAPSHOT</version>
     <name>Eclipse LSP4Jakarta Language Server</name>
     <description>Eclipse LSP4Jakarta Language Server</description>
     <organization>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>org.eclipse.lsp4jakarta</groupId>
             <artifactId>org.eclipse.lsp4jakarta.jdt.core</artifactId>
-            <version>0.2.2-SNAPSHOT</version>
+            <version>0.2.2</version>
         </dependency>
     </dependencies>
     <pluginRepositories>
