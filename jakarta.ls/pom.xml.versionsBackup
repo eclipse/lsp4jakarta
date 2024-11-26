@@ -17,7 +17,7 @@
         <connection>scm:git:git@github.com:eclipse/lsp4jakarta.git</connection>
         <developerConnection>scm:git:git@github.com:eclipse/lsp4jakarta.git</developerConnection>
         <url>git@github.com:eclipse/lsp4jakarta.git</url>
-        <tag>0.2.2</tag>
+        <tag>0.2.2-SNAPSHOT</tag>
     </scm>
     <licenses>
         <license>
