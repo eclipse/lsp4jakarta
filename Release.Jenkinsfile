@@ -29,7 +29,7 @@ pipeline {
                 cd ../jakarta.ls
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
                 ./mvnw versions:set-scm-tag -DnewTag=$VERSION
-                ./mvnw clean install
+                ./mvnw clean deploy -B -Peclipse-sign -Dcbi.jarsigner.skip=false
                 cd ../jakarta.eclipse
                 ./mvnw -Dtycho.mode=maven org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=$VERSION
                 cd ..
