@@ -16,6 +16,7 @@ package org.eclipse.lsp4jakarta.jdt.internal.persistence;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.Map;
 
 /**
  * Persistence diagnostic constants.
@@ -27,7 +28,6 @@ public class Constants {
     public static final String EMBEDDEDID = "jakarta.persistence.EmbeddedId";
     public static final String EMBEDDED = "jakarta.persistence.Embedded";
     public static final String EMBEDDABLE = "jakarta.persistence.Embeddable";
-    public static final String IDCLASS = "jakarta.persistence.IdClass";
     public static final String MAPPEDSUPERCLASS = "jakarta.persistence.MappedSuperclass";
     public static final String ELEMENT_COLLECTION = "jakarta.persistence.ElementCollection";
     public static final String ATTRIBUTE_OVERRIDE = "jakarta.persistence.AttributeOverride";
@@ -40,6 +40,13 @@ public class Constants {
     public static final String ATTRIBUTE_OVERRIDE_KEY_PREFIX = "key.";
 
     public static final String INHERITANCE = "jakarta.persistence.Inheritance";
+    public static final String MAPSID = "jakarta.persistence.MapsId";
+    public static final String ONETOONE = "jakarta.persistence.OneToOne";
+    public static final String MANYTOONE = "jakarta.persistence.ManyToOne";
+    public static final String ONETOMANY = "jakarta.persistence.OneToMany";
+    public static final String MANYTOMANY = "jakarta.persistence.ManyToMany";
+    public static final String GENERATEDVALUE = "jakarta.persistence.GeneratedValue";
+    public static final String IDCLASS = "jakarta.persistence.IdClass";
     public static final String MAPKEY = "jakarta.persistence.MapKey";
     public static final String MAPKEYCLASS = "jakarta.persistence.MapKeyClass";
     public static final String MAPKEYJOINCOLUMN = "jakarta.persistence.MapKeyJoinColumn";
@@ -114,6 +121,20 @@ public class Constants {
     public static final Set<String> BIG_NUMBER_TYPES = Set.of("java.math.BigDecimal", "java.math.BigInteger");
 
     public static final String STRING_TYPE = "java.lang.String";
+
+    /**
+     * Maps each primitive type name to its fully-qualified wrapper type name.
+     * Used for primitive ↔ wrapper compatibility checks (spec §2.4).
+     */
+    public static final Map<String, String> PRIMITIVE_TO_WRAPPER = Map.of(
+                                                                          "int", "java.lang.Integer",
+                                                                          "long", "java.lang.Long",
+                                                                          "short", "java.lang.Short",
+                                                                          "byte", "java.lang.Byte",
+                                                                          "char", "java.lang.Character",
+                                                                          "boolean", "java.lang.Boolean",
+                                                                          "float", "java.lang.Float",
+                                                                          "double", "java.lang.Double");
 
     /* Combined set of all valid @Id types */
     public static final Set<String> VALID_ID_TYPES = Stream.of(PRIMITIVES, WRAPPER_TYPES, DATE_TYPES, BIG_NUMBER_TYPES,
