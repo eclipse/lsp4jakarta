@@ -90,13 +90,7 @@ final class CompositeKeyResolver {
         }
 
         // Check for @IdClass at the type level
-        boolean hasIdClass = false;
-        for (IAnnotation ann : entityType.getAnnotations()) {
-            if (DiagnosticUtils.isMatchedJavaElement(entityType, ann.getElementName(), Constants.IDCLASS)) {
-                hasIdClass = true;
-                break;
-            }
-        }
+        boolean hasIdClass = DiagnosticUtils.isMatchedAnnotation(unit, entityType.getAnnotations(), Constants.IDCLASS);
 
         return new KeyStrategy(embeddedIdType, hasIdClass);
     }
@@ -147,7 +141,7 @@ final class CompositeKeyResolver {
         IAnnotation idClass = DiagnosticUtils.getMatchedAnnotation(cu, entityType.getAnnotations(), Constants.IDCLASS);
         if (idClass != null) {
             String literal = DiagnosticUtils.getAnnotationMemberValue(idClass, Constants.VALUE, String.class);
-            return literal == null ? null : ManagedBean.getFullyQualifiedClassName(entityType, literal.replace(".class", ""));
+            return literal == null ? null : ManagedBean.getFullyQualifiedClassName(entityType, literal);
         }
         for (IField field : entityType.getFields()) {
             if (isIdOrEmbeddedId(cu, field.getAnnotations())) {

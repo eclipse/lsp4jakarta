@@ -161,8 +161,12 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
         }
         if (hasValue) {
             validateMapsIdAttributeBinding(member, javaProject, keyStrategy, mapsIdValue, context, diagnostics);
-        } else if (!keyStrategy.hasIdClass
-                   && !DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.ID)) {
+        }
+        // Value-less @MapsId: skipped for @IdClass entities, since @IdClass member
+        // alignment is validated by a separate participant, and when the relationship
+        // itself is the @Id (its type is the parent entity, not a key type).
+        else if (!keyStrategy.hasIdClass
+                 && !DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.ID)) {
             validateValuelessMapsId(member, javaProject, context, diagnostics);
         }
     }

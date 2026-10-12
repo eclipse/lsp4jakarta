@@ -72,6 +72,12 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
                                     "MapsIdRequiresCompositeKey"));
     }
 
+    /** {@code @MapsId("empId")} on an entity with an {@code @IdClass} composite key is valid. */
+    @Test
+    public void testMapsIdWithValueAndIdClassIsValid() throws Exception {
+        assertJavaDiagnostics(paramsFor("ValidMapsIdWithIdClass"), IJDT_UTILS);
+    }
+
     /** Spec §2.4.1.1 / Example 4b: value-less {@code @MapsId} with a simple {@code @Id} is valid. */
     @Test
     public void testValuelessMapsIdWithSimpleKeyIsValid() throws Exception {
