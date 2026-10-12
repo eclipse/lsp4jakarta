@@ -58,16 +58,16 @@ public class PostConstructAnnotationTest extends BaseJakartaTest {
 
         // Non-void @PostConstruct also violates lifecycle callback signature rule
         Diagnostic nonVoid = d(19, 16, 28,
-                             "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
-                             DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
+                               "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                               DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         Diagnostic d2 = d(24, 13, 25, "A method with the @PostConstruct annotation must not have any parameters.",
                           DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructParams");
 
         // @PostConstruct with params also violates lifecycle callback signature rule
         Diagnostic withParamsInvalid = d(24, 13, 25,
-                             "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
-                             DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
+                                         "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                         DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         Diagnostic d3 = d(29, 13, 25, "A method with the annotation '@PostConstruct' must not throw checked exceptions.",
                           DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructException");

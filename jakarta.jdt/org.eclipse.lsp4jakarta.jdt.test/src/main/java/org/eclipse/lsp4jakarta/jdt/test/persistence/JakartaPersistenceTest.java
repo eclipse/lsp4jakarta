@@ -1799,7 +1799,6 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
         assertJavaCodeAction(codeActionParams, IJDT_UTILS, insertEntityCodeAction, insertMappedSuperclassCodeAction, removeCodeAction);
     }
 
-
     // -------------------------------------------------------------------------
     // @Convert annotation diagnostics
     // -------------------------------------------------------------------------
