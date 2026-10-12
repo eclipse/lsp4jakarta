@@ -21,7 +21,6 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -64,7 +63,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.persistence.CompositeKeyResolver.Par
  * that value must name an attribute in the {@code @EmbeddedId} class.</li>
  * <li>The type of that attribute must be compatible with the primary key type
  * of the referenced parent entity, resolved via
- * {@link IJavaProject#findType(String)} — no project-wide scan needed.</li>
+ * {@code IJavaProject#findType(String)} — no project-wide scan needed.</li>
  * </ul></li>
  * </ol>
  *
@@ -95,7 +94,7 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
             if (!DiagnosticUtils.isMatchedAnnotation(unit, type.getAnnotations(), Constants.ENTITY)) {
                 continue;
             }
-            validateEntityType(type, unit, context.getJavaProject(), diagnostics, context);
+            validateEntityType(type, unit, diagnostics, context);
         }
 
         return diagnostics;
@@ -110,19 +109,18 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
      *
      * @param type the {@code @Entity}-annotated type to inspect
      * @param unit the compilation unit that contains {@code type}
-     * @param javaProject the project used for cross-file type resolution
      * @param diagnostics the list to which any violations are appended
      * @param context the diagnostic context for range resolution and diagnostic creation
      * @throws JavaModelException if JDT cannot inspect the type's members or annotations
      */
-    private void validateEntityType(IType type, ICompilationUnit unit, IJavaProject javaProject,
+    private void validateEntityType(IType type, ICompilationUnit unit,
                                     List<Diagnostic> diagnostics,
                                     JavaDiagnosticsContext context) throws JavaModelException {
 
         // Determine whether the entity declares a composite key and resolve the
         // @EmbeddedId class (if any). Only the direct members of this type are
         // checked; hierarchy walking is intentionally omitted for simplicity.
-        KeyStrategy keyStrategy = CompositeKeyResolver.resolveKeyStrategy(type, unit, javaProject);
+        KeyStrategy keyStrategy = CompositeKeyResolver.resolveKeyStrategy(type, unit);
 
         // Validate every @MapsId-annotated field and property of this entity.
         for (IField field : type.getFields()) {
@@ -130,12 +128,12 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
                 continue;
             }
             if (DiagnosticUtils.isMatchedAnnotation(unit, field.getAnnotations(), Constants.MAPSID)) {
-                validateMapsIdMember(field, unit, javaProject, keyStrategy, diagnostics, context);
+                validateMapsIdMember(field, unit, keyStrategy, diagnostics, context);
             }
         }
         for (IMethod method : type.getMethods()) {
             if (DiagnosticUtils.isMatchedAnnotation(unit, method.getAnnotations(), Constants.MAPSID)) {
-                validateMapsIdMember(method, unit, javaProject, keyStrategy, diagnostics, context);
+                validateMapsIdMember(method, unit, keyStrategy, diagnostics, context);
             }
         }
     }
@@ -145,8 +143,7 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
      * binding. Attribute binding is skipped when structural validation reports a
      * fatal violation.
      */
-    private void validateMapsIdMember(IMember member, ICompilationUnit unit,
-                                      IJavaProject javaProject, KeyStrategy keyStrategy,
+    private void validateMapsIdMember(IMember member, ICompilationUnit unit, KeyStrategy keyStrategy,
                                       List<Diagnostic> diagnostics,
                                       JavaDiagnosticsContext context) throws JavaModelException {
         IAnnotation[] memberAnnotations = DiagnosticUtils.getAnnotations(member);
@@ -160,14 +157,14 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
             return;
         }
         if (hasValue) {
-            validateMapsIdAttributeBinding(member, javaProject, keyStrategy, mapsIdValue, context, diagnostics);
+            validateMapsIdAttributeBinding(member, keyStrategy, mapsIdValue, context, diagnostics);
         }
         // Value-less @MapsId: skipped for @IdClass entities, since @IdClass member
         // alignment is validated by a separate participant, and when the relationship
         // itself is the @Id (its type is the parent entity, not a key type).
         else if (!keyStrategy.hasIdClass
                  && !DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.ID)) {
-            validateValuelessMapsId(member, javaProject, context, diagnostics);
+            validateValuelessMapsId(member, context, diagnostics);
         }
     }
 
@@ -178,10 +175,10 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
      * the primary key of the parent entity. Skipped when the relationship itself is the
      * {@code @Id}, or when the entity uses {@code @IdClass}.
      */
-    private void validateValuelessMapsId(IMember member, IJavaProject javaProject,
+    private void validateValuelessMapsId(IMember member,
                                          JavaDiagnosticsContext context,
                                          List<Diagnostic> diagnostics) throws JavaModelException {
-        ParentPk parentPk = CompositeKeyResolver.resolveParentPk(member, javaProject);
+        ParentPk parentPk = CompositeKeyResolver.resolveParentPk(member);
         if (parentPk == null) {
             return;
         }
@@ -246,8 +243,7 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
      * Only runs when the entity uses {@code @EmbeddedId} and {@code @MapsId}
      * names a specific attribute.
      */
-    private void validateMapsIdAttributeBinding(IMember member,
-                                                IJavaProject javaProject, KeyStrategy keyStrategy,
+    private void validateMapsIdAttributeBinding(IMember member, KeyStrategy keyStrategy,
                                                 String mapsIdValue,
                                                 JavaDiagnosticsContext context,
                                                 List<Diagnostic> diagnostics) throws JavaModelException {
@@ -258,7 +254,7 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
 
         // Resolve the parent entity chain first — it is the expensive cross-file lookup.
         // Attribute resolution only runs if the parent chain is fully resolvable.
-        ParentPk parentPk = CompositeKeyResolver.resolveParentPk(member, javaProject);
+        ParentPk parentPk = CompositeKeyResolver.resolveParentPk(member);
         if (parentPk == null) {
             return;
         }

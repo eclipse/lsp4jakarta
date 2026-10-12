@@ -13,10 +13,10 @@
 
 package org.eclipse.lsp4jakarta.jdt.internal.persistence;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.Map;
 
 /**
  * Persistence diagnostic constants.

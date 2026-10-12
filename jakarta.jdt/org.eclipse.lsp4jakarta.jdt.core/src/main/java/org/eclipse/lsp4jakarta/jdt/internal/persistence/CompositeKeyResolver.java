@@ -15,7 +15,6 @@ package org.eclipse.lsp4jakarta.jdt.internal.persistence;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
@@ -61,8 +60,7 @@ final class CompositeKeyResolver {
      * Scans the direct members of {@code entityType} to determine whether a
      * composite key is declared and to resolve the {@code @EmbeddedId} class.
      */
-    static KeyStrategy resolveKeyStrategy(IType entityType, ICompilationUnit unit,
-                                          IJavaProject javaProject) throws JavaModelException {
+    static KeyStrategy resolveKeyStrategy(IType entityType, ICompilationUnit unit) throws JavaModelException {
         IType embeddedIdType = null;
 
         // Check @EmbeddedId on fields
@@ -70,7 +68,7 @@ final class CompositeKeyResolver {
             if (DiagnosticUtils.isMatchedAnnotation(unit, field.getAnnotations(), Constants.EMBEDDEDID)) {
                 String fqn = JDTTypeUtils.getResolvedTypeName(field);
                 if (fqn != null) {
-                    embeddedIdType = javaProject.findType(fqn);
+                    embeddedIdType = JDTTypeUtils.findType(entityType.getJavaProject(), fqn);
                 }
                 break;
             }
@@ -82,7 +80,7 @@ final class CompositeKeyResolver {
                 if (DiagnosticUtils.isMatchedAnnotation(unit, method.getAnnotations(), Constants.EMBEDDEDID)) {
                     String fqn = JDTTypeUtils.getResolvedResultTypeName(method);
                     if (fqn != null) {
-                        embeddedIdType = javaProject.findType(fqn);
+                        embeddedIdType = JDTTypeUtils.findType(entityType.getJavaProject(), fqn);
                     }
                     break;
                 }
@@ -111,12 +109,12 @@ final class CompositeKeyResolver {
      * and the FQ type of its primary key. Returns {@code null} if the parent
      * cannot be resolved (library type, unresolvable FQN, or no primary key).
      */
-    static ParentPk resolveParentPk(IMember member, IJavaProject javaProject) throws JavaModelException {
+    static ParentPk resolveParentPk(IMember member) throws JavaModelException {
         String parentEntityFqn = JDTTypeUtils.getResolvedMemberTypeName(member);
         if (parentEntityFqn == null) {
             return null;
         }
-        IType parentEntity = javaProject.findType(parentEntityFqn);
+        IType parentEntity = JDTTypeUtils.findType(member.getJavaProject(), parentEntityFqn);
         if (parentEntity == null) {
             return null;
         }
