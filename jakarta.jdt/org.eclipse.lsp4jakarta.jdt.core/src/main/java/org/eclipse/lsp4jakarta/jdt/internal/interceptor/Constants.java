@@ -59,4 +59,7 @@ public class Constants {
     /* JDT return-type signature for void */
     public static final String VOID_RETURN_TYPE = "V";
 
+    /* Fully qualified name of java.lang.Object */
+    public static final String JAVA_LANG_OBJECT = "java.lang.Object";
+
 }
