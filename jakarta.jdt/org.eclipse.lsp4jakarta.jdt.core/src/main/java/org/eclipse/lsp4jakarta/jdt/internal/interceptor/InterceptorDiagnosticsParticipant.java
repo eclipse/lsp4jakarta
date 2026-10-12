@@ -128,7 +128,7 @@ public class InterceptorDiagnosticsParticipant implements IJavaDiagnosticsPartic
             // @AroundConstruct is only valid in classes declared with @Interceptor (and their superclasses).
             if (!InterModuleCommonUtils.isInterceptorType(type, unit)) {
                 checkAroundConstructInTargetClass(type, unit, uri, diagnostics, context, monitor);
-                checkLifecycleCallbackMethodSignatureInTargetClass(type, unit, uri, diagnostics, context);
+                checkLifecycleCallbackMethodSignatureInTargetClass(type, unit, uri, diagnostics, context, monitor);
             }
 
             // When a non-interceptor type is a superclass of an @Interceptor class in a
@@ -603,11 +603,18 @@ public class InterceptorDiagnosticsParticipant implements IJavaDiagnosticsPartic
      * @param uri the URI of the file
      * @param diagnostics the list to add diagnostics to
      * @param context the diagnostics context
-     * @throws JavaModelException if there's an error accessing the Java model
+     * @param monitor the progress monitor
+     * @throws CoreException if there's an error accessing the Java model
      */
     private void checkLifecycleCallbackMethodSignatureInTargetClass(IType type, ICompilationUnit unit, String uri,
                                                                     List<Diagnostic> diagnostics,
-                                                                    JavaDiagnosticsContext context) throws JavaModelException {
+                                                                    JavaDiagnosticsContext context,
+                                                                    IProgressMonitor monitor) throws CoreException {
+        // Evaluate once for the type - suppress target class signature check if an @Interceptor subclass exists
+        boolean interceptorSubclassExists = InterModuleCommonUtils.hasInterceptorSubclass(type, monitor);
+        if (interceptorSubclassExists) {
+            return;
+        }
         for (IMethod method : type.getMethods()) {
             List<String> lifecycleAnnotations = DiagnosticUtils.getMatchedJavaElementNames(type,
                                                                                            Stream.of(method.getAnnotations()).map(IAnnotation::getElementName).toArray(String[]::new),
