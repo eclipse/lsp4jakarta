@@ -132,6 +132,10 @@ public class ManagedBean {
     /**
      * Returns true if the class represented by the input type object is an inner class. False, otherwise.
      *
+     * <p>Enums, records, interfaces, and annotations that are member types are implicitly static per
+     * the Java Language Specification (JLS 8.9, 8.10, 9.5), so they are never inner classes regardless
+     * of what {@link org.eclipse.jdt.core.IType#getFlags()} reports for source types.
+     *
      * @param type The type object to check.
      *
      * @return True if the class represented by the input type object is an inner class. False, otherwise.
@@ -139,8 +143,23 @@ public class ManagedBean {
      * @throws JavaModelException
      */
     public static boolean isInnerClass(IType type) throws JavaModelException {
-        // A Non-static member class is an inner class.
-        return type.isMember() && !Flags.isStatic(type.getFlags());
+        if (!type.isMember()) {
+            return false;
+        }
+        // Enums, records, interfaces, and annotations are implicitly static member types per the JLS
+        // (8.9, 8.10, 9.5). getFlags() on a source type may not carry the ACC_STATIC bit for these
+        // kinds, so we check the kind explicitly before falling back to the flags.
+        if (type.isEnum() || type.isRecord() || type.isInterface() || type.isAnnotation()) {
+            return false;
+        }
+        // A class declared directly inside an interface is also implicitly static per JLS 9.5.
+        // The type itself appears as a plain class, so we must check its declaring type.
+        IType declaringType = type.getDeclaringType();
+        if (declaringType != null && declaringType.isInterface()) {
+            return false;
+        }
+        // A non-static member class is an inner class.
+        return !Flags.isStatic(type.getFlags());
     }
 
     /**
@@ -372,5 +391,43 @@ public class ManagedBean {
             return false;
         }
         return DiagnosticUtils.isMatchedAnnotation(annotationCU, annotationType.getAnnotations(), metaAnnotationFQN);
+    }
+
+    /**
+     * Returns the value of a named member on a specific meta-annotation that is
+     * present on the given annotation's type, or {@code null} if the meta-annotation
+     * is absent, the member is missing, or the type cannot be resolved.
+     *
+     * <p>The CU-selection logic - annotation type's own CU for source types, the
+     * provided {@code cu} for binary types, when reading the attribute value.
+     *
+     * @param <T> the expected type of the member value
+     * @param annotation the annotation present on the bean class
+     * @param type the Java type being validated (used for name resolution)
+     * @param cu the compilation unit (fallback for binary annotation types)
+     * @param metaAnnotationFQN the fully qualified name of the meta-annotation to find
+     * @param memberName the name of the member whose value to return
+     * @param memberType the expected type class of the member value
+     * @return the member value, or {@code null} if not found
+     * @throws JavaModelException if there is an error accessing Java model elements
+     */
+    public static <T> T getMetaAnnotationMemberValue(IAnnotation annotation, IType type, ICompilationUnit cu,
+                                                     String metaAnnotationFQN, String memberName,
+                                                     Class<T> memberType) throws JavaModelException {
+        IType annotationType = getChildITypeByName(type, annotation.getElementName());
+        if (annotationType == null) {
+            return null;
+        }
+        // Use the annotation type's own compilation unit for source types, fall back to the provided cu for binary types.
+        ICompilationUnit annotationCU = annotationType.isBinary() ? cu : annotationType.getCompilationUnit();
+        if (annotationCU == null) {
+            return null;
+        }
+        for (IAnnotation metaAnnotation : annotationType.getAnnotations()) {
+            if (DiagnosticUtils.isMatchedAnnotation(annotationCU, metaAnnotation, metaAnnotationFQN)) {
+                return DiagnosticUtils.getAnnotationMemberValue(metaAnnotation, memberName, memberType);
+            }
+        }
+        return null;
     }
 }
