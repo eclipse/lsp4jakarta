@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,7 @@ import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.ILocalVariable;
+import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -43,6 +45,7 @@ import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.JavaDiagnosticsContext;
 import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.helpers.ConstructorInfoDiagnosticHelper;
 import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
 import org.eclipse.lsp4jakarta.jdt.core.utils.PositionUtils;
+import org.eclipse.lsp4jakarta.jdt.core.utils.TypeHierarchyUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.java.ManagedBean;
@@ -78,24 +81,6 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                                                                                                                                Constants.INTERCEPTOR_FQ_NAME,
                                                                                                                                Constants.DECORATOR_FQ_NAME
             }).isEmpty();
-
-            // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0#direct_and_indirect_specialization
-            // A specialized bean must not declare an explicit bean name using @Named.
-            // The name is inherited from the bean it specializes.
-            boolean isSpecializes = !DiagnosticUtils.getMatchedJavaElementNames(type, typeAnnotations,
-                                                                                new String[] { Constants.SPECIALIZES_FQ_NAME }).isEmpty();
-            if (isSpecializes) {
-                for (IAnnotation annotation : type.getAnnotations()) {
-                    if (DiagnosticUtils.isMatchedAnnotation(unit, annotation, Constants.NAMED_FQ_NAME)) {
-                        Range range = PositionUtils.toNameRange(annotation, context.getUtils());
-                        diagnostics.add(context.createDiagnostic(uri,
-                                                                 Messages.getMessage("SpecializedBeanWithNamedAnnotation", type.getElementName()), range,
-                                                                 Constants.DIAGNOSTIC_SOURCE, null,
-                                                                 ErrorCode.InvalidSpecializedBeanWithNamedAnnotation, DiagnosticSeverity.Error));
-                        break;
-                    }
-                }
-            }
 
             boolean isManagedBean = managedBeanAnnotations.size() > 0;
             boolean isDependent = managedBeanAnnotations.stream().anyMatch(annotation -> Constants.DEPENDENT_FQ_NAME.equals(annotation));
@@ -135,13 +120,8 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                 // Here we only look at the fields.
                 List<String> fieldInjects = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
                                                                                        injectAnnotations);
-                boolean isProducerField = false, isInjectField = false;
-                for (String annotation : fieldInjects) {
-                    if (Constants.PRODUCES_FQ_NAME.equals(annotation))
-                        isProducerField = true;
-                    else if (Constants.INJECT_FQ_NAME.equals(annotation))
-                        isInjectField = true;
-                }
+                boolean isProducerField = fieldInjects.contains(Constants.PRODUCES_FQ_NAME);
+                boolean isInjectField = fieldInjects.contains(Constants.INJECT_FQ_NAME);
                 if (isProducerField && fieldScopes.size() > 1) {
                     fieldScopes.add(Constants.PRODUCES_FQ_NAME);
                     Range range = PositionUtils.toNameRange(field, context.getUtils());
@@ -173,6 +153,22 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                                                              Messages.getMessage("ManagedBeanProducesAndInjectField"), range,
                                                              Constants.DIAGNOSTIC_SOURCE, null,
                                                              ErrorCode.InvalidFieldWithProducesAndInjectAnnotations, DiagnosticSeverity.Error));
+                }
+
+                // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0#additional_builtin_beans
+                // If a Jakarta EE component class has an injection point of type UserTransaction
+                // and qualifier @Default, and may not validly make use of the JTA UserTransaction,
+                // the container automatically detects the problem and treats it as a definition error.
+                // CDI-managed beans (those with a scope annotation) may not validly use UserTransaction.
+                if (isManagedBean && isInjectField && DiagnosticUtils.hasDefaultQualifier(unit, type, field.getAnnotations())) {
+                    String fieldTypeName = DiagnosticUtils.getDataTypeName(field.getTypeSignature());
+                    if (DiagnosticUtils.isMatchedJavaElement(type, fieldTypeName, Constants.USER_TRANSACTION_FQ_NAME)) {
+                        Range range = PositionUtils.toNameRange(field, context.getUtils());
+                        diagnostics.add(context.createDiagnostic(uri,
+                                                                 Messages.getMessage("InvalidUserTransactionInjectionInCDIBean"), range,
+                                                                 Constants.DIAGNOSTIC_SOURCE, null,
+                                                                 ErrorCode.InvalidUserTransactionInjectionInCDIBean, DiagnosticSeverity.Error));
+                    }
                 }
 
                 // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0.html#declaring_resource
@@ -213,13 +209,8 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                                                                                        scopeFQNames);
                 List<String> methodInjects = DiagnosticUtils.getMatchedJavaElementNames(type, annotationNames,
                                                                                         injectAnnotations);
-                boolean isProducerMethod = false, isInjectMethod = false;
-                for (String annotation : methodInjects) {
-                    if (Constants.PRODUCES_FQ_NAME.equals(annotation))
-                        isProducerMethod = true;
-                    else if (Constants.INJECT_FQ_NAME.equals(annotation))
-                        isInjectMethod = true;
-                }
+                boolean isProducerMethod = methodInjects.contains(Constants.PRODUCES_FQ_NAME);
+                boolean isInjectMethod = methodInjects.contains(Constants.INJECT_FQ_NAME);
 
                 if (isProducerMethod && methodScopes.size() > 1) {
                     methodScopes.add(Constants.PRODUCES_FQ_NAME);
@@ -356,6 +347,21 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                                 }
                             }
                         }
+
+                        // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0#additional_builtin_beans
+                        // UserTransaction injection via @Inject is also invalid when the injection
+                        // point is a constructor or initializer method parameter in a CDI-managed bean,
+                        // provided the qualifier is @Default (implicit or explicit).
+                        if (isManagedBean && DiagnosticUtils.hasDefaultQualifier(unit, type, param.getAnnotations())) {
+                            String paramTypeName = DiagnosticUtils.getDataTypeName(param.getTypeSignature());
+                            if (DiagnosticUtils.isMatchedJavaElement(type, paramTypeName, Constants.USER_TRANSACTION_FQ_NAME)) {
+                                Range range = PositionUtils.toNameRange(method, context.getUtils());
+                                diagnostics.add(context.createDiagnostic(uri,
+                                                                         Messages.getMessage("InvalidUserTransactionInjectionInCDIBean"), range,
+                                                                         Constants.DIAGNOSTIC_SOURCE, null,
+                                                                         ErrorCode.InvalidUserTransactionInjectionInCDIBean, DiagnosticSeverity.Error));
+                            }
+                        }
                     }
                 }
             }
@@ -374,21 +380,12 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                 List<IMethod> methodsNeedingDiagnostics = new ArrayList<IMethod>();
                 if (!hasNoArgConstructor) {
                     for (IMethod m : constructorMethods) {
-                        IAnnotation[] annotations = m.getAnnotations();
-                        boolean hasParameterizedInjectConstructor = false;
-                        // look up '@Inject' annotation
-                        for (IAnnotation annotation : annotations) {
-                            if (DiagnosticUtils.isMatchedJavaElement(type, annotation.getElementName(),
-                                                                     Constants.INJECT_FQ_NAME)) {
-                                hasParameterizedInjectConstructor = true;
-                                break;
-                            }
-                        }
-                        if (hasParameterizedInjectConstructor) {
+                        if (hasAnnotation(type, m.getAnnotations(), Constants.INJECT_FQ_NAME)) {
                             methodsNeedingDiagnostics.clear();
                             break;
-                        } else
+                        } else {
                             methodsNeedingDiagnostics.add(m);
+                        }
                     }
                 }
 
@@ -440,6 +437,16 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                                                              Constants.DIAGNOSTIC_SOURCE, (new Gson().toJsonTree(managedBeanAnnotations)),
                                                              ErrorCode.InvalidNumberOfScopedAnnotationsByManagedBean, DiagnosticSeverity.Error));
                 }
+            }
+
+            // A managed bean (or custom-scoped class) in a passivating scope must implement Serializable.
+            // CDI 3.0 §6.6.4: Passivating scopes must be declared @NormalScope(passivating=true).
+            // Built-in passivating scopes: @SessionScoped and @ConversationScoped.
+            // Custom passivating scopes: any annotation meta-annotated with @NormalScope(passivating=true).
+            // Interceptors and decorators are excluded as per CDI 3.0 §6.6.4 / §6.2.
+            // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0#passivating_scopes
+            if (!interceptorOrDecorator && hasPassivatingScope(type, unit)) {
+                validatePassivatingScopeWithoutSerializable(context, uri, diagnostics, type);
             }
 
             // Inject and Disposes, Observes, ObservesAsync Annotations:
@@ -512,10 +519,98 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
                                                                  ErrorCode.InvalidDisposerMethodParamAnnotation, DiagnosticSeverity.Error));
                     }
                 }
+
+                // A disposer method is only valid if the bean class declares a producer
+                // method or field whose return type is assignable to the @Disposes parameter.
+                // https://jakarta.ee/specifications/cdi/3.0/jakarta-cdi-spec-3.0#disposer_method_resolution
+                checkOrphanDisposerMethods(context, uri, diagnostics, type, methods, fields);
             }
         }
 
         return diagnostics;
+    }
+
+    /**
+     * Validates that a managed bean in a passivating scope implements {@code java.io.Serializable}.
+     *
+     * <p>CDI 3.0 §6.6.4: A passivating scope requires beans with that scope to be passivation
+     * capable. A managed bean is passivation capable if and only if the bean class is serializable.
+     * Passivating scopes must be declared {@code @NormalScope(passivating=true)}. The built-in
+     * passivating scopes are {@code @SessionScoped} and {@code @ConversationScoped}. Custom
+     * passivating scopes — user-defined annotations meta-annotated with
+     * {@code @NormalScope(passivating=true)} — are also detected.
+     *
+     * @param context the Java diagnostics context
+     * @param uri the URI of the compilation unit
+     * @param diagnostics the list to add diagnostic errors to
+     * @param type the Java type being validated
+     * @throws JavaModelException if there is an error accessing Java model elements
+     */
+    private void validatePassivatingScopeWithoutSerializable(JavaDiagnosticsContext context, String uri,
+                                                             List<Diagnostic> diagnostics,
+                                                             IType type) throws JavaModelException {
+        // Bean has a passivating scope — must implement java.io.Serializable.
+        try {
+            if (TypeHierarchyUtils.doesITypeHaveSuperType(type, Constants.SERIALIZABLE_FQ_NAME) != TypeHierarchyUtils.HAS_SUPERTYPE) {
+                Range range = PositionUtils.toNameRange(type, context.getUtils());
+                diagnostics.add(context.createDiagnostic(uri,
+                                                         Messages.getMessage("ManagedBeanInPassivatingScopeWithoutSerializable"),
+                                                         range,
+                                                         Constants.DIAGNOSTIC_SOURCE, null,
+                                                         ErrorCode.InvalidPassivatingScopedBeanWithoutSerializable,
+                                                         DiagnosticSeverity.Error));
+            }
+        } catch (CoreException e) {
+            LOGGER.log(Level.WARNING, "Error checking Serializable hierarchy for: " + type.getElementName(), e);
+        }
+    }
+
+    /**
+     * Returns {@code true} if the given type carries a passivating scope annotation.
+     *
+     * <p>Checks both built-in passivating scopes ({@code @SessionScoped},
+     * {@code @ConversationScoped}) and custom scopes whose annotation type is
+     * meta-annotated with {@code @NormalScope(passivating=true)}.
+     *
+     * @param type the Java type being validated
+     * @param unit the compilation unit
+     * @return {@code true} if any passivating scope annotation is present
+     * @throws JavaModelException if there is an error accessing Java model elements
+     */
+    private boolean hasPassivatingScope(IType type, ICompilationUnit unit) throws JavaModelException {
+        for (IAnnotation annotation : type.getAnnotations()) {
+            // Check built-in passivating scopes: @SessionScoped and @ConversationScoped
+            if (DiagnosticUtils.getMatchedJavaElementName(type, annotation.getElementName(),
+                                                          Constants.BUILT_IN_PASSIVATING_SCOPE_FQ_NAMES) != null) {
+                return true;
+            }
+
+            // Check custom passivating scopes: annotations meta-annotated with @NormalScope(passivating=true)
+            if (isCustomPassivatingScope(annotation, type, unit)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns {@code true} if the given annotation is a custom passivating scope —
+     * i.e. its annotation type is meta-annotated with {@code @NormalScope(passivating=true)}.
+     *
+     * <p>Delegates to {@link ManagedBean#getMetaAnnotationMemberValue}, which resolves
+     * the annotation type once and reads the {@code passivating} attribute in a single pass.
+     *
+     * @param annotation the annotation present on the bean class
+     * @param type the Java type being validated (used for name resolution)
+     * @param unit the compilation unit (used for import-aware matching of binary types)
+     * @return {@code true} if the annotation represents a custom passivating scope
+     * @throws JavaModelException if there is an error accessing Java model elements
+     */
+    private boolean isCustomPassivatingScope(IAnnotation annotation, IType type,
+                                             ICompilationUnit unit) throws JavaModelException {
+        return Boolean.TRUE.equals(ManagedBean.getMetaAnnotationMemberValue(
+                                                                            annotation, type, unit, Constants.NORMAL_SCOPE_FQ_NAME, Constants.NORMAL_SCOPE_PASSIVATING_ATTR,
+                                                                            Boolean.class));
     }
 
     /**
@@ -781,5 +876,105 @@ public class ManagedBeanDiagnosticsParticipant implements IJavaDiagnosticsPartic
             LOGGER.log(Level.SEVERE, "Error occurred while getting @Disposes parameter names", e);
         }
         return paramNames;
+    }
+
+    /**
+     * Checks whether any non-constructor method in the type has exactly one {@code @Disposes}
+     * parameter whose erased type has no matching {@code @Produces} producer (method or field)
+     * in the same class. Such a disposer is an orphan and the container must treat it as a
+     * definition error.
+     *
+     * <p>Methods with more than one {@code @Disposes} parameter are skipped — they are already
+     * flagged by {@code InvalidDisposesAnnotationOnMultipleMethodParams}.
+     *
+     * @param context the Java diagnostics context
+     * @param uri the URI of the compilation unit
+     * @param diagnostics the list to add diagnostic errors to
+     * @param type the bean class being analysed
+     * @param methods all methods declared on the type
+     * @param fields all fields declared on the type
+     * @throws JavaModelException if there is an error accessing Java model elements
+     */
+    private void checkOrphanDisposerMethods(JavaDiagnosticsContext context, String uri,
+                                            List<Diagnostic> diagnostics, IType type,
+                                            IMethod[] methods, IField[] fields) throws JavaModelException {
+
+        // Collect erased FQ type names produced by @Produces methods and fields.
+        Set<String> producerTypes = new HashSet<>();
+        for (IMethod m : methods) {
+            if (!DiagnosticUtils.isConstructorMethod(m) && hasAnnotation(type, m.getAnnotations(), Constants.PRODUCES_FQ_NAME)) {
+                String fqn = resolveTypeSignature(type, m.getReturnType());
+                if (fqn != null)
+                    producerTypes.add(fqn);
+            }
+        }
+        for (IField f : fields) {
+            if (hasAnnotation(type, f.getAnnotations(), Constants.PRODUCES_FQ_NAME)) {
+                String fqn = resolveTypeSignature(type, f.getTypeSignature());
+                if (fqn != null)
+                    producerTypes.add(fqn);
+            }
+        }
+
+        // Flag disposer methods whose @Disposes parameter type has no matching producer.
+        for (IMethod method : methods) {
+            if (DiagnosticUtils.isConstructorMethod(method))
+                continue;
+
+            // Find the sole @Disposes param; skip if there are 0 or >1 (>1 is a separate error).
+            List<ILocalVariable> disposesParams = Arrays.stream(method.getParameters()).filter(p -> {
+                try {
+                    return hasAnnotation(type, p.getAnnotations(), Constants.DISPOSES_FQ_NAME);
+                } catch (JavaModelException e) {
+                    return false;
+                }
+            }).collect(Collectors.toList());
+            if (disposesParams.size() != 1)
+                continue;
+            ILocalVariable disposesParam = disposesParams.get(0);
+
+            String erasedFqn = resolveTypeSignature(type, disposesParam.getTypeSignature());
+            if (erasedFqn != null && !producerTypes.contains(erasedFqn)) {
+                Range range = PositionUtils.toNameRange(method, context.getUtils());
+                diagnostics.add(context.createDiagnostic(uri,
+                                                         Messages.getMessage("InvalidOrphanDisposerMethod"),
+                                                         range, Constants.DIAGNOSTIC_SOURCE, null,
+                                                         ErrorCode.InvalidOrphanDisposerMethod, DiagnosticSeverity.Error));
+            }
+        }
+    }
+
+    /**
+     * Returns {@code true} if any annotation in the array resolves to the given FQ annotation name.
+     */
+    private boolean hasAnnotation(IType type, IAnnotation[] annotations, String fqAnnotationName) throws JavaModelException {
+        for (IAnnotation ann : annotations) {
+            if (DiagnosticUtils.isMatchedJavaElement(type, ann.getElementName(), fqAnnotationName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Resolves a JDT type signature to an erased fully-qualified class name.
+     * Generic arguments are stripped first (e.g. {@code List<String>} → {@code java.util.List}),
+     * then the simple name is resolved via {@link ManagedBean#getFullyQualifiedClassName}.
+     *
+     * @param declaringType the type that owns the signature (used to resolve imports)
+     * @param typeSig a JDT type signature
+     * @return the erased FQ class name, or {@code null} if it cannot be resolved
+     */
+    private String resolveTypeSignature(IType declaringType, String typeSig) {
+        if (typeSig == null)
+            return null;
+        try {
+            String simpleName = Signature.toString(Signature.getTypeErasure(typeSig));
+            String fqn = ManagedBean.getFullyQualifiedClassName(declaringType, simpleName);
+            return fqn != null ? fqn : (simpleName.contains(".") ? simpleName : null);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Unable to resolve type signature: " + typeSig, e);
+            return null;
+        }
     }
 }
