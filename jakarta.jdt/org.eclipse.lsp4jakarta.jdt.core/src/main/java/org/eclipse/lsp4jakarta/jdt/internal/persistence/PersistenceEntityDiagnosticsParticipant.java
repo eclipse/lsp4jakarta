@@ -97,7 +97,6 @@ public class PersistenceEntityDiagnosticsParticipant implements IJavaDiagnostics
             IAnnotation idClassAnnotation = null;
 
             IAnnotation inheritanceAnnotation = null;
-            IAnnotation idClassAnnotation = null;
             for (IAnnotation annotation : allAnnotations) {
                 String elementName = annotation.getElementName();
                 if (DiagnosticUtils.isMatchedJavaElement(type, elementName, Constants.ENTITY)) {
@@ -1051,27 +1050,7 @@ public class PersistenceEntityDiagnosticsParticipant implements IJavaDiagnostics
             return null;
         }
 
-        String fqName = ManagedBean.getFullyQualifiedClassName(declaringType, keyClassName);
-        if (fqName == null) {
-            // resolveType may fail for secondary types in the same compilation unit;
-            // fall back to qualifying with the declaring type's package.
-            String packageName = declaringType.getPackageFragment().getElementName();
-            fqName = packageName.isEmpty() ? keyClassName : packageName + "." + keyClassName;
-        }
-
-        // IJavaProject.findType() cannot locate secondary types (package-private
-        // top-level types whose file name differs from the type name). Search the
-        // declaring type's compilation unit first, then fall back to findType.
-        ICompilationUnit cu = declaringType.getCompilationUnit();
-        if (cu != null) {
-            for (IType type : cu.getAllTypes()) {
-                if (fqName.equals(type.getFullyQualifiedName('.'))) {
-                    return type;
-                }
-            }
-        }
-
-        return JDTTypeUtils.findType(declaringType.getJavaProject(), fqName);
+        return ManagedBean.resolveType(declaringType, keyClassName);
     }
 
     /**
