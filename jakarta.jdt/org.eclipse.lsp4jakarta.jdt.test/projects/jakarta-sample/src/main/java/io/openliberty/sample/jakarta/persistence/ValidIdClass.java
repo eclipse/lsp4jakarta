@@ -2,6 +2,9 @@ package io.openliberty.sample.jakarta.persistence;
 
 import java.io.Serializable;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class ValidIdClass implements Serializable {
 
     private static final long serialVersionUID = 1L;
