@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 public class Constants {
     /* Annotation Constants */
     public static final String ENTITY = "jakarta.persistence.Entity";
+    public static final String ENTITY_LISTENERS = "jakarta.persistence.EntityListeners";
     public static final String ID = "jakarta.persistence.Id";
     public static final String EMBEDDEDID = "jakarta.persistence.EmbeddedId";
     public static final String EMBEDDED = "jakarta.persistence.Embedded";
@@ -45,6 +46,8 @@ public class Constants {
     public static final String MAPKEYJOINCOLUMN = "jakarta.persistence.MapKeyJoinColumn";
     public static final String MAPKEYENUMERATED = "jakarta.persistence.MapKeyEnumerated";
     public static final String MAPKEYTEMPORAL = "jakarta.persistence.MapKeyTemporal";
+    public static final String CONVERTER = "jakarta.persistence.Converter";
+    public static final String ATTRIBUTE_CONVERTER = "jakarta.persistence.AttributeConverter";
     public static final String NAMEDENTITYGRAPH = "jakarta.persistence.NamedEntityGraph";
     public static final String NAMEDENTITYGRAPHS = "jakarta.persistence.NamedEntityGraphs";
     public static final String NAMEDQUERY = "jakarta.persistence.NamedQuery";
@@ -64,6 +67,9 @@ public class Constants {
     };
 
     public static final String VALUE = "value";
+
+    public static final String CONVERT = "jakarta.persistence.Convert";
+    public static final String ENUMERATED = "jakarta.persistence.Enumerated";
 
     /* Bidirectional relationship annotation constants */
     public static final String ONE_TO_MANY = "jakarta.persistence.OneToMany";
@@ -122,6 +128,14 @@ public class Constants {
     /* Annotation Fields */
     public static final String NAME = "name";
     public static final String REFERENCEDCOLUMNNAME = "referencedColumnName";
+    public static final String CONVERTER_ATTRIBUTE = "converter";
+    public static final String DISABLE_CONVERSION = "disableConversion";
+    public static final String ATTRIBUTE_NAME = "attributeName";
+
+    /* @Convert restricted-target annotations */
+    public static final String[] CONVERT_RESTRICTED_ANNOTATIONS = {
+                                                                    ID, VERSION, ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY, ENUMERATED, TEMPORAL
+    };
 
     /* Source */
     public static final String DIAGNOSTIC_SOURCE = "jakarta-persistence";
