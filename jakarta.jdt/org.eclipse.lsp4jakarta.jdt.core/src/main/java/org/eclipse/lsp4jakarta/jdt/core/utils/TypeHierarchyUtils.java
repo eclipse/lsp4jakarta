@@ -14,12 +14,14 @@
 package org.eclipse.lsp4jakarta.jdt.core.utils;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -47,6 +49,8 @@ public class TypeHierarchyUtils {
     private static final Logger LOGGER = Logger.getLogger(TypeHierarchyUtils.class.getName());
 
     public static final int HAS_SUPERTYPE = 1;
+
+    private static final String OBJECT_FQ_NAME = "java.lang.Object";
 
     /**
      *
@@ -173,6 +177,18 @@ public class TypeHierarchyUtils {
     }
 
     /**
+     * Gets all interfaces implemented by a type and its superclasses.
+     *
+     * @param type the type to inspect
+     * @return an array of all interface types
+     * @throws JavaModelException if an error occurs accessing the Java model
+     */
+    public static IType[] getAllInterfaces(IType type) throws JavaModelException {
+        ITypeHierarchy typeHierarchy = type.newSupertypeHierarchy(new NullProgressMonitor());
+        return typeHierarchy.getAllInterfaces();
+    }
+
+    /**
      * Walks the full superclass chain of {@code type} and returns the first
      * ancestor {@link IType} that is annotated with {@code annotationFQName}.
      *
@@ -204,6 +220,44 @@ public class TypeHierarchyUtils {
                 LOGGER.warning("Could not inspect annotations on superclass "
                                + superType.getFullyQualifiedName() + ": " + e.getMessage());
             }
+        }
+        return null;
+    }
+
+    /**
+     * Walks the full superclass chain of {@code type} and returns a two-element array
+     * {@code [annotationFQName, declaringClassName]} for the first ancestor that carries
+     * any of the given annotations, or {@code null} if none is found.
+     *
+     * <p>The type itself is skipped — only superclasses are examined. Every level of the
+     * hierarchy is checked; the walk stops early when a match is found.</p>
+     *
+     * @param type the root type whose superclass chain is searched
+     * @param annotationFQNames the fully-qualified names of the annotations to look for
+     *            in the supertype chain
+     * @return {@code String[]{annotationFQName, simpleClassName}} of the first matching
+     *         ancestor, or {@code null} if no such ancestor exists
+     * @throws JavaModelException if the type hierarchy cannot be resolved
+     */
+    public static String[] findSupertypeWithAnyAnnotation(IType type,
+                                                          Collection<String> annotationFQNames) throws JavaModelException {
+        ITypeHierarchy hierarchy = type.newSupertypeHierarchy(null);
+        IType superclass = hierarchy.getSuperclass(type);
+
+        while (superclass != null && !OBJECT_FQ_NAME.equals(superclass.getFullyQualifiedName())) {
+            try {
+                for (String annotationFQName : annotationFQNames) {
+                    if (DiagnosticUtils.isMatchedAnnotation(superclass.getCompilationUnit(),
+                                                            superclass.getAnnotations(),
+                                                            annotationFQName)) {
+                        return new String[] { annotationFQName, superclass.getElementName() };
+                    }
+                }
+            } catch (JavaModelException e) {
+                LOGGER.warning("Could not inspect annotations on superclass "
+                               + superclass.getFullyQualifiedName() + ": " + e.getMessage());
+            }
+            superclass = hierarchy.getSuperclass(superclass);
         }
         return null;
     }
