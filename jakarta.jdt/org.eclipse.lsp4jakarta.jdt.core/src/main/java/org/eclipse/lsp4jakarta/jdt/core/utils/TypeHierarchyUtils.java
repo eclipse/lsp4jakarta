@@ -292,9 +292,9 @@ public class TypeHierarchyUtils {
     }
 
     /**
-     * Returns {@code true} if the <em>direct</em> (immediate) superclass of
-     * {@code type} has a method with the same name and parameter count as
-     * {@code method} that is annotated with {@code annotationFQName}.
+     * Returns {@code true} if {@code method} directly overrides a method in the
+     * <em>direct</em> (immediate) superclass of {@code type}, and that overridden
+     * method carries {@code annotationFQName}.
      *
      * <p>This is used to validate producer method specialization: per CDI spec
      * §specialize_producer_method, a method annotated with {@code @Specializes}
@@ -302,20 +302,21 @@ public class TypeHierarchyUtils {
      * producer annotation (e.g. {@code @Produces}).</p>
      *
      * <p>Only the <em>direct</em> superclass is inspected — grandparents are not
-     * considered. The match uses method name and parameter count (arity); full
-     * generic-signature resolution is not performed.</p>
+     * considered. The override check uses {@link MethodOverrideTester}, which
+     * handles generics, type erasure, and covariant return types.</p>
      *
      * @param type the declaring type of the method being validated
-     * @param method the method to check for a matching annotated override target
-     * @param annotationFQName the fully-qualified annotation name the superclass
+     * @param method the method to check for a direct override of an annotated superclass method
+     * @param annotationFQName the fully-qualified annotation name the overridden superclass
      *            method must carry (e.g. {@code "jakarta.enterprise.inject.Produces"})
-     * @return {@code true} if the direct superclass has a matching method carrying
-     *         the annotation; {@code false} if there is no direct superclass, it
-     *         cannot be resolved, or no matching annotated method is found
+     * @return {@code true} if {@code method} directly overrides a method in the direct
+     *         superclass that carries {@code annotationFQName}; {@code false} if there is
+     *         no direct superclass, it cannot be resolved, no override exists, or the
+     *         overridden method does not carry the annotation
      * @throws JavaModelException if the Java model cannot be accessed
      */
-    public static boolean directSuperclassHasMatchingAnnotatedMethod(IType type, IMethod method,
-                                                                     String annotationFQName) throws JavaModelException {
+    public static boolean isDirectlyOverridingAnnotatedMethodInSuperclass(IType type, IMethod method,
+                                                                          String annotationFQName) throws JavaModelException {
         IType superclassType = resolveDirectSuperclass(type);
         if (superclassType == null) {
             return false;

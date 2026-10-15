@@ -192,7 +192,7 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
         }
 
         // The method must directly override a @Produces method in the superclass
-        if (!TypeHierarchyUtils.directSuperclassHasMatchingAnnotatedMethod(type, method, Constants.PRODUCES_FQ_NAME)) {
+        if (!TypeHierarchyUtils.isDirectlyOverridingAnnotatedMethodInSuperclass(type, method, Constants.PRODUCES_FQ_NAME)) {
             Range range = PositionUtils.toNameRange(method, context.getUtils());
             diagnostics.add(context.createDiagnostic(uri,
                                                      Messages.getMessage("InvalidSpecializesProducerMethodNotOverriding"),
