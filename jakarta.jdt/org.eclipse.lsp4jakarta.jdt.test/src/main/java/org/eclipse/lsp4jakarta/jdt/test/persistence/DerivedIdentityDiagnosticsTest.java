@@ -103,6 +103,28 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
                                     "GeneratedValueOnDerivedIdField"));
     }
 
+    /**
+     * {@code @MapsId("empId") @ManyToOne @Id @GeneratedValue} with {@code @EmbeddedId}:
+     * {@code MixedIdentifierAnnotations} on both fields, and {@code InvalidIdType} plus
+     * {@code GeneratedValueOnDerivedIdField} on field "employee".
+     */
+    @Test
+    public void testGeneratedValueOnMapsIdWithValueField() throws Exception {
+        assertJavaDiagnostics(paramsFor("MapsIdWithValueAndGeneratedValue"), IJDT_UTILS,
+                              error(18, 22, 24,
+                                    "@EmbeddedId cannot be combined with @Id in the same entity.",
+                                    "MixedIdentifierAnnotations"),
+                              error(24, 21, 29,
+                                    "The @Id annotation must use a valid identifier type (primitives, wrapper types, String, Date types, BigDecimal or BigInteger).",
+                                    "InvalidIdType"),
+                              error(24, 21, 29,
+                                    "@Id cannot be combined with @EmbeddedId in the same entity.",
+                                    "MixedIdentifierAnnotations"),
+                              error(24, 21, 29,
+                                    "@GeneratedValue cannot be applied to a primary key field that forms part of a derived identity via @MapsId.",
+                                    "GeneratedValueOnDerivedIdField"));
+    }
+
     // ---- Rule 4: @MapsId value must name an attribute of the @EmbeddedId class ----------------
 
     /** {@code @MapsId("nonExistent")}: "employee" at line 19, cols 21-29. */
@@ -134,6 +156,15 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
                                     "MapsIdValueTypeMismatch"));
     }
 
+    /** Property-access style: GetterAccessKey.isActive() is boolean but Department's @Id is String: "department" at line 20, cols 23-33. */
+    @Test
+    public void testMapsIdValueTypeMismatchIsPropertyAccess() throws Exception {
+        assertJavaDiagnostics(paramsFor("MapsIdIsPropertyAccessTypeMismatch"), IJDT_UTILS,
+                              error(20, 23, 33,
+                                    "The type of attribute 'active' in the @EmbeddedId class 'GetterAccessKey' ('boolean') is not compatible with the primary key type of the parent entity 'Department' ('java.lang.String').",
+                                    "MapsIdValueTypeMismatch"));
+    }
+
     // ---- Value-less @MapsId with @EmbeddedId (spec Examples 5b / 6b) --------------------------
 
     /** The whole embedded id (ChildKey) differs from the parent's PK (ProjectId): "parent" at line 20, cols 33-39. */
@@ -162,5 +193,11 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
     @Test
     public void testValidMapsIdWithCompositeParent() throws Exception {
         assertJavaDiagnostics(paramsFor("ValidMapsIdCompositeParent"), IJDT_UTILS);
+    }
+
+    /** Property-access style with getEmpId() resolving long matching Employee's @Id (long). */
+    @Test
+    public void testValidMapsIdPropertyAccess() throws Exception {
+        assertJavaDiagnostics(paramsFor("ValidMapsIdPropertyAccess"), IJDT_UTILS);
     }
 }

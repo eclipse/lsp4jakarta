@@ -166,15 +166,22 @@ final class CompositeKeyResolver {
      * not found.
      */
     static String resolveAttributeType(IType embeddableType, String attrName) throws JavaModelException {
+        if (attrName == null || attrName.isEmpty()) {
+            return null;
+        }
         // IType.getField(name) is JDT's O(1) named-field lookup — no loop needed.
         IField field = embeddableType.getField(attrName);
         if (field != null && field.exists()) {
             return JDTTypeUtils.getResolvedTypeName(field);
         }
-        // Fall back to property-access style: look for a matching no-arg getter.
-        String getterName = "get" + Character.toUpperCase(attrName.charAt(0)) + attrName.substring(1);
+        // Fall back to property-access style: look for a matching no-arg getter (get... or is...).
+        String capitalized = Character.toUpperCase(attrName.charAt(0)) + attrName.substring(1);
+        String getterName = "get" + capitalized;
+        String isGetterName = "is" + capitalized;
         for (IMethod method : embeddableType.getMethods()) {
-            if (getterName.equals(method.getElementName()) && method.getNumberOfParameters() == 0) {
+            String methodName = method.getElementName();
+            if ((getterName.equals(methodName) || isGetterName.equals(methodName))
+                && method.getNumberOfParameters() == 0) {
                 return JDTTypeUtils.getResolvedResultTypeName(method);
             }
         }
