@@ -43,6 +43,7 @@ public enum ErrorCode implements IJavaErrorCode {
     InvalidDecoratorDelegateInjectionPoints,
     InvalidDelegateInjectionPoint,
     InvalidDelegateOutsideDecorator,
+    InvalidDelegateOnNonInjectionPoint,
     InvalidDecoratorDelegateTypeAssignability,
     InvalidDecoratorWithNoDecoratedTypes,
     InvalidWildcardTypeInInjectField,
@@ -58,7 +59,10 @@ public enum ErrorCode implements IJavaErrorCode {
     InvalidOrphanDisposerMethod,
     InvalidSpecializesAnnotationOnNonBeanSuperclass,
     InvalidObserverMethodWithoutNotify,
-    InvalidRawEventTypeInjectionPoint;
+    InvalidRawEventTypeInjectionPoint,
+    InvalidTypedAnnotationNonMatchingBeanType,
+    InvalidUserTransactionInjectionInCDIBean,
+    InvalidPassivatingScopedBeanWithoutSerializable;
 
     /**
      * {@inheritDoc}

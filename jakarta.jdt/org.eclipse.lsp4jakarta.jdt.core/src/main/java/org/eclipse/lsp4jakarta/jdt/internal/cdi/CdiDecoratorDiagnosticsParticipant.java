@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
@@ -35,6 +36,7 @@ import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.IJavaDiagnosticsParticipant;
 import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.JavaDiagnosticsContext;
 import org.eclipse.lsp4jakarta.jdt.core.utils.IJDTUtils;
+import org.eclipse.lsp4jakarta.jdt.core.utils.JDTTypeUtils;
 import org.eclipse.lsp4jakarta.jdt.core.utils.PositionUtils;
 import org.eclipse.lsp4jakarta.jdt.core.utils.TypeHierarchyUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
@@ -102,12 +104,28 @@ public class CdiDecoratorDiagnosticsParticipant implements IJavaDiagnosticsParti
 
         List<IJavaElement> delegateElements = new ArrayList<>();
         for (IField field : type.getFields()) {
-            validateDelegate(type, field, field, uri, context, diagnostics, delegateElements, isDecorator);
+            validateDelegate(type, field, field, uri, context, diagnostics, delegateElements, false, isDecorator);
         }
         for (IMethod method : type.getMethods()) {
             IAnnotation[] methodAnnotations = method.getAnnotations();
+
+            // Per CDI spec §3.7 / §8.1.2, @Delegate is only valid on injection points:
+            // fields, bean constructor parameters, or initializer method parameters.
+            // An initializer method is a non-constructor, non-static, void method
+            // annotated with @Inject.
+            boolean isConstructor = DiagnosticUtils.isConstructorMethod(method);
+            boolean isInitializerMethod = !isConstructor
+                                          && !Flags.isStatic(method.getFlags())
+                                          && JDTTypeUtils.isVoidReturnType(method)
+                                          && DiagnosticUtils.isMatchedAnnotation(type.getCompilationUnit(), methodAnnotations, Constants.INJECT_FQ_NAME);
+            // True when the method is not a valid @Delegate injection-point context.
+            // Parameters of such methods still need to be scanned so that any @Delegate
+            // annotation on them produces InvalidDelegateOnNonInjectionPoint.
+            boolean isNonInjectionPointMethod = !isConstructor && !isInitializerMethod;
+
             for (ILocalVariable parameter : method.getParameters()) {
-                validateDelegate(type, method, parameter, uri, context, diagnostics, delegateElements, isDecorator, methodAnnotations);
+                validateDelegate(type, method, parameter, uri, context, diagnostics, delegateElements,
+                                 isNonInjectionPointMethod, isDecorator, methodAnnotations);
             }
         }
 
@@ -125,17 +143,21 @@ public class CdiDecoratorDiagnosticsParticipant implements IJavaDiagnosticsParti
      *
      * If {@code isDecorator} is true, collects the element into {@code delegateElements}
      * and validates the @Inject requirement. If {@code isDecorator} is false, any
-     *
      * @Delegate found is immediately reported as an error (delegate outside decorator).
      *
      * @param owner The element to report diagnostics on (field or method).
      * @param element The actual element annotated with @Delegate.
+     * @param isNonInjectionPointMethod true when the enclosing method is not a valid
+     *            injection-point context (not a constructor and not an @Inject void method).
+     *            When true the element is NOT counted as a delegate injection point but
+     *            InvalidDelegateOnNonInjectionPoint is reported if @Delegate is present.
      * @param isDecorator Whether the enclosing class is annotated with @Decorator.
      * @param methodAnnotations Annotations from the enclosing method, if any.
      */
     private void validateDelegate(IType type, IJavaElement owner, IJavaElement element, String uri,
                                   JavaDiagnosticsContext context, List<Diagnostic> diagnostics,
-                                  List<IJavaElement> delegateElements, boolean isDecorator,
+                                  List<IJavaElement> delegateElements, boolean isNonInjectionPointMethod,
+                                  boolean isDecorator,
                                   IAnnotation... methodAnnotations) throws JavaModelException {
 
         IAnnotation[] annotations = (element instanceof IAnnotatable) ? ((IAnnotatable) element).getAnnotations() : new IAnnotation[0];
@@ -148,7 +170,7 @@ public class CdiDecoratorDiagnosticsParticipant implements IJavaDiagnosticsParti
             delegateElements.add(element);
             validateDelegateInjectionPoint(owner,
                                            methodAnnotations.length > 0 ? methodAnnotations : annotations,
-                                           type, uri, context, diagnostics);
+                                           type, uri, context, diagnostics, isNonInjectionPointMethod);
         } else {
             Range range = PositionUtils.toNameRange(element, context.getUtils());
             String message = Messages.getMessage("InvalidDelegateOutsideDecorator");
@@ -167,7 +189,7 @@ public class CdiDecoratorDiagnosticsParticipant implements IJavaDiagnosticsParti
      * @param context the diagnostics context
      * @param diagnostics the list to add diagnostics to
      * @param delegateElements the list of fields/parameters annotated with @Delegate
-     * @param delegateCount the number of @Delegate injection points found
+     * @param delegateCount the number of valid @Delegate injection points found
      * @throws JavaModelException if an error occurs accessing the Java model
      */
     private void reportInvalidDelegateCountDiagnostics(IType type, String uri, JavaDiagnosticsContext context,
@@ -175,7 +197,7 @@ public class CdiDecoratorDiagnosticsParticipant implements IJavaDiagnosticsParti
                                                        int delegateCount) throws JavaModelException {
         // Report diagnostics based on delegate count
         if (delegateCount == 0) {
-            // No @Delegate found - report at class level
+            // No valid @Delegate injection point found - report at class level
             Range range = PositionUtils.toNameRange(type, context.getUtils());
             String message = Messages.getMessage("MissingDelegateInDecorator");
             diagnostics.add(context.createDiagnostic(uri, message, range,
@@ -206,20 +228,31 @@ public class CdiDecoratorDiagnosticsParticipant implements IJavaDiagnosticsParti
      * @param uri the file URI
      * @param context the diagnostics context
      * @param diagnostics the list to add diagnostics to
+     * @param isNonInjectionPointMethod true when the enclosing method is not a valid injection-point
+     *            context; in that case the missing-@Inject diagnostic is reported regardless of whether
+     *            @Inject is present on the method (the method itself is not a valid injection point)
      * @throws JavaModelException if an error occurs accessing the Java model
      */
     private void validateDelegateInjectionPoint(IJavaElement diagnosticTarget,
                                                 IAnnotation[] annotations, IType type, String uri,
-                                                JavaDiagnosticsContext context, List<Diagnostic> diagnostics) throws JavaModelException {
-        // Check if element or its containing method/constructor has @Inject annotation
+                                                JavaDiagnosticsContext context, List<Diagnostic> diagnostics,
+                                                boolean isNonInjectionPointMethod) throws JavaModelException {
         if (!DiagnosticUtils.isMatchedAnnotation(type.getCompilationUnit(), annotations, Constants.INJECT_FQ_NAME)) {
-            // @Delegate without @Inject - report diagnostic on the target element
-            // For fields, target is the field itself; for parameters, target is the method
+            // @Inject is missing — offer "Insert @Inject" quickfix regardless of method kind.
             Range range = PositionUtils.toNameRange(diagnosticTarget, context.getUtils());
             String message = Messages.getMessage("InvalidDelegateInjectionPoint");
             diagnostics.add(context.createDiagnostic(uri, message, range,
                                                      Constants.DIAGNOSTIC_SOURCE, null,
                                                      ErrorCode.InvalidDelegateInjectionPoint,
+                                                     DiagnosticSeverity.Error));
+        } else if (isNonInjectionPointMethod) {
+            // @Inject is present but the method is not a valid injection-point context
+            // (e.g. non-void, static). No quickfix — the user needs to fix the method itself.
+            Range range = PositionUtils.toNameRange(diagnosticTarget, context.getUtils());
+            String message = Messages.getMessage("InvalidDelegateOnNonInjectionPoint");
+            diagnostics.add(context.createDiagnostic(uri, message, range,
+                                                     Constants.DIAGNOSTIC_SOURCE, null,
+                                                     ErrorCode.InvalidDelegateOnNonInjectionPoint,
                                                      DiagnosticSeverity.Error));
         }
     }
