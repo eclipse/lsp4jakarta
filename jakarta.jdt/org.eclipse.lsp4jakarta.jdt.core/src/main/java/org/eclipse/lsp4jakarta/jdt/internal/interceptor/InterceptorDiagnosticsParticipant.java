@@ -143,7 +143,7 @@ public class InterceptorDiagnosticsParticipant implements IJavaDiagnosticsPartic
             try {
                 if (isMatchedInvocationContextMethods(unit, methodDecl)) {
                     invocationContextMethodInvocations.add(methodDecl);
-                } else if (isInterceptorMethodWithUnwrappedProceed(unit, methodDecl)) {
+                } else if (ASTUtils.isMethodInvocationOutsideTryCatch(methodDecl, Constants.PROCEED, Constants.JAKARTA_INTERCEPTOR_INVOCATION_CONTEXT)) {
                     proceedNotInTryCatch.add(methodDecl);
                 }
             } catch (JavaModelException e) {
@@ -163,25 +163,6 @@ public class InterceptorDiagnosticsParticipant implements IJavaDiagnosticsPartic
                                                      DiagnosticSeverity.Warning));
         }
         return diagnostics;
-    }
-
-    /**
-     * Checks whether a method declaration is an interceptor method that calls {@code proceed()}
-     * but does NOT wrap that call in a try/catch/finally block.
-     *
-     * <p>According to the Jakarta Interceptors specification, exceptions and initialization
-     * and/or cleanup operations should typically be handled in try/catch/finally blocks
-     * around the proceed method.</p>
-     *
-     * @param unit the compilation unit
-     * @param methodDecl the method declaration to inspect
-     * @return {@code true} if the method is an interceptor method whose {@code proceed()} call
-     *         is not enclosed in a try statement; {@code false} otherwise
-     * @throws JavaModelException if there is an error accessing the Java model
-     */
-    private boolean isInterceptorMethodWithUnwrappedProceed(ICompilationUnit unit, MethodDeclaration methodDecl) throws JavaModelException {
-        return ASTUtils.containsMethodInvocation(methodDecl, Constants.PROCEED, Constants.JAKARTA_INTERCEPTOR_INVOCATION_CONTEXT)
-               && !ASTUtils.isMethodWrappedInTryCatch(methodDecl, Constants.PROCEED, Constants.JAKARTA_INTERCEPTOR_INVOCATION_CONTEXT);
     }
 
     /**
