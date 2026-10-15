@@ -62,7 +62,6 @@ public enum ErrorCode implements IJavaErrorCode {
     SequenceGeneratorsMissingSequenceGeneratorMapping,
     SecondaryTableInvalidEmptyName,
     SecondaryTablesMissingSecondaryTableMapping,
-    ExtendedPersistenceContextInNonStatefulBean,
     DuplicateNamedEntityGraphName,
     NamedEntityGraphOnNonEntityClass,
     NamedEntityGraphsOnNonEntityClass,
