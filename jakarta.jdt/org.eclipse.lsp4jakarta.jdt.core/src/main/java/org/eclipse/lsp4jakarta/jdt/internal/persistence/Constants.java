@@ -41,6 +41,8 @@ public class Constants {
     public static final String ATTRIBUTE_OVERRIDE_KEY_PREFIX = "key.";
 
     public static final String INHERITANCE = "jakarta.persistence.Inheritance";
+    public static final String NAMED_ENTITY_GRAPH = "jakarta.persistence.NamedEntityGraph";
+    public static final String NAMED_ENTITY_GRAPHS = "jakarta.persistence.NamedEntityGraphs";
     public static final String MAPKEY = "jakarta.persistence.MapKey";
     public static final String MAPKEYCLASS = "jakarta.persistence.MapKeyClass";
     public static final String MAPKEYJOINCOLUMN = "jakarta.persistence.MapKeyJoinColumn";
