@@ -81,6 +81,10 @@ public class PostConstructAnnotationTest extends BaseJakartaTest {
                           DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructException");
         d5.setData(new Gson().toJsonTree(Arrays.asList("io.openliberty.sample.jakarta.annotations.CustomCheckedException", "java.io.IOException")));
 
+        // Expected diagnostics are ordered in top-down source line order:
+        // - Line 19: getStudentId() violates both @PostConstruct return type (d1) and interceptor lifecycle signature (nonVoid)
+        // - Line 24: getHappiness() violates both @PostConstruct parameter rule (d2) and interceptor lifecycle signature (withParamsInvalid)
+        // - Lines 29, 44, 49: methods throwing checked exceptions (d3, d4, d5)
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d1, nonVoid, d2, withParamsInvalid, d3, d4, d5);
 
         JakartaJavaCodeActionParams codeActionParams1 = createCodeActionParams(uri, d2);

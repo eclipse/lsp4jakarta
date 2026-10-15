@@ -80,6 +80,11 @@ public class PreDestroyAnnotationTest extends BaseJakartaTest {
                           DiagnosticSeverity.Error, "jakarta-annotations", "PreDestroyException");
         d5.setData(new Gson().toJsonTree(Arrays.asList("io.openliberty.sample.jakarta.annotations.CustomCheckedException")));
 
+        // Expected diagnostics are ordered in bottom-up source line order:
+        // - Lines 56, 51, 36: methods throwing checked exceptions (d5, d4, d3)
+        // - Line 31: makeUnhappy() violates @PreDestroy static modifier rule (d2)
+        // - Line 24: getHappiness() violates both @PreDestroy parameter rule (d1) and interceptor lifecycle signature (hasParamsSignature)
+        // - Line 19: getStudentId() violates interceptor lifecycle signature (nonVoidReturnSignature)
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d5, d4, d3, d2, d1, hasParamsSignature, nonVoidReturnSignature);
 
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, d1);
