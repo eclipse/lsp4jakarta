@@ -143,6 +143,7 @@ public class CdiDecoratorDiagnosticsParticipant implements IJavaDiagnosticsParti
      *
      * If {@code isDecorator} is true, collects the element into {@code delegateElements}
      * and validates the @Inject requirement. If {@code isDecorator} is false, any
+     *
      * @Delegate found is immediately reported as an error (delegate outside decorator).
      *
      * @param owner The element to report diagnostics on (field or method).
@@ -230,7 +231,7 @@ public class CdiDecoratorDiagnosticsParticipant implements IJavaDiagnosticsParti
      * @param diagnostics the list to add diagnostics to
      * @param isNonInjectionPointMethod true when the enclosing method is not a valid injection-point
      *            context; in that case the missing-@Inject diagnostic is reported regardless of whether
-     *            @Inject is present on the method (the method itself is not a valid injection point)
+     * @Inject is present on the method (the method itself is not a valid injection point)
      * @throws JavaModelException if an error occurs accessing the Java model
      */
     private void validateDelegateInjectionPoint(IJavaElement diagnosticTarget,
