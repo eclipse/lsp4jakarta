@@ -125,25 +125,33 @@ public class ASTUtils {
      * (i.e., not inside a try/catch, try/finally, or try/catch/finally block).
      * All three forms map to the same JDT {@link TryStatement} AST node type.
      *
+     * <p>A method may contain multiple matching invocations (e.g. one inside a try and one
+     * outside). This method returns {@code true} if <em>any</em> of the matching invocations
+     * is outside a try statement, because each such call is unprotected.
+     *
      * @param methodDecl the method declaration to inspect
      * @param targetMethod the method name to look for (e.g. "proceed")
      * @param parentFQN the fully qualified name of the declaring class (e.g. "jakarta.interceptor.InvocationContext")
-     * @return {@code true} if the matching method invocation exists AND is not inside a try statement;
-     *         {@code false} if there is no matching invocation or it is inside a try statement
+     * @return {@code true} if at least one matching invocation exists AND is not inside a try statement;
+     *         {@code false} if there are no matching invocations or all of them are inside a try statement
      */
     public static boolean isMethodInvocationOutsideTryCatch(MethodDeclaration methodDecl, String targetMethod, String parentFQN) {
-        MethodInvocation match = findMethodInvocation(methodDecl, targetMethod, parentFQN);
-        if (match == null) {
-            return false;
-        }
-        ASTNode parent = match.getParent();
-        while (parent != null && parent != methodDecl) {
-            if (parent instanceof TryStatement) {
-                return false;
+        List<MethodInvocation> matches = collectMethodInvocations(methodDecl, targetMethod, parentFQN, false);
+        for (MethodInvocation match : matches) {
+            ASTNode parent = match.getParent();
+            boolean insideTry = false;
+            while (parent != null && parent != methodDecl) {
+                if (parent instanceof TryStatement) {
+                    insideTry = true;
+                    break;
+                }
+                parent = parent.getParent();
             }
-            parent = parent.getParent();
+            if (!insideTry) {
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -157,30 +165,49 @@ public class ASTUtils {
      * @return the first matching {@link MethodInvocation}, or {@code null}
      */
     private static MethodInvocation findMethodInvocation(MethodDeclaration methodDecl, String targetMethod, String parentFQN) {
+        List<MethodInvocation> results = collectMethodInvocations(methodDecl, targetMethod, parentFQN, true);
+        return results.isEmpty() ? null : results.get(0);
+    }
+
+    /**
+     * Shared implementation for {@link #findMethodInvocation} and {@link #findAllMethodInvocations}.
+     * Walks the body of {@code methodDecl} collecting invocations whose name matches
+     * {@code targetMethod} and whose declaring class matches {@code parentFQN}.
+     *
+     * @param methodDecl the method declaration to search
+     * @param targetMethod the method name to look for
+     * @param parentFQN the fully qualified name of the declaring class
+     * @param stopAfterFirst if {@code true}, stops after the first match (early-exit)
+     * @return matching {@link MethodInvocation} nodes; at most one element when {@code stopAfterFirst} is {@code true}
+     */
+    private static List<MethodInvocation> collectMethodInvocations(MethodDeclaration methodDecl, String targetMethod,
+                                                                   String parentFQN, boolean stopAfterFirst) {
         if (methodDecl == null || methodDecl.getBody() == null) {
-            return null;
+            return Collections.emptyList();
         }
-        MethodInvocation[] result = new MethodInvocation[1];
+        List<MethodInvocation> results = new ArrayList<>();
         methodDecl.accept(new ASTVisitor() {
             @Override
             public boolean visit(MethodInvocation node) {
-                if (result[0] != null) {
-                    return false; // already found, stop visiting
+                if (stopAfterFirst && !results.isEmpty()) {
+                    return false; // early-exit: already found one
                 }
                 if (targetMethod.equals(node.getName().getIdentifier())) {
                     IMethodBinding binding = node.resolveMethodBinding();
                     if (binding != null) {
                         ITypeBinding declaringClass = binding.getDeclaringClass();
                         if (declaringClass != null && parentFQN.equals(declaringClass.getQualifiedName())) {
-                            result[0] = node;
-                            return false;
+                            results.add(node);
+                            if (stopAfterFirst) {
+                                return false;
+                            }
                         }
                     }
                 }
                 return true;
             }
         });
-        return result[0];
+        return results;
     }
 
     /**

@@ -1508,6 +1508,27 @@ public class InterceptorTest extends BaseJakartaTest {
     }
 
     @Test
+    public void testInterceptorTwoProceedCallsOnlyOneInTryCatchTest() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+
+        IFile javaFile = javaProject.getProject().getFile(
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/interceptor/InvalidInterceptorTwoProceedCalls.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        // The method has two proceed() calls: the first is inside a try/catch (protected)
+        // and the second is outside in an if-block (unprotected). The diagnostic must fire
+        // because at least one call is unprotected, even though another call is protected.
+        Diagnostic twoProceedWarning = d(16, 18, 30,
+                                         PROCEED_NOT_IN_TRY_CATCH_MSG,
+                                         DiagnosticSeverity.Warning, "jakarta-interceptor", "InvalidInterceptorProceedNotInTryCatch");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, twoProceedWarning);
+    }
+
+    @Test
     public void testValidInterceptorProceedInTryCatchAllFormsTest() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
 
