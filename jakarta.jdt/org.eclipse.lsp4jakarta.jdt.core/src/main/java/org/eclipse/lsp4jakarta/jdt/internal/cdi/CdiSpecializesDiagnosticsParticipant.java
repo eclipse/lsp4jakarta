@@ -72,23 +72,23 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
                     if (DiagnosticUtils.isMatchedAnnotation(unit, annotation, Constants.NAMED_FQ_NAME)) {
                         Range range = PositionUtils.toNameRange(annotation, context.getUtils());
                         diagnostics.add(context.createDiagnostic(uri,
-                                                                Messages.getMessage("SpecializedBeanWithNamedAnnotation", type.getElementName()),
-                                                                range,
-                                                                Constants.DIAGNOSTIC_SOURCE, null,
-                                                                ErrorCode.InvalidSpecializedBeanWithNamedAnnotation,
-                                                                DiagnosticSeverity.Error));
+                                                                 Messages.getMessage("SpecializedBeanWithNamedAnnotation", type.getElementName()),
+                                                                 range,
+                                                                 Constants.DIAGNOSTIC_SOURCE, null,
+                                                                 ErrorCode.InvalidSpecializedBeanWithNamedAnnotation,
+                                                                 DiagnosticSeverity.Error));
                         break;
                     }
                 }
 
                 // Rule 3: inconsistent specialization -- more than one bean specializes the same base
-                String supertypeFqName = resolveUltimateBaseFqName(type);
-                if (supertypeFqName != null && hasInconsistentSpecialization(type, supertypeFqName)) {
+                IType directSuperType = resolveDirectSuperclass(type);
+                if (directSuperType != null && hasInconsistentSpecialization(directSuperType)) {
                     Range range = PositionUtils.toNameRange(type, context.getUtils());
                     diagnostics.add(context.createDiagnostic(uri,
                                                              Messages.getMessage("InconsistentSpecialization",
                                                                                  type.getElementName(),
-                                                                                 supertypeFqName),
+                                                                                 directSuperType.getFullyQualifiedName()),
                                                              range,
                                                              Constants.DIAGNOSTIC_SOURCE, null,
                                                              ErrorCode.InvalidInconsistentSpecialization,
@@ -139,30 +139,23 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
     }
 
     /**
-     * Returns {@code true} if more than one subtype of {@code ultimateBaseFqName}
+     * Returns {@code true} if more than one direct subclass of {@code directSuperType}
      * carries {@code @Specializes}, indicating inconsistent specialization.
      *
-     * <p>Builds an {@link ITypeHierarchy} rooted at the ultimate base and checks
-     * all subtypes — both direct and transitive — for the {@code @Specializes}
-     * annotation.
+     * <p>Builds an {@link ITypeHierarchy} rooted at the direct superclass and checks
+     * immediate subclasses for the {@code @Specializes} annotation.
      *
-     * @param specializerType the type being validated (used to resolve the project)
-     * @param ultimateBaseFqName the fully-qualified name of the ultimate base bean
-     * @return {@code true} if the specialization is inconsistent
+     * @param directSuperType the direct superclass type
+     * @return {@code true} if multiple direct subclasses specialize the base bean
      * @throws JavaModelException if the Java model cannot be accessed
      */
-    private boolean hasInconsistentSpecialization(IType specializerType,
-                                                  String ultimateBaseFqName) throws JavaModelException {
-        IType baseType = specializerType.getJavaProject().findType(ultimateBaseFqName);
-        if (baseType == null) {
-            return false;
-        }
-        ITypeHierarchy hierarchy = baseType.newTypeHierarchy(null);
-        IType[] subtypes = hierarchy.getAllSubtypes(baseType);
+    private boolean hasInconsistentSpecialization(IType directSuperType) throws JavaModelException {
+        ITypeHierarchy hierarchy = directSuperType.newTypeHierarchy(null);
+        IType[] subclasses = hierarchy.getSubclasses(directSuperType);
         int specializerCount = 0;
-        for (IType subtype : subtypes) {
-            if (DiagnosticUtils.isMatchedAnnotation(subtype.getCompilationUnit(),
-                                                    subtype.getAnnotations(),
+        for (IType subclass : subclasses) {
+            if (DiagnosticUtils.isMatchedAnnotation(subclass.getCompilationUnit(),
+                                                    subclass.getAnnotations(),
                                                     Constants.SPECIALIZES_FQ_NAME)) {
                 specializerCount++;
                 if (specializerCount > 1) {
@@ -174,32 +167,21 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
     }
 
     /**
-     * Walks the @Specializes chain transitively to find the ultimate base bean FQ name.
-     * Returns null if there is no explicit superclass or the name cannot be resolved.
+     * Resolves the direct superclass IType for the given type.
+     * Returns null if there is no explicit superclass or if it cannot be resolved.
      *
-     * @param type the type to resolve
-     * @return the ultimate base FQ class name, or null
+     * @param type the type whose superclass is to be resolved
+     * @return the direct superclass IType, or null
      */
-    private String resolveUltimateBaseFqName(IType type) {
+    private IType resolveDirectSuperclass(IType type) {
         try {
             String superclassName = type.getSuperclassName();
-            if (superclassName == null) {
+            if (superclassName == null || "Object".equals(superclassName) || "java.lang.Object".equals(superclassName)) {
                 return null;
             }
-            String fqName = ManagedBean.getFullyQualifiedClassName(type, superclassName);
-            if (fqName == null || "java.lang.Object".equals(fqName)) {
-                return null;
-            }
-            IType superType = type.getJavaProject().findType(fqName);
-            if (superType != null &&
-                DiagnosticUtils.isMatchedAnnotation(superType.getCompilationUnit(),
-                                                    superType.getAnnotations(),
-                                                    Constants.SPECIALIZES_FQ_NAME)) {
-                return resolveUltimateBaseFqName(superType);
-            }
-            return fqName;
+            return ManagedBean.getChildITypeByName(type, superclassName);
         } catch (JavaModelException e) {
-            LOGGER.log(Level.WARNING, "Unable to resolve ultimate base for type: " + type.getElementName(), e);
+            LOGGER.log(Level.WARNING, "Unable to resolve direct superclass for type: " + type.getElementName(), e);
             return null;
         }
     }

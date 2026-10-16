@@ -87,9 +87,9 @@ public class InconsistentSpecializationTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         Diagnostic expectedDiagnostic = d(8, 13, 25,
-                         msg("SpecializerA",
-                             "io.openliberty.sample.jakarta.cdi.specializes.BaseBean"),
-                         DiagnosticSeverity.Error, "jakarta-cdi", "InvalidInconsistentSpecialization");
+                                          msg("SpecializerA",
+                                              "io.openliberty.sample.jakarta.cdi.specializes.BaseBean"),
+                                          DiagnosticSeverity.Error, "jakarta-cdi", "InvalidInconsistentSpecialization");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, expectedDiagnostic);
     }
@@ -117,26 +117,29 @@ public class InconsistentSpecializationTest extends BaseJakartaTest {
     }
 
     /**
-     * TransitiveSpecializerB.java — transitively takes over TransitiveBaseBean via
-     * TransitiveSpecializerA, which also directly takes over it — conflict.
-     * Diagnostic expected on the class name (line 16, col 13–35).
+     * TransitiveSpecializerA.java & TransitiveSpecializerB.java — linear specialization chain
+     * (TransitiveSpecializerB -> TransitiveSpecializerA -> TransitiveBaseBean).
+     * TransitiveSpecializerB disables TransitiveSpecializerA, so there is only one enabled
+     * bean specializing TransitiveBaseBean. No diagnostic expected.
      */
     @Test
-    public void inconsistentSpecializationOnTransitiveBean() throws Exception {
+    public void noDiagnosticOnValidTransitiveSpecializationChain() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
-        IFile javaFile = javaProject.getProject().getFile(
-                                                          new Path("src/main/java/io/openliberty/sample/jakarta/cdi/specializes/TransitiveSpecializerB.java"));
-        String uri = javaFile.getLocation().toFile().toURI().toString();
+        IFile fileA = javaProject.getProject().getFile(
+                                                       new Path("src/main/java/io/openliberty/sample/jakarta/cdi/specializes/TransitiveSpecializerA.java"));
+        String uriA = fileA.getLocation().toFile().toURI().toString();
 
-        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
-        diagnosticsParams.setUris(Arrays.asList(uri));
+        JakartaJavaDiagnosticsParams paramsA = new JakartaJavaDiagnosticsParams();
+        paramsA.setUris(Arrays.asList(uriA));
+        assertJavaDiagnostics(paramsA, IJDT_UTILS);
 
-        Diagnostic d = d(8, 13, 35,
-                         msg("TransitiveSpecializerB",
-                             "io.openliberty.sample.jakarta.cdi.specializes.TransitiveBaseBean"),
-                         DiagnosticSeverity.Error, "jakarta-cdi", "InvalidInconsistentSpecialization");
+        IFile fileB = javaProject.getProject().getFile(
+                                                       new Path("src/main/java/io/openliberty/sample/jakarta/cdi/specializes/TransitiveSpecializerB.java"));
+        String uriB = fileB.getLocation().toFile().toURI().toString();
 
-        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, d);
+        JakartaJavaDiagnosticsParams paramsB = new JakartaJavaDiagnosticsParams();
+        paramsB.setUris(Arrays.asList(uriB));
+        assertJavaDiagnostics(paramsB, IJDT_UTILS);
     }
 
 }
