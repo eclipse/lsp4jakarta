@@ -1549,7 +1549,7 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
     public void testNamedEntityGraphOnValidEntityClass() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject().getFile(
-                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/NamedEntityGraphOnValidEntityClass.java"));
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/NamedEntityGraphUnique.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
@@ -1600,8 +1600,11 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
                                           "@NamedEntityGraph must only be applied to a class annotated with @Entity.",
                                           DiagnosticSeverity.Error, "jakarta-persistence", "NamedEntityGraphOnNonEntityClass",
                                           diagnosticsData);
+        Diagnostic duplicateDiagnostic = d(4, 0, 38,
+                                           "The @NamedEntityGraph name 'Graph.User' must be unique within the persistence unit.",
+                                           DiagnosticSeverity.Error, "jakarta-persistence", "DuplicateNamedEntityGraphName");
 
-        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, expectedDiagnostic);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, expectedDiagnostic, duplicateDiagnostic);
 
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, expectedDiagnostic);
         TextEdit insertEntityTextEdit = te(2, 0, 4, 0, "import jakarta.persistence.Entity;\nimport jakarta.persistence.NamedEntityGraph;\n\n@Entity\n");
@@ -1674,7 +1677,7 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
     public void testNamedEntityGraphsOnValidEntityClass() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject().getFile(
-                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/NamedEntityGraphsOnValidEntityClass.java"));
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/NamedEntityGraphsContainerUnique.java"));
         String uri = javaFile.getLocation().toFile().toURI().toString();
 
         JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
@@ -1725,8 +1728,14 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
                                           "@NamedEntityGraphs must only be applied to a class annotated with @Entity.",
                                           DiagnosticSeverity.Error, "jakarta-persistence", "NamedEntityGraphsOnNonEntityClass",
                                           diagnosticsData);
+        Diagnostic duplicateUser = d(5, 21, 59,
+                                     "The @NamedEntityGraph name 'Graph.User' must be unique within the persistence unit.",
+                                     DiagnosticSeverity.Error, "jakarta-persistence", "DuplicateNamedEntityGraphName");
+        Diagnostic duplicateOrder = d(5, 61, 100,
+                                      "The @NamedEntityGraph name 'Graph.Order' must be unique within the persistence unit.",
+                                      DiagnosticSeverity.Error, "jakarta-persistence", "DuplicateNamedEntityGraphName");
 
-        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, expectedDiagnostic);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, expectedDiagnostic, duplicateUser, duplicateOrder);
 
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, expectedDiagnostic);
         TextEdit insertEntityTextEdit = te(2, 0, 5, 0,
@@ -1915,6 +1924,93 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
                                                   DiagnosticSeverity.Error, "jakarta-persistence", "IdClassMemberTypeMismatch");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, deptTypeMismatchDiagnostic);
+    }
+
+    // -------------------------------------------------------------------------
+    // @Convert annotation diagnostics
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void convertAnnotationMissingConverterOrDisable() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+
+        IFile javaFile = javaProject.getProject().getFile(
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/ConvertAnnotationMissingAttributes.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic convertDiagnostic = d(17, 19, 23,
+                                         "@Convert must specify a converter class or set disableConversion to true.",
+                                         DiagnosticSeverity.Error, "jakarta-persistence",
+                                         "InvalidConvertAnnotationMissingConverterOrDisable");
+
+        // disableConversion = false is not equivalent to disableConversion = true
+        Diagnostic disableConversionDiagnostic = d(21, 19, 25,
+                                                   "@Convert must specify a converter class or set disableConversion to true.",
+                                                   DiagnosticSeverity.Error, "jakarta-persistence",
+                                                   "InvalidConvertAnnotationMissingConverterOrDisable");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, convertDiagnostic, disableConversionDiagnostic);
+    }
+
+    @Test
+    public void convertAnnotationOnRestrictedTarget() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+
+        IFile javaFile = javaProject.getProject().getFile(
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/ConvertAnnotationOnRestrictedTarget.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic convertOnIDDiagnostic = d(16, 17, 19,
+                                             "@Convert must not be applied to an attribute annotated with @Id.",
+                                             DiagnosticSeverity.Error, "jakarta-persistence",
+                                             "InvalidConvertAnnotationOnRestrictedTarget");
+
+        Diagnostic convertOnVersionDiagnostic = d(21, 16, 23,
+                                                  "@Convert must not be applied to an attribute annotated with @Version.",
+                                                  DiagnosticSeverity.Error, "jakarta-persistence",
+                                                  "InvalidConvertAnnotationOnRestrictedTarget");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, convertOnIDDiagnostic, convertOnVersionDiagnostic);
+    }
+
+    @Test
+    public void convertAnnotationMultipleOnSameAttribute() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+
+        IFile javaFile = javaProject.getProject().getFile(
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/ConvertAnnotationMultiple.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        Diagnostic diagnostic = d(18, 19, 25,
+                                  "Multiple @Convert annotations on the same attribute are not supported.",
+                                  DiagnosticSeverity.Error, "jakarta-persistence",
+                                  "MultipleConvertAnnotationOnSameAttribute");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, diagnostic);
+    }
+
+    @Test
+    public void convertAnnotationValidUsageNoDiagnostics() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+
+        IFile javaFile = javaProject.getProject().getFile(
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/ConvertAnnotationValid.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        // Valid usage - no diagnostics expected
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS);
     }
 
 }
