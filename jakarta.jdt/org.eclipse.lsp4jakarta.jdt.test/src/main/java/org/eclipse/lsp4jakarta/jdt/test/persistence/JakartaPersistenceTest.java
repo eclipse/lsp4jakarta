@@ -1918,6 +1918,30 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
     }
 
     @Test
+    public void testIdClassSingleIdManyToOneTypeMismatch() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/idclass/IdClassSingleIdManyToOne.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        // Derived identity: the entity has a single @Id (@ManyToOne "dept") alongside @IdClass.
+        // Alignment must still be validated: Department's PK type is int, key class holds String.
+        Diagnostic deptTypeMismatchDiagnostic = d(31, 23, 27,
+                                                  "The type of @Id field or property 'dept' in the entity ('int') does not match the type of the corresponding member in the @IdClass key class ('java.lang.String').",
+                                                  DiagnosticSeverity.Error, "jakarta-persistence", "IdClassMemberTypeMismatch");
+
+        // The key class is not annotated with @Embeddable.
+        Diagnostic idClassNotEmbeddableDiagnostic = d(26, 0, 42,
+                                                      "The primary key class 'IdClassSingleIdManyToOnePK' used in the @IdClass annotation must be annotated with @Embeddable.",
+                                                      DiagnosticSeverity.Error, "jakarta-persistence", "IdClassTypeNotAnnotatedWithEmbeddable");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, deptTypeMismatchDiagnostic, idClassNotEmbeddableDiagnostic);
+    }
+
+    @Test
     public void testIdClassOneToOneValid() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
         IFile javaFile = javaProject.getProject().getFile(

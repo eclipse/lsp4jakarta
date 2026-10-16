@@ -12,7 +12,6 @@
  *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.persistence;
 
-import java.beans.Introspector;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +82,7 @@ class IdClassService {
         // PK type, not the relationship type (spec §2.4.1.1, third bullet).
         Map<String, String> entityIdMap = new HashMap<>();
         for (IMember member : idMembers) {
-            String name = fieldAccess ? member.getElementName() : getterPropertyName(member.getElementName());
+            String name = fieldAccess ? member.getElementName() : DiagnosticUtils.getterPropertyName(member.getElementName());
             if (name != null) {
                 entityIdMap.put(name, resolveExpectedKeyClassType(member, entityType));
             }
@@ -99,8 +98,11 @@ class IdClassService {
             }
         } else {
             for (IMethod method : keyClass.getMethods()) {
-                String propName = getterPropertyName(method.getElementName());
-                if (propName != null && method.getNumberOfParameters() == 0) {
+                String propName = DiagnosticUtils.getterPropertyName(method.getElementName());
+                // A property getter is an instance method with no parameters and a non-void return type.
+                if (propName != null && method.getNumberOfParameters() == 0
+                    && !Flags.isStatic(method.getFlags())
+                    && !JDTTypeUtils.isVoidReturnType(method)) {
                     keyClassMap.put(propName, JDTTypeUtils.getResolvedResultTypeName(method));
                 }
             }
@@ -108,7 +110,7 @@ class IdClassService {
 
         // Check every entity @Id member against the key class map.
         for (IMember idMember : idMembers) {
-            String memberName = fieldAccess ? idMember.getElementName() : getterPropertyName(idMember.getElementName());
+            String memberName = fieldAccess ? idMember.getElementName() : DiagnosticUtils.getterPropertyName(idMember.getElementName());
             if (memberName == null) {
                 continue;
             }
@@ -214,25 +216,4 @@ class IdClassService {
         return ManagedBean.getChildITypeByName(declaringType, classLiteral.replace(".class", ""));
     }
 
-    /**
-     * Derives a Java bean property name from a getter method name using
-     * {@link Introspector#decapitalize}, consistent with the approach in
-     * {@link PersistenceMapKeyDiagnosticsParticipant}.
-     * Returns {@code null} if the method name does not follow getter conventions.
-     *
-     * @param methodName the getter method name (e.g. {@code "getName"}, {@code "isActive"})
-     * @return the property name (e.g. {@code "name"}, {@code "active"}), or {@code null}
-     */
-    private String getterPropertyName(String methodName) {
-        if (methodName == null) {
-            return null;
-        }
-        if (methodName.startsWith("get") && methodName.length() > 3) {
-            return Introspector.decapitalize(methodName.substring(3));
-        }
-        if (methodName.startsWith("is") && methodName.length() > 2) {
-            return Introspector.decapitalize(methodName.substring(2));
-        }
-        return null;
-    }
 }
