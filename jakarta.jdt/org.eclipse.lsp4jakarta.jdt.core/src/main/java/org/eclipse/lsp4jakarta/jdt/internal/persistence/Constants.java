@@ -43,7 +43,6 @@ public class Constants {
     public static final String MAPSID = "jakarta.persistence.MapsId";
     public static final String ONETOONE = "jakarta.persistence.OneToOne";
     public static final String MANYTOONE = "jakarta.persistence.ManyToOne";
-    public static final String GENERATEDVALUE = "jakarta.persistence.GeneratedValue";
     public static final String IDCLASS = "jakarta.persistence.IdClass";
     public static final String MAPKEY = "jakarta.persistence.MapKey";
     public static final String MAPKEYCLASS = "jakarta.persistence.MapKeyClass";

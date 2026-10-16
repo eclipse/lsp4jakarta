@@ -84,47 +84,6 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
         assertJavaDiagnostics(paramsFor("ValidMapsIdSimpleKey"), IJDT_UTILS);
     }
 
-    // ---- Rule 3: @GeneratedValue forbidden on derived @Id (spec §11.1.20) ---------------------
-
-    /**
-     * {@code @Id @MapsId @OneToOne @GeneratedValue} on an entity-typed field: two diagnostics fire.
-     * {@code InvalidIdType} because Employee is not a valid @Id type, and
-     * {@code GeneratedValueOnDerivedIdField} because @GeneratedValue is forbidden on a derived @Id.
-     * Both are on field "employee" at line 21 (0-based), cols 21-29.
-     */
-    @Test
-    public void testGeneratedValueOnValuelessMapsIdField() throws Exception {
-        assertJavaDiagnostics(paramsFor("MapsIdWithGeneratedValue"), IJDT_UTILS,
-                              error(21, 21, 29,
-                                    "The @Id annotation must use a valid identifier type (primitives, wrapper types, String, Date types, BigDecimal or BigInteger).",
-                                    "InvalidIdType"),
-                              error(21, 21, 29,
-                                    "@GeneratedValue cannot be applied to a primary key field that forms part of a derived identity via @MapsId.",
-                                    "GeneratedValueOnDerivedIdField"));
-    }
-
-    /**
-     * {@code @MapsId("empId") @ManyToOne @Id @GeneratedValue} with {@code @EmbeddedId}:
-     * {@code MixedIdentifierAnnotations} on both fields, and {@code InvalidIdType} plus
-     * {@code GeneratedValueOnDerivedIdField} on field "employee".
-     */
-    @Test
-    public void testGeneratedValueOnMapsIdWithValueField() throws Exception {
-        assertJavaDiagnostics(paramsFor("MapsIdWithValueAndGeneratedValue"), IJDT_UTILS,
-                              error(18, 22, 24,
-                                    "@EmbeddedId cannot be combined with @Id in the same entity.",
-                                    "MixedIdentifierAnnotations"),
-                              error(24, 21, 29,
-                                    "The @Id annotation must use a valid identifier type (primitives, wrapper types, String, Date types, BigDecimal or BigInteger).",
-                                    "InvalidIdType"),
-                              error(24, 21, 29,
-                                    "@Id cannot be combined with @EmbeddedId in the same entity.",
-                                    "MixedIdentifierAnnotations"),
-                              error(24, 21, 29,
-                                    "@GeneratedValue cannot be applied to a primary key field that forms part of a derived identity via @MapsId.",
-                                    "GeneratedValueOnDerivedIdField"));
-    }
-
     // ---- Rule 4: @MapsId value must name an attribute of the @EmbeddedId class ----------------
 
     /** {@code @MapsId("nonExistent")}: "employee" at line 19, cols 21-29. */
@@ -173,6 +132,15 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
         assertJavaDiagnostics(paramsFor("MapsIdValuelessPkTypeMismatch"), IJDT_UTILS,
                               error(20, 33, 39,
                                     "The primary key type of this entity ('io.openliberty.sample.jakarta.persistence.derivedidentity.ChildKey') must be the same as the primary key type of the parent entity 'ParentWithEmbeddedId' ('io.openliberty.sample.jakarta.persistence.derivedidentity.ProjectId') when @MapsId is specified without a value.",
+                                    "MapsIdPrimaryKeyTypeMismatch"));
+    }
+
+    /** Simple @Id (String) differs from parent's simple PK (Employee.id: long): "employee" at line 20, cols 21-29. */
+    @Test
+    public void testValuelessMapsIdSimpleKeyTypeMismatch() throws Exception {
+        assertJavaDiagnostics(paramsFor("MapsIdSimpleKeyTypeMismatch"), IJDT_UTILS,
+                              error(20, 21, 29,
+                                    "The primary key type of this entity ('java.lang.String') must be the same as the primary key type of the parent entity 'Employee' ('long') when @MapsId is specified without a value.",
                                     "MapsIdPrimaryKeyTypeMismatch"));
     }
 

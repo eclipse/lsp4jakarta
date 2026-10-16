@@ -72,8 +72,7 @@ public enum ErrorCode implements IJavaErrorCode {
     MapsIdRequiresCompositeKey,
     MapsIdValueNotInEmbeddedIdClass,
     MapsIdValueTypeMismatch,
-    MapsIdPrimaryKeyTypeMismatch,
-    GeneratedValueOnDerivedIdField;
+    MapsIdPrimaryKeyTypeMismatch;
 
     /**
      * {@inheritDoc}

@@ -40,7 +40,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.persistence.CompositeKeyResolver.Par
 
 /**
  * Diagnostic participant for Jakarta Persistence 3.0 derived-identity rules
- * (specification sections 2.4.1 and 11.1.20).
+ * (specification section 2.4.1).
  *
  * <h3>Checks performed</h3>
  * <ol>
@@ -53,9 +53,6 @@ import org.eclipse.lsp4jakarta.jdt.internal.persistence.CompositeKeyResolver.Par
  * composite primary key via {@code @EmbeddedId} or {@code @IdClass}. A
  * {@code @MapsId} without a value is valid with a simple {@code @Id}
  * (spec §2.4.1.1, Example 4b).</li>
- * <li>{@code @GeneratedValue} is forbidden on a primary key field that is
- * also annotated with {@code @MapsId} and {@code @Id} — the key is derived
- * from the parent, not generated independently (spec §11.1.20).</li>
  * </ul></li>
  * <li><b>Phase 2 – {@code @MapsId} cross-file checks</b>:
  * <ul>
@@ -72,9 +69,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.persistence.CompositeKeyResolver.Par
  *
  * <p><b>Specification:</b>
  * <a href="https://jakarta.ee/specifications/persistence/3.0/jakarta-persistence-spec-3.0#a149">
- * §2.4.1 Primary Keys Corresponding to Derived Identities</a>,
- * <a href="https://jakarta.ee/specifications/persistence/3.0/jakarta-persistence-spec-3.0#a14790">
- * §11.1.20 GeneratedValue Annotation</a>.</p>
+ * §2.4.1 Primary Keys Corresponding to Derived Identities</a>.</p>
  */
 public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
@@ -195,9 +190,8 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
 
     /**
      * Validates the structural constraints of a {@code @MapsId}-annotated member
-     * (Rules 1–3, spec §2.4.1 and §11.1.20): the member must be a to-one
-     * relationship, the entity must declare a composite key, and {@code @GeneratedValue}
-     * must not appear alongside {@code @Id} on a derived-identity field.
+     * (Rules 1–2, spec §2.4.1): the member must be a to-one
+     * relationship, and a {@code @MapsId} with a value requires a composite key.
      *
      * @return {@code true} if a fatal violation was found and attribute-binding
      *         checks must not run, {@code false} otherwise.
@@ -222,15 +216,6 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
             addDiagnostic(member, Messages.getMessage("MapsIdRequiresCompositeKey"),
                           ErrorCode.MapsIdRequiresCompositeKey, context, diagnostics);
             return true;
-        }
-
-        // Rule 3: @GeneratedValue forbidden on a derived-identity @Id field (spec §11.1.20).
-        // Non-fatal: Phase 2 attribute checks are independent and can fire on the same member.
-        boolean hasId = DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.ID);
-        boolean hasGeneratedValue = DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.GENERATEDVALUE);
-        if (hasId && hasGeneratedValue) {
-            addDiagnostic(member, Messages.getMessage("GeneratedValueOnDerivedIdField"),
-                          ErrorCode.GeneratedValueOnDerivedIdField, context, diagnostics);
         }
 
         return false;
