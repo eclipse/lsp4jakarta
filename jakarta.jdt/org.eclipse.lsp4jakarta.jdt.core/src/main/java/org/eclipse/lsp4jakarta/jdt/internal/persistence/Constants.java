@@ -65,8 +65,6 @@ public class Constants {
     public static final String SECONDARY_TABLES = "jakarta.persistence.SecondaryTables";
 
     public static final String MAPSID = "jakarta.persistence.MapsId";
-    public static final String ONETOONE = "jakarta.persistence.OneToOne";
-    public static final String MANYTOONE = "jakarta.persistence.ManyToOne";
     public static final String IDCLASS = "jakarta.persistence.IdClass";
 
     public static final String[] GENERATOR_AND_TABLE_ANNOTATIONS = {

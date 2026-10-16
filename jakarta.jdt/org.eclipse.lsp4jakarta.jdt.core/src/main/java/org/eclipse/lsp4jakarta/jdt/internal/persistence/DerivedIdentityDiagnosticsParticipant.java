@@ -202,8 +202,8 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
                                             JavaDiagnosticsContext context,
                                             List<Diagnostic> diagnostics) throws JavaModelException {
         // Rule 1: @MapsId must be on @OneToOne or @ManyToOne (spec §2.4.1).
-        boolean hasToOne = DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.ONETOONE)
-                           || DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.MANYTOONE);
+        boolean hasToOne = DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.ONE_TO_ONE)
+                           || DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.MANY_TO_ONE);
         if (!hasToOne) {
             addDiagnostic(member, Messages.getMessage("MapsIdOnInvalidRelationship"),
                           ErrorCode.MapsIdOnInvalidRelationship, context, diagnostics);
