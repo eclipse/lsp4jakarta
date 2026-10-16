@@ -338,7 +338,7 @@ public class NamedEntityGraphDiagnosticsTest extends BaseJakartaTest {
 
             IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
             IFile javaFile = javaProject.getProject().getFile(
-                                                              new Path("src/main/java/io/openliberty/sample/jakarta/persistence/NamedEntityGraphDuplicate1.java"));
+                                                              new Path("src/main/java/io/openliberty/sample/jakarta/persistence/entitygraph/NamedEntityGraphDuplicate1.java"));
             String uri = javaFile.getLocation().toFile().toURI().toString();
 
             JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
