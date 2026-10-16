@@ -184,19 +184,19 @@ public class InterceptorTest extends BaseJakartaTest {
 
         // @PostConstruct/PreDestroy methods with InvocationContext param also violate void <METHOD>() in target class
         Diagnostic postConstructSignature = d(35, 16, 36,
-                                              "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                              "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                               DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
         Diagnostic preDestroySignature = d(40, 16, 33,
-                                           "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                           "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                            DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
         Diagnostic aroundConstructSignature = d(23, 18, 41,
-                                                "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                                "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                                 DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
         Diagnostic postConstructSignatureChild = d(67, 17, 42,
-                                                   "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                                   "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                                    DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
         Diagnostic preDestroySignatureChild = d(72, 14, 36,
-                                                "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                                "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                                 DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS,
@@ -877,7 +877,7 @@ public class InterceptorTest extends BaseJakartaTest {
                                                     DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidAroundConstructInTargetClass");
 
         Diagnostic invalidSignature = d(14, 18, 27,
-                                        "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                        "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                         DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, aroundConstructInTargetClass, invalidSignature);
@@ -902,7 +902,7 @@ public class InterceptorTest extends BaseJakartaTest {
                                                    DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidAroundConstructInTargetClass");
 
         Diagnostic invalidSignature = d(14, 18, 27,
-                                        "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                        "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                         DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, aroundConstructInSuperclass, invalidSignature);
@@ -981,7 +981,7 @@ public class InterceptorTest extends BaseJakartaTest {
                                                            DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidAroundConstructInTargetClass");
 
         Diagnostic invalidLifecycleSignature = d(18, 16, 25,
-                                                 "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                                 "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                                  DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, aroundConstructInSeparateSuperclass, invalidLifecycleSignature);
@@ -1007,7 +1007,7 @@ public class InterceptorTest extends BaseJakartaTest {
                                                        DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidAroundConstructInTargetClass");
 
         Diagnostic invalidLifecycleSignatureShared = d(19, 16, 25,
-                                                       "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                                       "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                                        DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, aroundConstructInSharedAncestor, invalidLifecycleSignatureShared);
@@ -1304,7 +1304,7 @@ public class InterceptorTest extends BaseJakartaTest {
         diagnosticsParams.setUris(Arrays.asList(uri));
 
         Diagnostic postConstructWithParam = d(18, 16, 38,
-                                              "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                              "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                               DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         Diagnostic postConstructParamsAnnotation = d(18, 16, 38,
@@ -1312,7 +1312,7 @@ public class InterceptorTest extends BaseJakartaTest {
                                                      DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructParams");
 
         Diagnostic preDestroyNonVoid = d(22, 18, 45,
-                                         "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                         "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                          DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS,
@@ -1363,12 +1363,12 @@ public class InterceptorTest extends BaseJakartaTest {
                                                     "Around-construct interceptor methods may be only declared in interceptor classes and/or their superclasses.",
                                                     DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidAroundConstructInTargetClass");
         Diagnostic aroundConstructWithParam = d(29, 16, 26,
-                                                "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                                "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                                 DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         // Line 23: public String preCleanup() -- non-void return type violates void <METHOD>()
         Diagnostic preDestroyNonVoid = d(23, 18, 28,
-                                         "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                         "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                          DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         // Line 18: public void postInit(InvocationContext ctx) -- also triggers PostConstructParams from jakarta-annotations
@@ -1376,7 +1376,7 @@ public class InterceptorTest extends BaseJakartaTest {
                                            "A method with the @PostConstruct annotation must not have any parameters.",
                                            DiagnosticSeverity.Error, "jakarta-annotations", "PostConstructParams");
         Diagnostic postConstructWithParam = d(18, 16, 24,
-                                              "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                              "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                               DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS,

@@ -54,7 +54,7 @@ public class PreDestroyAnnotationTest extends BaseJakartaTest {
 
         // Line 19: getStudentId() has non-void return -- violates lifecycle callback signature in target class
         Diagnostic nonVoidReturnSignature = d(19, 16, 28,
-                                              "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                              "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                               DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         Diagnostic d1 = d(24, 16, 28, "A method with the @PreDestroy annotation must not have any parameters.",
@@ -62,7 +62,7 @@ public class PreDestroyAnnotationTest extends BaseJakartaTest {
 
         // Line 24: getHappiness(String type) has params -- also violates lifecycle callback signature in target class
         Diagnostic hasParamsSignature = d(24, 16, 28,
-                                          "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must have the signature void <METHOD>().",
+                                          "Lifecycle callback interceptor methods declared in a target class or in a superclass of a target class must be of type void and have no parameters.",
                                           DiagnosticSeverity.Error, "jakarta-interceptor", "InvalidLifecycleCallbackMethodSignatureInTargetClass");
 
         Diagnostic d2 = d(31, 20, 31, "A method with the @PreDestroy annotation must not be static.",
