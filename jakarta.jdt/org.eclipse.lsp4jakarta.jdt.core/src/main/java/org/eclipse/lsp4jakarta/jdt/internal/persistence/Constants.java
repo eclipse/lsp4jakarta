@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 public class Constants {
     /* Annotation Constants */
     public static final String ENTITY = "jakarta.persistence.Entity";
+    public static final String ENTITY_LISTENERS = "jakarta.persistence.EntityListeners";
     public static final String ID = "jakarta.persistence.Id";
     public static final String EMBEDDEDID = "jakarta.persistence.EmbeddedId";
     public static final String EMBEDDED = "jakarta.persistence.Embedded";
@@ -40,10 +41,8 @@ public class Constants {
     public static final String ATTRIBUTE_OVERRIDE_KEY_PREFIX = "key.";
 
     public static final String INHERITANCE = "jakarta.persistence.Inheritance";
-    public static final String MAPSID = "jakarta.persistence.MapsId";
-    public static final String ONETOONE = "jakarta.persistence.OneToOne";
-    public static final String MANYTOONE = "jakarta.persistence.ManyToOne";
-    public static final String IDCLASS = "jakarta.persistence.IdClass";
+    public static final String NAMED_ENTITY_GRAPH = "jakarta.persistence.NamedEntityGraph";
+    public static final String NAMED_ENTITY_GRAPHS = "jakarta.persistence.NamedEntityGraphs";
     public static final String MAPKEY = "jakarta.persistence.MapKey";
     public static final String MAPKEYCLASS = "jakarta.persistence.MapKeyClass";
     public static final String MAPKEYJOINCOLUMN = "jakarta.persistence.MapKeyJoinColumn";
@@ -65,11 +64,19 @@ public class Constants {
     public static final String SECONDARY_TABLE = "jakarta.persistence.SecondaryTable";
     public static final String SECONDARY_TABLES = "jakarta.persistence.SecondaryTables";
 
+    public static final String MAPSID = "jakarta.persistence.MapsId";
+    public static final String ONETOONE = "jakarta.persistence.OneToOne";
+    public static final String MANYTOONE = "jakarta.persistence.ManyToOne";
+    public static final String IDCLASS = "jakarta.persistence.IdClass";
+
     public static final String[] GENERATOR_AND_TABLE_ANNOTATIONS = {
                                                                      TABLE_GENERATOR, TABLE_GENERATORS, SEQUENCE_GENERATOR, SEQUENCE_GENERATORS, SECONDARY_TABLE, SECONDARY_TABLES
     };
 
     public static final String VALUE = "value";
+
+    public static final String CONVERT = "jakarta.persistence.Convert";
+    public static final String ENUMERATED = "jakarta.persistence.Enumerated";
 
     /* Bidirectional relationship annotation constants */
     public static final String ONE_TO_MANY = "jakarta.persistence.OneToMany";
@@ -142,6 +149,14 @@ public class Constants {
     /* Annotation Fields */
     public static final String NAME = "name";
     public static final String REFERENCEDCOLUMNNAME = "referencedColumnName";
+    public static final String CONVERTER_ATTRIBUTE = "converter";
+    public static final String DISABLE_CONVERSION = "disableConversion";
+    public static final String ATTRIBUTE_NAME = "attributeName";
+
+    /* @Convert restricted-target annotations */
+    public static final String[] CONVERT_RESTRICTED_ANNOTATIONS = {
+                                                                    ID, VERSION, ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY, ENUMERATED, TEMPORAL
+    };
 
     /* Source */
     public static final String DIAGNOSTIC_SOURCE = "jakarta-persistence";
