@@ -157,8 +157,8 @@ class IdClassService {
         // IField and IMethod both implement IAnnotatable; cast is safe for @Id members.
         ICompilationUnit entityCu = entityType.getCompilationUnit();
         IAnnotation[] memberAnnotations = ((IAnnotatable) member).getAnnotations();
-        if (!DiagnosticUtils.isMatchedAnnotation(entityCu, memberAnnotations, Constants.MANYTOONE)
-            && !DiagnosticUtils.isMatchedAnnotation(entityCu, memberAnnotations, Constants.ONETOONE)) {
+        if (!DiagnosticUtils.isMatchedAnnotation(entityCu, memberAnnotations, Constants.MANY_TO_ONE)
+            && !DiagnosticUtils.isMatchedAnnotation(entityCu, memberAnnotations, Constants.ONE_TO_ONE)) {
             return rawType;
         }
 

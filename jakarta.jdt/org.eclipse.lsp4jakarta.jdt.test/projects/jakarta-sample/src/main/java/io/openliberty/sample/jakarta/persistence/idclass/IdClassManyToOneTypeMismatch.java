@@ -21,8 +21,10 @@ import jakarta.persistence.ManyToOne;
  * Invalid @IdClass usage with a relationship @Id field (spec §2.4.1.1, third bullet).
  * The entity has a @ManyToOne @Id field whose parent entity (Department) has a simple
  * int primary key. The key class holds String for that field instead of int.
+ * The entity also has a boolean @Id field whose key class member is a String.
  * Expects:
  *   - IdClassMemberTypeMismatch on @Id field "dept"
+ *   - IdClassMemberTypeMismatch on @Id field "active"
  */
 @Entity
 @IdClass(IdClassManyToOneTypeMismatchPK.class)
@@ -34,6 +36,9 @@ public class IdClassManyToOneTypeMismatch {
     @Id
     @ManyToOne
     private Department dept;
+
+    @Id
+    private boolean active;
 
     public IdClassManyToOneTypeMismatch() {
     }

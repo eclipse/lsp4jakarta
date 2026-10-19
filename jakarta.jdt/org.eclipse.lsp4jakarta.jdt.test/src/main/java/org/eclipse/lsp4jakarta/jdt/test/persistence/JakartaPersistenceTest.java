@@ -1905,16 +1905,21 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 
         // @ManyToOne @Id field "dept" resolves to Department's PK type (int),
         // but the key class holds String — type mismatch expected.
-        Diagnostic deptTypeMismatchDiagnostic = d(35, 23, 27,
+        Diagnostic deptTypeMismatchDiagnostic = d(37, 23, 27,
                                                   "The type of @Id field or property 'dept' in the entity ('int') does not match the type of the corresponding member in the @IdClass key class ('java.lang.String').",
                                                   DiagnosticSeverity.Error, "jakarta-persistence", "IdClassMemberTypeMismatch");
 
+        // Entity @Id field "active" is boolean but key class field is String.
+        Diagnostic activeTypeMismatchDiagnostic = d(40, 20, 26,
+                                                    "The type of @Id field or property 'active' in the entity ('boolean') does not match the type of the corresponding member in the @IdClass key class ('java.lang.String').",
+                                                    DiagnosticSeverity.Error, "jakarta-persistence", "IdClassMemberTypeMismatch");
+
         // The key class is not annotated with @Embeddable.
-        Diagnostic idClassNotEmbeddableDiagnostic = d(27, 0, 46,
+        Diagnostic idClassNotEmbeddableDiagnostic = d(29, 0, 46,
                                                       "The primary key class 'IdClassManyToOneTypeMismatchPK' used in the @IdClass annotation must be annotated with @Embeddable.",
                                                       DiagnosticSeverity.Error, "jakarta-persistence", "IdClassTypeNotAnnotatedWithEmbeddable");
 
-        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, deptTypeMismatchDiagnostic, idClassNotEmbeddableDiagnostic);
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, deptTypeMismatchDiagnostic, activeTypeMismatchDiagnostic, idClassNotEmbeddableDiagnostic);
     }
 
     @Test

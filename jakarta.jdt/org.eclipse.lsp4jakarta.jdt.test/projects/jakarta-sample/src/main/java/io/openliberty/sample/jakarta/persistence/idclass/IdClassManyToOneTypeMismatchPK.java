@@ -16,7 +16,7 @@ import java.io.Serializable;
 
 /**
  * Key class for {@link IdClassManyToOneTypeMismatch}: holds String dept instead of int,
- * which mismatches the parent entity's PK type.
+ * which mismatches the parent entity's PK type, and String active instead of boolean.
  */
 public class IdClassManyToOneTypeMismatchPK implements Serializable {
 
@@ -24,6 +24,7 @@ public class IdClassManyToOneTypeMismatchPK implements Serializable {
 
     public String empName;
     public String dept;
+    public String active;
 
     public IdClassManyToOneTypeMismatchPK() {
     }
