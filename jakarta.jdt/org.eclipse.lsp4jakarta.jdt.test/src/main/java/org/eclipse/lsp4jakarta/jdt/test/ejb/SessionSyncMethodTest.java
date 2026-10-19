@@ -273,6 +273,28 @@ public class SessionSyncMethodTest extends BaseJakartaTest {
         assertJavaCodeAction(codeActionParams, IJDT_UTILS, fixAction);
     }
 
+    @Test
+    public void testAfterCompletionMultiParamAllBooleanQuickFix() throws Exception {
+        String uri = getJavaFileUri(BASE_PATH + "InvalidAfterCompletionMultiParamAllBoolean.java");
+        JakartaJavaDiagnosticsParams diagnosticsParams = createDiagnosticsParams(uri);
+
+        // Line 14 (0-based): "    public void afterCompletion(boolean committed, boolean extra1, boolean extra2) {"
+        // method name "afterCompletion" at col 16, ends at col 31
+        Diagnostic multiParamAllBooleanDiagnostic = d(14, 16, 31,
+                                                      "@AfterCompletion session synchronization method must declare exactly one boolean parameter.",
+                                                      DiagnosticSeverity.Error, "jakarta-ejb", "InvalidAfterCompletionMethodParams");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, multiParamAllBooleanDiagnostic);
+
+        // QuickFix: all three params are boolean — first param is already correct so the AST only
+        // removes the trailing params. ListRewrite produces one edit deleting ", boolean extra1, boolean extra2"
+        // from col 49 (end of "boolean committed") to col 81 (end of "boolean extra2").
+        JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, multiParamAllBooleanDiagnostic);
+        TextEdit fixEdit = te(14, 49, 14, 81, "");
+        CodeAction fixAction = ca(uri, "Fix @AfterCompletion method parameter to boolean", multiParamAllBooleanDiagnostic, fixEdit);
+        assertJavaCodeAction(codeActionParams, IJDT_UTILS, fixAction);
+    }
+
     // -----------------------------------------------------------------------
     // Mixed modifiers: multiple violations on the same method
     // -----------------------------------------------------------------------
