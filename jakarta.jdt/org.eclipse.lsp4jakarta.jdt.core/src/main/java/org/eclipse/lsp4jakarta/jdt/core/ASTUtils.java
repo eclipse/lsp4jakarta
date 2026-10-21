@@ -192,19 +192,11 @@ public class ASTUtils {
                 if (stopAfterFirst && !results.isEmpty()) {
                     return false; // early-exit: already found one
                 }
-                if (targetMethod.equals(node.getName().getIdentifier())) {
-                    IMethodBinding binding = node.resolveMethodBinding();
-                    if (binding != null) {
-                        ITypeBinding declaringClass = binding.getDeclaringClass();
-                        if (declaringClass != null && parentFQN.equals(declaringClass.getQualifiedName())) {
-                            results.add(node);
-                            if (stopAfterFirst) {
-                                return false;
-                            }
-                        }
-                    }
+                if (!targetMethod.equals(node.getName().getIdentifier()) || !isMatchedTargetClass(node, parentFQN)) {
+                    return true;
                 }
-                return true;
+                results.add(node);
+                return !stopAfterFirst;
             }
         });
         return results;
