@@ -141,17 +141,24 @@ class IdClassHelper {
      * <ul>
      * <li>For a basic {@code @Id} field or property this is the declared type.</li>
      * <li>For a relationship {@code @Id} ({@code @ManyToOne} / {@code @OneToOne}),
-     * the key-class must hold the parent entity's PK type (simple PK) or
-     * {@code @IdClass} type (composite PK).</li>
+     * spec §2.4.1.1 (third bullet) requires the key-class to hold the <em>related</em>
+     * entity's PK type — not the entity type itself:
+     * <ul>
+     * <li>If the related entity has a simple PK, the key-class member type is that
+     * {@code @Id} field/property type.</li>
+     * <li>If the related entity itself has a composite PK ({@code @IdClass}), the
+     * key-class member type is that {@code @IdClass} type.</li>
+     * </ul>
+     * </li>
      * </ul>
      *
      * @param member the entity {@code @Id} field or method
      * @param entityType the entity class that owns the member
-     * @return the expected key-class type name, or the raw member type if unresolvable
+     * @return the expected key-class type name, or the {@code @Id} field type if unresolvable
      * @throws JavaModelException if the Java model cannot be inspected
      */
     private String resolveExpectedKeyClassType(IMember member, IType entityType) throws JavaModelException {
-        String rawType = JDTTypeUtils.getResolvedMemberTypeName(member);
+        String idFieldType = JDTTypeUtils.getResolvedMemberTypeName(member);
 
         // Only relationship @Id fields need special handling.
         // IField and IMethod both implement IAnnotatable; cast is safe for @Id members.
@@ -159,44 +166,44 @@ class IdClassHelper {
         IAnnotation[] memberAnnotations = ((IAnnotatable) member).getAnnotations();
         if (!DiagnosticUtils.isMatchedAnnotation(entityCu, memberAnnotations, Constants.MANY_TO_ONE)
             && !DiagnosticUtils.isMatchedAnnotation(entityCu, memberAnnotations, Constants.ONE_TO_ONE)) {
-            return rawType;
+            return idFieldType;
         }
 
-        if (rawType == null) {
+        if (idFieldType == null) {
             return null;
         }
 
-        // Resolve the parent entity type.
-        IType parentType = entityType.getJavaProject().findType(rawType);
-        if (parentType == null) {
-            return rawType;
+        // Resolve the related entity type.
+        IType idType = entityType.getJavaProject().findType(idFieldType);
+        if (idType == null) {
+            return idFieldType;
         }
 
-        // If the parent has @IdClass (composite PK), return that class's type.
-        ICompilationUnit parentCu = parentType.getCompilationUnit();
-        for (IAnnotation annotation : parentType.getAnnotations()) {
-            if (DiagnosticUtils.isMatchedAnnotation(parentCu, annotation, Constants.IDCLASS)) {
+        // Spec §2.4.1.1 third bullet: if the *related* entity itself has a composite PK
+        // (@IdClass), the key-class member must use that @IdClass type, not the entity type.
+        ICompilationUnit idTypeCu = idType.getCompilationUnit();
+        for (IAnnotation annotation : idType.getAnnotations()) {
+            if (DiagnosticUtils.isMatchedAnnotation(idTypeCu, annotation, Constants.IDCLASS)) {
                 String classLiteral = DiagnosticUtils.getAnnotationMemberValue(annotation, Constants.VALUE, String.class);
                 if (classLiteral != null) {
-                    String simpleName = classLiteral.replace(".class", "");
-                    return ManagedBean.getFullyQualifiedClassName(parentType, simpleName);
+                    return ManagedBean.getFullyQualifiedClassName(idType, classLiteral);
                 }
             }
         }
 
-        // Simple parent PK: return the type of the parent's @Id field or getter.
-        for (IField field : parentType.getFields()) {
-            if (DiagnosticUtils.isMatchedAnnotation(parentCu, field.getAnnotations(), Constants.ID)) {
+        // Simple PK on the related entity: return its @Id field/getter type directly.
+        for (IField field : idType.getFields()) {
+            if (DiagnosticUtils.isMatchedAnnotation(idTypeCu, field.getAnnotations(), Constants.ID)) {
                 return JDTTypeUtils.getResolvedTypeName(field);
             }
         }
-        for (IMethod method : parentType.getMethods()) {
-            if (DiagnosticUtils.isMatchedAnnotation(parentCu, method.getAnnotations(), Constants.ID)) {
+        for (IMethod method : idType.getMethods()) {
+            if (DiagnosticUtils.isMatchedAnnotation(idTypeCu, method.getAnnotations(), Constants.ID)) {
                 return JDTTypeUtils.getResolvedResultTypeName(method);
             }
         }
 
-        return rawType;
+        return idFieldType;
     }
 
     /**
@@ -213,7 +220,7 @@ class IdClassHelper {
         if (classLiteral == null) {
             return null;
         }
-        return ManagedBean.getChildITypeByName(declaringType, classLiteral.replace(".class", ""));
+        return ManagedBean.getChildITypeByName(declaringType, classLiteral);
     }
 
 }
