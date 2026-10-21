@@ -77,13 +77,15 @@ class IdClassHelper {
         // Infer access type: if any @Id is on a field → field-based; otherwise → property-based.
         boolean fieldAccess = idMembers.stream().anyMatch(m -> m instanceof IField);
 
-        // Build name→expectedType map for entity @Id members.
-        // For @ManyToOne / @OneToOne @Id members the expected type is the parent entity's
+        // Build name→member and name→expectedType maps for entity @Id members in one pass.
+        // For @ManyToOne / @OneToOne @Id members the expected type is the related entity's
         // PK type, not the relationship type (spec §2.4.1.1, third bullet).
+        Map<String, IMember> entityIdMembers = new HashMap<>();
         Map<String, String> entityIdMap = new HashMap<>();
         for (IMember member : idMembers) {
             String memberName = fieldAccess ? member.getElementName() : DiagnosticUtils.getterPropertyName(member.getElementName());
             if (memberName != null) {
+                entityIdMembers.put(memberName, member);
                 entityIdMap.put(memberName, resolveExpectedKeyClassType(member, entityType));
             }
         }
@@ -98,30 +100,24 @@ class IdClassHelper {
             }
         } else {
             for (IMethod method : keyClass.getMethods()) {
-                String propertyName = DiagnosticUtils.getterPropertyName(method.getElementName());
-                // A property getter is an instance method with no parameters and a non-void return type.
-                if (propertyName != null && method.getNumberOfParameters() == 0
-                    && !Flags.isStatic(method.getFlags())
-                    && !JDTTypeUtils.isVoidReturnType(method)) {
+                String propertyName = DiagnosticUtils.getterPropertyName(method);
+                if (propertyName != null) {
                     keyClassMap.put(propertyName, JDTTypeUtils.getResolvedResultTypeName(method));
                 }
             }
         }
 
-        // Check every entity @Id member against the key class map.
-        for (IMember idMember : idMembers) {
-            String memberName = fieldAccess ? idMember.getElementName() : DiagnosticUtils.getterPropertyName(idMember.getElementName());
-            if (memberName == null) {
-                continue;
-            }
-            Range range = PositionUtils.toNameRange(idMember, context.getUtils());
+        // Iterate entityIdMap directly — no need to re-derive memberName from idMembers again.
+        for (Map.Entry<String, String> entry : entityIdMap.entrySet()) {
+            String memberName = entry.getKey();
+            Range range = PositionUtils.toNameRange(entityIdMembers.get(memberName), context.getUtils());
             if (!keyClassMap.containsKey(memberName)) {
                 diagnostics.add(context.createDiagnostic(uri,
                                                          Messages.getMessage(ErrorCode.IdClassMemberMissingInKeyClass.name(), memberName),
                                                          range, Constants.DIAGNOSTIC_SOURCE, null,
                                                          ErrorCode.IdClassMemberMissingInKeyClass, DiagnosticSeverity.Error));
             } else {
-                String entityTypeName = entityIdMap.get(memberName);
+                String entityTypeName = entry.getValue();
                 String keyTypeName = keyClassMap.get(memberName);
                 if (entityTypeName != null && keyTypeName != null && !entityTypeName.equals(keyTypeName)) {
                     diagnostics.add(context.createDiagnostic(uri,
