@@ -49,8 +49,6 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
 
     private static final Logger LOGGER = Logger.getLogger(CdiSpecializesDiagnosticsParticipant.class.getName());
 
-    private static final String JAVA_LANG_OBJECT = "java.lang.Object";
-
     @Override
     public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) throws CoreException {
         IJDTUtils utils = JDTUtilsLSImpl.getInstance();
@@ -84,7 +82,7 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
 
                     // Inconsistent specialization: more than one bean specializes the same base
                     IType directSuperType = TypeHierarchyUtils.resolveDirectSuperclass(type);
-                    if (directSuperType != null && !JAVA_LANG_OBJECT.equals(directSuperType.getFullyQualifiedName())
+                    if (directSuperType != null && !Constants.OBJECT_FQ_NAME.equals(directSuperType.getFullyQualifiedName())
                         && hasInconsistentSpecialization(directSuperType)) {
                         Range range = PositionUtils.toNameRange(type, context.getUtils());
                         diagnostics.add(context.createDiagnostic(uri,
