@@ -35,13 +35,14 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.PositionUtils;
 import org.eclipse.lsp4jakarta.jdt.core.utils.TypeHierarchyUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
-import org.eclipse.lsp4jakarta.jdt.internal.core.java.ManagedBean;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 
 /** Validates CDI specialization: superclass must be a scoped bean, no duplicate specialization of the same base. */
 public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsParticipant {
 
     private static final Logger LOGGER = Logger.getLogger(CdiSpecializesDiagnosticsParticipant.class.getName());
+
+    private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
     @Override
     public List<Diagnostic> collectDiagnostics(JavaDiagnosticsContext context, IProgressMonitor monitor) throws CoreException {
@@ -82,8 +83,9 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
                 }
 
                 // Rule 3: inconsistent specialization -- more than one bean specializes the same base
-                IType directSuperType = resolveDirectSuperclass(type);
-                if (directSuperType != null && hasInconsistentSpecialization(directSuperType)) {
+                IType directSuperType = TypeHierarchyUtils.resolveDirectSuperclass(type);
+                if (directSuperType != null && !JAVA_LANG_OBJECT.equals(directSuperType.getFullyQualifiedName())
+                    && hasInconsistentSpecialization(directSuperType)) {
                     Range range = PositionUtils.toNameRange(type, context.getUtils());
                     diagnostics.add(context.createDiagnostic(uri,
                                                              Messages.getMessage("InconsistentSpecialization",
@@ -164,25 +166,5 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
             }
         }
         return false;
-    }
-
-    /**
-     * Resolves the direct superclass IType for the given type.
-     * Returns null if there is no explicit superclass or if it cannot be resolved.
-     *
-     * @param type the type whose superclass is to be resolved
-     * @return the direct superclass IType, or null
-     */
-    private IType resolveDirectSuperclass(IType type) {
-        try {
-            String superclassName = type.getSuperclassName();
-            if (superclassName == null || "Object".equals(superclassName) || "java.lang.Object".equals(superclassName)) {
-                return null;
-            }
-            return ManagedBean.getChildITypeByName(type, superclassName);
-        } catch (JavaModelException e) {
-            LOGGER.log(Level.WARNING, "Unable to resolve direct superclass for type: " + type.getElementName(), e);
-            return null;
-        }
     }
 }

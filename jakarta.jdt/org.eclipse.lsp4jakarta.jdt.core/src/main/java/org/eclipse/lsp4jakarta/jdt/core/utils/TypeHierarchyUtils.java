@@ -339,7 +339,7 @@ public class TypeHierarchyUtils {
      * @return the resolved {@link IType} of the direct superclass, or {@code null}
      * @throws JavaModelException if the Java model cannot be accessed
      */
-    private static IType resolveDirectSuperclass(IType type) throws JavaModelException {
+    public static IType resolveDirectSuperclass(IType type) throws JavaModelException {
         String superclassName = type.getSuperclassName();
         if (superclassName == null) {
             return null;
