@@ -747,7 +747,7 @@ public class PersistenceEntityDiagnosticsParticipant implements IJavaDiagnostics
         if (Constants.ID.equals(candidate)) {
             // When @IdClass is present the entity uses composite FK-based PKs (spec §2.4.1.1);
             // @Id fields may hold entity types — InvalidIdType is not applicable.
-            // IdClassService validates correctness separately.
+            // IdClassHelper validates correctness separately.
             if (!entityHasIdClass && (isArrayType || !Constants.VALID_ID_TYPES.contains(typeFQ))) {
                 diagnostics.add(context.createDiagnostic(context.getUri(),
                                                          Messages.getMessage("InvalidIdType"),
@@ -970,7 +970,7 @@ public class PersistenceEntityDiagnosticsParticipant implements IJavaDiagnostics
                                                 List<IMember> idMembers,
                                                 JavaDiagnosticsContext context, String uri,
                                                 List<Diagnostic> diagnostics) throws JavaModelException {
-        new IdClassService().validate(entityType, idClassAnnotation, idMembers, context, uri, diagnostics);
+        new IdClassHelper().validate(entityType, idClassAnnotation, idMembers, context, uri, diagnostics);
     }
 
 }

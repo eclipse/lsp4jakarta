@@ -36,7 +36,7 @@ import org.eclipse.lsp4jakarta.jdt.core.utils.PositionUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
- * Service class that encapsulates all {@code @IdClass} validation logic for
+ * Helper class that encapsulates all {@code @IdClass} validation logic for
  * Jakarta Persistence entity diagnostics.
  *
  * <p>Implements the rules from Jakarta Persistence 3.0 spec §2.4 and §2.4.1.1:
@@ -50,7 +50,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
  * </ul>
  * </p>
  */
-class IdClassService {
+class IdClassHelper {
 
     /**
      * Validates that the members of an {@code @IdClass} key class correspond to the
@@ -82,9 +82,9 @@ class IdClassService {
         // PK type, not the relationship type (spec §2.4.1.1, third bullet).
         Map<String, String> entityIdMap = new HashMap<>();
         for (IMember member : idMembers) {
-            String name = fieldAccess ? member.getElementName() : DiagnosticUtils.getterPropertyName(member.getElementName());
-            if (name != null) {
-                entityIdMap.put(name, resolveExpectedKeyClassType(member, entityType));
+            String memberName = fieldAccess ? member.getElementName() : DiagnosticUtils.getterPropertyName(member.getElementName());
+            if (memberName != null) {
+                entityIdMap.put(memberName, resolveExpectedKeyClassType(member, entityType));
             }
         }
 
@@ -98,12 +98,12 @@ class IdClassService {
             }
         } else {
             for (IMethod method : keyClass.getMethods()) {
-                String propName = DiagnosticUtils.getterPropertyName(method.getElementName());
+                String propertyName = DiagnosticUtils.getterPropertyName(method.getElementName());
                 // A property getter is an instance method with no parameters and a non-void return type.
-                if (propName != null && method.getNumberOfParameters() == 0
+                if (propertyName != null && method.getNumberOfParameters() == 0
                     && !Flags.isStatic(method.getFlags())
                     && !JDTTypeUtils.isVoidReturnType(method)) {
-                    keyClassMap.put(propName, JDTTypeUtils.getResolvedResultTypeName(method));
+                    keyClassMap.put(propertyName, JDTTypeUtils.getResolvedResultTypeName(method));
                 }
             }
         }
@@ -174,9 +174,9 @@ class IdClassService {
 
         // If the parent has @IdClass (composite PK), return that class's type.
         ICompilationUnit parentCu = parentType.getCompilationUnit();
-        for (IAnnotation ann : parentType.getAnnotations()) {
-            if (DiagnosticUtils.isMatchedAnnotation(parentCu, ann, Constants.IDCLASS)) {
-                String classLiteral = DiagnosticUtils.getAnnotationMemberValue(ann, Constants.VALUE, String.class);
+        for (IAnnotation annotation : parentType.getAnnotations()) {
+            if (DiagnosticUtils.isMatchedAnnotation(parentCu, annotation, Constants.IDCLASS)) {
+                String classLiteral = DiagnosticUtils.getAnnotationMemberValue(annotation, Constants.VALUE, String.class);
                 if (classLiteral != null) {
                     String simpleName = classLiteral.replace(".class", "");
                     return ManagedBean.getFullyQualifiedClassName(parentType, simpleName);
