@@ -562,6 +562,38 @@ public class DiagnosticUtils {
     }
 
     /**
+     * getAnnotationMemberValues
+     * Get the values of an array-valued annotation member, normalizing JDT's
+     * two representations into a single list.
+     *
+     * <p>JDT's {@link IMemberValuePair#getValue()} returns an {@code Object[]} when
+     * the member is written with array notation (e.g. {@code {@A, @B}}), but returns
+     * the bare element when a single value is given without braces
+     * (e.g. {@code @A}). Both forms are handled here.</p>
+     *
+     * @param annotation the annotation
+     * @param memberName the member/attribute name
+     * @param elementType the expected type of each element; elements of other types are skipped
+     * @return the matching elements, or an empty list if the member is absent
+     * @throws JavaModelException if there's an error accessing the annotation
+     */
+    public static <T> List<T> getAnnotationMemberValues(IAnnotation annotation, String memberName,
+                                                        Class<T> elementType) throws JavaModelException {
+        Object value = getAnnotationMemberValue(annotation, memberName, Object.class);
+        if (value == null) {
+            return List.of();
+        }
+        Object[] items = (value instanceof Object[]) ? (Object[]) value : new Object[] { value };
+        List<T> result = new ArrayList<>();
+        for (Object item : items) {
+            if (elementType.isInstance(item)) {
+                result.add(elementType.cast(item));
+            }
+        }
+        return result;
+    }
+
+    /**
      * Returns all class-literal values for a named member of an annotation.
      *
      * <p>JDT represents {@code Class<?>} literals in annotations as
