@@ -970,7 +970,11 @@ public class PersistenceEntityDiagnosticsParticipant implements IJavaDiagnostics
                                                 List<IMember> idMembers,
                                                 JavaDiagnosticsContext context, String uri,
                                                 List<Diagnostic> diagnostics) throws JavaModelException {
-        new IdClassHelper().validate(entityType, idClassAnnotation, idMembers, context, uri, diagnostics);
+        for (IdClassHelper.Finding f : new IdClassHelper().validate(entityType, idClassAnnotation, idMembers)) {
+            Range range = PositionUtils.toNameRange(f.member(), context.getUtils());
+            diagnostics.add(context.createDiagnostic(uri, f.message(), range,
+                                                     Constants.DIAGNOSTIC_SOURCE, null, f.code(), DiagnosticSeverity.Error));
+        }
     }
 
 }

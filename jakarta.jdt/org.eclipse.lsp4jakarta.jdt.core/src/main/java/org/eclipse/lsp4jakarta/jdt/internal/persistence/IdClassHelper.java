@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.persistence;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +28,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.core.java.ManagedBean;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4jakarta.jdt.core.java.diagnostics.JavaDiagnosticsContext;
 import org.eclipse.lsp4jakarta.jdt.core.utils.JDTTypeUtils;
-import org.eclipse.lsp4jakarta.jdt.core.utils.PositionUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 
 /**
@@ -53,6 +49,14 @@ import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 class IdClassHelper {
 
     /**
+     * A finding produced by {@link #validate} — carries the member to highlight,
+     * the human-readable message, and the diagnostic code. Diagnostic creation is
+     * intentionally left to the caller so that it can use its own
+     * {@code JavaDiagnosticsContext.createDiagnostic} infrastructure.
+     */
+    record Finding(IMember member, String message, ErrorCode code) {}
+
+    /**
      * Validates that the members of an {@code @IdClass} key class correspond to the
      * {@code @Id} fields or properties of the entity, and that their names and types
      * match per Jakarta Persistence spec §2.4 and §2.4.1.1.
@@ -60,18 +64,15 @@ class IdClassHelper {
      * @param entityType the {@code @Entity} class under inspection
      * @param idClassAnnotation the {@code @IdClass} annotation on the entity
      * @param idMembers the members of the entity annotated with {@code @Id}
-     * @param context the diagnostics context
-     * @param uri the URI of the compilation unit being analysed
-     * @param diagnostics the list to add diagnostics to
+     * @return list of findings; empty when validation passes
      * @throws JavaModelException if the Java model cannot be inspected
      */
-    void validate(IType entityType, IAnnotation idClassAnnotation,
-                  List<IMember> idMembers,
-                  JavaDiagnosticsContext context, String uri,
-                  List<Diagnostic> diagnostics) throws JavaModelException {
+    List<Finding> validate(IType entityType, IAnnotation idClassAnnotation,
+                           List<IMember> idMembers) throws JavaModelException {
+        List<Finding> findings = new ArrayList<>();
         IType keyClass = resolveIdClass(entityType, idClassAnnotation);
         if (keyClass == null || idMembers.isEmpty()) {
-            return;
+            return findings;
         }
 
         // Infer access type: if any @Id is on a field → field-based; otherwise → property-based.
@@ -110,24 +111,19 @@ class IdClassHelper {
         // Iterate entityIdMap directly — no need to re-derive memberName from idMembers again.
         for (Map.Entry<String, String> entry : entityIdMap.entrySet()) {
             String memberName = entry.getKey();
-            Range range = PositionUtils.toNameRange(entityIdMembers.get(memberName), context.getUtils());
+            IMember idMember = entityIdMembers.get(memberName);
             if (!keyClassMap.containsKey(memberName)) {
-                diagnostics.add(context.createDiagnostic(uri,
-                                                         Messages.getMessage(ErrorCode.IdClassMemberMissingInKeyClass.name(), memberName),
-                                                         range, Constants.DIAGNOSTIC_SOURCE, null,
-                                                         ErrorCode.IdClassMemberMissingInKeyClass, DiagnosticSeverity.Error));
+                findings.add(new Finding(idMember, Messages.getMessage(ErrorCode.IdClassMemberMissingInKeyClass.name(), memberName), ErrorCode.IdClassMemberMissingInKeyClass));
             } else {
                 String entityTypeName = entry.getValue();
                 String keyTypeName = keyClassMap.get(memberName);
                 if (entityTypeName != null && keyTypeName != null && !entityTypeName.equals(keyTypeName)) {
-                    diagnostics.add(context.createDiagnostic(uri,
-                                                             Messages.getMessage(ErrorCode.IdClassMemberTypeMismatch.name(),
-                                                                                 memberName, entityTypeName, keyTypeName),
-                                                             range, Constants.DIAGNOSTIC_SOURCE, null,
-                                                             ErrorCode.IdClassMemberTypeMismatch, DiagnosticSeverity.Error));
+                    findings.add(new Finding(idMember, Messages.getMessage(ErrorCode.IdClassMemberTypeMismatch.name(),
+                                                                           memberName, entityTypeName, keyTypeName), ErrorCode.IdClassMemberTypeMismatch));
                 }
             }
         }
+        return findings;
     }
 
     /**
