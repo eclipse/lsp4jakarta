@@ -699,48 +699,6 @@ public class DiagnosticUtils {
     }
 
     /**
-     * Extracts all property and field names from a type across its
-     * inheritance hierarchy.
-     *
-     * <p>Includes all fields and JavaBean getter/boolean is-getter property names.
-     *
-     * @param type the Java type to inspect
-     * @return a set of available property/field names
-     * @throws JavaModelException if an error occurs accessing the Java model
-     */
-    public static Set<String> getPropertyNames(IType type) throws JavaModelException {
-        Set<String> propertyNames = new HashSet<>();
-        if (type == null) {
-            return propertyNames;
-        }
-        Set<IType> hierarchy = new HashSet<>();
-        TypeHierarchyUtils.collectSuperTypes(type, hierarchy);
-
-        for (IType t : hierarchy) {
-            for (IField field : t.getFields()) {
-                propertyNames.add(field.getElementName());
-            }
-            for (IMethod method : t.getMethods()) {
-                if (method.getNumberOfParameters() != 0) {
-                    continue;
-                }
-                String returnType = method.getReturnType();
-                if (Signature.SIG_VOID.equals(returnType)) {
-                    continue;
-                }
-                String name = method.getElementName();
-                if (name.startsWith("get") && name.length() > 3 && Character.isUpperCase(name.charAt(3))) {
-                    propertyNames.add(Introspector.decapitalize(name.substring(3)));
-                } else if (name.startsWith("is") && name.length() > 2 && Character.isUpperCase(name.charAt(2))
-                           && (Signature.SIG_BOOLEAN.equals(returnType) || "QBoolean;".equals(returnType) || "java.lang.Boolean".equals(returnType))) {
-                    propertyNames.add(Introspector.decapitalize(name.substring(2)));
-                }
-            }
-        }
-        return propertyNames;
-    }
-
-    /**
      * Returns the fully-qualified name of the first type argument from a parameterised
      * superinterface on the given class binding.
      *
@@ -884,5 +842,54 @@ public class DiagnosticUtils {
         }
         // Simple reference type: QDepartment;
         return getDataTypeName(typeSignature);
+    }
+
+    /**
+     * Returns {@code true} if the entity type uses field-based access, i.e. at
+     * least one field on {@code type} directly carries {@code @Id} or
+     * {@code @EmbeddedId}.
+     *
+     * <p>JPA access type is determined by the placement of {@code @Id} on the
+     * declaring entity — no superclass walk is needed here.
+     *
+     * @param type the entity type to inspect
+     * @param unit the compilation unit, used for import resolution
+     * @param idFQ the fully-qualified name of {@code @Id}
+     * @param embeddedIdFQ the fully-qualified name of {@code @EmbeddedId}
+     * @return {@code true} if any field on {@code type} is annotated with
+     *         {@code @Id} or {@code @EmbeddedId}
+     * @throws JavaModelException if the Java model cannot be accessed
+     */
+    public static boolean isFieldBasedAccess(IType type, ICompilationUnit unit,
+                                             String idFQ, String embeddedIdFQ) throws JavaModelException {
+        for (IField field : type.getFields()) {
+            if (isMatchedAnnotation(unit, field.getAnnotations(), idFQ)
+                || isMatchedAnnotation(unit, field.getAnnotations(), embeddedIdFQ)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns {@code true} if {@code type} or any superclass in its hierarchy
+     * declares a field with the given {@code fieldName}, using
+     * {@link IType#getField(String)} + {@link IField#exists()}.
+     *
+     * @param type the type to start the search from
+     * @param fieldName the simple field name to look for
+     * @return {@code true} if a matching field is found in the type hierarchy
+     * @throws JavaModelException if the Java model cannot be accessed
+     */
+    public static boolean hasFieldInHierarchy(IType type, String fieldName) throws JavaModelException {
+        Set<IType> hierarchy = new HashSet<>();
+        TypeHierarchyUtils.collectSuperTypes(type, hierarchy);
+        for (IType t : hierarchy) {
+            IField field = t.getField(fieldName);
+            if (field != null && field.exists()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

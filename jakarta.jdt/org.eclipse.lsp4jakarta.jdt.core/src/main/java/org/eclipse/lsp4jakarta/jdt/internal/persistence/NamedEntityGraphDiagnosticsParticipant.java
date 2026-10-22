@@ -15,7 +15,6 @@ package org.eclipse.lsp4jakarta.jdt.internal.persistence;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -68,7 +67,7 @@ public class NamedEntityGraphDiagnosticsParticipant implements IJavaDiagnosticsP
                                                                                 context.getJavaProject(), this::extractNamesFromType, monitor);
 
         for (IType type : unit.getAllTypes()) {
-            validateType(type, graphNameOccurrences, diagnostics, context);
+            validateType(type, unit, graphNameOccurrences, diagnostics, context);
         }
         return diagnostics;
     }
@@ -104,31 +103,32 @@ public class NamedEntityGraphDiagnosticsParticipant implements IJavaDiagnosticsP
     // Validation — flags duplicates and invalid attributes
     // -------------------------------------------------------------------------
 
-    private void validateType(IType type, Map<String, Integer> counts,
+    private void validateType(IType type, ICompilationUnit unit, Map<String, Integer> counts,
                               List<Diagnostic> diagnostics, JavaDiagnosticsContext context) throws JavaModelException {
-        Set<String> entityAttributes = null;
+        // JPA access type is determined by where @Id is placed.
+        // Only validate attribute node existence when the entity uses field-based access
+        // (i.e. at least one field in the hierarchy carries @Id).  Property-based access
+        // (getter-level @Id) is deliberately excluded — resolving property names from
+        // methods is complex and out of scope here.
+        boolean fieldBased = DiagnosticUtils.isFieldBasedAccess(type, unit, Constants.ID, Constants.EMBEDDEDID);
+
         for (IAnnotation ann : type.getAnnotations()) {
             String elementName = ann.getElementName();
             if (DiagnosticUtils.isMatchedJavaElement(type, elementName, Constants.NAMED_ENTITY_GRAPH)) {
-                if (entityAttributes == null) {
-                    entityAttributes = DiagnosticUtils.getPropertyNames(type);
-                }
-                validateEntityGraph(ann, type, entityAttributes, counts, diagnostics, context);
+                validateEntityGraph(ann, type, fieldBased, counts, diagnostics, context);
             } else if (DiagnosticUtils.isMatchedJavaElement(type, elementName, Constants.NAMED_ENTITY_GRAPHS)) {
-                if (entityAttributes == null) {
-                    entityAttributes = DiagnosticUtils.getPropertyNames(type);
-                }
-                Set<String> attrs = entityAttributes;
-                forEachNestedGraph(ann, nested -> validateEntityGraph(nested, type, attrs, counts, diagnostics, context));
+                forEachNestedGraph(ann, nested -> validateEntityGraph(nested, type, fieldBased, counts, diagnostics, context));
             }
         }
     }
 
-    private void validateEntityGraph(IAnnotation graphAnn, IType type, Set<String> entityAttributes,
+    private void validateEntityGraph(IAnnotation graphAnn, IType type, boolean fieldBased,
                                      Map<String, Integer> counts, List<Diagnostic> diagnostics,
                                      JavaDiagnosticsContext context) throws JavaModelException {
         checkForDuplicate(graphAnn, counts, diagnostics, context);
-        validateAttributeNodes(graphAnn, type, entityAttributes, diagnostics, context);
+        if (fieldBased) {
+            validateAttributeNodes(graphAnn, type, diagnostics, context);
+        }
     }
 
     private void checkForDuplicate(IAnnotation ann, Map<String, Integer> counts,
@@ -144,7 +144,7 @@ public class NamedEntityGraphDiagnosticsParticipant implements IJavaDiagnosticsP
         }
     }
 
-    private void validateAttributeNodes(IAnnotation parentAnnotation, IType targetType, Set<String> entityAttributes,
+    private void validateAttributeNodes(IAnnotation parentAnnotation, IType targetType,
                                         List<Diagnostic> diagnostics,
                                         JavaDiagnosticsContext context) throws JavaModelException {
         Object val = DiagnosticUtils.getAnnotationMemberValue(parentAnnotation, "attributeNodes", Object.class);
@@ -154,16 +154,16 @@ public class NamedEntityGraphDiagnosticsParticipant implements IJavaDiagnosticsP
         Object[] items = (val instanceof Object[]) ? (Object[]) val : new Object[] { val };
         for (Object item : items) {
             if (item instanceof IAnnotation) {
-                validateSingleAttributeNode((IAnnotation) item, targetType, entityAttributes, diagnostics, context);
+                validateSingleAttributeNode((IAnnotation) item, targetType, diagnostics, context);
             }
         }
     }
 
-    private void validateSingleAttributeNode(IAnnotation nodeAnn, IType targetType, Set<String> entityAttributes,
+    private void validateSingleAttributeNode(IAnnotation nodeAnn, IType targetType,
                                              List<Diagnostic> diagnostics,
                                              JavaDiagnosticsContext context) throws JavaModelException {
         String attrName = DiagnosticUtils.getAnnotationMemberValue(nodeAnn, "value", String.class);
-        if (attrName != null && !attrName.isEmpty() && !entityAttributes.contains(attrName)) {
+        if (attrName != null && !attrName.isEmpty() && !DiagnosticUtils.hasFieldInHierarchy(targetType, attrName)) {
             Range range = PositionUtils.toNameRange(nodeAnn, context.getUtils());
             diagnostics.add(context.createDiagnostic(context.getUri(),
                                                      Messages.getMessage("NamedAttributeNodeAttributeNotFound", attrName, targetType.getElementName()),

@@ -284,8 +284,8 @@ public class NamedEntityGraphDiagnosticsTest extends BaseJakartaTest {
     }
 
     /**
-     * Tests that attributeNodes referencing fields/getters from a superclass as well as
-     * methods complying with JavaBean conventions on the entity produce no diagnostics.
+     * Tests that attributeNodes referencing fields from the entity itself and
+     * from a superclass produce no diagnostics (field-based access only).
      */
     @Test
     public void validSuperclassAndMethodProperties() throws Exception {
@@ -301,8 +301,9 @@ public class NamedEntityGraphDiagnosticsTest extends BaseJakartaTest {
     }
 
     /**
-     * Tests that referencing invalid attributes (non-existent superclass field or non-getter
-     * method) produces {@code NamedAttributeNodeAttributeNotFound} diagnostics.
+     * Tests that referencing non-existent field names (including names that happen to
+     * match getter methods but have no backing field) produces
+     * {@code NamedAttributeNodeAttributeNotFound} diagnostics.
      */
     @Test
     public void invalidSuperclassAndMethodProperties() throws Exception {

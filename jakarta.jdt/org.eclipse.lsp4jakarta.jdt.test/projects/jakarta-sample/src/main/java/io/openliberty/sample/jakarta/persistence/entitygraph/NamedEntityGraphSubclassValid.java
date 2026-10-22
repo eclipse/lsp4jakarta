@@ -11,11 +11,7 @@ import jakarta.persistence.NamedEntityGraph;
     attributeNodes = {
         @NamedAttributeNode("id"),
         @NamedAttributeNode("subclassField"),
-        @NamedAttributeNode("methodProperty"),
-        @NamedAttributeNode("active"),
-        @NamedAttributeNode("superField"),
-        @NamedAttributeNode("superGetterProperty"),
-        @NamedAttributeNode("superActive")
+        @NamedAttributeNode("superField")
     }
 )
 public class NamedEntityGraphSubclassValid extends NamedEntityGraphSuperclass {
