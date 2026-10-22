@@ -205,7 +205,7 @@ public class SessionSyncMethodTest extends BaseJakartaTest {
         // Actual AST edit: col 32-32 (open paren + 1 for AST positioning)
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, missingParamDiagnostic);
         TextEdit insertParamEdit = te(14, 32, 14, 32, "boolean committed");
-        CodeAction fixAction = ca(uri, "Fix @AfterCompletion method parameter to boolean", missingParamDiagnostic, insertParamEdit);
+        CodeAction fixAction = ca(uri, "Change @AfterCompletion method parameter to boolean", missingParamDiagnostic, insertParamEdit);
         assertJavaCodeAction(codeActionParams, IJDT_UTILS, fixAction);
     }
 
@@ -226,7 +226,7 @@ public class SessionSyncMethodTest extends BaseJakartaTest {
         // QuickFix: change "String" to "boolean" — actual AST range col 32-38
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, wrongParamTypeDiagnostic);
         TextEdit changeTypeEdit = te(14, 32, 14, 38, "boolean");
-        CodeAction fixAction = ca(uri, "Fix @AfterCompletion method parameter to boolean", wrongParamTypeDiagnostic, changeTypeEdit);
+        CodeAction fixAction = ca(uri, "Change @AfterCompletion method parameter to boolean", wrongParamTypeDiagnostic, changeTypeEdit);
         assertJavaCodeAction(codeActionParams, IJDT_UTILS, fixAction);
     }
 
@@ -248,7 +248,7 @@ public class SessionSyncMethodTest extends BaseJakartaTest {
         // with just the boolean param "boolean committed"
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, multiParamWithBooleanDiagnostic);
         TextEdit fixEdit = te(14, 32, 14, 75, "boolean committed");
-        CodeAction fixAction = ca(uri, "Fix @AfterCompletion method parameter to boolean", multiParamWithBooleanDiagnostic, fixEdit);
+        CodeAction fixAction = ca(uri, "Change @AfterCompletion method parameter to boolean", multiParamWithBooleanDiagnostic, fixEdit);
         assertJavaCodeAction(codeActionParams, IJDT_UTILS, fixAction);
     }
 
@@ -269,7 +269,7 @@ public class SessionSyncMethodTest extends BaseJakartaTest {
         // replacing "String status, int extra" (col 32-56) with "boolean status"
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, multiParamNoBooleanDiagnostic);
         TextEdit fixEdit = te(14, 32, 14, 56, "boolean status");
-        CodeAction fixAction = ca(uri, "Fix @AfterCompletion method parameter to boolean", multiParamNoBooleanDiagnostic, fixEdit);
+        CodeAction fixAction = ca(uri, "Change @AfterCompletion method parameter to boolean", multiParamNoBooleanDiagnostic, fixEdit);
         assertJavaCodeAction(codeActionParams, IJDT_UTILS, fixAction);
     }
 
@@ -291,7 +291,7 @@ public class SessionSyncMethodTest extends BaseJakartaTest {
         // from col 49 (end of "boolean committed") to col 81 (end of "boolean extra2").
         JakartaJavaCodeActionParams codeActionParams = createCodeActionParams(uri, multiParamAllBooleanDiagnostic);
         TextEdit fixEdit = te(14, 49, 14, 81, "");
-        CodeAction fixAction = ca(uri, "Fix @AfterCompletion method parameter to boolean", multiParamAllBooleanDiagnostic, fixEdit);
+        CodeAction fixAction = ca(uri, "Change @AfterCompletion method parameter to boolean", multiParamAllBooleanDiagnostic, fixEdit);
         assertJavaCodeAction(codeActionParams, IJDT_UTILS, fixAction);
     }
 
