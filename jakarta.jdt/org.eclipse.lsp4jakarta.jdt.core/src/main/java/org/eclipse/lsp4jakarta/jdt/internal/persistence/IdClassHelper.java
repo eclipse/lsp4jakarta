@@ -136,8 +136,10 @@ class IdClassHelper {
      * spec §2.4.1.1 (third bullet) requires the key-class to hold the <em>related</em>
      * entity's PK type — not the entity type itself:
      * <ul>
-     * <li>If the related entity has a simple PK, the key-class member type is that
-     * {@code @Id} field/property type.</li>
+     * <li>If the related entity has a simple {@code @Id}, the key-class member type is
+     * that field/property type.</li>
+     * <li>If the related entity uses {@code @EmbeddedId}, the key-class member type is
+     * the embeddable class type of that field/property.</li>
      * <li>If the related entity itself has a composite PK ({@code @IdClass}), the
      * key-class member type is that {@code @IdClass} type.</li>
      * </ul>
@@ -183,14 +185,18 @@ class IdClassHelper {
             }
         }
 
-        // Simple PK on the related entity: return its @Id field/getter type directly.
+        // Simple PK on the related entity: return its @Id or @EmbeddedId field/getter type.
+        // @EmbeddedId holds an embeddable class; the key-class member must be of that
+        // embeddable type, not the entity type (spec §2.4.1.1, third bullet).
         for (IField field : idType.getFields()) {
-            if (DiagnosticUtils.isMatchedAnnotation(idTypeCu, field.getAnnotations(), Constants.ID)) {
+            if (DiagnosticUtils.isMatchedAnnotation(idTypeCu, field.getAnnotations(), Constants.ID)
+                || DiagnosticUtils.isMatchedAnnotation(idTypeCu, field.getAnnotations(), Constants.EMBEDDEDID)) {
                 return JDTTypeUtils.getResolvedTypeName(field);
             }
         }
         for (IMethod method : idType.getMethods()) {
-            if (DiagnosticUtils.isMatchedAnnotation(idTypeCu, method.getAnnotations(), Constants.ID)) {
+            if (DiagnosticUtils.isMatchedAnnotation(idTypeCu, method.getAnnotations(), Constants.ID)
+                || DiagnosticUtils.isMatchedAnnotation(idTypeCu, method.getAnnotations(), Constants.EMBEDDEDID)) {
                 return JDTTypeUtils.getResolvedResultTypeName(method);
             }
         }

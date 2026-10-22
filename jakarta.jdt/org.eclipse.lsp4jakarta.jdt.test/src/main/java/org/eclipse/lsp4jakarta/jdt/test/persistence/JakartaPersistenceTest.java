@@ -1990,6 +1990,27 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, deptTypeMismatchDiagnostic, idClassNotEmbeddableDiagnostic);
     }
 
+    @Test
+    public void testIdClassManyToOneEmbeddedIdValid() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(
+                                                          new Path("src/main/java/io/openliberty/sample/jakarta/persistence/idclass/IdClassManyToOneEmbeddedIdValid.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        // @ManyToOne @Id field "order" points to OrderWithEmbeddedId, which uses @EmbeddedId
+        // of type OrderEmbeddedId. The key class holds OrderEmbeddedId for that field — types
+        // match, so no type-mismatch diagnostic is expected (spec §2.4.1.1, third bullet).
+        // Only the @Embeddable diagnostic fires (key class is not annotated with @Embeddable).
+        Diagnostic idClassNotEmbeddableDiagnostic = d(27, 0, 49,
+                                                      "The primary key class 'IdClassManyToOneEmbeddedIdValidPK' used in the @IdClass annotation must be annotated with @Embeddable.",
+                                                      DiagnosticSeverity.Error, "jakarta-persistence", "IdClassTypeNotAnnotatedWithEmbeddable");
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, idClassNotEmbeddableDiagnostic);
+    }
+
     // -------------------------------------------------------------------------
     // @Convert annotation diagnostics
     // -------------------------------------------------------------------------
