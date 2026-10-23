@@ -2010,6 +2010,7 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS, idClassNotEmbeddableDiagnostic);
     }
+
     @Test
     public void testInvalidIdClassStructure() throws Exception {
         IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
@@ -2086,7 +2087,6 @@ public class JakartaPersistenceTest extends BaseJakartaTest {
 
         assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS);
     }
-
 
     // -------------------------------------------------------------------------
     // @Convert annotation diagnostics
