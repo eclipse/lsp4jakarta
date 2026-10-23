@@ -63,6 +63,21 @@ public class PersistenceMappingDiagnosticsTest extends BaseJakartaTest {
     }
 
     /**
+     * Valid: @AttributeOverride on @EmbeddedId field with name="city" which exists in Address.
+     */
+    @Test
+    public void validEmbeddedIdOverride_nodiagnostic() throws Exception {
+        IJavaProject javaProject = loadJavaProject("jakarta-sample", "");
+        IFile javaFile = javaProject.getProject().getFile(new Path("src/main/java/io/openliberty/sample/jakarta/persistence/attributeoverride/ValidEmbeddedIdOverride.java"));
+        String uri = javaFile.getLocation().toFile().toURI().toString();
+
+        JakartaJavaDiagnosticsParams diagnosticsParams = new JakartaJavaDiagnosticsParams();
+        diagnosticsParams.setUris(Arrays.asList(uri));
+
+        assertJavaDiagnostics(diagnosticsParams, IJDT_UTILS /* no diagnostics expected */);
+    }
+
+    /**
      * Valid: class-level @AttributeOverride with name="address" which exists in Person.
      */
     @Test
