@@ -66,7 +66,6 @@ public class Constants {
     public static final String SECONDARY_TABLES = "jakarta.persistence.SecondaryTables";
 
     public static final String MAPSID = "jakarta.persistence.MapsId";
-    public static final String IDCLASS = "jakarta.persistence.IdClass";
 
     public static final String[] GENERATOR_AND_TABLE_ANNOTATIONS = {
                                                                      TABLE_GENERATOR, TABLE_GENERATORS, SEQUENCE_GENERATOR, SEQUENCE_GENERATORS, SECONDARY_TABLE, SECONDARY_TABLES
