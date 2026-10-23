@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.lsp4jakarta.jdt.internal.persistence;
 
+import java.beans.Introspector;
+
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
@@ -26,7 +28,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.core.java.ManagedBean;
 /**
  * Stateless JPA model-query helpers used by
  * {@link DerivedIdentityDiagnosticsParticipant} to resolve composite-key
- * metadata and parent-entity primary key types.
+ * metadata and relational-entity primary key types.
  *
  * <p>All methods are {@code static}; this class is not instantiated.</p>
  */
@@ -93,36 +95,36 @@ final class CompositeKeyResolver {
         return new KeyStrategy(embeddedIdType, hasIdClass);
     }
 
-    /** Holds the resolved parent entity and the FQ type of its primary key. */
-    static final class ParentPk {
+    /** Holds the resolved relational entity and the FQ type of its primary key. */
+    static final class RelationalEntityPk {
         final IType entity;
         final String pkFqType;
 
-        ParentPk(IType entity, String pkFqType) {
+        RelationalEntityPk(IType entity, String pkFqType) {
             this.entity = entity;
             this.pkFqType = pkFqType;
         }
     }
 
     /**
-     * Resolves the parent entity referenced by the relationship {@code member}
-     * and the FQ type of its primary key. Returns {@code null} if the parent
+     * Resolves the relational entity referenced by the relationship {@code member}
+     * and the FQ type of its primary key. Returns {@code null} if the entity
      * cannot be resolved (library type, unresolvable FQN, or no primary key).
      */
-    static ParentPk resolveParentPk(IMember member) throws JavaModelException {
-        String parentEntityFqn = JDTTypeUtils.getResolvedMemberTypeName(member);
-        if (parentEntityFqn == null) {
+    static RelationalEntityPk resolveRelationalEntityPk(IMember member) throws JavaModelException {
+        String relationalEntityFqn = JDTTypeUtils.getResolvedMemberTypeName(member);
+        if (relationalEntityFqn == null) {
             return null;
         }
-        IType parentEntity = JDTTypeUtils.findType(member.getJavaProject(), parentEntityFqn);
-        if (parentEntity == null) {
+        IType relationalEntity = JDTTypeUtils.findType(member.getJavaProject(), relationalEntityFqn);
+        if (relationalEntity == null) {
             return null;
         }
-        String pkFqType = resolvePkType(parentEntity);
+        String pkFqType = resolvePkType(relationalEntity);
         if (pkFqType == null) {
             return null;
         }
-        return new ParentPk(parentEntity, pkFqType);
+        return new RelationalEntityPk(relationalEntity, pkFqType);
     }
 
     /**
@@ -175,13 +177,18 @@ final class CompositeKeyResolver {
             return JDTTypeUtils.getResolvedTypeName(field);
         }
         // Fall back to property-access style: look for a matching no-arg getter (get... or is...).
-        String capitalized = Character.toUpperCase(attrName.charAt(0)) + attrName.substring(1);
-        String getterName = "get" + capitalized;
-        String isGetterName = "is" + capitalized;
         for (IMethod method : embeddableType.getMethods()) {
+            if (method.getNumberOfParameters() != 0) {
+                continue;
+            }
             String methodName = method.getElementName();
-            if ((getterName.equals(methodName) || isGetterName.equals(methodName))
-                && method.getNumberOfParameters() == 0) {
+            String propertyName = null;
+            if (methodName.startsWith("get") && methodName.length() > 3) {
+                propertyName = Introspector.decapitalize(methodName.substring(3));
+            } else if (methodName.startsWith("is") && methodName.length() > 2) {
+                propertyName = Introspector.decapitalize(methodName.substring(2));
+            }
+            if (attrName.equals(propertyName)) {
                 return JDTTypeUtils.getResolvedResultTypeName(method);
             }
         }

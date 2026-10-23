@@ -52,7 +52,7 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
 
     // ---- Rule 1: @MapsId must be on @OneToOne / @ManyToOne ------------------------------------
 
-    /** {@code @MapsId} on a plain {@code @Id} field: field "id" at 0-based line 15, cols 17-19. */
+    /** {@code @MapsId} on a plain {@code @Id} field. */
     @Test
     public void testMapsIdOnNonRelationshipField() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdOnNonRelationshipField"), IJDT_UTILS,
@@ -63,7 +63,7 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
 
     // ---- Rule 2: @MapsId("value") requires a composite key ------------------------------------
 
-    /** {@code @MapsId("empId")} with only a simple {@code @Id}: "employee" at line 19, cols 21-29. */
+    /** {@code @MapsId("empId")} with only a simple {@code @Id}. */
     @Test
     public void testMapsIdWithValueRequiresCompositeKey() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdWithSimpleKey"), IJDT_UTILS,
@@ -86,7 +86,7 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
 
     // ---- Rule 4: @MapsId value must name an attribute of the @EmbeddedId class ----------------
 
-    /** {@code @MapsId("nonExistent")}: "employee" at line 19, cols 21-29. */
+    /** {@code @MapsId("nonExistent")} where attribute is not in the @EmbeddedId class. */
     @Test
     public void testMapsIdValueNotInEmbeddedIdClass() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdValueNotInEmbeddedId"), IJDT_UTILS,
@@ -95,14 +95,14 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
                                     "MapsIdValueNotInEmbeddedIdClass"));
     }
 
-    // ---- Rule 5: attribute type must match the parent PK type ---------------------------------
+    // ---- Rule 5: attribute type must match the relational entity's PK type --------------------
 
-    /** ProjectId.empId is long but Department's @Id is String: "department" at line 20, cols 23-33. */
+    /** ProjectId.empId is long but Department's @Id is String. */
     @Test
     public void testMapsIdValueTypeMismatchSimpleParent() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdValueTypeMismatch"), IJDT_UTILS,
                               error(20, 23, 33,
-                                    "The type of attribute 'empId' in the @EmbeddedId class 'ProjectId' ('long') is not compatible with the primary key type of the parent entity 'Department' ('java.lang.String').",
+                                    "The type of attribute 'empId' in the @EmbeddedId class 'ProjectId' ('long') is not compatible with the primary key type of the relational entity 'Department' ('java.lang.String').",
                                     "MapsIdValueTypeMismatch"));
     }
 
@@ -111,22 +111,22 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
     public void testMapsIdValueTypeMismatchCompositeParent() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdCompositeParentTypeMismatch"), IJDT_UTILS,
                               error(20, 33, 39,
-                                    "The type of attribute 'wrongKey' in the @EmbeddedId class 'ChildKey' ('java.lang.String') is not compatible with the primary key type of the parent entity 'ParentWithEmbeddedId' ('io.openliberty.sample.jakarta.persistence.derivedidentity.ProjectId').",
+                                    "The type of attribute 'wrongKey' in the @EmbeddedId class 'ChildKey' ('java.lang.String') is not compatible with the primary key type of the relational entity 'ParentWithEmbeddedId' ('io.openliberty.sample.jakarta.persistence.derivedidentity.ProjectId').",
                                     "MapsIdValueTypeMismatch"));
     }
 
-    /** Property-access style: GetterAccessKey.isActive() is boolean but Department's @Id is String: "department" at line 20, cols 23-33. */
+    /** Property-access style: GetterAccessKey.isActive() is boolean but Department's @Id is String. */
     @Test
     public void testMapsIdValueTypeMismatchIsPropertyAccess() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdIsPropertyAccessTypeMismatch"), IJDT_UTILS,
                               error(20, 23, 33,
-                                    "The type of attribute 'active' in the @EmbeddedId class 'GetterAccessKey' ('boolean') is not compatible with the primary key type of the parent entity 'Department' ('java.lang.String').",
+                                    "The type of attribute 'active' in the @EmbeddedId class 'GetterAccessKey' ('boolean') is not compatible with the primary key type of the relational entity 'Department' ('java.lang.String').",
                                     "MapsIdValueTypeMismatch"));
     }
 
     // ---- Value-less @MapsId with @EmbeddedId (spec Examples 5b / 6b) --------------------------
 
-    /** The whole embedded id (ChildKey) differs from the parent's PK (ProjectId): "parent" at line 20, cols 33-39. */
+    /** The whole embedded id (ChildKey) differs from the relational entity's PK (ProjectId). */
     @Test
     public void testValuelessMapsIdPrimaryKeyTypeMismatch() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdValuelessPkTypeMismatch"), IJDT_UTILS,
@@ -135,7 +135,7 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
                                     "MapsIdPrimaryKeyTypeMismatch"));
     }
 
-    /** Simple @Id (String) differs from parent's simple PK (Employee.id: long): "employee" at line 20, cols 21-29. */
+    /** Simple @Id (String) differs from relational entity's simple PK (Employee.id: long). */
     @Test
     public void testValuelessMapsIdSimpleKeyTypeMismatch() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdSimpleKeyTypeMismatch"), IJDT_UTILS,

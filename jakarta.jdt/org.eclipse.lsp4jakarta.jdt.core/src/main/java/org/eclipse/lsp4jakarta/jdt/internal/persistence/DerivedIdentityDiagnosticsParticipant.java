@@ -36,7 +36,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.DiagnosticUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.Messages;
 import org.eclipse.lsp4jakarta.jdt.internal.core.ls.JDTUtilsLSImpl;
 import org.eclipse.lsp4jakarta.jdt.internal.persistence.CompositeKeyResolver.KeyStrategy;
-import org.eclipse.lsp4jakarta.jdt.internal.persistence.CompositeKeyResolver.ParentPk;
+import org.eclipse.lsp4jakarta.jdt.internal.persistence.CompositeKeyResolver.RelationalEntityPk;
 
 /**
  * Diagnostic participant for Jakarta Persistence 3.0 derived-identity rules
@@ -59,7 +59,7 @@ import org.eclipse.lsp4jakarta.jdt.internal.persistence.CompositeKeyResolver.Par
  * <li>When {@code @MapsId} specifies a value (e.g. {@code @MapsId("empPK")}),
  * that value must name an attribute in the {@code @EmbeddedId} class.</li>
  * <li>The type of that attribute must be compatible with the primary key type
- * of the referenced parent entity, resolved via
+ * of the referenced relational entity, resolved via
  * {@code IJavaProject#findType(String)} — no project-wide scan needed.</li>
  * </ul></li>
  * </ol>
@@ -147,8 +147,8 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
         String mapsIdValue = DiagnosticUtils.getAnnotationMemberValue(mapsIdAnn, Constants.VALUE, String.class);
         boolean hasValue = mapsIdValue != null && !mapsIdValue.isEmpty();
 
-        boolean fatal = validateMapsIdStructure(member, unit, memberAnnotations, keyStrategy, hasValue, context, diagnostics);
-        if (fatal) {
+        boolean isValidStructure = isValidMapsIdStructure(member, unit, memberAnnotations, keyStrategy, hasValue, context, diagnostics);
+        if (!isValidStructure) {
             return;
         }
         if (hasValue) {
@@ -167,23 +167,23 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
      * Validates a {@code @MapsId} with no {@code value} (spec §2.4.1.1, Examples 4b, 5b, 6b):
      * the relationship maps the dependent's entire primary key, so that key (the
      * {@code @EmbeddedId} type or the simple {@code @Id} type) must have the same type as
-     * the primary key of the parent entity. Skipped when the relationship itself is the
+     * the primary key of the relational entity. Skipped when the relationship itself is the
      * {@code @Id}, or when the entity uses {@code @IdClass}.
      */
     private void validateValuelessMapsId(IMember member,
                                          JavaDiagnosticsContext context,
                                          List<Diagnostic> diagnostics) throws JavaModelException {
-        ParentPk parentPk = CompositeKeyResolver.resolveParentPk(member);
-        if (parentPk == null) {
+        RelationalEntityPk relationalEntityPk = CompositeKeyResolver.resolveRelationalEntityPk(member);
+        if (relationalEntityPk == null) {
             return;
         }
         String ownPkType = CompositeKeyResolver.resolvePkType(member.getDeclaringType());
-        if (ownPkType != null && !CompositeKeyResolver.typesCompatible(ownPkType, parentPk.pkFqType)) {
+        if (ownPkType != null && !CompositeKeyResolver.typesCompatible(ownPkType, relationalEntityPk.pkFqType)) {
             addDiagnostic(member,
                           Messages.getMessage("MapsIdPrimaryKeyTypeMismatch",
                                               ownPkType,
-                                              parentPk.entity.getElementName(),
-                                              parentPk.pkFqType),
+                                              relationalEntityPk.entity.getElementName(),
+                                              relationalEntityPk.pkFqType),
                           ErrorCode.MapsIdPrimaryKeyTypeMismatch, context, diagnostics);
         }
     }
@@ -193,21 +193,22 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
      * (Rules 1–2, spec §2.4.1): the member must be a to-one
      * relationship, and a {@code @MapsId} with a value requires a composite key.
      *
-     * @return {@code true} if a fatal violation was found and attribute-binding
-     *         checks must not run, {@code false} otherwise.
+     * @return {@code true} if the member satisfies structural constraints and attribute-binding
+     *         validation can proceed, {@code false} if a structural violation was found (and
+     *         reported as a diagnostic), in which case further checks should be skipped.
      */
-    private boolean validateMapsIdStructure(IMember member, ICompilationUnit unit,
-                                            IAnnotation[] memberAnnotations, KeyStrategy keyStrategy,
-                                            boolean mapsIdHasValue,
-                                            JavaDiagnosticsContext context,
-                                            List<Diagnostic> diagnostics) throws JavaModelException {
+    private boolean isValidMapsIdStructure(IMember member, ICompilationUnit unit,
+                                           IAnnotation[] memberAnnotations, KeyStrategy keyStrategy,
+                                           boolean mapsIdHasValue,
+                                           JavaDiagnosticsContext context,
+                                           List<Diagnostic> diagnostics) throws JavaModelException {
         // Rule 1: @MapsId must be on @OneToOne or @ManyToOne (spec §2.4.1).
         boolean hasToOne = DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.ONE_TO_ONE)
                            || DiagnosticUtils.isMatchedAnnotation(unit, memberAnnotations, Constants.MANY_TO_ONE);
         if (!hasToOne) {
             addDiagnostic(member, Messages.getMessage("MapsIdOnInvalidRelationship"),
                           ErrorCode.MapsIdOnInvalidRelationship, context, diagnostics);
-            return true; // @MapsId is misplaced — further checks are meaningless
+            return false; // @MapsId is misplaced — further checks are meaningless
         }
 
         // Rule 2: a @MapsId value names an attribute within a composite key, so the entity
@@ -215,16 +216,16 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
         if (mapsIdHasValue && !keyStrategy.isComposite()) {
             addDiagnostic(member, Messages.getMessage("MapsIdRequiresCompositeKey"),
                           ErrorCode.MapsIdRequiresCompositeKey, context, diagnostics);
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
      * Validates that the value attribute of {@code @MapsId} names an existing
      * attribute in the {@code @EmbeddedId} class and that its type is compatible
-     * with the parent entity's primary key type (Rules 4–5, spec §2.4.1).
+     * with the relational entity's primary key type (Rules 4–5, spec §2.4.1).
      * Only runs when the entity uses {@code @EmbeddedId} and {@code @MapsId}
      * names a specific attribute.
      */
@@ -237,10 +238,10 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
             return; // @IdClass path — attribute-name checks do not apply here
         }
 
-        // Resolve the parent entity chain first — it is the expensive cross-file lookup.
-        // Attribute resolution only runs if the parent chain is fully resolvable.
-        ParentPk parentPk = CompositeKeyResolver.resolveParentPk(member);
-        if (parentPk == null) {
+        // Resolve the relational entity chain first — it is the expensive cross-file lookup.
+        // Attribute resolution only runs if the relational entity chain is fully resolvable.
+        RelationalEntityPk relationalEntityPk = CompositeKeyResolver.resolveRelationalEntityPk(member);
+        if (relationalEntityPk == null) {
             return;
         }
 
@@ -255,15 +256,15 @@ public class DerivedIdentityDiagnosticsParticipant implements IJavaDiagnosticsPa
             return;
         }
 
-        // Rule 5: the attribute's type must be compatible with the parent entity's PK type.
-        if (!CompositeKeyResolver.typesCompatible(embeddedAttrFqType, parentPk.pkFqType)) {
+        // Rule 5: the attribute's type must be compatible with the relational entity's PK type.
+        if (!CompositeKeyResolver.typesCompatible(embeddedAttrFqType, relationalEntityPk.pkFqType)) {
             addDiagnostic(member,
                           Messages.getMessage("MapsIdValueTypeMismatch",
                                               mapsIdValue,
                                               embeddedIdClass.getElementName(),
                                               embeddedAttrFqType,
-                                              parentPk.entity.getElementName(),
-                                              parentPk.pkFqType),
+                                              relationalEntityPk.entity.getElementName(),
+                                              relationalEntityPk.pkFqType),
                           ErrorCode.MapsIdValueTypeMismatch, context, diagnostics);
         }
     }
