@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
@@ -78,6 +79,21 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
                             break;
                         }
                     }
+
+                    // Inconsistent specialization: more than one bean specializes the same base
+                    IType directSuperType = TypeHierarchyUtils.resolveDirectSuperclass(type);
+                    if (directSuperType != null && !Constants.OBJECT_FQ_NAME.equals(directSuperType.getFullyQualifiedName())
+                        && hasInconsistentSpecialization(directSuperType)) {
+                        Range range = PositionUtils.toNameRange(type, context.getUtils());
+                        diagnostics.add(context.createDiagnostic(uri,
+                                                                 Messages.getMessage("InconsistentSpecialization",
+                                                                                     type.getElementName(),
+                                                                                     directSuperType.getFullyQualifiedName()),
+                                                                 range,
+                                                                 Constants.DIAGNOSTIC_SOURCE, null,
+                                                                 ErrorCode.InvalidInconsistentSpecialization,
+                                                                 DiagnosticSeverity.Error));
+                    }
                 }
             }
         } catch (JavaModelException e) {
@@ -130,5 +146,33 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
                                                  Constants.DIAGNOSTIC_SOURCE, null,
                                                  ErrorCode.InvalidSpecializesAnnotationOnNonBeanSuperclass,
                                                  DiagnosticSeverity.Error));
+    }
+
+    /**
+     * Returns {@code true} if more than one direct subclass of {@code directSuperType}
+     * carries {@code @Specializes}, indicating inconsistent specialization.
+     *
+     * <p>Builds an {@link ITypeHierarchy} rooted at the direct superclass and checks
+     * immediate subclasses for the {@code @Specializes} annotation.
+     *
+     * @param directSuperType the direct superclass type
+     * @return {@code true} if multiple direct subclasses specialize the base bean
+     * @throws JavaModelException if the Java model cannot be accessed
+     */
+    private boolean hasInconsistentSpecialization(IType directSuperType) throws JavaModelException {
+        ITypeHierarchy hierarchy = directSuperType.newTypeHierarchy(null);
+        IType[] subclasses = hierarchy.getSubclasses(directSuperType);
+        int specializerCount = 0;
+        for (IType subclass : subclasses) {
+            if (DiagnosticUtils.isMatchedAnnotation(subclass.getCompilationUnit(),
+                                                    subclass.getAnnotations(),
+                                                    Constants.SPECIALIZES_FQ_NAME)) {
+                specializerCount++;
+                if (specializerCount > 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
