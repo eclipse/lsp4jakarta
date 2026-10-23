@@ -16,7 +16,9 @@ import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,10 +39,11 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.utils.TypeHierarchyUtils;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.lsp4jakarta.jdt.core.utils.JDTTypeUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.cdi.Constants;
 import org.eclipse.lsp4jakarta.jdt.internal.core.java.ManagedBean;
@@ -558,6 +561,38 @@ public class DiagnosticUtils {
     }
 
     /**
+     * getAnnotationMemberValues
+     * Get the values of an array-valued annotation member, normalizing JDT's
+     * two representations into a single list.
+     *
+     * <p>JDT's {@link IMemberValuePair#getValue()} returns an {@code Object[]} when
+     * the member is written with array notation (e.g. {@code {@A, @B}}), but returns
+     * the bare element when a single value is given without braces
+     * (e.g. {@code @A}). Both forms are handled here.</p>
+     *
+     * @param annotation the annotation
+     * @param memberName the member/attribute name
+     * @param elementType the expected type of each element; elements of other types are skipped
+     * @return the matching elements, or an empty list if the member is absent
+     * @throws JavaModelException if there's an error accessing the annotation
+     */
+    public static <T> List<T> getAnnotationMemberValues(IAnnotation annotation, String memberName,
+                                                        Class<T> elementType) throws JavaModelException {
+        Object value = getAnnotationMemberValue(annotation, memberName, Object.class);
+        if (value == null) {
+            return List.of();
+        }
+        Object[] items = (value instanceof Object[]) ? (Object[]) value : new Object[] { value };
+        List<T> result = new ArrayList<>();
+        for (Object item : items) {
+            if (elementType.isInstance(item)) {
+                result.add(elementType.cast(item));
+            }
+        }
+        return result;
+    }
+
+    /**
      * Returns all class-literal values for a named member of an annotation.
      *
      * <p>JDT represents {@code Class<?>} literals in annotations as
@@ -838,6 +873,55 @@ public class DiagnosticUtils {
         }
         // Simple reference type: QDepartment;
         return getDataTypeName(typeSignature);
+    }
+
+    /**
+     * Returns {@code true} if the entity type uses field-based access, i.e. at
+     * least one field on {@code type} directly carries {@code @Id} or
+     * {@code @EmbeddedId}.
+     *
+     * <p>JPA access type is determined by the placement of {@code @Id} on the
+     * declaring entity — no superclass walk is needed here.
+     *
+     * @param type the entity type to inspect
+     * @param unit the compilation unit, used for import resolution
+     * @param idFQ the fully-qualified name of {@code @Id}
+     * @param embeddedIdFQ the fully-qualified name of {@code @EmbeddedId}
+     * @return {@code true} if any field on {@code type} is annotated with
+     *         {@code @Id} or {@code @EmbeddedId}
+     * @throws JavaModelException if the Java model cannot be accessed
+     */
+    public static boolean isFieldBasedAccess(IType type, ICompilationUnit unit,
+                                             String idFQ, String embeddedIdFQ) throws JavaModelException {
+        for (IField field : type.getFields()) {
+            if (isMatchedAnnotation(unit, field.getAnnotations(), idFQ)
+                || isMatchedAnnotation(unit, field.getAnnotations(), embeddedIdFQ)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns {@code true} if {@code type} or any superclass in its hierarchy
+     * declares a field with the given {@code fieldName}, using
+     * {@link IType#getField(String)} + {@link IField#exists()}.
+     *
+     * @param type the type to start the search from
+     * @param fieldName the simple field name to look for
+     * @return {@code true} if a matching field is found in the type hierarchy
+     * @throws JavaModelException if the Java model cannot be accessed
+     */
+    public static boolean hasFieldInHierarchy(IType type, String fieldName) throws JavaModelException {
+        Set<IType> hierarchy = new HashSet<>();
+        TypeHierarchyUtils.collectSuperTypes(type, hierarchy);
+        for (IType t : hierarchy) {
+            IField field = t.getField(fieldName);
+            if (field != null && field.exists()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

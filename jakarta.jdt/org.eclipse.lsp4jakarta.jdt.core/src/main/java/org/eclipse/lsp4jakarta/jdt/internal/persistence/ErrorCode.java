@@ -58,6 +58,7 @@ public enum ErrorCode implements IJavaErrorCode {
     IdClassMemberTypeMismatch,
     PersistenceContextNotInManagedComponent,
     ExtendedPersistenceContextInNonStatefulBean,
+    NamedAttributeNodeAttributeNotFound,
     InvalidConvertAnnotationMissingConverterOrDisable,
     InvalidConvertAnnotationOnRestrictedTarget,
     MultipleConvertAnnotationOnSameAttribute,

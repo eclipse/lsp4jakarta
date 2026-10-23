@@ -199,7 +199,7 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
         }
         return false;
     }
-  
+
     /**
      * Validates a producer method annotated with {@code @Specializes}.
      *
