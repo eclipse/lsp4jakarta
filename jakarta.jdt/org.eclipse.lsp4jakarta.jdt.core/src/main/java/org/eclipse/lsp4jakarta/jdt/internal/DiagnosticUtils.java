@@ -44,8 +44,7 @@ import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
 import org.eclipse.lsp4jakarta.jdt.core.utils.TypeHierarchyUtils;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
-import org.eclipse.lsp4jakarta.jdt.core.JakartaCorePlugin;
+import org.eclipse.lsp4jakarta.jdt.core.utils.JDTTypeUtils;
 import org.eclipse.lsp4jakarta.jdt.internal.cdi.Constants;
 import org.eclipse.lsp4jakarta.jdt.internal.core.java.ManagedBean;
 import org.eclipse.lsp4jakarta.jdt.internal.cdi.Constants;
@@ -924,4 +923,46 @@ public class DiagnosticUtils {
         }
         return false;
     }
+
+    /**
+     * Returns the JavaBeans property name for the given method if it qualifies as
+     * a property getter: a non-static, no-argument method whose name follows
+     * {@code get<Name>} or {@code is<Name>} conventions and whose return type is
+     * not {@code void}. Returns {@code null} if any condition is not met.
+     *
+     * @param method the method to inspect
+     * @return the property name (e.g. {@code "name"}), or {@code null} if not a getter
+     * @throws JavaModelException if the Java model cannot be inspected
+     */
+    public static String getterPropertyName(IMethod method) throws JavaModelException {
+        if (method.getNumberOfParameters() != 0
+            || Flags.isStatic(method.getFlags())
+            || JDTTypeUtils.isVoidReturnType(method)) {
+            return null;
+        }
+        return getterPropertyName(method.getElementName());
+    }
+
+    /**
+     * Derives a Java bean property name from a method name using
+     * {@link Introspector#decapitalize}.
+     * Returns {@code null} if the name does not follow getter conventions
+     * ({@code get<Name>} or {@code is<Name>}).
+     *
+     * @param methodName the method name (e.g. {@code "getName"}, {@code "isActive"})
+     * @return the property name (e.g. {@code "name"}, {@code "active"}), or {@code null}
+     */
+    public static String getterPropertyName(String methodName) {
+        if (methodName == null) {
+            return null;
+        }
+        if (methodName.startsWith("get") && methodName.length() > 3) {
+            return Introspector.decapitalize(methodName.substring(3));
+        }
+        if (methodName.startsWith("is") && methodName.length() > 2) {
+            return Introspector.decapitalize(methodName.substring(2));
+        }
+        return null;
+    }
+
 }
