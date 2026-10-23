@@ -131,7 +131,7 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
     public void testValuelessMapsIdPrimaryKeyTypeMismatch() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdValuelessPkTypeMismatch"), IJDT_UTILS,
                               error(20, 33, 39,
-                                    "The primary key type of the parent entity ('io.openliberty.sample.jakarta.persistence.derivedidentity.ChildKey') must be same as the primary key type of the dependent entity 'ParentWithEmbeddedId' ('io.openliberty.sample.jakarta.persistence.derivedidentity.ProjectId') when @MapsId is specified without a value.",
+                                    "The primary key type of the Entity ('io.openliberty.sample.jakarta.persistence.derivedidentity.ChildKey') must be same as the primary key type of the Relational Entity 'ParentWithEmbeddedId' ('io.openliberty.sample.jakarta.persistence.derivedidentity.ProjectId') when @MapsId is specified without a value.",
                                     "MapsIdPrimaryKeyTypeMismatch"));
     }
 
@@ -140,7 +140,7 @@ public class DerivedIdentityDiagnosticsTest extends BaseJakartaTest {
     public void testValuelessMapsIdSimpleKeyTypeMismatch() throws Exception {
         assertJavaDiagnostics(paramsFor("MapsIdSimpleKeyTypeMismatch"), IJDT_UTILS,
                               error(20, 21, 29,
-                                    "The primary key type of the parent entity ('java.lang.String') must be same as the primary key type of the dependent entity 'Employee' ('long') when @MapsId is specified without a value.",
+                                    "The primary key type of the Entity ('java.lang.String') must be same as the primary key type of the Relational Entity 'Employee' ('long') when @MapsId is specified without a value.",
                                     "MapsIdPrimaryKeyTypeMismatch"));
     }
 
