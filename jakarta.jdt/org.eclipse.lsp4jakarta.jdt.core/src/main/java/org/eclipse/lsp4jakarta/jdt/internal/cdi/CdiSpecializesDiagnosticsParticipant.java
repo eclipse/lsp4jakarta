@@ -100,7 +100,7 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
                     boolean hasSpecializes = DiagnosticUtils.isMatchedAnnotation(unit, method.getAnnotations(), Constants.SPECIALIZES_FQ_NAME);
                     boolean hasProduces = DiagnosticUtils.isMatchedAnnotation(unit, method.getAnnotations(), Constants.PRODUCES_FQ_NAME);
                     if (hasSpecializes && hasProduces) {
-                        validateSpecializesProducerMethod(method, type, unit, uri, context, diagnostics);
+                        validateSpecializesProducerMethod(method, type, uri, context, diagnostics);
                     }
                 }
             }
@@ -171,13 +171,12 @@ public class CdiSpecializesDiagnosticsParticipant implements IJavaDiagnosticsPar
      *
      * @param method the producer method to validate
      * @param type the declaring type
-     * @param unit the compilation unit
      * @param uri the file URI
      * @param context the diagnostics context
      * @param diagnostics the list to add diagnostics to
      * @throws JavaModelException if an error occurs accessing the Java model
      */
-    private void validateSpecializesProducerMethod(IMethod method, IType type, ICompilationUnit unit,
+    private void validateSpecializesProducerMethod(IMethod method, IType type,
                                                    String uri, JavaDiagnosticsContext context,
                                                    List<Diagnostic> diagnostics) throws JavaModelException {
         // The method must not be static

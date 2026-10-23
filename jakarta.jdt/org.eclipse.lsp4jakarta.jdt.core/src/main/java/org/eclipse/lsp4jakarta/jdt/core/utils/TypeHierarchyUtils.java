@@ -244,7 +244,8 @@ public class TypeHierarchyUtils {
         if (superclassType == null) {
             return false;
         }
-        return DiagnosticUtils.isMatchedAnnotation(superclassType.getCompilationUnit(),
+        ICompilationUnit superclassCU = superclassType.isBinary() ? type.getCompilationUnit() : superclassType.getCompilationUnit();
+        return DiagnosticUtils.isMatchedAnnotation(superclassCU,
                                                    superclassType.getAnnotations(),
                                                    annotationFQName);
     }
@@ -282,9 +283,10 @@ public class TypeHierarchyUtils {
         if (superclassType == null) {
             return false;
         }
+        ICompilationUnit fallbackCU = superclassType.isBinary() ? type.getCompilationUnit() : superclassType.getCompilationUnit();
         return Arrays.stream(superclassType.getAnnotations()).anyMatch(annotation -> {
             try {
-                return ManagedBean.hasMetaAnnotation(annotation, superclassType, superclassType.getCompilationUnit(), metaAnnotationFQName);
+                return ManagedBean.hasMetaAnnotation(annotation, superclassType, fallbackCU, metaAnnotationFQName);
             } catch (JavaModelException e) {
                 return false;
             }
@@ -329,7 +331,8 @@ public class TypeHierarchyUtils {
         if (overriddenMethod == null) {
             return false;
         }
-        return DiagnosticUtils.isMatchedAnnotation(superclassType.getCompilationUnit(),
+        ICompilationUnit superclassCU = superclassType.isBinary() ? type.getCompilationUnit() : superclassType.getCompilationUnit();
+        return DiagnosticUtils.isMatchedAnnotation(superclassCU,
                                                    overriddenMethod.getAnnotations(),
                                                    annotationFQName);
     }
