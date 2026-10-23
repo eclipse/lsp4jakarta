@@ -62,7 +62,9 @@ public enum ErrorCode implements IJavaErrorCode {
     InvalidInconsistentSpecialization,
     InvalidTypedAnnotationNonMatchingBeanType,
     InvalidUserTransactionInjectionInCDIBean,
-    InvalidPassivatingScopedBeanWithoutSerializable;
+    InvalidPassivatingScopedBeanWithoutSerializable,
+    InvalidSpecializesStaticProducerMethod,
+    InvalidSpecializesProducerMethodNotOverriding;
 
     /**
      * {@inheritDoc}
